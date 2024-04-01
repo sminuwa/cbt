@@ -21,23 +21,23 @@
     <meta name="twitter:image" content="assets/img/preview-banner.jpg">
 
     <!-- Favicons -->
-    <link href="assets/img/favicon.png" rel="icon">
+    <link href="{{asset("assets/img/favicon.png")}}" rel="icon">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{asset("assets/css/bootstrap.min.css")}}">
 
     <!-- Fontawesome CSS -->
-    <link rel="stylesheet" href="assets/plugins/fontawesome/css/fontawesome.min.css">
-    <link rel="stylesheet" href="assets/plugins/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="{{asset("assets/plugins/fontawesome/css/fontawesome.min.css")}}">
+    <link rel="stylesheet" href="{{asset("assets/plugins/fontawesome/css/all.min.css")}}">
 
     <!-- Feathericon CSS -->
-    <link rel="stylesheet" href="assets/css/feather.css">
+    <link rel="stylesheet" href="{{asset("assets/css/feather.css")}}">
 
     <!-- Apex Css -->
-    <link rel="stylesheet" href="assets/plugins/apex/apexcharts.css">
+    <link rel="stylesheet" href="{{asset("assets/plugins/apex/apexcharts.css")}}">
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="{{asset("assets/css/custom.css")}}">
 
 </head>
 <body>
