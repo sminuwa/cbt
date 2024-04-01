@@ -28,7 +28,7 @@ class Helper
             $questionText = str_replace('<br>', '', $questionText);
             $questionText = str_replace('&nbsp;', '', $questionText);
             // Remove the last element (empty string) from the array
-            array_pop($parts);
+//            array_pop($parts);
 
             $options = [];
             foreach ($parts as $option) {
@@ -36,6 +36,7 @@ class Helper
                 $optionText = trim(str_replace($delimeters['answer'], '', $option));
                 $optionText = trim(str_replace('<br>', '', $optionText));
                 $optionText = trim(str_replace('&nbsp;', '', $optionText));
+                $optionText = trim(str_replace('<br style="mso-special-character: line-break;"><!--[endif]--></span></p>', '', $optionText));
                 $options[] = (object)[
                     'text' => $optionText,
                     'isCorrect' => $isCorrect

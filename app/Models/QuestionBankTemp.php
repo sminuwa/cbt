@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class QuestionBankTemp
- * 
+ *
  * @property int $id
  * @property string $title
  * @property string|null $difficulty_level
@@ -28,23 +28,28 @@ use Illuminate\Database\Eloquent\Model;
  */
 class QuestionBankTemp extends Model
 {
-	protected $table = 'question_bank_temps';
+    protected $table = 'question_bank_temps';
 
-	protected $casts = [
-		'questiontime' => 'datetime',
-		'author' => 'int',
-		'subject_id' => 'int',
-		'topic_id' => 'int'
-	];
+    protected $casts = [
+        'questiontime' => 'datetime',
+        'author' => 'int',
+        'subject_id' => 'int',
+        'topic_id' => 'int'
+    ];
 
-	protected $fillable = [
-		'title',
-		'difficulty_level',
-		'questiontime',
-		'active',
-		'author',
-		'subject_id',
-		'topic',
-		'topic_id'
-	];
+    protected $fillable = [
+        'title',
+        'difficulty_level',
+        'questiontime',
+        'active',
+        'author',
+        'subject_id',
+        'topic',
+        'topic_id'
+    ];
+
+    public function options()
+    {
+        return $this->hasMany(AnsweroptionsTemp::class);
+    }
 }

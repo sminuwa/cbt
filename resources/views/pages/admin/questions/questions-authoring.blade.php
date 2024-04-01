@@ -73,7 +73,7 @@
                                             <div class="form-group">
                                                 <label for="subject_id">Subject:</label>
                                                 <select class="form-control form-select" name="subject_id"
-                                                        id="subject_id">
+                                                        id="subject_id" required>
                                                     <option value="">Select Subject</option>
                                                     @foreach(\App\Models\Subject::all() as $subject)
                                                         <option value="{{$subject->id}}">{{ $subject->name }}</option>
@@ -84,16 +84,24 @@
                                         <div class="col-12 col-md-6 col-lg-4 col-xl-4">
                                             <div class="form-group">
                                                 <label for="topic_id">Topic:</label>
-                                                <select class="form-control form-select" name="topic_id" id="topic_id">
+                                                <select class="form-control form-select" name="topic_id" id="topic_id"
+                                                        required>
                                                     <option value="">Select Topic</option>
                                                 </select>
                                             </div>
                                         </div>
 
-                                        <div class="col-12 col-md-4 col-lg-4 col-xl-3"></div>
+                                        <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                                            <div class="form-group">
+                                                <label for="question-time">Question Time</label>
+                                                <input class="form-control" type="number" name="questiontime"
+                                                       id="question-time" placeholder="Question Time (minutes)"
+                                                       required>
+                                            </div>
+                                        </div>
                                     </div>
                                     <textarea id="question-editor" name="content"></textarea>
-                                    <input class="btn btn-primary mt-3" type="submit" value="Submit">
+                                    <input class="btn btn-sm btn-info mt-3 text-light" type="submit" value="Submit">
                                 </form>
                             </div>
                         </div>

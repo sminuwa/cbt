@@ -39,6 +39,8 @@
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{asset("assets/css/custom.css")}}">
 
+    @yield('css')
+
 </head>
 <body>
 
@@ -64,7 +66,7 @@
     <!-- /Page Content -->
 
     <!-- Footer -->
-   @include('commons.footer')
+    @include('commons.footer')
     <!-- /Footer -->
 
 </div>
