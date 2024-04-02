@@ -14,6 +14,8 @@ Route::prefix('questions')->group(function () {
     Route::get('authoring/questions/review/{subject}/{topic}', [QuestionController::class, 'review'])->name('questions.authoring.review');
     Route::post('authoring/store', [QuestionController::class, 'store'])->name('questions.authoring.store');
     Route::get('authoring/completed', [QuestionController::class, 'completed'])->name('questions.authoring.completed');
+    Route::get('preview', [QuestionController::class, 'preview'])->name('questions.authoring.preview');
+    Route::post('preview/load', [QuestionController::class, 'loadPreview'])->name('questions.authoring.load.preview');
 
     Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('questions.topics');
 });

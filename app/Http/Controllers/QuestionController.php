@@ -92,6 +92,20 @@ class QuestionController extends Controller
         return view('pages.admin.questions.completed');
     }
 
+    public function preview()
+    {
+        return view('pages.admin.questions.preview-questions');
+    }
+
+    public function loadPreview(Request $request)
+    {
+        $questions = QuestionBank::where(
+            ['subject_id' => $request->subject_id, 'topic_id' => $request->topic_id, 'author' => 1]
+        )->get();
+
+        return view('pages.admin.questions.ajax.ajax-preview-questions', compact('questions'));
+    }
+
     private function clearTemps($subjectId, $topicId)
     {
         $questions = QuestionBankTemp::where(['subject_id' => $subjectId, 'topic_id' => $topicId, 'author' => 1])->get();

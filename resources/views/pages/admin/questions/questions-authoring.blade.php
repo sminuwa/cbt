@@ -91,14 +91,14 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-12 col-md-6 col-lg-4 col-xl-4">
-                                            <div class="form-group">
-                                                <label for="question-time">Question Time</label>
-                                                <input class="form-control" type="number" name="questiontime"
-                                                       id="question-time" placeholder="Question Time (minutes)"
-                                                       required>
-                                            </div>
-                                        </div>
+                                        {{--                                        <div class="col-12 col-md-6 col-lg-4 col-xl-4">--}}
+                                        {{--                                            <div class="form-group">--}}
+                                        {{--                                                <label for="question-time">Question Time</label>--}}
+                                        {{--                                                <input class="form-control" type="number" name="questiontime"--}}
+                                        {{--                                                       id="question-time" placeholder="Question Time (minutes)"--}}
+                                        {{--                                                       required>--}}
+                                        {{--                                            </div>--}}
+                                        {{--                                        </div>--}}
                                     </div>
                                     <textarea id="question-editor" name="content"></textarea>
                                     <input class="btn btn-sm btn-info mt-3 text-light" type="submit" value="Submit">
