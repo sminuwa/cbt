@@ -6,12 +6,12 @@ use stdClass;
 
 class Helper
 {
-    public static function extractQuestions($text,$delimeters=['question'=>'??','option'=>'**','answer'=>'==','difficulty'=>['S','M','D']])
+    public static function extractQuestions($text, $delimeters = ['question' => '??', 'option' => '**', 'answer' => '==', 'difficulty' => ['S', 'M', 'D']])
     {
         // Split the string into individual questions
         $questionsArray = explode($delimeters['question'], $text);
 
-// Remove the first element (empty string) from the array
+        // Remove the first element (empty string) from the array
         array_shift($questionsArray);
 
         $questions = [];
@@ -25,14 +25,19 @@ class Helper
 
             // Remove the difficulty indicator from the question text
             $questionText = preg_replace('/\{[SMD]\}/', '', $questionText);
+            $questionText = str_replace('<br>', '', $questionText);
+            $questionText = str_replace('&nbsp;', '', $questionText);
             // Remove the last element (empty string) from the array
-            array_pop($parts);
+//            array_pop($parts);
 
             $options = [];
             foreach ($parts as $option) {
                 $isCorrect = strpos($option, $delimeters['answer']) !== false;
                 $optionText = trim(str_replace($delimeters['answer'], '', $option));
-                $options[] = (object) [
+                $optionText = trim(str_replace('<br>', '', $optionText));
+                $optionText = trim(str_replace('&nbsp;', '', $optionText));
+                $optionText = trim(str_replace('<br style="mso-special-character: line-break;"><!--[endif]--></span></p>', '', $optionText));
+                $options[] = (object)[
                     'text' => $optionText,
                     'isCorrect' => $isCorrect
                 ];
