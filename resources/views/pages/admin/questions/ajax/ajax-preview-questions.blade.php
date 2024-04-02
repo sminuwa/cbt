@@ -20,7 +20,7 @@
 @else
     <div class="card border-info">
         <div class="card-header">
-            <h4 class="card-title">Preview Question(s)</h4>
+            <h4 class="card-title">&nbsp;</h4>
         </div>
         <div class="card-body pt-2 pb-2  mt-1 mb-1">
             <div class="row">
