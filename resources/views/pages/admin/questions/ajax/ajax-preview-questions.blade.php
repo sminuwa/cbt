@@ -1,8 +1,18 @@
 @if(count($questions)>0)
     @foreach($questions as $question)
-        <div class="card border-info">
+        <div
+            class="card border-{{$question->difficulty_level=='simple'?'info':($question->difficulty_level=='difficult'?'warning':'danger')}}">
             <div class="card-header">
-                <h4 class="card-title">({{$loop->iteration}}) {{ $question->title }}</h4>
+                <div class="row">
+                    <div class="col-11">
+                        <h4 class="card-title">({{$loop->iteration}}) {{ $question->title }}</h4>
+                    </div>
+                    <div class="col-1 pull-right">
+                        <a href="{{ route('questions.authoring.edit.question',[$question->id]) }}"
+                           class="btn btn-sm btn-warning text-white pull-right"><i class="far fa-edit"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
             <div class="card-body pt-2 pb-2  mt-1 mb-1">
                 <div class="row">

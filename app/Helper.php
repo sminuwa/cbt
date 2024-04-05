@@ -54,4 +54,9 @@ class Helper
         }
         return $questions;
     }
+
+    public static function indexToChar($index)
+    {
+        return chr($index + 65);
+    }
 }

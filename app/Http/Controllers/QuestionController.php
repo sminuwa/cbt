@@ -106,6 +106,33 @@ class QuestionController extends Controller
         return view('pages.admin.questions.ajax.ajax-preview-questions', compact('questions'));
     }
 
+    public function editQuestion(QuestionBank $question)
+    {
+        return view('pages.admin.questions.edit-question', compact('question'));
+    }
+
+    public function storeQuestion(Request $request)
+    {
+        $question = QuestionBank::where(['id' => $request->question_id])->first();
+        $question->title = $request->title;
+        $question->active = $request->active;
+        $question->subject_id = $request->subject_id;
+        $question->topic_id = $request->topic_id;
+        $question->difficulty_level = $request->difficulty_level;
+        $question->save();
+
+        $index = 0;
+
+        $options = $request->question_option;
+        foreach ($question->answer_options as $option) {
+            $option->question_option = $options[$index++];
+            $option->correctness = $option->id == $request->input('correctness') ? 1 : 0;
+            $option->save();
+        }
+
+        return back();
+    }
+
     private function clearTemps($subjectId, $topicId)
     {
         $questions = QuestionBankTemp::where(['subject_id' => $subjectId, 'topic_id' => $topicId, 'author' => 1])->get();
