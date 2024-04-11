@@ -25,7 +25,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="favourites.html">
+                        <a href="{{route('admin.test.config.index')}}">
                             <i class="fas fa-clipboard"></i>
                             <span>Test</span>
                         </a>

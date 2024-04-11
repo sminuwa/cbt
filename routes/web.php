@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\CandidateLoginController;
 use App\Http\Controllers\Auth\UserLoginController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\TestConfigController;
 use App\Http\Controllers\TopicController;
 use Illuminate\Support\Facades\Route;
 
@@ -46,5 +47,10 @@ Route::name('auth.')->prefix('auth/')->group(function () {
 Route::name('admin.')->prefix('adm')->group(function () {
     Route::name('dashboard.')->prefix('dashboard')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
+    });
+    Route::name('test.')->prefix('test')->group(function () {
+        Route::name('config.')->prefix('config')->group(function () {
+            Route::get('/', [TestConfigController::class, 'index'])->name('index');
+        });
     });
 });
