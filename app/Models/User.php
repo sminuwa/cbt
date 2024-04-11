@@ -8,11 +8,14 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+//use Laravel\Sanctum\HasApiTokens;
 
 /**
  * Class User
- * 
+ *
  * @property int $id
  * @property string $username
  * @property string $password
@@ -24,7 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $answer
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|TestCompositor[] $test_compositors
  * @property Collection|TestConfig[] $test_configs
  * @property Collection|TestInvigilator[] $test_invigilators
@@ -33,55 +36,56 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models
  */
-class User extends Model
+class User extends Authenticatable
 {
-	protected $table = 'users';
+    use  HasFactory, Notifiable;
+    protected $table = 'users';
 
-	protected $casts = [
-		'enabled' => 'int'
-	];
+    protected $casts = [
+        'enabled' => 'int'
+    ];
 
-	protected $hidden = [
-		'password'
-	];
+    protected $hidden = [
+        'password'
+    ];
 
-	protected $fillable = [
-		'username',
-		'password',
-		'display_name',
-		'email',
-		'personnel_no',
-		'enabled',
-		'question',
-		'answer'
-	];
+    protected $fillable = [
+        'username',
+        'password',
+        'display_name',
+        'email',
+        'personnel_no',
+        'enabled',
+        'question',
+        'answer'
+    ];
 
-	public function test_compositors()
-	{
-		return $this->hasMany(TestCompositor::class);
-	}
+    public function test_compositors()
+    {
+        return $this->hasMany(TestCompositor::class);
+    }
 
-	public function test_configs()
-	{
-		return $this->hasMany(TestConfig::class, 'initiated_by');
-	}
+    public function test_configs()
+    {
+        return $this->hasMany(TestConfig::class, 'initiated_by');
+    }
 
-	public function test_invigilators()
-	{
-		return $this->hasMany(TestInvigilator::class);
-	}
+    public function test_invigilators()
+    {
+        return $this->hasMany(TestInvigilator::class);
+    }
 
-	public function permissions()
-	{
-		return $this->belongsToMany(Permission::class, 'user_permissions')
-					->withPivot('id')
-					->withTimestamps();
-	}
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'user_permissions')
+            ->withPivot('id')
+            ->withTimestamps();
+    }
 
-	public function roles()
-	{
-		return $this->belongsToMany(Role::class, 'user_roles')
-					->withPivot('id')
-					->withTimestamps();
-	}
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_roles')
+            ->withPivot('id')
+            ->withTimestamps();
+    }
 }

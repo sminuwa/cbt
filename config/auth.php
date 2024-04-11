@@ -38,11 +38,11 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'candidates',
         ],
         'admin' => [
             'driver' => 'session',
-            'provider' => 'candidates',
+            'provider' => 'users',
         ],
     ],
 
