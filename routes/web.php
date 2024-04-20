@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Auth\CandidateLoginController;
 use App\Http\Controllers\Auth\UserLoginController;
-use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TestConfigController;
 use App\Http\Controllers\TopicController;
 use Illuminate\Support\Facades\Route;

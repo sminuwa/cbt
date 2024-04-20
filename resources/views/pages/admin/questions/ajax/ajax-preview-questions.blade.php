@@ -8,7 +8,7 @@
                         <h4 class="card-title">({{$loop->iteration}}) {{ $question->title }}</h4>
                     </div>
                     <div class="col-1 pull-right">
-                        <a href="{{ route('questions.authoring.edit.question',[$question->id]) }}"
+                        <a href="{{ route('admin.questions.authoring.edit.question',[$question->id]) }}"
                            class="btn btn-sm btn-warning text-white pull-right"><i class="far fa-edit"></i>
                         </a>
                     </div>

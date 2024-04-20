@@ -1,19 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Helper;
+use App\Http\Controllers\Controller;
 use App\Models\AnswerOption;
 use App\Models\AnsweroptionsTemp;
 use App\Models\QuestionBank;
 use App\Models\QuestionBankTemp;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuestionController extends Controller
 {
     public function __construct()
     {
-        // $this->middleware("auth");
+        $this->middleware('auth:admin');
     }
 
     public function author()
@@ -29,7 +31,7 @@ class QuestionController extends Controller
 
         foreach ($questions as $question) {
             $bank = new  QuestionBankTemp();
-            $bank->author = 1;
+            $bank->author = Auth::user()->id;
             $bank->title = $question->text;
             $bank->topic_id = $request->topic_id;
             $bank->subject_id = $request->subject_id;
@@ -53,7 +55,7 @@ class QuestionController extends Controller
 
     public function review($subjectId, $topicId)
     {
-        $questions = QuestionBankTemp::where(['subject_id' => $subjectId, 'topic_id' => $topicId, 'author' => 1])
+        $questions = QuestionBankTemp::where(['subject_id' => $subjectId, 'topic_id' => $topicId, 'author' => Auth::user()->id])
             ->get();
 
         return view('pages.admin.questions.review', compact('questions', 'subjectId', 'topicId'));
@@ -62,7 +64,7 @@ class QuestionController extends Controller
     public function store(Request $request)
     {
         $tempQuestions = QuestionBankTemp::where(
-            ['subject_id' => $request->subject_id, 'topic_id' => $request->topic_id, 'author' => 1]
+            ['subject_id' => $request->subject_id, 'topic_id' => $request->topic_id, 'author' => Auth::user()->id]
         )->get();
 
         foreach ($tempQuestions as $tempQuestion) {
@@ -105,7 +107,7 @@ class QuestionController extends Controller
     public function loadPreview(Request $request)
     {
         $questions = QuestionBank::where(
-            ['subject_id' => $request->subject_id, 'topic_id' => $request->topic_id, 'author' => 1]
+            ['subject_id' => $request->subject_id, 'topic_id' => $request->topic_id, 'author' => Auth::user()->id]
         )->get();
 
         return view('pages.admin.questions.ajax.ajax-preview-questions', compact('questions'));
@@ -135,12 +137,12 @@ class QuestionController extends Controller
             $option->save();
         }
 
-        return back();
+        return redirect(route('admin.questions.authoring.preview'));
     }
 
     private function clearTemps($subjectId, $topicId)
     {
-        $questions = QuestionBankTemp::where(['subject_id' => $subjectId, 'topic_id' => $topicId, 'author' => 1])->get();
+        $questions = QuestionBankTemp::where(['subject_id' => $subjectId, 'topic_id' => $topicId, 'author' => Auth::user()->id])->get();
 
         foreach ($questions as $question) {
             AnsweroptionsTemp::where(['question_bank_temp_id' => $question->id])->delete();
