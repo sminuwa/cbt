@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Auth\CandidateLoginController;
 use App\Http\Controllers\Auth\UserLoginController;
 use App\Http\Controllers\TestConfigController;
@@ -12,7 +13,6 @@ Route::get('/', function () {
 
     return view('pages.admin.dashboard.index');
 });
-
 
 
 Route::name('auth.')->prefix('auth/')->group(function () {
@@ -27,7 +27,6 @@ Route::name('auth.')->prefix('auth/')->group(function () {
         Route::get('logout', [CandidateLoginController::class, 'logout'])->name('logout');
     });
 });
-
 
 
 Route::name('admin.')->prefix('adm')->group(function () {
@@ -56,6 +55,16 @@ Route::name('admin.')->prefix('adm')->group(function () {
         Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('questions.topics');
     });
 
+    Route::name('reports.')->prefix('reports')->group(function () {
+        Route::name('testcode.')->prefix('by-test-code')->group(function () {
+            Route::get('/', [ReportController::class, 'index'])->name('index');
+            Route::post('generate', [ReportController::class, 'generateByCode'])->name('generate');
+        });
 
+        Route::name('daily.')->prefix('daily')->group(function () {
+            Route::get('/', [ReportController::class, 'daily'])->name('index');
+            Route::post('generate', [ReportController::class, 'generateDaily'])->name('generate');
+        });
+    });
 
 });
