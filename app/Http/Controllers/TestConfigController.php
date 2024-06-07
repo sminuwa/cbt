@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TestConfig;
+use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,9 +20,55 @@ class TestConfigController extends Controller
         $this->middleware('auth:admin');
     }
 
-    public function index(Request $request)
+    public function index(Request $request): Factory|\Illuminate\Foundation\Application|View|Application
     {
         $user = Auth::user();
         return view('pages.author.test.config.index');
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        try {
+            $user = Auth::user();
+            $config = new TestConfig();
+            $config->fill($request->all());
+            $config->initiated_by = $user->id;
+            $config->date_initiated = now();
+            $config->total_mark = 0.0;
+            if ($config->save())
+                return back()->with(['success' => true, 'message' => 'Test successfully created']);
+
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function basics(TestConfig $config): Factory|\Illuminate\Foundation\Application|View|Application
+    {
+        return view('pages.author.test.config.basics', compact('config'));
+    }
+
+    public function storeBasics(Request $request): RedirectResponse
+    {
+        try {
+            $config = TestConfig::find($request->id);
+            if ($config) {
+                $config->duration = $request->duration;
+                $config->pass_key = $request->pass_key;
+                $config->allow_calc = $request->allow_calc;
+                $config->endorsement = $request->endorsement;
+                $config->time_padding = $request->time_padding;
+                $config->display_mode = $request->display_mode;
+                $config->starting_mode = $request->starting_mode;
+                $config->option_administration = $request->option_administration;
+                $config->question_administration = $request->question_administration;
+                if ($config->save())
+                    return back()->with(['success' => true, 'message' => 'Test Configurations successfully saved']);
+            }
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
 }
