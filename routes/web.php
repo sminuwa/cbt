@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Auth\CandidateLoginController;
 use App\Http\Controllers\Auth\UserLoginController;
+use App\Http\Controllers\MiscController;
 use App\Http\Controllers\TestConfigController;
 use App\Http\Controllers\TopicController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,9 @@ Route::name('admin.')->prefix('adm')->group(function () {
             Route::get('/{config}/dates', [TestConfigController::class, 'dates'])->name('dates');
             Route::post('/dates/store', [TestConfigController::class, 'storeDate'])->name('dates.store');
             Route::get('/dates/delete/{date}', [TestConfigController::class, 'deleteDate'])->name('dates.delete');
+
+            Route::get('/{config}/schedules', [TestConfigController::class, 'schedules'])->name('schedules');
+            Route::post('/schedules/store', [TestConfigController::class, 'storeSchedule'])->name('schedules.store');
         });
     });
 
@@ -75,4 +79,7 @@ Route::name('admin.')->prefix('adm')->group(function () {
         });
     });
 
+    Route::name('misc.')->prefix('misc')->group(function () {
+        Route::get('/{centre}/venues', [MiscController::class, 'venues'])->name('venues');
+    });
 });

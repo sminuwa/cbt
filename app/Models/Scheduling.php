@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Scheduling
- * 
+ *
  * @property int $id
  * @property int|null $test_id
  * @property int|null $venue_id
@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $daily_end_time
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property TestConfig|null $test_config
  * @property Venue|null $venue
  * @property Collection|CandidateStudent[] $candidate_students
@@ -40,7 +40,7 @@ class Scheduling extends Model
 	protected $table = 'schedulings';
 
 	protected $casts = [
-		'test_id' => 'int',
+		'test_config_id' => 'int',
 		'venue_id' => 'int',
 		'date' => 'datetime',
 		'maximum_batch' => 'int',
@@ -50,7 +50,7 @@ class Scheduling extends Model
 	];
 
 	protected $fillable = [
-		'test_id',
+		'test_config_id',
 		'venue_id',
 		'date',
 		'maximum_batch',
@@ -61,7 +61,7 @@ class Scheduling extends Model
 
 	public function test_config()
 	{
-		return $this->belongsTo(TestConfig::class, 'test_id');
+		return $this->belongsTo(TestConfig::class, 'test_config_id');
 	}
 
 	public function venue()

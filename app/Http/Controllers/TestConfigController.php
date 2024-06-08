@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ExamsDate;
+use App\Models\Scheduling;
 use App\Models\TestConfig;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -108,4 +109,24 @@ class TestConfigController extends Controller
     {
         return ExamsDate::where(['test_config_id' => $config_id])->get();
     }
+
+    public function schedules($config_id): Factory|\Illuminate\Foundation\Application|View|Application
+    {
+        $schedules = Scheduling::where(['test_config_id' => $config_id])->get();
+        return view('pages.author.test.config.schedules', compact('schedules', 'config_id'));
+    }
+
+    public function storeSchedule(Request $request): RedirectResponse
+    {
+        try {
+            $schedule = new Scheduling();
+            $schedule->fill($request->all());
+            if ($schedule->save())
+                return back()->with(['success' => true, 'message' => 'Test Schedule successfully saved']);
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (\Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
 }
