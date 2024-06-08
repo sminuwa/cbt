@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ExamsDate;
 use App\Models\TestConfig;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -24,6 +25,11 @@ class TestConfigController extends Controller
     {
         $user = Auth::user();
         return view('pages.author.test.config.index');
+    }
+
+    public function view(TestConfig $config)
+    {
+        return view('pages.author.test.config.view', compact('config'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -70,5 +76,36 @@ class TestConfigController extends Controller
         } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
+    }
+
+    public function dates($config_id): Factory|\Illuminate\Foundation\Application|View|Application
+    {
+        $dates = $this->testDatesBy($config_id);
+        return view('pages.author.test.config.dates', compact('config_id', 'dates'));
+    }
+
+    public function storeDate(Request $request)
+    {
+        $date = new ExamsDate();
+        $date->test_config_id = $request->test_config_id;
+        $date->date = $request->date;
+        $date->save();
+
+        $dates = $this->testDatesBy($request->test_config_id);
+        return view('pages.author.test.config.ajax.test-dates', compact('dates'));
+    }
+
+    public function deleteDate(ExamsDate $date)
+    {
+        $config_id = $date->test_config_id;
+        $date->delete();
+
+        $dates = $this->testDatesBy($config_id);
+        return view('pages.author.test.config.ajax.test-dates', compact('dates'));
+    }
+
+    private function testDatesBy($config_id)
+    {
+        return ExamsDate::where(['test_config_id' => $config_id])->get();
     }
 }

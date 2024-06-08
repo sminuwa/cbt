@@ -2,60 +2,37 @@
 @extends('layouts.app')
 
 @section('content')
-    @if(session()->has('success'))
-        @if(!session('success'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Error!</strong> {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @else
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <strong>Success!</strong> {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-    @endif
-    <div class="card border-info">
-        <div class="card-header">
-            <div class="row">
-                <div>
-                    <h4 class="card-title d-flex justify-content-between">
-                        <span>Test Configurations</span>
-                        <a data-bs-toggle="modal" href="#add_new_config"
-                           class="edit-link btn btn-info text-light"><i class="fa fa-add me-1"></i>Add New</a>
-                    </h4>
+    <div class="row mt-3">
+
+        <div class="col-6 col-lg-6 col-xl-6 col-md-12">
+            <div class="card border-info">
+                <div class="card-header border-info">
+                    {{ $config->session }} / {{ $config->test_type->name}}
+                    / {{ $config->semester==1?'First':'Second' }}
+                </div>
+                <div class="card-body">
+                    <ol style="list-style-type: circle;">
+                        <li>
+                            <a href="{{ route('admin.test.config.basics',[$config->id]) }}" class="mb-2">
+                                Basic Configurations
+                            </a>
+                        </li>
+                        <li><a href="" class="mb-2">Test Versions</a></li>
+                        <li>
+                            <a href="{{ route('admin.test.config.dates',[$config->id]) }}" class="mb-2">Test Dates</a>
+                        </li>
+                        <li><a href="" class="mb-2">Test Schedules</a></li>
+                        <li><a href="" class="mb-2">Test Mapping</a></li>
+                        <li><a href="" class="mb-2">Manual Candidate Scheduling</a></li>
+                        <li><a href="" class="mb-2">Test Subjects</a></li>
+                        <li><a href="" class="mb-2">Test Composition</a></li>
+                        <li><a href="" class="mb-2">Preview Test Questions</a></li>
+                        <li><a href="" class="mb-2">Manage Users</a></li>
+                        <li><a href="" class="mb-2">Delete</a></li>
+                    </ol>
                 </div>
             </div>
         </div>
-        <div class="card-body pt-0" style="padding: 1px !important;"></div>
-    </div>
-    <div class="row mt-3">
-        @php
-            $configs = TestConfig::with('test_type')->select(['id','session','semester','test_type_id'])->orderBy('session','desc')->get();
-        @endphp
-        @foreach($configs as $config)
-            <div class="col-4 col-lg-4 col-xl-4 col-md-6">
-                <div class="card border-info">
-                    <div class="card-header border-info">
-                        <a href="{{route('admin.test.config.view',[$config->id])}}">
-                            {{ $config->session }} / {{ $config->test_type->name}}
-                            / {{ $config->semester==1?'First':'Second' }}
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        <ol style="list-style-type: circle;">
-                            <li><a href="" class="mb-2">Make Unavailable</a></li>
-                            <li><a href="{{ route('admin.test.config.basics',[$config->id]) }}" class="mb-2">Configurations</a>
-                            </li>
-                            <li>Upload Candidates</li>
-                            <li><a href="" class="mb-2">Add/Remove Venue</a></li>
-                            <li><a href="" class="mb-2">Manage Users</a></li>
-                            <li><a href="" class="mb-2">Delete</a></li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        @endforeach
     </div>
 @endsection
 
@@ -86,7 +63,7 @@
                                                         required>
                                                     @foreach($years as $year)
                                                         <option
-                                                                value="{{ $year }}" {{$year==$now?'selected':''}} >{{ $year }}</option>
+                                                            value="{{ $year }}" {{$year==$now?'selected':''}} >{{ $year }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>

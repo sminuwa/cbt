@@ -38,9 +38,14 @@ Route::name('admin.')->prefix('adm')->group(function () {
     Route::name('test.')->prefix('test')->group(function () {
         Route::name('config.')->prefix('config')->group(function () {
             Route::get('/', [TestConfigController::class, 'index'])->name('index');
+            Route::get('/{config}/view', [TestConfigController::class, 'view'])->name('view');
             Route::post('/store', [TestConfigController::class, 'store'])->name('store');
             Route::get('/{config}/basics', [TestConfigController::class, 'basics'])->name('basics');
             Route::post('/basics/store', [TestConfigController::class, 'storeBasics'])->name('basics.store');
+
+            Route::get('/{config}/dates', [TestConfigController::class, 'dates'])->name('dates');
+            Route::post('/dates/store', [TestConfigController::class, 'storeDate'])->name('dates.store');
+            Route::get('/dates/delete/{date}', [TestConfigController::class, 'deleteDate'])->name('dates.delete');
         });
     });
 
