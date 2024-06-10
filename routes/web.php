@@ -50,6 +50,9 @@ Route::name('admin.')->prefix('adm')->group(function () {
 
             Route::get('/{config}/schedules', [TestConfigController::class, 'schedules'])->name('schedules');
             Route::post('/schedules/store', [TestConfigController::class, 'storeSchedule'])->name('schedules.store');
+
+            Route::get('/{config}/mappings', [TestConfigController::class, 'mappings'])->name('mappings');
+            Route::post('/mappings/store', [TestConfigController::class, 'storeMappings'])->name('mappings.store');
         });
     });
 
@@ -81,5 +84,6 @@ Route::name('admin.')->prefix('adm')->group(function () {
 
     Route::name('misc.')->prefix('misc')->group(function () {
         Route::get('/{centre}/venues', [MiscController::class, 'venues'])->name('venues');
+        Route::get('/{scheduling}/faculty/mappings', [MiscController::class, 'facultyMappings'])->name('faculty.mappings');
     });
 });

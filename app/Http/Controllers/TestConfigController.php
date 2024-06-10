@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ExamsDate;
+use App\Models\Faculty;
+use App\Models\FacultyScheduleMapping;
 use App\Models\Scheduling;
 use App\Models\TestConfig;
 use Exception;
@@ -28,7 +30,7 @@ class TestConfigController extends Controller
         return view('pages.author.test.config.index');
     }
 
-    public function view(TestConfig $config)
+    public function view(TestConfig $config): Factory|\Illuminate\Foundation\Application|View|Application
     {
         return view('pages.author.test.config.view', compact('config'));
     }
@@ -85,7 +87,7 @@ class TestConfigController extends Controller
         return view('pages.author.test.config.dates', compact('config_id', 'dates'));
     }
 
-    public function storeDate(Request $request)
+    public function storeDate(Request $request): Factory|\Illuminate\Foundation\Application|View|Application
     {
         $date = new ExamsDate();
         $date->test_config_id = $request->test_config_id;
@@ -96,7 +98,7 @@ class TestConfigController extends Controller
         return view('pages.author.test.config.ajax.test-dates', compact('dates'));
     }
 
-    public function deleteDate(ExamsDate $date)
+    public function deleteDate(ExamsDate $date): Factory|\Illuminate\Foundation\Application|View|Application
     {
         $config_id = $date->test_config_id;
         $date->delete();
@@ -129,4 +131,39 @@ class TestConfigController extends Controller
         }
     }
 
+    public function mappings($config_id)
+    {
+        $schedules = Scheduling::select(['schedulings.id', 'date', 'daily_start_time', 'centres.name as centre', 'venues.name as venue'])
+            ->join('venues', 'venues.id', '=', 'schedulings.venue_id')
+            ->join('centres', 'centres.id', '=', 'venues.centre_id')
+            ->where(['schedulings.test_config_id' => $config_id])
+            ->get();
+
+        return view('pages.author.test.config.mapping', compact('config_id', 'schedules'));
+    }
+
+    public function storeMappings(Request $request)
+    {
+        try {
+            $mapped_ids = [];
+            $existingMappings = FacultyScheduleMapping::where(['scheduling_id' => $request->scheduling_id]);
+            foreach ($existingMappings->get() as $mapping) {
+                $mapped_ids[] = $mapping->faculty_id;
+                if (!in_array($mapping->faculty_id, $request->mapped))
+                    $mapping->delete();
+            }
+
+            foreach ($request->mapped as $faculty_id) {
+                if (!in_array($faculty_id, $mapped_ids)) {
+                    $fm = new FacultyScheduleMapping();
+                    $fm->scheduling_id = $request->scheduling_id;
+                    $fm->faculty_id = $faculty_id;
+                    $fm->save();
+                }
+            }
+            return back()->with(['success' => true, 'message' => 'Test Mappings successfully saved']);
+        } catch (\Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 }

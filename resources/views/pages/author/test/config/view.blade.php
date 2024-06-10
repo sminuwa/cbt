@@ -22,11 +22,15 @@
                             <a href="{{ route('admin.test.config.dates',[$config->id]) }}" class="mb-2">Test Dates</a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.test.config.schedules',[$config->id]) }}" class="mb-2">Test
-                                Schedules
+                            <a href="{{ route('admin.test.config.schedules',[$config->id]) }}" class="mb-2">
+                                Test Schedules
                             </a>
                         </li>
-                        <li><a href="" class="mb-2">Test Mapping</a></li>
+                        <li>
+                            <a href="{{ route('admin.test.config.mappings',[$config->id]) }}" class="mb-2">
+                                Test Mapping
+                            </a>
+                        </li>
                         <li><a href="" class="mb-2">Manual Candidate Scheduling</a></li>
                         <li><a href="" class="mb-2">Test Subjects</a></li>
                         <li><a href="" class="mb-2">Test Composition</a></li>

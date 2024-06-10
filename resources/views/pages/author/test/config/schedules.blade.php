@@ -41,13 +41,13 @@
                             <div class="col-md-12 col-lg-3 col-xl-3">
                                 <div class="form-group">
                                     <label for="exam-dates">Test Date:</label>
-                                    <select class="form-control form-select" id="exam-dates" required>
+                                    <select class="form-control form-select" id="exam-dates" name="date" required>
                                         @php
                                             $dates = ExamsDate::where(['test_config_id'=>$config_id])->get();
                                         @endphp
                                         <option value="0">---</option>
                                         @foreach($dates as $date)
-                                            <option value="{{$date->id}}">
+                                            <option value="{{$date->date}}">
                                                 {{ Carbon::parse($date->date)->format('D, jS M, Y') }}
                                             </option>
                                         @endforeach
@@ -109,7 +109,7 @@
                         <div class="mt-3 d-flex justify-content-between">
                             <a class="btn btn-warning text-light"
                                href="{{ route('admin.test.config.view',[$config_id]) }}"><i
-                                        class="fa fa-arrow-left me-1"></i>Back</a>
+                                    class="fa fa-arrow-left me-1"></i>Back</a>
                             <input id="submit" class="btn btn-info text-light" type="submit" value="Save Changes"
                                    style="display: none">
                         </div>
