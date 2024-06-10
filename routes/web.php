@@ -9,10 +9,8 @@ use App\Http\Controllers\TopicController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-
     return view('pages.admin.dashboard.index');
 });
-
 
 
 Route::name('auth.')->prefix('auth/')->group(function () {
@@ -55,7 +53,6 @@ Route::name('admin.')->prefix('adm')->group(function () {
 
         Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('questions.topics');
     });
-
 
 
 });
