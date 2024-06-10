@@ -43,6 +43,8 @@
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{asset("assets/css/custom.css")}}">
 
+    <link rel="stylesheet" href="{{asset("assets/css/jquery.ui.css")}}">
+
     @yield('css')
 
 </head>

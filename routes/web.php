@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Auth\CandidateLoginController;
 use App\Http\Controllers\Auth\UserLoginController;
+use App\Http\Controllers\MiscController;
 use App\Http\Controllers\TestConfigController;
 use App\Http\Controllers\TopicController;
 use Illuminate\Support\Facades\Route;
@@ -27,7 +29,6 @@ Route::name('auth.')->prefix('auth/')->group(function () {
 });
 
 
-
 Route::name('admin.')->prefix('adm')->group(function () {
 
     Route::name('dashboard.')->prefix('dashboard')->group(function () {
@@ -37,6 +38,20 @@ Route::name('admin.')->prefix('adm')->group(function () {
     Route::name('test.')->prefix('test')->group(function () {
         Route::name('config.')->prefix('config')->group(function () {
             Route::get('/', [TestConfigController::class, 'index'])->name('index');
+            Route::get('/{config}/view', [TestConfigController::class, 'view'])->name('view');
+            Route::post('/store', [TestConfigController::class, 'store'])->name('store');
+            Route::get('/{config}/basics', [TestConfigController::class, 'basics'])->name('basics');
+            Route::post('/basics/store', [TestConfigController::class, 'storeBasics'])->name('basics.store');
+
+            Route::get('/{config}/dates', [TestConfigController::class, 'dates'])->name('dates');
+            Route::post('/dates/store', [TestConfigController::class, 'storeDate'])->name('dates.store');
+            Route::get('/dates/delete/{date}', [TestConfigController::class, 'deleteDate'])->name('dates.delete');
+
+            Route::get('/{config}/schedules', [TestConfigController::class, 'schedules'])->name('schedules');
+            Route::post('/schedules/store', [TestConfigController::class, 'storeSchedule'])->name('schedules.store');
+
+            Route::get('/{config}/mappings', [TestConfigController::class, 'mappings'])->name('mappings');
+            Route::post('/mappings/store', [TestConfigController::class, 'storeMappings'])->name('mappings.store');
         });
     });
 
@@ -54,5 +69,23 @@ Route::name('admin.')->prefix('adm')->group(function () {
         Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('questions.topics');
     });
 
+    Route::name('reports.')->prefix('reports')->group(function () {
+        Route::name('testcode.')->prefix('by-test-code')->group(function () {
+            Route::get('/', [ReportController::class, 'index'])->name('index');
+            Route::post('generate', [ReportController::class, 'generateByCode'])->name('generate');
+        });
+
+
+
+        Route::name('daily.')->prefix('daily')->group(function () {
+            Route::get('/', [ReportController::class, 'daily'])->name('index');
+            Route::post('generate', [ReportController::class, 'generateDaily'])->name('generate');
+        });
+    });
+
+    Route::name('misc.')->prefix('misc')->group(function () {
+        Route::get('/{centre}/venues', [MiscController::class, 'venues'])->name('venues');
+        Route::get('/{scheduling}/faculty/mappings', [MiscController::class, 'facultyMappings'])->name('faculty.mappings');
+    });
 
 });

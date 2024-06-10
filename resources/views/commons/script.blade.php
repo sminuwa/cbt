@@ -1,4 +1,3 @@
-
 <!-- jQuery -->
 <script src="{{asset("assets/js/jquery-3.7.1.min.js")}}"></script>
 
@@ -14,5 +13,7 @@
 
 <!-- Custom JS -->
 <script src="{{asset("assets/js/script.js")}}"></script>
+
+<script src="{{asset("assets/js/jquery.ui.git.js")}}"></script>
 
 @yield('script')

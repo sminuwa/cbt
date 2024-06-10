@@ -27,13 +27,13 @@
                     <li>
                         <a href="{{route('admin.test.config.index')}}">
                             <i class="fas fa-clipboard"></i>
-                            <span>Test</span>
+                            <span>Test Config</span>
                         </a>
                     </li>
                     <li>
-                        <a href="dependent.html">
+                        <a href="{{route('admin.questions.authoring')}}">
                             <i class="fas fa-users"></i>
-                            <span>Dependent</span>
+                            <span>Question Authoring</span>
                         </a>
                     </li>
                     <li>
