@@ -8,6 +8,7 @@ use App\Models\FacultyScheduleMapping;
 use App\Models\Scheduling;
 use App\Models\Subject;
 use App\Models\TestConfig;
+use App\Models\TestSection;
 use App\Models\TestSubject;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -213,4 +214,31 @@ class TestConfigController extends Controller
             ->select(['id', 'subject_id'])
             ->where(['test_config_id' => $config_id]);
     }
+
+    public function composition($config_id)
+    {
+        $subjects = $this->registeredSubjects($config_id)->get();
+        return view('pages.author.test.config.composition', compact('config_id', 'subjects'));
+    }
+
+    public function compose(TestSubject $testSubject): Factory|\Illuminate\Foundation\Application|View|Application
+    {
+        $sections = TestSection::where(['test_subject_id' => $testSubject->id])->get();
+        return view('pages.author.test.config.compose', compact('sections', 'testSubject'));
+    }
+
+    public function storeSection(Request $request)
+    {
+        try {
+            $section = new TestSection();
+            $section->fill($request->all());
+            $section->test_subject_id = $request->test_subject_id;
+            if ($section->save())
+                return back()->with(['success' => true, 'message' => 'Test Section successfully saved']);
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (\Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
 }

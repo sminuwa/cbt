@@ -37,7 +37,11 @@
                                 Test Subjects
                             </a>
                         </li>
-                        <li><a href="" class="mb-2">Test Composition</a></li>
+                        <li>
+                            <a href="{{ route('admin.test.config.composition',[$config->id]) }}" class="mb-2">
+                                Test Composition
+                            </a>
+                        </li>
                         <li><a href="" class="mb-2">Preview Test Questions</a></li>
                         <li><a href="" class="mb-2">Manage Users</a></li>
                         <li><a href="" class="mb-2">Delete</a></li>
