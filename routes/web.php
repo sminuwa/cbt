@@ -53,6 +53,12 @@ Route::name('admin.')->prefix('adm')->group(function () {
 
             Route::get('/{config}/mappings', [TestConfigController::class, 'mappings'])->name('mappings');
             Route::post('/mappings/store', [TestConfigController::class, 'storeMappings'])->name('mappings.store');
+
+            Route::get('/{config}/subjects', [TestConfigController::class, 'subjects'])->name('subjects');
+            Route::get('/{config}/subjects/ajax', [TestConfigController::class, 'subjectsAjax'])->name('subjects.ajax');
+            Route::get('/{config}/registered/subjects', [TestConfigController::class, 'registeredSubjectsAjax'])->name('registered.subjects');
+            Route::post('/register/subject', [TestConfigController::class, 'registerSubject'])->name('subject.register');
+            Route::get('/remove/{testSubject}', [TestConfigController::class, 'removeSubject'])->name('subject.remove');
         });
     });
 

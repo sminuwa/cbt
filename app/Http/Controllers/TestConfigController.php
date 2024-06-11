@@ -6,11 +6,14 @@ use App\Models\ExamsDate;
 use App\Models\Faculty;
 use App\Models\FacultyScheduleMapping;
 use App\Models\Scheduling;
+use App\Models\Subject;
 use App\Models\TestConfig;
+use App\Models\TestSubject;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -126,7 +129,7 @@ class TestConfigController extends Controller
             if ($schedule->save())
                 return back()->with(['success' => true, 'message' => 'Test Schedule successfully saved']);
             return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -162,8 +165,52 @@ class TestConfigController extends Controller
                 }
             }
             return back()->with(['success' => true, 'message' => 'Test Mappings successfully saved']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
+    }
+
+    public function subjects($config_id)
+    {
+        return view('pages.author.test.config.subjects', compact('config_id'));
+    }
+
+    public function subjectsAjax($config_id): Factory|\Illuminate\Foundation\Application|View|Application
+    {
+
+        $ids = $this->registeredSubjects($config_id)->pluck('subject_id');
+
+        $subjects = Subject::select('id', 'name', 'subject_code')
+            ->whereNotIn('id', $ids)
+            ->orderBy('subject_code')
+            ->get();
+
+        return view('pages.author.test.config.ajax.subjects', compact('subjects'));
+    }
+
+    public function registeredSubjectsAjax($config_id): Factory|\Illuminate\Foundation\Application|View|Application
+    {
+        $subjects = $this->registeredSubjects($config_id)->get();
+        return view('pages.author.test.config.ajax.registered-subjects', compact('subjects'));
+    }
+
+    public function registerSubject(Request $request)
+    {
+        $testSubject = new TestSubject();
+        $testSubject->subject_id = $request->subject_id;
+        $testSubject->test_config_id = $request->test_config_id;
+        $testSubject->save();
+    }
+
+    public function removeSubject(TestSubject $testSubject)
+    {
+        $testSubject->delete();
+    }
+
+    private function registeredSubjects($config_id): Builder
+    {
+        return TestSubject::with('subject')
+            ->select(['id', 'subject_id'])
+            ->where(['test_config_id' => $config_id]);
     }
 }
