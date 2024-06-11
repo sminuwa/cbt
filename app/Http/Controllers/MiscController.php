@@ -39,4 +39,10 @@ class MiscController extends Controller
 
         return view('pages.author.test.config.ajax.faculty-mappings', compact('faculties', 'config_id'));
     }
+
+    public function batchCapacity(Venue $venue)
+    {
+        return $venue;
+    }
+
 }

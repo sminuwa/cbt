@@ -187,6 +187,12 @@
                 if ($(this).val() !== '0') {
                     $('#submit').show()
                     $('#batches-div').show()
+
+                    $.get('{{ route('admin.misc.batches.capacity',[':id']) }}'.replace(':id', $(this).val()),
+                        function (data) {
+                            console.log(data)
+                        }
+                    )
                 } else {
                     $('#submit').hide()
                     $('#batches-div').hide()

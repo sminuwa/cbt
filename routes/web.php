@@ -85,5 +85,7 @@ Route::name('admin.')->prefix('adm')->group(function () {
     Route::name('misc.')->prefix('misc')->group(function () {
         Route::get('/{centre}/venues', [MiscController::class, 'venues'])->name('venues');
         Route::get('/{scheduling}/faculty/mappings', [MiscController::class, 'facultyMappings'])->name('faculty.mappings');
+
+        Route::get('/{venue}/batches/capacity', [MiscController::class, 'batchCapacity'])->name('batches.capacity');
     });
 });

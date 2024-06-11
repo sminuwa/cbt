@@ -50,7 +50,7 @@ class QuestionController extends Controller
             }
         }
 
-        return redirect(route('questions.authoring.review', [request('subject_id'), request('topic_id')]));
+        return redirect(route('admin.questions.authoring.review', [request('subject_id'), request('topic_id')]));
     }
 
     public function review($subjectId, $topicId)
@@ -91,7 +91,7 @@ class QuestionController extends Controller
 
             $tempQuestion->delete();
         }
-        return redirect(route('questions.authoring.completed'));
+        return redirect(route('admin.questions.authoring.completed'));
     }
 
     public function completed()
@@ -143,13 +143,10 @@ class QuestionController extends Controller
     private function clearTemps($subjectId, $topicId)
     {
         $questions = QuestionBankTemp::where(['subject_id' => $subjectId, 'topic_id' => $topicId, 'author' => Auth::user()->id])->get();
-
         foreach ($questions as $question) {
             AnsweroptionsTemp::where(['question_bank_temp_id' => $question->id])->delete();
-
             $question->delete();
         }
-
     }
 
 }
