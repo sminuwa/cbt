@@ -7,10 +7,10 @@
                     <img src="/assets/img/patients/patient.jpg" alt="User Image">
                 </a>
                 <div class="profile-det-info">
-                    <h3>Richard Wilson</h3>
+                    <h3>Sylux Endyusa Dimitri</h3>
                     <div class="patient-details">
                         <h5><i class="fas fa-birthday-cake"></i> 24 Jul 1983, 38 years</h5>
-                        <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Newyork, USA</h5>
+                        <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Moscow, Russia</h5>
                     </div>
                 </div>
             </div>
@@ -19,65 +19,39 @@
             <nav class="dashboard-menu">
                 <ul>
                     <li class="active">
-                        <a href="patient-dashboard.html">
-                            <i class="fas fa-columns"></i>
+                        <a href="{{ route('admin.dashboard.index') }}">
+                            <i class="fas fa-dashboard"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{route('admin.test.config.index')}}">
-                            <i class="fas fa-clipboard"></i>
-                            <span>Test Config</span>
+                            <i class="fas fa-cogs"></i>
+                            <span>Test Configuration</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{route('admin.questions.authoring')}}">
-                            <i class="fas fa-users"></i>
+                            <i class="fas fa-question"></i>
                             <span>Question Authoring</span>
                         </a>
                     </li>
                     <li>
-                        <a href="chat.html">
-                            <i class="fas fa-comments"></i>
-                            <span>Message</span>
-                            <small class="unread-msg">23</small>
+                        <a href="">
+                            <i class="fas fa-toolbox"></i>
+                            <span>Admin Toolbox</span>
                         </a>
                     </li>
                     <li>
-                        <a href="patient-accounts.html">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            <span>Accounts</span>
+                        <a href="">
+                            <i class="fas fa-bar-chart"></i>
+                            <span>Reports</span>
                         </a>
                     </li>
                     <li>
-                        <a href="orders-list.html">
-                            <i class="fas fa-list-alt"></i>
-                            <span>Orders</span>
-                            <small class="unread-msg">7</small>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="medical-records.html">
-                            <i class="fas fa-clipboard"></i>
-                            <span>Add Medical Records</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="medical-details.html">
-                            <i class="fas fa-file-medical-alt"></i>
-                            <span>Medical Details</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="profile-settings.html">
-                            <i class="fas fa-user-cog"></i>
-                            <span>Profile Settings</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="change-password.html">
-                            <i class="fas fa-lock"></i>
-                            <span>Change Password</span>
+                        <a href="">
+                            <i class="fas fa-users"></i>
+                            <span>Manage Users</span>
                         </a>
                     </li>
                     <li>
