@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ExamsDate;
 use App\Models\Faculty;
 use App\Models\FacultyScheduleMapping;
+use App\Models\QuestionBank;
 use App\Models\Scheduling;
 use App\Models\Subject;
 use App\Models\TestConfig;
@@ -230,7 +231,10 @@ class TestConfigController extends Controller
     public function storeSection(Request $request)
     {
         try {
-            $section = new TestSection();
+            if (isset($request->id))
+                $section = TestSection::find($request->id);
+            else
+                $section = new TestSection();
             $section->fill($request->all());
             $section->test_subject_id = $request->test_subject_id;
             if ($section->save())
@@ -238,6 +242,54 @@ class TestConfigController extends Controller
             return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
         } catch (\Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function questions(TestSection $testSection)
+    {
+        $topics = $testSection->test_subject->subject->topics;
+        return view('pages.author.test.config.compose-questions', compact('testSection', 'topics'));
+    }
+
+    public function loadQuestions(Request $request)
+    {
+        try {
+            $where = [];
+            $where[] = ['subject_id', '=', $request->subject_id];
+
+            if ($request->difficulty_level != '%')
+                $where[] = ['difficulty_level', '=', $request->difficulty_level];
+
+            if ($request->topic_id != '%')
+                $where[] = ['topic_id', '=', $request->topic_id];
+
+            if ($request->author == 'me')
+                $where[] = ['author', '=', Auth::user()->id];
+            else if ($request->author == 'others')
+                $where[] = ['author', '!=', Auth::user()->id];
+
+            if (isset($request->phrase))
+                $where[] = ['title', 'like', '%' . $request->phrase . '%'];
+
+            $questions = QuestionBank::where($where)->get();
+
+            $easy = 0;
+            $moderate = 0;
+            $difficult = 0;
+
+            foreach ($questions as $question) {
+                if ($question->difficulty_level == 'simple') $easy++;
+                else if ($question->difficulty_level == 'moderate') $moderate++;
+                else if ($question->difficulty_level == 'difficult') $difficult++;
+            }
+
+            $statistics['easy'] = $easy;
+            $statistics['moderate'] = $moderate;
+            $statistics['difficult'] = $difficult;
+
+            return view('pages.author.test.config.ajax.questions', compact('questions', 'statistics'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
     }
 

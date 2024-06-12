@@ -54,15 +54,22 @@
                                     <td>{{ $section->num_to_answer }}</td>
                                     <td>{{ $section->num_to_answer * $section->mark_per_question }}</td>
                                     <td>
-                                        <a class="btn btn-sm btn-outline-info composition"
-                                           data-id="{{ $section->id }}" href="javascript:;">
+                                        <a class="btn btn-sm btn-outline-info compose"
+                                           href="{{route('admin.test.config.composition.compose.questions',[$section->id])}}">
                                             Compose
                                         </a>
-                                        <a class="btn btn-sm btn-outline-warning composition"
-                                           data-id="{{ $section->id }}" href="javascript:;">
+                                        <a class="btn btn-sm btn-outline-warning edit" href="javascript:;"
+                                           data-id="{{ $section->id }}"
+                                           data-title="{{$section->title}}"
+                                           data-mark="{{$section->mark_per_question}}"
+                                           data-count="{{$section->num_to_answer}}"
+                                           data-easy="{{$section->num_of_easy}}"
+                                           data-mod="{{$section->num_of_moderate}}"
+                                           data-diff="{{$section->num_of_difficult}}"
+                                           data-inst="{{$section->instruction}}">
                                             Modify
                                         </a>
-                                        <a class="btn btn-sm btn-outline-danger composition"
+                                        <a class="btn btn-sm btn-outline-danger remove"
                                            data-id="{{ $section->id }}" href="javascript:;">
                                             Remove
                                         </a>
@@ -81,13 +88,25 @@
         </div>
     </div>
     <div class="card border-info">
+        {{--        <x-head.tinymce-config/>--}}
         <div class="card-header border-info">
-            New Section
+            <h4 class="card-title d-flex justify-content-between">
+                <span>New Section</span>
+            </h4>
         </div>
         <div class="card-body p-3">
             <form action="{{ route('admin.test.config.composition.compose.store') }}" method="post">
                 @csrf
+                <input type="hidden" name="id" id="section_id">
                 <input type="hidden" name="test_subject_id" value="{{ $testSubject->id }}">
+                <div class="row mt-1">
+                    <div class="col-12 col-md-12 col-lg-12 col-xl-12">
+                        <div class="form-group">
+                            <textarea id="instruction" name="instruction" placeholder="Instructions (if any)">
+                            </textarea>
+                        </div>
+                    </div>
+                </div>
                 <div class="row mt-3">
                     <div class="col-4 col-md-12 col-lg-4 col-xl-4">
                         <div class="form-group">
@@ -98,28 +117,23 @@
                     </div>
                     <div class="col-4 col-md-12 col-lg-4 col-xl-4">
                         <div class="form-group">
-                            <label for="instruction">Instructions (if any):</label>
-                            <input class="form-control" type="text" name="instruction" id="instruction">
+                            <label for="mark">Mark Per Question:</label>
+                            <input class="form-control" type="number" step=".01" name="mark_per_question" id="mark"
+                                   required>
                         </div>
                     </div>
                     <div class="col-4 col-md-12 col-lg-4 col-xl-4">
                         <div class="form-group">
-                            <label for="mark">Mark Per Question:</label>
-                            <input class="form-control" type="number" name="mark_per_question" id="mark" required>
+                            <label for="count">Questions Count:</label>
+                            <input class="form-control" type="number" name="num_to_answer" id="count" required>
                         </div>
                     </div>
                 </div>
                 <div class="row mt-1">
                     <div class="col-4 col-md-12 col-lg-4 col-xl-4">
                         <div class="form-group">
-                            <label for="num_to_answer">Questions Count:</label>
-                            <input class="form-control" type="number" name="num_to_answer" id="num_to_answer" required>
-                        </div>
-                    </div>
-                    <div class="col-4 col-md-12 col-lg-4 col-xl-4">
-                        <div class="form-group">
-                            <label for="num_of_easy">Easy Questions Count:</label>
-                            <input class="form-control" type="number" name="num_of_easy" id="num_of_easy" required>
+                            <label for="easy">Easy Questions Count:</label>
+                            <input class="form-control" type="number" name="num_of_easy" id="easy" required>
                         </div>
                     </div>
                     <div class="col-4 col-md-12 col-lg-4 col-xl-4">
@@ -128,8 +142,6 @@
                             <input class="form-control" type="number" name="num_of_moderate" id="moderate" required>
                         </div>
                     </div>
-                </div>
-                <div class="row mt-1">
                     <div class="col-4 col-md-12 col-lg-4 col-xl-4">
                         <div class="form-group">
                             <label for="difficult">Difficult Questions Count:</label>
@@ -141,7 +153,7 @@
                     {{--                    <a class="btn btn-warning text-light"--}}
                     {{--                       href="{{ route('admin.test.config.composition',[$testSubject->test_config_id]) }}"><i--}}
                     {{--                            class="fa fa-arrow-left me-1"></i>Back</a>--}}
-                    <input class="btn btn-info text-light" type="submit" value="Add Section">
+                    <input class="btn btn-info text-light" id="submit" type="submit" value="Add Section">
                 </div>
             </form>
         </div>
@@ -149,8 +161,29 @@
 @endsection
 
 @section('script')
+    <script src="{{ asset('js/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            height: 200,
+            selector: 'textarea#instruction', // Replace this CSS selector to match the placeholder element for TinyMCE
+            plugins: 'code table lists',
+            toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | indent outdent | bullist numlist | code | table'
+        });
+    </script>
     <script>
         $(function () {
+            $('.edit').on('click', function () {
+                $('#section_id').val($(this).data('id'))
+                $('#title').val($(this).data('title'))
+                $('#mark').val($(this).data('mark'))
+                $('#count').val($(this).data('count'))
+                $('#easy').val($(this).data('easy'))
+                $('#moderate').val($(this).data('mod'))
+                $('#difficult').val($(this).data('diff'))
+                $('#submit').val('Save Section')
+                tinymce.activeEditor.setContent($(this).data('inst'));
+            })
+
             $(document).on('click', '.composition', function () {
                 let id = $(this).data('id')
                 $.get('{{ route('admin.test.config.subject.remove',[':id']) }}'.replace(':id', id), function () {
