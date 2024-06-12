@@ -17,7 +17,7 @@
                                 Basic Configurations
                             </a>
                         </li>
-                        <li><a href="" class="mb-2">Test Versions</a></li>
+                        {{--                        <li><a href="" class="mb-2">Test Versions</a></li>--}}
                         <li>
                             <a href="{{ route('admin.test.config.dates',[$config->id]) }}" class="mb-2">Test Dates</a>
                         </li>
@@ -26,12 +26,13 @@
                                 Test Schedules
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ route('admin.test.config.mappings',[$config->id]) }}" class="mb-2">
-                                Test Mapping
-                            </a>
-                        </li>
-                        <li><a href="" class="mb-2">Manual Candidate Scheduling</a></li>
+                        {{--                        <li>--}}
+                        {{--                            <a href="{{ route('admin.test.config.mappings',[$config->id]) }}" class="mb-2">--}}
+                        {{--                                Test Mapping--}}
+                        {{--                            </a>--}}
+                        {{--                        </li>--}}
+                        {{--                        <li><a href="" class="mb-2">Manual Candidate Scheduling</a></li>--}}
+                        <li><a href="" class="mb-2">Upload Candidate List</a></li>
                         <li>
                             <a href="{{ route('admin.test.config.subjects',[$config->id]) }}" class="mb-2">
                                 Test Subjects
@@ -44,7 +45,7 @@
                         </li>
                         <li><a href="" class="mb-2">Preview Test Questions</a></li>
                         <li><a href="" class="mb-2">Manage Users</a></li>
-                        <li><a href="" class="mb-2">Delete</a></li>
+                        {{--                        <li><a href="" class="mb-2">Delete</a></li>--}}
                     </ol>
                 </div>
             </div>

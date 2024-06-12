@@ -178,8 +178,8 @@
             </div>
         </div>
         <div class="mt-3 d-flex justify-content-between">
-            <a class="btn btn-warning text-light" href="{{ route('admin.test.config.view',[$config->id]) }}"><i
-                    class="fa fa-arrow-left me-1"></i>Back</a>
+            {{--            <a class="btn btn-warning text-light" href="{{ route('admin.test.config.view',[$config->id]) }}"><i--}}
+            {{--                    class="fa fa-arrow-left me-1"></i>Back</a>--}}
             <input class="btn btn-info text-light" type="submit" value="Save Config">
         </div>
     </form>

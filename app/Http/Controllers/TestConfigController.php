@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class TestConfigController extends Controller
 {
@@ -60,6 +61,7 @@ class TestConfigController extends Controller
 
     public function basics(TestConfig $config): Factory|\Illuminate\Foundation\Application|View|Application
     {
+        Session::put('config', $config);
         return view('pages.author.test.config.basics', compact('config'));
     }
 
