@@ -1,5 +1,5 @@
 @php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
-        <!-- Profile Sidebar -->
+    <!-- Profile Sidebar -->
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
         <div class="widget-profile pro-widget-content">
@@ -83,14 +83,20 @@
                                 <span>Upload Candidate List</span>
                             </a>
                         </li>
+                        <li class="{{Request::is('*subjects*')?'active':''}}">
+                            <a href="{{ route('admin.test.config.subjects',[$config]) }}">
+                                <i class="fas fa-list"></i>
+                                <span>Test Subjects</span>
+                            </a>
+                        </li>
                         <li class="{{Request::is('*composition*')?'active':''}}">
                             <a href="{{ route('admin.test.config.composition',[$config]) }}">
                                 <i class="fas fa-edit"></i>
                                 <span>Test Composition</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="">
+                        <li class="{{Request::is('*preview*')?'active':''}}">
+                            <a href="{{ route('admin.test.config.composition.preview',[$config]) }}">
                                 <i class="fas fa-display"></i>
                                 <span>Preview Test Questions</span>
                             </a>

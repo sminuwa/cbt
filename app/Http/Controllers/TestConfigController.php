@@ -347,4 +347,15 @@ class TestConfigController extends Controller
         $question->delete();
     }
 
+    public function previewQuestions($config_id)
+    {
+        $subjects = $this->registeredSubjects($config_id)->get();
+        return view('pages.author.test.config.composition-previews', compact('config_id', 'subjects'));
+    }
+
+    public function preview(TestSubject $testSubject)
+    {
+        return view('pages.author.test.config.composition-preview-questions', compact('testSubject'));
+    }
+
 }
