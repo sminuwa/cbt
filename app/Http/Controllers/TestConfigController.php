@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\ExamsDate;
-use App\Models\Faculty;
 use App\Models\FacultyScheduleMapping;
 use App\Models\QuestionBank;
 use App\Models\Scheduling;
@@ -294,9 +293,20 @@ class TestConfigController extends Controller
 
             $collection = collect($questions);
             $currentPage = $request->input('page', 1);
-            $perPage = 4;
+            $perPage = 40;
             $offset = ($currentPage - 1) * $perPage;
             $currentPageItems = $collection->slice($offset, $perPage)->values();
+
+            $ids = [];
+            $index = 0;
+            $registered = TestQuestion::where(['test_section_id' => $request->test_section_id])->get();
+            foreach ($registered as $qtn)
+                $ids[] = $qtn->question_bank_id;
+
+            foreach ($currentPageItems as $item) {
+                if ($index < count($registered))
+                    $item->checked = in_array($item->id, $ids);
+            }
 
             $paginator = new LengthAwarePaginator(
                 $currentPageItems,

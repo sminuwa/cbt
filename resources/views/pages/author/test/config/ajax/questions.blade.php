@@ -31,11 +31,26 @@
                             <div>
                                 <label for="question-{{$question->id}}">Unselect</label>
                                 <input class="btn btn-info selection" name="bank_ids[]" value="{{$question->id}}"
-                                       type="checkbox">
+                                       {{$question->checked?'checked':''}} type="checkbox">
+                            </div>
+                        </div>
+                        <div id="options-{{$question->id}}" style="display: none"
+                             class="card-body pt-2 pb-2  mt-1 mb-1">
+                            <div class="row">
+                                <div class="row pb-3 pt-2">
+                                    <ol class="list-group list-group-flush ordered-list">
+                                        @foreach($question->answer_options as $option)
+                                            <li class="list-group-item {{$option->correctness=='1'?'list-group-item-success':''}}">{{ $option->question_option }}</li>
+                                        @endforeach
+                                    </ol>
+                                </div>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <a class="btn btn-sm btn-outline-light text-info" href="javascript:;">Full Question</a>
+                            <a class="btn btn-sm btn-outline-light text-info full-question" data-id="{{$question->id}}"
+                               href="javascript:;">
+                                Full Question
+                            </a>
                             <span>Difficulty: {{$question->difficulty_level=='simple'?'Easy':($question->difficulty_level=='moderate'?'Medium':'Hard')}}</span>
                         </div>
                         <hr>

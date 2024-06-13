@@ -1,4 +1,24 @@
 @extends('layouts.app')
+@section('css')
+    <style>
+        .list-group.ordered-list {
+            counter-reset: list-counter;
+        }
+
+        .list-group.ordered-list .list-group-item {
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .list-group.ordered-list .list-group-item::before {
+            content: counter(list-counter, upper-alpha) ".  ";
+            counter-increment: list-counter;
+            position: absolute;
+            left: 0em;
+            top: 0.5em;
+        }
+    </style>
+@endsection
 
 @section('content')
     <div class="card border-info">
@@ -25,6 +45,7 @@
             <form id="load-form" method="post">
                 @csrf
                 <input type="hidden" name="subject_id" value="{{$subject->id}}">
+                <input type="hidden" name="test_section_id" value="{{$testSection->id}}">
                 <input type="hidden" id="page" name="page" value="1">
                 <div class="row">
                     <div class="col-3 col-md-12 col-lg-3 col-xl-3">
@@ -120,6 +141,14 @@
                     $.get('{{route('admin.test.config.compose.questions.remove',[$testSection->id,':id'])}}'.replace(':id', $(this).val()), function () {
                     })
                 }
+            })
+
+            $(document).on('click', '.full-question', function () {
+                let options = $(document).find('#options-' + $(this).data('id'))
+                if (options.is(':visible'))
+                    options.hide()
+                else
+                    options.show()
             })
 
             $(document).on('click', '#previous', function () {
