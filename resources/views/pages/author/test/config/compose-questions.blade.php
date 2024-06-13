@@ -1,20 +1,6 @@
-@php use App\Models\Centre;use App\Models\ExamsDate;use App\Models\Scheduling;use Carbon\Carbon; @endphp
 @extends('layouts.app')
 
 @section('content')
-    @if(session()->has('success'))
-        @if(!session('success'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Error!</strong> {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @else
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <strong>Success!</strong> {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-    @endif
     <div class="card border-info">
         <div class="card-header">
             <div class="row">
@@ -39,6 +25,7 @@
             <form id="load-form" method="post">
                 @csrf
                 <input type="hidden" name="subject_id" value="{{$subject->id}}">
+                <input type="hidden" id="page" name="page" value="1">
                 <div class="row">
                     <div class="col-3 col-md-12 col-lg-3 col-xl-3">
                         <div class="form-group">
@@ -92,20 +79,59 @@
 @section('script')
     <script>
         $(function () {
-            $('#load-form').on('submit', function (e) {
-                e.preventDefault()
-                $.post('{{route('admin.test.config.compose.questions.load')}}', $(this).serialize(), function (response) {
-                    console.log(response)
+            let page = $('#page')
+            let form = $('#load-form')
+            let q_form
+
+            function loadQuestions() {
+                $.get('{{route('admin.test.config.compose.questions.load')}}', form.serialize(), function (response) {
                     $('#questions-div').html(response)
+                    $(document).find('#section_id').val({{$testSection->id}})
+                    q_form = $(document).find('#questions-form')
                 })
+            }
+
+            function store() {
+                $.post('{{route('admin.test.config.compose.questions.store')}}', q_form.serialize(), function (data) {
+                })
+            }
+
+            form.on('submit', function (e) {
+                e.preventDefault()
+                loadQuestions()
             })
 
             $(document).on('click', '#select-all', function () {
-                $('.selection').prop('checked', $(this).is(':checked'));
+                let checked = $(this).is(':checked')
+                $('.selection').prop('checked', checked);
+
+                if (checked)
+                    store()
+                else {
+
+                }
             })
 
             $(document).on('click', '.selection', function () {
+                let checked = $(this).is(':checked')
+                if (checked)
+                    store()
+                else {
+                    $.get('{{route('admin.test.config.compose.questions.remove',[$testSection->id,':id'])}}'.replace(':id', $(this).val()), function () {
+                    })
+                }
+            })
 
+            $(document).on('click', '#previous', function () {
+                let index = parseInt(page.val()) - 1
+                page.val(index)
+                loadQuestions()
+            })
+
+            $(document).on('click', '#next', function () {
+                let index = parseInt(page.val()) + 1
+                page.val(index)
+                loadQuestions()
             })
         })
     </script>

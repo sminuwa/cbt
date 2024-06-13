@@ -4,7 +4,7 @@
             <div class="d-flex justify-content-between">
                 <h4 class="card-title">
                     <span>
-                        {{count($questions)}} questions selected
+                        {{$statistics['count']}} questions selected
                         ({{$statistics['easy']}} easy,
                         {{$statistics['moderate']}} modeerate,
                         {{$statistics['difficult']}} difficult)
@@ -12,32 +12,48 @@
                 </h4>
                 <div>
                     <label for="select-all">Unselect all</label>
-                    <input id="select-all" class="btn btn-info text-light" checked type="checkbox">
+                    <input id="select-all" class="btn btn-info text-light" type="checkbox">
                 </div>
             </div>
         </div>
     </div>
     <div class="card-body pt-3">
-        @foreach($questions as $question)
-            <div class="row mb-3">
-                <div class="col-12">
-                    <div class="mt-3 d-flex justify-content-between">
-                        <p>
-                            @php echo $question->title; @endphp
-                        </p>
-                        <div>
-                            <label for="question-{{$question->id}}">Unselect</label>
-                            <input class="btn btn-info selection" data-id="{{$question->id}}"
-                                   checked type="checkbox">
+        <form id="questions-form" method="post">
+            @csrf
+            <input type="hidden" id="section_id" name="test_section_id">
+            @foreach($questions as $question)
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="mt-3 d-flex justify-content-between">
+                            <p>
+                                @php echo $question->title; @endphp
+                            </p>
+                            <div>
+                                <label for="question-{{$question->id}}">Unselect</label>
+                                <input class="btn btn-info selection" name="bank_ids[]" value="{{$question->id}}"
+                                       type="checkbox">
+                            </div>
                         </div>
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-sm btn-outline-light text-info" href="javascript:;">Full Question</a>
+                            <span>Difficulty: {{$question->difficulty_level=='simple'?'Easy':($question->difficulty_level=='moderate'?'Medium':'Hard')}}</span>
+                        </div>
+                        <hr>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <a class="btn btn-sm btn-outline-light text-info" href="javascript:;">Full Question</a>
-                        <span>Difficulty: {{$question->difficulty_level=='simple'?'Easy':($question->difficulty_level=='moderate'?'Medium':'Hard')}}</span>
-                    </div>
-                    <hr>
                 </div>
+            @endforeach
+        </form>
+
+        <div class="row">
+            <div class="d-flex justify-content-center">
+                <button id="previous" class="btn btn-info text-light m-2" title="Previous"{{$page==1?'disabled':''}} >
+                    <i class="fa fa-arrow-left"></i>
+                </button>
+                <button id="next" class="btn btn-info text-light m-2" title="Next"
+                    {{$page*$pageSize>=$statistics['count']?'disabled':''}}>
+                    <i class="fa fa-arrow-right"></i>
+                </button>
             </div>
-        @endforeach
+        </div>
     </div>
 </div>

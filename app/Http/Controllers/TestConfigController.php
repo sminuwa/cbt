@@ -9,6 +9,7 @@ use App\Models\QuestionBank;
 use App\Models\Scheduling;
 use App\Models\Subject;
 use App\Models\TestConfig;
+use App\Models\TestQuestion;
 use App\Models\TestSection;
 use App\Models\TestSubject;
 use Exception;
@@ -18,6 +19,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
@@ -273,7 +275,7 @@ class TestConfigController extends Controller
             if (isset($request->phrase))
                 $where[] = ['title', 'like', '%' . $request->phrase . '%'];
 
-            $questions = QuestionBank::where($where)->get();
+            $questions = QuestionBank::with('answer_options')->where($where)->get();
 
             $easy = 0;
             $moderate = 0;
@@ -288,11 +290,51 @@ class TestConfigController extends Controller
             $statistics['easy'] = $easy;
             $statistics['moderate'] = $moderate;
             $statistics['difficult'] = $difficult;
+            $statistics['count'] = count($questions);
 
-            return view('pages.author.test.config.ajax.questions', compact('questions', 'statistics'));
+            $collection = collect($questions);
+            $currentPage = $request->input('page', 1);
+            $perPage = 4;
+            $offset = ($currentPage - 1) * $perPage;
+            $currentPageItems = $collection->slice($offset, $perPage)->values();
+
+            $paginator = new LengthAwarePaginator(
+                $currentPageItems,
+                $collection->count(),
+                $perPage,
+                $currentPage,
+                ['path' => $request->url()]
+            );
+
+            return view('pages.author.test.config.ajax.questions',
+                ['questions' => $paginator, 'statistics' => $statistics, 'page' => $currentPage, 'pageSize' => $perPage]);
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    public function storeQuestions(Request $request)
+    {
+        try {
+            $section_id = $request->test_section_id;
+            $selected_ids = $request->bank_ids;
+            foreach ($selected_ids as $id) {
+                $question = TestQuestion::where(['question_bank_id' => $id])->first();
+                if ($question)
+                    continue;
+                $question = new TestQuestion();
+                $question->question_bank_id = $id;
+                $question->test_section_id = $section_id;
+                $question->save();
+            }
+        } catch (\Exception $e) {
+        }
+    }
+
+    public function removeQuestion($section_id, $bank_id)
+    {
+        $question = TestQuestion::where(['question_bank_id' => $bank_id, 'test_section_id' => $section_id])->first();
+        $question->delete();
     }
 
 }

@@ -64,7 +64,9 @@ Route::name('admin.')->prefix('adm')->group(function () {
             Route::get('/{testSubject}/composition/compose', [TestConfigController::class, 'compose'])->name('composition.compose');
             Route::post('/composition/compose/store', [TestConfigController::class, 'storeSection'])->name('composition.compose.store');
             Route::get('/{testSection}/composition/compose/questions', [TestConfigController::class, 'questions'])->name('composition.compose.questions');
-            Route::post('/composition/load/questions', [TestConfigController::class, 'loadQuestions'])->name('compose.questions.load');
+            Route::get('/composition/load/questions', [TestConfigController::class, 'loadQuestions'])->name('compose.questions.load');
+            Route::post('/composition/questions/store', [TestConfigController::class, 'storeQuestions'])->name('compose.questions.store');
+            Route::get('/composition/questions/remove/{sid}/{qid}', [TestConfigController::class, 'removeQuestion'])->name('compose.questions.remove');
         });
     });
 
