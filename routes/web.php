@@ -51,6 +51,9 @@ Route::name('admin.')->prefix('adm')->group(function () {
             Route::get('/{config}/schedules', [TestConfigController::class, 'schedules'])->name('schedules');
             Route::post('/schedules/store', [TestConfigController::class, 'storeSchedule'])->name('schedules.store');
 
+            Route::get('/{config}/upload-candidates/options', [TestConfigController::class, 'uploadOptions'])->name('upload.options');
+            Route::post('/upload-candidates/single', [TestConfigController::class, 'uploadSingle'])->name('upload.single');
+
             Route::get('/{config}/mappings', [TestConfigController::class, 'mappings'])->name('mappings');
             Route::post('/mappings/store', [TestConfigController::class, 'storeMappings'])->name('mappings.store');
 

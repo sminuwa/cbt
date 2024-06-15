@@ -1,5 +1,5 @@
 @php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
-    <!-- Profile Sidebar -->
+        <!-- Profile Sidebar -->
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
         <div class="widget-profile pro-widget-content">
@@ -77,8 +77,8 @@
                                 <span>Test Schedules</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="">
+                        <li class="{{Request::is('*upload*')?'active':''}}">
+                            <a href="{{route('admin.test.config.upload.options',[$config])}}">
                                 <i class="fas fa-upload"></i>
                                 <span>Upload Candidate List</span>
                             </a>

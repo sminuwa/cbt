@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Candidate;
+use App\Models\CandidateStudent;
 use App\Models\ExamsDate;
 use App\Models\FacultyScheduleMapping;
 use App\Models\QuestionBank;
@@ -135,6 +137,47 @@ class TestConfigController extends Controller
                 return back()->with(['success' => true, 'message' => 'Test Schedule successfully saved']);
             return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
         } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function uploadOptions($config_id)
+    {
+        $schedules = Scheduling::with('venue')->where(['test_config_id' => $config_id])->get();
+        return view('pages.author.test.config.upload-options', compact('config_id', 'schedules'));
+    }
+
+    public function uploadSingle(Request $request)
+    {
+        try {
+            $candidate_id = Candidate::where(['matric_number' => $request->candidate_number])->first()->id;
+            $subjects = TestSubject::where(['test_config_id' => $request->test_config_id])->pluck('subject_id');
+            $schedule = CandidateStudent::where(['candidate_id' => $candidate_id, 'schedule_id' => $request->schedule_id])
+                ->whereIn('subject_id', $subjects)
+                ->get();
+
+            if (count($schedule))
+                return back()->with(['success' => false, 'message' => 'Oops! Candidate with this number: '
+                    . $request->candidate_number . ' was already scheduled for this test']);
+
+            $records = [];
+            foreach ($subjects as $subject_id) {
+                $records[] = [
+                    'candidate_id' => $candidate_id,
+                    'schedule_id' => $request->schedule_id,
+                    'subject_id' => $subject_id
+                ];
+            }
+
+            if (CandidateStudent::insert($records))
+                return back()->with(['success' => true, 'message' => 'Candidate successfully scheduled for this test']);
+
+//            $schedule->candidate_id = $request->candidate_number;
+//            $schedule->schedule_id = $request->schedule_id;
+//            if ($schedule->save())
+
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (\Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
     }
