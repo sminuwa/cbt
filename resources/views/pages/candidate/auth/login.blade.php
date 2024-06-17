@@ -40,7 +40,7 @@
         <div class="col-12 p-0">
             <div class="login-card login-dark">
                 <div>
-                    <div><a class="logo" href="#"><img class="img-fluid for-dark" src="{{ asset('candidate/assets/images/logo/logo.png') }}" alt="looginpage"><img class="img-fluid for-light" src="{{ asset('candidate/assets/images/logo/logo_dark.png') }}" alt="looginpage"></a></div>
+                    <div><a class="logo" href="#"><img class="img-fluid for-dark" src="{{ asset('candidate/assets/images/logo/logo.png') }}" alt="looginpage" width="100"><img class="img-fluid for-light" src="{{ asset('candidate/assets/images/logo/logo_dark.png') }}" alt="looginpage" width="100"></a></div>
                     <div class="login-main">
                         <form class="theme-form" action="{{ route('candidate.test.instruction') }}">
                             <h4>Sign in </h4>

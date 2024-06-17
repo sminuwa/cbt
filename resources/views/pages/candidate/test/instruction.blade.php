@@ -4,9 +4,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Riho admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
-    <meta name="keywords" content="admin template, Riho admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="CHPRBN">
     <link rel="icon" href="https://admin.pixelstrap.net/riho/assets/images/favicon/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="https://admin.pixelstrap.net/riho/assets/images/favicon/favicon.png" type="image/x-icon">
     <title>CBT Exam Instructions</title>
@@ -74,7 +74,7 @@
                         <table style="margin: 0 auto; margin-bottom: 30px">
                             <tbody>
                             <tr class="logo-sec" style="display: flex; align-items: center; justify-content: space-between; width: 650px;">
-                                <td><img class="img-fluid" src="{{ asset('candidate/assets/images/other-images/logo-login.png') }}" alt=""></td>
+                                <td><img class="img-fluid" src="{{ asset('candidate/assets/images/logo/logo.png') }}" alt="" width="50"></td>
                                 <td style="text-align: right; color:#999"><span>Instructions</span></td>
                             </tr>
                             </tbody>
@@ -83,7 +83,7 @@
                             <tbody>
                             <tr>
                                 <td style="padding: 30px">
-                                    <h2>Welcome to Your CBT Exam!</h2>
+                                    <h2 style="text-align: center">Welcome to CHPRBN CBT Exam!</h2>
                                     <p>Please read the following instructions carefully before starting the exam:</p>
 
                                     <h3>Timing:</h3>
