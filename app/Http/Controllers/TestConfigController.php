@@ -169,7 +169,7 @@ class TestConfigController extends Controller
                 ];
             }
 
-            if (CandidateStudent::insert($records))
+            if (CandidateStudent::upsert($records, []))
                 return back()->with(['success' => true, 'message' => 'Candidate successfully scheduled for this test']);
 
 //            $schedule->candidate_id = $request->candidate_number;
@@ -177,7 +177,26 @@ class TestConfigController extends Controller
 //            if ($schedule->save())
 
             return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        try {
+//            $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
+            $file = $request->file;
+            $sheet = 'Sheet1';
+//            $collection = Excel::toArray([], $file);
+//            $rows = $collection->firstWhere('title', $sheet);
+//            foreach ($rows as $row) {
+//                echo $row['A'] . '<br>';
+//            }
+
+
+            return $request;
+        } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -286,7 +305,7 @@ class TestConfigController extends Controller
             if ($section->save())
                 return back()->with(['success' => true, 'message' => 'Test Section successfully saved']);
             return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -361,7 +380,7 @@ class TestConfigController extends Controller
 
             return view('pages.author.test.config.ajax.questions',
                 ['questions' => $paginator, 'statistics' => $statistics, 'page' => $currentPage, 'pageSize' => $perPage]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $e->getMessage();
         }
     }
@@ -380,7 +399,7 @@ class TestConfigController extends Controller
                 $question->test_section_id = $section_id;
                 $question->save();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
