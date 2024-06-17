@@ -1,4 +1,4 @@
-@php use App\Models\Centre;use App\Models\ExamsDate;use Carbon\Carbon; @endphp
+@php use App\Models\Centre;use App\Models\ExamsDate;use App\Models\Scheduling;use Carbon\Carbon; @endphp
 @extends('layouts.app')
 
 @section('content')
@@ -122,8 +122,39 @@
         <div class="card-header border-info">
             Existing Schedules
         </div>
-        <div class="card-body pt-0">
+        <div class="card-body p-3">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Venue</th>
+                    <th>Batches</th>
+                    <th>No. Per Batch</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
 
+                @php
+                    $schedules = Scheduling::with('venue')->where(['test_config_id'=>$config_id])->get();
+                @endphp
+                <tbody>
+                @foreach($schedules as $schedule)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{  Carbon::parse($schedule->date)->format('D jS M, Y') }}</td>
+                        <td>{{ $schedule->venue->name }}</td>
+                        <td>{{ $schedule->maximum_batch }}</td>
+                        <td>{{ $schedule->no_per_schedule }}</td>
+                        <td>{{  Carbon::parse($schedule->daily_start_time)->format('h:m a') }}</td>
+                        <td>{{  Carbon::parse($schedule->daily_end_time)->format('h:m a') }}</td>
+                        <td></td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 @endsection
@@ -156,6 +187,12 @@
                 if ($(this).val() !== '0') {
                     $('#submit').show()
                     $('#batches-div').show()
+
+                    $.get('{{ route('admin.misc.batches.capacity',[':id']) }}'.replace(':id', $(this).val()),
+                        function (data) {
+                            console.log(data)
+                        }
+                    )
                 } else {
                     $('#submit').hide()
                     $('#batches-div').hide()

@@ -2,18 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Candidate;
+use App\Models\CandidateStudent;
 use App\Models\ExamsDate;
-use App\Models\Faculty;
 use App\Models\FacultyScheduleMapping;
+use App\Models\QuestionBank;
 use App\Models\Scheduling;
+use App\Models\Subject;
 use App\Models\TestConfig;
+use App\Models\TestQuestion;
+use App\Models\TestSection;
+use App\Models\TestSubject;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class TestConfigController extends Controller
 {
@@ -55,6 +64,7 @@ class TestConfigController extends Controller
 
     public function basics(TestConfig $config): Factory|\Illuminate\Foundation\Application|View|Application
     {
+        Session::put('config', $config);
         return view('pages.author.test.config.basics', compact('config'));
     }
 
@@ -126,6 +136,47 @@ class TestConfigController extends Controller
             if ($schedule->save())
                 return back()->with(['success' => true, 'message' => 'Test Schedule successfully saved']);
             return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function uploadOptions($config_id)
+    {
+        $schedules = Scheduling::with('venue')->where(['test_config_id' => $config_id])->get();
+        return view('pages.author.test.config.upload-options', compact('config_id', 'schedules'));
+    }
+
+    public function uploadSingle(Request $request)
+    {
+        try {
+            $candidate_id = Candidate::where(['matric_number' => $request->candidate_number])->first()->id;
+            $subjects = TestSubject::where(['test_config_id' => $request->test_config_id])->pluck('subject_id');
+            $schedule = CandidateStudent::where(['candidate_id' => $candidate_id, 'schedule_id' => $request->schedule_id])
+                ->whereIn('subject_id', $subjects)
+                ->get();
+
+            if (count($schedule))
+                return back()->with(['success' => false, 'message' => 'Oops! Candidate with this number: '
+                    . $request->candidate_number . ' was already scheduled for this test']);
+
+            $records = [];
+            foreach ($subjects as $subject_id) {
+                $records[] = [
+                    'candidate_id' => $candidate_id,
+                    'schedule_id' => $request->schedule_id,
+                    'subject_id' => $subject_id
+                ];
+            }
+
+            if (CandidateStudent::insert($records))
+                return back()->with(['success' => true, 'message' => 'Candidate successfully scheduled for this test']);
+
+//            $schedule->candidate_id = $request->candidate_number;
+//            $schedule->schedule_id = $request->schedule_id;
+//            if ($schedule->save())
+
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
         } catch (\Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
@@ -162,8 +213,192 @@ class TestConfigController extends Controller
                 }
             }
             return back()->with(['success' => true, 'message' => 'Test Mappings successfully saved']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function subjects($config_id)
+    {
+        return view('pages.author.test.config.subjects', compact('config_id'));
+    }
+
+    public function subjectsAjax($config_id): Factory|\Illuminate\Foundation\Application|View|Application
+    {
+
+        $ids = $this->registeredSubjects($config_id)->pluck('subject_id');
+
+        $subjects = Subject::select('id', 'name', 'subject_code')
+            ->whereNotIn('id', $ids)
+            ->orderBy('subject_code')
+            ->get();
+
+        return view('pages.author.test.config.ajax.subjects', compact('subjects'));
+    }
+
+    public function registeredSubjectsAjax($config_id): Factory|\Illuminate\Foundation\Application|View|Application
+    {
+        $subjects = $this->registeredSubjects($config_id)->get();
+        return view('pages.author.test.config.ajax.registered-subjects', compact('subjects'));
+    }
+
+    public function registerSubject(Request $request)
+    {
+        $testSubject = new TestSubject();
+        $testSubject->subject_id = $request->subject_id;
+        $testSubject->test_config_id = $request->test_config_id;
+        $testSubject->save();
+    }
+
+    public function removeSubject(TestSubject $testSubject)
+    {
+        $testSubject->delete();
+    }
+
+    private function registeredSubjects($config_id): Builder
+    {
+        return TestSubject::with('subject')
+            ->select(['id', 'subject_id'])
+            ->where(['test_config_id' => $config_id]);
+    }
+
+    public function composition($config_id)
+    {
+        $subjects = $this->registeredSubjects($config_id)->get();
+        return view('pages.author.test.config.composition', compact('config_id', 'subjects'));
+    }
+
+    public function compose(TestSubject $testSubject): Factory|\Illuminate\Foundation\Application|View|Application
+    {
+        $sections = TestSection::where(['test_subject_id' => $testSubject->id])->get();
+        return view('pages.author.test.config.compose', compact('sections', 'testSubject'));
+    }
+
+    public function storeSection(Request $request)
+    {
+        try {
+            if (isset($request->id))
+                $section = TestSection::find($request->id);
+            else
+                $section = new TestSection();
+            $section->fill($request->all());
+            $section->test_subject_id = $request->test_subject_id;
+            if ($section->save())
+                return back()->with(['success' => true, 'message' => 'Test Section successfully saved']);
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
         } catch (\Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+
+    public function questions(TestSection $testSection)
+    {
+        $topics = $testSection->test_subject->subject->topics;
+        return view('pages.author.test.config.compose-questions', compact('testSection', 'topics'));
+    }
+
+    public function loadQuestions(Request $request)
+    {
+        try {
+            $where = [];
+            $where[] = ['subject_id', '=', $request->subject_id];
+
+            if ($request->difficulty_level != '%')
+                $where[] = ['difficulty_level', '=', $request->difficulty_level];
+
+            if ($request->topic_id != '%')
+                $where[] = ['topic_id', '=', $request->topic_id];
+
+            if ($request->author == 'me')
+                $where[] = ['author', '=', Auth::user()->id];
+            else if ($request->author == 'others')
+                $where[] = ['author', '!=', Auth::user()->id];
+
+            if (isset($request->phrase))
+                $where[] = ['title', 'like', '%' . $request->phrase . '%'];
+
+            $questions = QuestionBank::with('answer_options')->where($where)->get();
+
+            $easy = 0;
+            $moderate = 0;
+            $difficult = 0;
+
+            foreach ($questions as $question) {
+                if ($question->difficulty_level == 'simple') $easy++;
+                else if ($question->difficulty_level == 'moderate') $moderate++;
+                else if ($question->difficulty_level == 'difficult') $difficult++;
+            }
+
+            $statistics['easy'] = $easy;
+            $statistics['moderate'] = $moderate;
+            $statistics['difficult'] = $difficult;
+            $statistics['count'] = count($questions);
+
+            $collection = collect($questions);
+            $currentPage = $request->input('page', 1);
+            $perPage = 40;
+            $offset = ($currentPage - 1) * $perPage;
+            $currentPageItems = $collection->slice($offset, $perPage)->values();
+
+            $ids = [];
+            $index = 0;
+            $registered = TestQuestion::where(['test_section_id' => $request->test_section_id])->get();
+            foreach ($registered as $qtn)
+                $ids[] = $qtn->question_bank_id;
+
+            foreach ($currentPageItems as $item) {
+                if ($index < count($registered))
+                    $item->checked = in_array($item->id, $ids);
+            }
+
+            $paginator = new LengthAwarePaginator(
+                $currentPageItems,
+                $collection->count(),
+                $perPage,
+                $currentPage,
+                ['path' => $request->url()]
+            );
+
+            return view('pages.author.test.config.ajax.questions',
+                ['questions' => $paginator, 'statistics' => $statistics, 'page' => $currentPage, 'pageSize' => $perPage]);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function storeQuestions(Request $request)
+    {
+        try {
+            $section_id = $request->test_section_id;
+            $selected_ids = $request->bank_ids;
+            foreach ($selected_ids as $id) {
+                $question = TestQuestion::where(['question_bank_id' => $id])->first();
+                if ($question)
+                    continue;
+                $question = new TestQuestion();
+                $question->question_bank_id = $id;
+                $question->test_section_id = $section_id;
+                $question->save();
+            }
+        } catch (\Exception $e) {
+        }
+    }
+
+    public function removeQuestion($section_id, $bank_id)
+    {
+        $question = TestQuestion::where(['question_bank_id' => $bank_id, 'test_section_id' => $section_id])->first();
+        $question->delete();
+    }
+
+    public function previewQuestions($config_id)
+    {
+        $subjects = $this->registeredSubjects($config_id)->get();
+        return view('pages.author.test.config.composition-previews', compact('config_id', 'subjects'));
+    }
+
+    public function preview(TestSubject $testSubject)
+    {
+        return view('pages.author.test.config.composition-preview-questions', compact('testSubject'));
+    }
+
 }

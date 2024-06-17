@@ -50,8 +50,28 @@ Route::name('admin.')->prefix('adm')->group(function () {
             Route::get('/{config}/schedules', [TestConfigController::class, 'schedules'])->name('schedules');
             Route::post('/schedules/store', [TestConfigController::class, 'storeSchedule'])->name('schedules.store');
 
+            Route::get('/{config}/upload-candidates/options', [TestConfigController::class, 'uploadOptions'])->name('upload.options');
+            Route::post('/upload-candidates/single', [TestConfigController::class, 'uploadSingle'])->name('upload.single');
+
             Route::get('/{config}/mappings', [TestConfigController::class, 'mappings'])->name('mappings');
             Route::post('/mappings/store', [TestConfigController::class, 'storeMappings'])->name('mappings.store');
+
+            Route::get('/{config}/subjects', [TestConfigController::class, 'subjects'])->name('subjects');
+            Route::get('/{config}/subjects/ajax', [TestConfigController::class, 'subjectsAjax'])->name('subjects.ajax');
+            Route::get('/{config}/registered/subjects', [TestConfigController::class, 'registeredSubjectsAjax'])->name('registered.subjects');
+            Route::post('/register/subject', [TestConfigController::class, 'registerSubject'])->name('subject.register');
+            Route::get('/remove/{testSubject}', [TestConfigController::class, 'removeSubject'])->name('subject.remove');
+
+            Route::get('/{config}/composition', [TestConfigController::class, 'composition'])->name('composition');
+            Route::get('/{testSubject}/composition/compose', [TestConfigController::class, 'compose'])->name('composition.compose');
+            Route::post('/composition/compose/store', [TestConfigController::class, 'storeSection'])->name('composition.compose.store');
+            Route::get('/{testSection}/composition/compose/questions', [TestConfigController::class, 'questions'])->name('composition.compose.questions');
+            Route::get('/composition/load/questions', [TestConfigController::class, 'loadQuestions'])->name('compose.questions.load');
+            Route::post('/composition/questions/store', [TestConfigController::class, 'storeQuestions'])->name('compose.questions.store');
+            Route::get('/composition/questions/remove/{sid}/{qid}', [TestConfigController::class, 'removeQuestion'])->name('compose.questions.remove');
+
+            Route::get('/{config}/compose/preview', [TestConfigController::class, 'previewQuestions'])->name('composition.preview');
+            Route::get('/{testSubject}/compose/preview/questions', [TestConfigController::class, 'preview'])->name('composition.preview.questions');
         });
     });
 
@@ -86,6 +106,8 @@ Route::name('admin.')->prefix('adm')->group(function () {
     Route::name('misc.')->prefix('misc')->group(function () {
         Route::get('/{centre}/venues', [MiscController::class, 'venues'])->name('venues');
         Route::get('/{scheduling}/faculty/mappings', [MiscController::class, 'facultyMappings'])->name('faculty.mappings');
+
+        Route::get('/{venue}/batches/capacity', [MiscController::class, 'batchCapacity'])->name('batches.capacity');
     });
 
 });

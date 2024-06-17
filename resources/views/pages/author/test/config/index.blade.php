@@ -36,8 +36,8 @@
         @foreach($configs as $config)
             <div class="col-4 col-lg-4 col-xl-4 col-md-6">
                 <div class="card border-info">
-                    <div class="card-header border-info">
-                        <a href="{{route('admin.test.config.view',[$config->id])}}">
+                    <div class="card-header border-info view">
+                        <a href="{{route('admin.test.config.basics',[$config->id])}}">
                             {{ $config->session }} / {{ $config->test_type->name}}
                             / {{ $config->semester==1?'First':'Second' }}
                         </a>
@@ -86,7 +86,7 @@
                                                         required>
                                                     @foreach($years as $year)
                                                         <option
-                                                                value="{{ $year }}" {{$year==$now?'selected':''}} >{{ $year }}</option>
+                                                            value="{{ $year }}" {{$year==$now?'selected':''}} >{{ $year }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>

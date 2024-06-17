@@ -121,7 +121,7 @@
                                             id="question_administration" required>
                                         <option
                                             value="linear"{{$config->question_administration=='linear'?'selected':''}}>
-                                            Uniform
+                                            Linear
                                         </option>
                                         <option
                                             value="random" {{$config->question_administration=='random'?'Selected':''}}>
@@ -134,12 +134,12 @@
                         <div class="row">
                             <div class="col-12 col-md-12 col-lg-12 col-xl-12">
                                 <div class="form-group">
-                                    <label for="option_administration">Starting Mode:</label>
+                                    <label for="option_administration">Option Administration:</label>
                                     <select class="form-control form-select" name="option_administration"
                                             id="option_administration" required>
                                         <option
                                             value="linear" {{$config->option_administration=='linear'?'selected':''}}>
-                                            Uniform
+                                            Linear
                                         </option>
                                         <option
                                             value="random" {{$config->option_administration=='random'?'selected':''}}>
@@ -178,7 +178,8 @@
             </div>
         </div>
         <div class="mt-3 d-flex justify-content-between">
-            <a class="btn btn-warning text-light" href="{{ route('admin.test.config.view',[$config->id]) }}"><i class="fa fa-arrow-left me-1"></i>Back</a>
+            {{--            <a class="btn btn-warning text-light" href="{{ route('admin.test.config.view',[$config->id]) }}"><i--}}
+            {{--                    class="fa fa-arrow-left me-1"></i>Back</a>--}}
             <input class="btn btn-info text-light" type="submit" value="Save Config">
         </div>
     </form>

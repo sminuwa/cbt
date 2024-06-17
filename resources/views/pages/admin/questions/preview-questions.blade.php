@@ -1,3 +1,4 @@
+@php use App\Models\Subject; @endphp
 @extends('layouts.app')
 @section('css')
     <style>
@@ -35,7 +36,7 @@
                                 <select class="form-control form-select" name="subject_id"
                                         id="subject_id" required>
                                     <option value="">Select Subject</option>
-                                    @foreach(\App\Models\Subject::all() as $subject)
+                                    @foreach(Subject::all() as $subject)
                                         <option value="{{$subject->id}}">{{ $subject->name }}</option>
                                     @endforeach
                                 </select>

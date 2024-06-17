@@ -1,4 +1,5 @@
-<!-- Profile Sidebar -->
+@php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
+        <!-- Profile Sidebar -->
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
         <div class="widget-profile pro-widget-content">
@@ -7,10 +8,10 @@
                     <img src="/assets/img/patients/patient.jpg" alt="User Image">
                 </a>
                 <div class="profile-det-info">
-                    <h3>Richard Wilson</h3>
+                    <h3>Sylux Endyusa Dimitri</h3>
                     <div class="patient-details">
                         <h5><i class="fas fa-birthday-cake"></i> 24 Jul 1983, 38 years</h5>
-                        <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Newyork, USA</h5>
+                        <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Moscow, Russia</h5>
                     </div>
                 </div>
             </div>
@@ -18,68 +19,95 @@
         <div class="dashboard-widget">
             <nav class="dashboard-menu">
                 <ul>
-                    <li class="active">
-                        <a href="patient-dashboard.html">
-                            <i class="fas fa-columns"></i>
+                    <li class="{{Request::is('*dashboard')?'active':''}}">
+                        <a href="{{ route('admin.dashboard.index') }}">
+                            <i class="fas fa-dashboard"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="{{route('admin.test.config.index')}}">
-                            <i class="fas fa-clipboard"></i>
-                            <span>Test Config</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{route('admin.questions.authoring')}}">
-                            <i class="fas fa-users"></i>
-                            <span>Question Authoring</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="chat.html">
-                            <i class="fas fa-comments"></i>
-                            <span>Message</span>
-                            <small class="unread-msg">23</small>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="patient-accounts.html">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            <span>Accounts</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="orders-list.html">
-                            <i class="fas fa-list-alt"></i>
-                            <span>Orders</span>
-                            <small class="unread-msg">7</small>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="medical-records.html">
-                            <i class="fas fa-clipboard"></i>
-                            <span>Add Medical Records</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="medical-details.html">
-                            <i class="fas fa-file-medical-alt"></i>
-                            <span>Medical Details</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="profile-settings.html">
-                            <i class="fas fa-user-cog"></i>
-                            <span>Profile Settings</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="change-password.html">
-                            <i class="fas fa-lock"></i>
-                            <span>Change Password</span>
-                        </a>
-                    </li>
+                    @if(Request::is('*dashboard*'))
+                        <li>
+                            <a href="{{route('admin.test.config.index')}}">
+                                <i class="fas fa-cog"></i>
+                                <span>Test Configuration</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{route('admin.questions.authoring')}}">
+                                <i class="fas fa-question"></i>
+                                <span>Question Authoring</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <i class="fas fa-toolbox"></i>
+                                <span>Admin Toolbox</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <i class="fas fa-bar-chart"></i>
+                                <span>Reports</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <i class="fas fa-users"></i>
+                                <span>Manage Users</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if(Request::is('*test/config*') && !Request::is('*test/config'))
+                        @php $config = Session::get('config'); @endphp
+                        <li class="{{Request::is('*basics')?'active':''}}">
+                            <a href="{{route('admin.test.config.basics',[$config])}}">
+                                <i class="fas fa-cogs"></i>
+                                <span>Basic Configurations</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*dates')?'active':''}}">
+                            <a href="{{ route('admin.test.config.dates',[$config]) }}">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Test Dates</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*schedules')?'active':''}}">
+                            <a href="{{ route('admin.test.config.schedules',[$config]) }}">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Test Schedules</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*upload*')?'active':''}}">
+                            <a href="{{route('admin.test.config.upload.options',[$config])}}">
+                                <i class="fas fa-upload"></i>
+                                <span>Upload Candidate List</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*subjects*')?'active':''}}">
+                            <a href="{{ route('admin.test.config.subjects',[$config]) }}">
+                                <i class="fas fa-list"></i>
+                                <span>Test Subjects</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*composition*')?'active':''}}">
+                            <a href="{{ route('admin.test.config.composition',[$config]) }}">
+                                <i class="fas fa-edit"></i>
+                                <span>Test Composition</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*preview*')?'active':''}}">
+                            <a href="{{ route('admin.test.config.composition.preview',[$config]) }}">
+                                <i class="fas fa-display"></i>
+                                <span>Preview Test Questions</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <i class="fas fa-users"></i>
+                                <span>Manage Users</span>
+                            </a>
+                        </li>
+                    @endif
                     <li>
                         <a href="{{ route('auth.admin.logout') }}">
                             <i class="fas fa-sign-out-alt"></i>
