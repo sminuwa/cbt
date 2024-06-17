@@ -131,7 +131,10 @@ class TestConfigController extends Controller
     public function storeSchedule(Request $request): RedirectResponse
     {
         try {
-            $schedule = new Scheduling();
+            if (isset($request->id))
+                $schedule = Scheduling::find($request->id);
+            else
+                $schedule = new Scheduling();
             $schedule->fill($request->all());
             if ($schedule->save())
                 return back()->with(['success' => true, 'message' => 'Test Schedule successfully saved']);
