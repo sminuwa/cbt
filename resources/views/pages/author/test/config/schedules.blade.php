@@ -161,7 +161,10 @@
                                href="javascript:;">
                                 Modify
                             </a>
-                            <a class="btn btn-sm btn-danger text-light" href="javascript:;">Delete</a>
+                            <a class="btn btn-sm btn-danger text-light"
+                               href="{{route('admin.test.config.schedules.delete',[$schedule->id])}}">
+                                Delete
+                            </a>
                         </td>
                     </tr>
                 @endforeach

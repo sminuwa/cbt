@@ -144,6 +144,54 @@ class TestConfigController extends Controller
         }
     }
 
+    public function deleteSchedule(Scheduling $scheduling)
+    {
+        $candidates = $scheduling->candidate_students()->distinct('candidate_id')->count();
+        if ($candidates > 0)
+            return view('pages.author.test.config.displacement-options', compact('candidates', 'scheduling'));
+        else
+            if ($scheduling->delete()) return back()->with(['success' => true, 'message' => 'Test Schedule successfully deleted']);
+
+        return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+    }
+
+    public function removeAndDeleteSchedule(Scheduling $scheduling)
+    {
+        $config = $scheduling->test_config;
+        $remove = CandidateStudent::where(['schedule_id' => $scheduling->id])->delete();
+        if ($remove) {
+            if ($scheduling->delete())
+                return redirect(route('admin.test.config.schedules', [$config->id]))->with(['success' => true, 'message' => 'Affected Candidate(s) removed and Test Schedule successfully deleted']);
+        }
+
+        return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+    }
+
+    public function otherSchedules(Scheduling $scheduling, $size)
+    {
+        $others = Scheduling::with('venue')
+            ->where(['test_config_id' => $scheduling->test_config_id])
+            ->whereNot('id', $scheduling->id)
+            ->get();
+
+        $candidates = CandidateStudent::select(['schedule_id', 'candidate_id', 'venues.id as venue_id'])
+            ->join('schedulings', 'schedulings.id', '=', 'candidate_students.schedule_id')
+            ->join('venues', 'venues.id', '=', 'schedulings.venue_id')
+            ->where('schedule_id', '!=', $scheduling->id)
+            ->distinct()
+            ->get();
+
+        foreach ($others as $other) {
+            foreach ($candidates as $candidate) {
+                if ($candidate->schedule_id == $other->id && $candidate->venue_id == $other->venue->id)
+                    $other->venue->capacity -= 1;
+            }
+        }
+        $schedules = $others;
+
+        return view('pages.author.test.config.ajax.schedules', compact('schedules', 'size'));
+    }
+
     public function uploadOptions($config_id)
     {
         $schedules = Scheduling::with('venue')->where(['test_config_id' => $config_id])->get();
