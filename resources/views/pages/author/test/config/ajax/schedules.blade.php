@@ -37,7 +37,7 @@
     </table>
     <div class="p-4">
         <a id="reschedule" class="btn btn-sm btn-info text-light float-end mb-3" href="javascript:;"
-           style="display: none">Reschedule</a>
+           data-id="{{$schedule_id}}" style="display: none">Reschedule</a>
     </div>
 @else
     <div class="d-flex justify-content-center p-4" style="width: 100%; height: 80px;">

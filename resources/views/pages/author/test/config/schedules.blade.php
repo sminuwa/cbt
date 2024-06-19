@@ -89,7 +89,7 @@
                                 <div class="form-group">
                                     <label for="no_per_schedule">Candidate per Batch:</label>
                                     <input class="form-control" type="number" name="no_per_schedule"
-                                           id="no_per_schedule" placeholder="Candidates per Batch" value="250" required>
+                                           id="no_per_schedule" placeholder="Candidates per Batch" required>
                                 </div>
                             </div>
                             <div class="col-md-12 col-lg-3 col-xl-3">
@@ -203,11 +203,11 @@
                     $('#submit').show()
                     $('#batches-div').show()
 
-                    {{--$.get('{{ route('admin.misc.batches.capacity',[':id']) }}'.replace(':id', $(this).val()),--}}
-                    {{--    function (data) {--}}
-                    {{--        console.log(data)--}}
-                    {{--    }--}}
-                    {{--)--}}
+                    $.get('{{ route('admin.misc.batches.capacity',[':id']) }}'.replace(':id', $(this).val()),
+                        function (venue) {
+                            $('#no_per_schedule').val(venue.capacity)
+                        }
+                    )
                 } else {
                     $('#submit').hide()
                     $('#batches-div').hide()
@@ -224,12 +224,6 @@
                 $('#no_per_schedule').val($(this).data('count'))
                 $('#daily_start_time').val($(this).data('start'))
                 $('#daily_end_time').val($(this).data('end'))
-
-                //alert($(this).data('id'))
-                // $('#submit').show()
-                // $('#venue-div').show()
-                // $('#centre-div').show()
-                // $('#batches-div').show()
             })
         })
     </script>

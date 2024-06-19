@@ -82,7 +82,16 @@
             })
 
             $(document).on('click', '#reschedule', function () {
-               //   Reschedule cands
+                let old = $(this).data('id')
+                $.post('{{route('admin.test.config.schedules.reschedule')}}', {
+                    'from': old,
+                    'to': selection,
+                    '_token': '{{csrf_token()}}'
+                }, function (response) {
+                    console.log(response)
+                    alert(response.message)
+                    window.location = response.url
+                })
             })
         })
     </script>

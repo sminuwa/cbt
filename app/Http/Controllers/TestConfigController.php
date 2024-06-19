@@ -169,6 +169,7 @@ class TestConfigController extends Controller
 
     public function otherSchedules(Scheduling $scheduling, $size)
     {
+        $schedule_id = $scheduling->id;
         $others = Scheduling::with('venue')
             ->where(['test_config_id' => $scheduling->test_config_id])
             ->whereNot('id', $scheduling->id)
@@ -189,7 +190,37 @@ class TestConfigController extends Controller
         }
         $schedules = $others;
 
-        return view('pages.author.test.config.ajax.schedules', compact('schedules', 'size'));
+        return view('pages.author.test.config.ajax.schedules', compact('schedules', 'size', 'schedule_id'));
+    }
+
+    public function reschedule(Request $request)
+    {
+        try {
+            $candidates = CandidateStudent::where(['schedule_id' => $request->from]);
+            $size = count($candidates->get());
+            if ($candidates->update(['schedule_id' => $request->to])) {
+                $schedule = Scheduling::find($request->from);
+                $config = $schedule->test_config_id;
+
+                if ($schedule->delete())
+                    return [
+                        'success' => true,
+                        'url' => route('admin.test.config.schedules', [$config]),
+                        'message' => $size . ' candidate(s) successfully rescheduled and the old schedule deleted'
+                    ];
+            }
+
+            return [
+                'success' => false,
+                'url' => route('admin.test.config.schedules', [$config]),
+                'message' => 'Oops! Look like something went wrong'
+            ];
+        } catch (Exception $e) {
+            return ['success' => false,
+                'url' => route('admin.test.config.schedules', [$config]),
+                'message' => $e->getMessage()
+            ];
+        }
     }
 
     public function uploadOptions($config_id)
