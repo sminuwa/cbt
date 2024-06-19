@@ -85,6 +85,24 @@
                         @csrf
                         <input type="hidden" name="test_config_id" value="{{$config_id}}">
                         <div class="row">
+                            <div class="col-12 col-md-12 col-xl-12 col-lg-12">
+                                <div class="form-group">
+                                    <label for="schedule">Test Schedule:</label>
+                                    <select class="form-control form-select" name="schedule_id" id="schedule" required>
+                                        @foreach($schedules as $schedule)
+                                            <option value="{{$schedule->id}}">
+                                                {{  Carbon::parse($schedule->date)->format('D jS M, Y') }} -
+                                                {{ $schedule->venue->name }} -
+                                                {{ $schedule->no_per_schedule }} -
+                                                {{  Carbon::parse($schedule->daily_start_time)->format('h:m a') }} -
+                                                {{  Carbon::parse($schedule->daily_end_time)->format('h:m a') }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-4 col-md-12 col-lg-4 col-xl-4">
                                 <div class="form-group">
                                     <label for="file"></label>
