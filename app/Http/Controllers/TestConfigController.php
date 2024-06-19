@@ -131,13 +131,95 @@ class TestConfigController extends Controller
     public function storeSchedule(Request $request): RedirectResponse
     {
         try {
-            $schedule = new Scheduling();
+            if (isset($request->id))
+                $schedule = Scheduling::find($request->id);
+            else
+                $schedule = new Scheduling();
             $schedule->fill($request->all());
             if ($schedule->save())
                 return back()->with(['success' => true, 'message' => 'Test Schedule successfully saved']);
             return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
         } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function deleteSchedule(Scheduling $scheduling)
+    {
+        $candidates = $scheduling->candidate_students()->distinct('candidate_id')->count();
+        if ($candidates > 0)
+            return view('pages.author.test.config.displacement-options', compact('candidates', 'scheduling'));
+        else
+            if ($scheduling->delete()) return back()->with(['success' => true, 'message' => 'Test Schedule successfully deleted']);
+
+        return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+    }
+
+    public function removeAndDeleteSchedule(Scheduling $scheduling)
+    {
+        $config = $scheduling->test_config;
+        $remove = CandidateStudent::where(['schedule_id' => $scheduling->id])->delete();
+        if ($remove) {
+            if ($scheduling->delete())
+                return redirect(route('admin.test.config.schedules', [$config->id]))->with(['success' => true, 'message' => 'Affected Candidate(s) removed and Test Schedule successfully deleted']);
+        }
+
+        return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+    }
+
+    public function otherSchedules(Scheduling $scheduling, $size)
+    {
+        $schedule_id = $scheduling->id;
+        $others = Scheduling::with('venue')
+            ->where(['test_config_id' => $scheduling->test_config_id])
+            ->whereNot('id', $scheduling->id)
+            ->get();
+
+        $candidates = CandidateStudent::select(['schedule_id', 'candidate_id', 'venues.id as venue_id'])
+            ->join('schedulings', 'schedulings.id', '=', 'candidate_students.schedule_id')
+            ->join('venues', 'venues.id', '=', 'schedulings.venue_id')
+            ->where('schedule_id', '!=', $scheduling->id)
+            ->distinct()
+            ->get();
+
+        foreach ($others as $other) {
+            foreach ($candidates as $candidate) {
+                if ($candidate->schedule_id == $other->id && $candidate->venue_id == $other->venue->id)
+                    $other->venue->capacity -= 1;
+            }
+        }
+        $schedules = $others;
+
+        return view('pages.author.test.config.ajax.schedules', compact('schedules', 'size', 'schedule_id'));
+    }
+
+    public function reschedule(Request $request)
+    {
+        try {
+            $candidates = CandidateStudent::where(['schedule_id' => $request->from]);
+            $size = count($candidates->get());
+            if ($candidates->update(['schedule_id' => $request->to])) {
+                $schedule = Scheduling::find($request->from);
+                $config = $schedule->test_config_id;
+
+                if ($schedule->delete())
+                    return [
+                        'success' => true,
+                        'url' => route('admin.test.config.schedules', [$config]),
+                        'message' => $size . ' candidate(s) successfully rescheduled and the old schedule deleted'
+                    ];
+            }
+
+            return [
+                'success' => false,
+                'url' => route('admin.test.config.schedules', [$config]),
+                'message' => 'Oops! Look like something went wrong'
+            ];
+        } catch (Exception $e) {
+            return ['success' => false,
+                'url' => route('admin.test.config.schedules', [$config]),
+                'message' => $e->getMessage()
+            ];
         }
     }
 
@@ -169,7 +251,7 @@ class TestConfigController extends Controller
                 ];
             }
 
-            if (CandidateStudent::insert($records))
+            if (CandidateStudent::upsert($records, []))
                 return back()->with(['success' => true, 'message' => 'Candidate successfully scheduled for this test']);
 
 //            $schedule->candidate_id = $request->candidate_number;
@@ -177,7 +259,26 @@ class TestConfigController extends Controller
 //            if ($schedule->save())
 
             return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        try {
+//            $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
+            $file = $request->file;
+            $sheet = 'Sheet1';
+//            $collection = Excel::toArray([], $file);
+//            $rows = $collection->firstWhere('title', $sheet);
+//            foreach ($rows as $row) {
+//                echo $row['A'] . '<br>';
+//            }
+
+
+            return $request;
+        } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -286,7 +387,7 @@ class TestConfigController extends Controller
             if ($section->save())
                 return back()->with(['success' => true, 'message' => 'Test Section successfully saved']);
             return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -361,7 +462,7 @@ class TestConfigController extends Controller
 
             return view('pages.author.test.config.ajax.questions',
                 ['questions' => $paginator, 'statistics' => $statistics, 'page' => $currentPage, 'pageSize' => $perPage]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $e->getMessage();
         }
     }
@@ -380,7 +481,7 @@ class TestConfigController extends Controller
                 $question->test_section_id = $section_id;
                 $question->save();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 

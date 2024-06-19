@@ -49,9 +49,14 @@ Route::name('admin.')->prefix('adm')->group(function () {
 
             Route::get('/{config}/schedules', [TestConfigController::class, 'schedules'])->name('schedules');
             Route::post('/schedules/store', [TestConfigController::class, 'storeSchedule'])->name('schedules.store');
+            Route::get('/schedules/{scheduling}/displacement', [TestConfigController::class, 'deleteSchedule'])->name('schedules.delete');
+            Route::get('/schedules/{scheduling}/remove/delete', [TestConfigController::class, 'removeAndDeleteSchedule'])->name('schedules.remove.delete');
+            Route::get('/schedules/{scheduling}/others/{size}', [TestConfigController::class, 'otherSchedules'])->name('schedules.others');
+            Route::post('/schedules/reschedule', [TestConfigController::class, 'reschedule'])->name('schedules.reschedule');
 
             Route::get('/{config}/upload-candidates/options', [TestConfigController::class, 'uploadOptions'])->name('upload.options');
             Route::post('/upload-candidates/single', [TestConfigController::class, 'uploadSingle'])->name('upload.single');
+            Route::post('/upload-candidates/list', [TestConfigController::class, 'bulkUpload'])->name('upload.list');
 
             Route::get('/{config}/mappings', [TestConfigController::class, 'mappings'])->name('mappings');
             Route::post('/mappings/store', [TestConfigController::class, 'storeMappings'])->name('mappings.store');

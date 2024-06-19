@@ -37,6 +37,7 @@
                     <form action="{{ route('admin.test.config.schedules.store') }}" method="post">
                         @csrf
                         <input type="hidden" name="test_config_id" value="{{$config_id}}">
+                        <input type="hidden" name="id" id="schedule_id">
                         <div class="row">
                             <div class="col-md-12 col-lg-3 col-xl-3">
                                 <div class="form-group">
@@ -88,7 +89,7 @@
                                 <div class="form-group">
                                     <label for="no_per_schedule">Candidate per Batch:</label>
                                     <input class="form-control" type="number" name="no_per_schedule"
-                                           id="no_per_schedule" placeholder="Candidates per Batch" value="250" required>
+                                           id="no_per_schedule" placeholder="Candidates per Batch" required>
                                 </div>
                             </div>
                             <div class="col-md-12 col-lg-3 col-xl-3">
@@ -107,9 +108,9 @@
                             </div>
                         </div>
                         <div class="mt-3 d-flex justify-content-between">
-                            <a class="btn btn-warning text-light"
-                               href="{{ route('admin.test.config.view',[$config_id]) }}"><i
-                                    class="fa fa-arrow-left me-1"></i>Back</a>
+                            {{--                            <a class="btn btn-warning text-light"--}}
+                            {{--                               href="{{ route('admin.test.config.view',[$config_id]) }}"><i--}}
+                            {{--                                    class="fa fa-arrow-left me-1"></i>Back</a>--}}
                             <input id="submit" class="btn btn-info text-light" type="submit" value="Save Changes"
                                    style="display: none">
                         </div>
@@ -150,7 +151,21 @@
                         <td>{{ $schedule->no_per_schedule }}</td>
                         <td>{{  Carbon::parse($schedule->daily_start_time)->format('h:m a') }}</td>
                         <td>{{  Carbon::parse($schedule->daily_end_time)->format('h:m a') }}</td>
-                        <td></td>
+                        <td>
+                            <a class="btn btn-sm btn-warning text-light modify"
+                               data-id="{{$schedule->id}}" data-date="{{$schedule->date}}"
+                               data-venue="{{$schedule->venue->id}}" data-centre="{{$schedule->venue->centre->id}}"
+                               data-batch="{{$schedule->maximum_batch}}" data-count="{{$schedule->no_per_schedule}}"
+                               data-start="{{Carbon::parse($schedule->daily_start_time)->format('H:m')}}"
+                               data-end="{{Carbon::parse($schedule->daily_end_time)->format('H:m')}}"
+                               href="javascript:;">
+                                Modify
+                            </a>
+                            <a class="btn btn-sm btn-danger text-light"
+                               href="{{route('admin.test.config.schedules.delete',[$schedule->id])}}">
+                                Delete
+                            </a>
+                        </td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -189,14 +204,26 @@
                     $('#batches-div').show()
 
                     $.get('{{ route('admin.misc.batches.capacity',[':id']) }}'.replace(':id', $(this).val()),
-                        function (data) {
-                            console.log(data)
+                        function (venue) {
+                            $('#no_per_schedule').val(venue.capacity)
                         }
                     )
                 } else {
                     $('#submit').hide()
                     $('#batches-div').hide()
                 }
+            })
+
+            $('.modify').on('click', function () {
+                console.log($(this).data('start'))
+                $('#schedule_id').val($(this).data('id'))
+                $('#exam-dates').val($(this).data('date')).change()
+                $('#centre').val($(this).data('centre')).change()
+                $('#venue').val($(this).data('venue')).change()
+                $('#maximum_batch').val($(this).data('batch'))
+                $('#no_per_schedule').val($(this).data('count'))
+                $('#daily_start_time').val($(this).data('start'))
+                $('#daily_end_time').val($(this).data('end'))
             })
         })
     </script>

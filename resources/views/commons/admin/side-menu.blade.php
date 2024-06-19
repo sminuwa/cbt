@@ -71,7 +71,7 @@
                                 <span>Test Dates</span>
                             </a>
                         </li>
-                        <li class="{{Request::is('*schedules')?'active':''}}">
+                        <li class="{{Request::is('*schedules*')?'active':''}}">
                             <a href="{{ route('admin.test.config.schedules',[$config]) }}">
                                 <i class="fas fa-calendar-check"></i>
                                 <span>Test Schedules</span>
