@@ -46,6 +46,15 @@
                             <h4>Sign in </h4>
                             <p>Enter your Exam No & password to login</p>
                             <div class="form-group">
+                                <label class="col-form-label">Exam Type</label>
+                                <select class="form-control" type="text" required="" placeholder="Exam No.">
+                                    <option>-- Select Exam -- </option>
+                                    <option>JCHEW National Exam</option>
+                                    <option>CHEW National Exam</option>
+                                    <option>CHO National Exam</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label class="col-form-label">Exam No.</label>
                                 <input class="form-control" type="text" required="" placeholder="Exam No.">
                             </div>

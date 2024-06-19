@@ -84,62 +84,45 @@
                             <tr>
                                 <td style="padding: 30px">
                                     <h2 style="text-align: center">Welcome to CHPRBN CBT Exam!</h2>
-                                    <p>Please read the following instructions carefully before starting the exam:</p>
 
-                                    <h3>Timing:</h3>
-                                    <ul>
-                                        <li>The exam duration is <strong>2 hours</strong>. The timer will start as soon as you begin the exam.</li>
-                                        <li>Ensure you complete all sections within the allotted time. Unsubmitted answers will not be counted once the time expires.</li>
-                                    </ul>
-
-                                    <h3>Navigation:</h3>
-                                    <ul>
-                                        <li>Use the <strong>Next</strong> and <strong>Previous</strong> buttons to navigate between questions.</li>
-                                        <li>You can <strong>flag questions</strong> for review if you need to revisit them later.</li>
-                                        <li>At any point, you can see an overview of all questions and flagged items by clicking the <strong>Review</strong> button.</li>
-                                    </ul>
-
-                                    <h3>Answering Questions:</h3>
-                                    <ul>
-                                        <li>Questions may be multiple-choice, true/false, fill-in-the-blank, or essay types.</li>
-                                        <li>For multiple-choice and true/false questions, select your answer by clicking on the option.</li>
-                                        <li>For fill-in-the-blank questions, type your answer in the provided text box.</li>
-                                        <li>For essay questions, write your response in the text editor provided.</li>
-                                    </ul>
-
-                                    <h3>Submitting the Exam:</h3>
-                                    <ul>
-                                        <li>You must submit your exam before the time expires. Click the <strong>Submit Exam</strong> button once you have completed all questions.</li>
-                                        <li>After submission, you will not be able to change any answers or re-enter the exam.</li>
-                                    </ul>
-
-                                    <h3>Technical Issues:</h3>
-                                    <ul>
-                                        <li>If you encounter any technical issues during the exam, please contact the technical support team immediately using the chat feature or call the support number provided.</li>
-                                    </ul>
-
-                                    <h3>Exam Rules:</h3>
-                                    <ul>
-                                        <li>No external help or collaboration is allowed during the exam.</li>
-                                        <li>Do not open any other browser tabs or applications.</li>
-                                        <li>Ensure your internet connection is stable throughout the exam duration.</li>
-                                    </ul>
-
-                                    <h3>Integrity:</h3>
-                                    <ul>
-                                        <li>Academic integrity is crucial. Any form of cheating or dishonesty will result in disqualification.</li>
-                                    </ul>
-
-                                    <h3>Review:</h3>
-                                    <ul>
-                                        <li>If you finish early, use the remaining time to review your answers.</li>
-                                        <li>Make sure all questions are answered to the best of your ability.</li>
-                                    </ul>
-
-                                    <p>By starting the exam, you acknowledge that you have read and understood these instructions and agree to abide by the exam rules and regulations.</p>
+                                    <h3 class="text-lg font-bold mb-2">
+                                        General instructions to candidates: <span class="font-normal">Read carefully</span>
+                                    </h3>
+                                    <ol class="list-decimal list-inside space-y-2 mb-6">
+                                        <li>
+                                            Your time will start counting as soon as you click on
+                                            <span class="font-semibold">Start Exams</span>.
+                                        </li>
+                                        <li>Click on the subject code to view the questions.</li>
+                                        <li>
+                                            Use the <span class="font-semibold">NAVIGATION</span> panel to quickly move to desired
+                                            questions.
+                                        </li>
+                                        <li>Answers are automatically saved as they are selected.</li>
+                                        <li>
+                                            Avoid using <span class="font-semibold">Forward, Backward, Refresh</span> buttons of your
+                                            browser as they may log you out.
+                                        </li>
+                                        <li>
+                                            Once you click on the <span class="font-semibold">Submit Button</span>, you cannot come back
+                                            to the test again.
+                                        </li>
+                                        <li>
+                                          <span class="font-semibold">
+                                              You are advised to adhere strictly to the examination Regulations/Discipline as spelt out
+                                            in the current University/Faculty prospectus and Information brochure. Ignorance of these
+                                            regulations will not be accepted as an excuse for any misdemeanors.
+                                          </span>
+                                        </li>
+                                        <li>
+                                            Borrowing of pencils, biros, calculator etc is not allowed as each candidate is expected to
+                                            have his/hers.
+                                        </li>
+                                        <li>GSM Handset(s) switched or un-switched are not allowed in the examination hall.</li>
+                                    </ol>
 
                                     <p><strong>Good luck!</strong></p>
-                                    <div class="text-center"><a href="{{ route('candidate.test.question') }}" style="padding: 10px; background-color: #006666; color: #fff; display: inline-block; border-radius:30px; margin-bottom:18px; font-weight:600; padding:0.6rem 1.75rem;">Start </a></div>
+                                    <div class="text-center"><a href="{{ route('candidate.test.question') }}" style="padding: 10px; background-color: #006666; color: #fff; display: inline-block; border-radius:30px; margin-bottom:18px; font-weight:600; padding:0.6rem 1.75rem;">Start Exams</a></div>
                                 </td>
                             </tr>
                             </tbody>
