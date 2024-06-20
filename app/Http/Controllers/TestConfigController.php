@@ -9,10 +9,12 @@ use App\Models\FacultyScheduleMapping;
 use App\Models\QuestionBank;
 use App\Models\Scheduling;
 use App\Models\Subject;
+use App\Models\TestCompositor;
 use App\Models\TestConfig;
 use App\Models\TestQuestion;
 use App\Models\TestSection;
 use App\Models\TestSubject;
+use App\Models\User;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -502,4 +504,45 @@ class TestConfigController extends Controller
         return view('pages.author.test.config.composition-preview-questions', compact('testSubject'));
     }
 
+    public function manageUsers($config_id)
+    {
+//        $compositors = User::all();
+        return view('pages.author.test.config.manage-users', compact('config_id'));
+    }
+
+    public function searchCompositor(Request $request)
+    {
+        $user = User::where(['personnel_no' => $request->user_number])->first();
+        $subjects = TestSubject::with('subject')
+            ->select(['subject_id'])
+            ->where(['test_config_id' => $request->config_id])
+            ->get();
+
+        return view('pages.author.test.config.ajax.compositor', compact('user', 'subjects'));
+    }
+
+    public function addCompositor(Request $request)
+    {
+        try {
+            $compositors = [];
+            $ids = $request->subjects;
+            $user_id = $request->user_id;
+            $test_config = $request->test_config_id;
+
+            foreach ($ids as $subject_id) {
+                $compositors[] = [
+                    'user_id' => $user_id,
+                    'test_config_id' => $test_config,
+                    'subject_id' => $subject_id
+                ];
+            }
+
+            if (TestCompositor::upsert($compositors, []))
+                return back()->with(['success' => true, 'message' => 'User successfully added as a compositor for the selected subject(s)']);
+
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 }
