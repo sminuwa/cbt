@@ -101,8 +101,8 @@
                                 <span>Preview Test Questions</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="">
+                        <li class="{{Request::is('*manage*')?'active':''}}">
+                            <a href="{{ route('admin.test.config.manage.users',[$config]) }}">
                                 <i class="fas fa-users"></i>
                                 <span>Manage Users</span>
                             </a>
