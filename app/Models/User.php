@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+
 //use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -39,6 +40,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     use  HasFactory, Notifiable;
+
     protected $table = 'users';
 
     protected $casts = [
@@ -63,6 +65,18 @@ class User extends Authenticatable
     public function test_compositors()
     {
         return $this->hasMany(TestCompositor::class);
+    }
+
+    public function compositor_subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'test_compositors', 'user_id', 'subject_id')
+            ->withPivot('test_config_id');
+    }
+
+    public function previewer_subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'question_previewers', 'user_id', 'subject_id')
+            ->withPivot('test_config_id');
     }
 
     public function test_configs()
