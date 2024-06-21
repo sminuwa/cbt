@@ -82,6 +82,7 @@ Route::name('admin.')->prefix('adm')->group(function () {
             Route::get('/{config}/manage/users', [TestConfigController::class, 'manageUsers'])->name('manage.users');
             Route::post('/manage/users/search/compositor', [TestConfigController::class, 'searchCompositor'])->name('manage.users.search.compositor');
             Route::post('/manage/users/add/compositor', [TestConfigController::class, 'addCompositor'])->name('manage.users.add.compositor');
+            Route::get('/{config}/manage/users/remove/compositor/{id}', [TestConfigController::class, 'removeCompositor'])->name('manage.users.remove.compositor');
         });
     });
 

@@ -30,13 +30,13 @@
         <div class="card-header border-info">
             <ul class="nav nav-tabs nav-tabs-solid nav-tabs-rounded">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#compositors" data-bs-toggle="tab">Compositors</a>
+                    <a class="nav-link active compositors" href="#compositors" data-bs-toggle="tab">Compositors</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#invigilators" data-bs-toggle="tab">Invigilators</a>
+                    <a class="nav-link invigilators" href="#invigilators" data-bs-toggle="tab">Invigilators</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#previewer" data-bs-toggle="tab">Previewer</a>
+                    <a class="nav-link previewer" href="#previewer" data-bs-toggle="tab">Previewer</a>
                 </li>
             </ul>
         </div>
@@ -84,7 +84,7 @@
                     </div>
                 </div>
 
-                <div class="tab-pane" id="bulk-upload">
+                <div class="tab-pane" id="invigilators">
                     <form action="" method="post">
                         @csrf
                         <input type="hidden" name="test_config_id" value="">
@@ -127,27 +127,60 @@
         </div>
     </div>
 
-    {{--    <div id="schedules-div" style="display: none">--}}
-    {{--        <div class="card border-info">--}}
-    {{--            <div class="card-header border-info">--}}
-    {{--                <div class="row">--}}
-    {{--                    <div>--}}
-    {{--                        <h4 class="card-title d-flex justify-content-between">--}}
-    {{--                            <span>Select a schedule for the {{$candidates}} candidate(s)</span>--}}
-    {{--                        </h4>--}}
-    {{--                    </div>--}}
-    {{--                </div>--}}
-    {{--            </div>--}}
-    {{--            <div id="others" class="card-body p-0">--}}
-
-    {{--            </div>--}}
-    {{--        </div>--}}
-    {{--    </div>--}}
+    <div id="schedules-div">
+        <div class="card border-info">
+            <div class="card-header border-info">
+                <div class="row">
+                    <div>
+                        <h4 id="header" class="card-title d-flex justify-content-between">
+                            Available Test Compositor(s)
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div id="compositors-div">
+                    <table class="table table-bordered table-striped mt-2">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>User #</th>
+                            <th>Full Name</th>
+                            <th>Subject(s)</th>
+                            <th style="width: 10%">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($users as $user)
+                            <tr>
+                                <td>{{$loop->iteration}}</td>
+                                <td>{{$user->number}}</td>
+                                <td>{{$user->name}}</td>
+                                <td>
+                                    @foreach($user->subjects as $subject)
+                                        <p> {{$subject->subject_code}} - {{$subject->name}} </p>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    <a class="btn btn-sm btn-danger text-light"
+                                       href="{{route('admin.test.config.manage.users.remove.compositor',[$config_id,$user->id])}}">Remove</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div id="invigilator-div" style="display: none"></div>
+                <div id="previewer-div" style="display: none"></div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('script')
     <script>
         $(function () {
+            let header = $('#header')
             $('#search-compositor').on('click', function () {
                 let user_number = $('#staff_number').val()
                 if (user_number === '') {
@@ -162,6 +195,17 @@
                 }, function (response) {
                     $('#compositor-div').html(response)
                 })
+            })
+            $('.compositors').on('click', function () {
+                header.html('Available Test Compositor(s)')
+            })
+
+            $('.invigilators').on('click', function () {
+                header.html('Available Test Invigilator(s)')
+            })
+
+            $('.previewer').on('click', function () {
+                header.html('Available Test Previewer')
             })
         })
     </script>
