@@ -506,8 +506,26 @@ class TestConfigController extends Controller
 
     public function manageUsers($config_id)
     {
-//        $compositors = User::all();
-        return view('pages.author.test.config.manage-users', compact('config_id'));
+        $userIds = TestCompositor::where('test_config_id', $config_id)
+            ->distinct('user_id')
+            ->pluck('user_id');
+
+        $users = User::select(['id', 'personnel_no as number', 'display_name as name'])
+            ->whereIn('id', $userIds)
+            ->get();
+
+        $subjects = Subject::select(['subjects.subject_code', 'subjects.name', 'test_compositors.user_id'])
+            ->join('test_compositors', 'test_compositors.subject_id', '=', 'subjects.id')
+            ->where('test_compositors.test_config_id', $config_id)
+            ->whereIn('test_compositors.user_id', $userIds)
+            ->get()
+            ->groupBy('user_id');
+
+        foreach ($users as $user) {
+            $user->subjects = $subjects->get($user->id, collect());
+        }
+
+        return view('pages.author.test.config.manage-users', compact('config_id', 'users'));
     }
 
     public function searchCompositor(Request $request)
@@ -541,6 +559,16 @@ class TestConfigController extends Controller
                 return back()->with(['success' => true, 'message' => 'User successfully added as a compositor for the selected subject(s)']);
 
             return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function removeCompositor($config, $user_id)
+    {
+        try {
+            TestCompositor::where(['test_config_id' => $config, 'user_id' => $user_id])->delete();
+            return back()->with(['success' => true, 'message' => 'User successfully removed as a compositor for the selected subject(s)']);
         } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
