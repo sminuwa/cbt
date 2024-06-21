@@ -83,6 +83,10 @@ Route::name('admin.')->prefix('adm')->group(function () {
             Route::post('/manage/users/search/compositor', [TestConfigController::class, 'searchCompositor'])->name('manage.users.search.compositor');
             Route::post('/manage/users/add/compositor', [TestConfigController::class, 'addCompositor'])->name('manage.users.add.compositor');
             Route::get('/{config}/manage/users/remove/compositor/{id}', [TestConfigController::class, 'removeCompositor'])->name('manage.users.remove.compositor');
+            Route::post('/manage/users/add/invigilator', [TestConfigController::class, 'addInvigilator'])->name('manage.users.add.invigilator');
+            Route::get('/{config}/manage/users/remove/invigilator/{id}', [TestConfigController::class, 'removeInvigilator'])->name('manage.users.remove.invigilator');
+            Route::post('/manage/users/add/previewer', [TestConfigController::class, 'addPreviewer'])->name('manage.users.add.previewer');
+            Route::get('/{config}/manage/users/remove/previewer/{id}', [TestConfigController::class, 'removePreviewer'])->name('manage.users.remove.previewer');
         });
     });
 

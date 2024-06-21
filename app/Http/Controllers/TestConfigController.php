@@ -7,10 +7,12 @@ use App\Models\CandidateStudent;
 use App\Models\ExamsDate;
 use App\Models\FacultyScheduleMapping;
 use App\Models\QuestionBank;
+use App\Models\QuestionPreviewer;
 use App\Models\Scheduling;
 use App\Models\Subject;
 use App\Models\TestCompositor;
 use App\Models\TestConfig;
+use App\Models\TestInvigilator;
 use App\Models\TestQuestion;
 use App\Models\TestSection;
 use App\Models\TestSubject;
@@ -504,28 +506,41 @@ class TestConfigController extends Controller
         return view('pages.author.test.config.composition-preview-questions', compact('testSubject'));
     }
 
-    public function manageUsers($config_id)
+    public function manageUsers(TestConfig $config)
     {
-        $userIds = TestCompositor::where('test_config_id', $config_id)
+        $config_id = $config->id;
+        $compIds = TestCompositor::where('test_config_id', $config_id)
             ->distinct('user_id')
             ->pluck('user_id');
+
+        $invIds = TestInvigilator::where('test_config_id', $config_id)
+            ->distinct('user_id')
+            ->pluck('user_id');
+
+        $preIds = QuestionPreviewer::where('test_config_id', $config_id)
+            ->distinct('user_id')
+            ->pluck('user_id');
+
+        $userIds = $compIds->merge($invIds)->unique();
+        $userIds = $userIds->merge($preIds)->unique();
 
         $users = User::select(['id', 'personnel_no as number', 'display_name as name'])
             ->whereIn('id', $userIds)
             ->get();
 
-        $subjects = Subject::select(['subjects.subject_code', 'subjects.name', 'test_compositors.user_id'])
-            ->join('test_compositors', 'test_compositors.subject_id', '=', 'subjects.id')
-            ->where('test_compositors.test_config_id', $config_id)
-            ->whereIn('test_compositors.user_id', $userIds)
-            ->get()
-            ->groupBy('user_id');
+        $users->load([
+            'compositor_subjects' => function ($query) use ($config_id) {
+                $query->select(['subjects.subject_code', 'subjects.name'])
+                    ->where('test_compositors.test_config_id', $config_id);
+            },
+            'previewer_subjects' => function ($query) use ($config_id) {
+                $query->select(['subjects.subject_code', 'subjects.name'])
+                    ->where('question_previewers.test_config_id', $config_id);
+            },
+            'test_invigilators'
+        ]);
 
-        foreach ($users as $user) {
-            $user->subjects = $subjects->get($user->id, collect());
-        }
-
-        return view('pages.author.test.config.manage-users', compact('config_id', 'users'));
+        return view('pages.author.test.config.manage-users', compact('config', 'users'));
     }
 
     public function searchCompositor(Request $request)
@@ -569,6 +584,79 @@ class TestConfigController extends Controller
         try {
             TestCompositor::where(['test_config_id' => $config, 'user_id' => $user_id])->delete();
             return back()->with(['success' => true, 'message' => 'User successfully removed as a compositor for the selected subject(s)']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function addInvigilator(Request $request)
+    {
+        try {
+            $user = User::where('personnel_no', $request->staff)->first();
+            if (isset($user)) {
+                $user_id = $user->id;
+                $scheduling_id = $request->scheduling_id;
+                $test_config_id = $request->test_config_id;
+                $invigilator = TestInvigilator::where(['user_id' => $user_id, 'scheduling_id' => $scheduling_id, 'test_config_id' => $test_config_id])->first();
+                if (isset($invigilator))
+                    return back()->with(['success' => true, 'message' => 'User was already added as an invigilator for this test schedule)']);
+
+                $invigilator[] = [
+                    'user_id' => $user_id,
+                    'scheduling_id' => $scheduling_id,
+                    'test_config_id' => $test_config_id,
+                    'pass_key' => $request->pass_key
+                ];
+                if (TestInvigilator::upsert($invigilator, []))
+                    return back()->with(['success' => true, 'message' => 'User successfully added as an invigilator for this test schedule)']);
+
+            }
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function removeInvigilator($config_id, $user_id)
+    {
+        try {
+            TestInvigilator::where(['test_config_id' => $config_id, 'user_id' => $user_id])->delete();
+            return back()->with(['success' => true, 'message' => 'User successfully removed as an invigilator for this test']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function addPreviewer(Request $request)
+    {
+        try {
+            $previewers = [];
+            $ids = $request->subjects;
+            $user_id = $request->user_id;
+            $test_config = $request->test_config_id;
+
+            foreach ($ids as $subject_id) {
+                $previewers[] = [
+                    'user_id' => $user_id,
+                    'test_config_id' => $test_config,
+                    'subject_id' => $subject_id
+                ];
+            }
+
+            if (QuestionPreviewer::upsert($previewers, []))
+                return back()->with(['success' => true, 'message' => 'User successfully added as a questions previewer for the selected subject(s)']);
+
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function removePreviewer($config, $user_id)
+    {
+        try {
+            QuestionPreviewer::where(['test_config_id' => $config, 'user_id' => $user_id])->delete();
+            return back()->with(['success' => true, 'message' => 'User successfully removed as a questions previewer for the selected schedule(s)']);
         } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
