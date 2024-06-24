@@ -46,14 +46,15 @@
                         @csrf
                         <input type="hidden" name="test_config_id" value="{{$config_id}}">
                         <div class="row">
-                            <div class="col-4 col-md-12 col-xl-4 col-lg-4">
+                            <div class="col-5 col-md-12 col-xl-5 col-lg-5">
                                 <div class="form-group">
                                     <label for="candidate_number">Candidate Number:</label>
                                     <input class="form-control" type="text" name="candidate_number"
-                                           id="candidate_number" placeholder="Candidate Number" required>
+                                           id="candidate_number" placeholder="Candidate Numbers (comma separated)"
+                                           required>
                                 </div>
                             </div>
-                            <div class="col-8 col-md-12 col-xl-8 col-lg-8">
+                            <div class="col-7 col-md-12 col-xl-7 col-lg-7">
                                 <div class="form-group">
                                     <label for="schedule">Test Schedule:</label>
                                     <select class="form-control form-select" name="schedule_id" id="schedule" required>
@@ -85,7 +86,13 @@
                         @csrf
                         <input type="hidden" name="test_config_id" value="{{$config_id}}">
                         <div class="row">
-                            <div class="col-12 col-md-12 col-xl-12 col-lg-12">
+                            <div class="col-5 col-md-12 col-lg-5 col-xl-5">
+                                <div class="form-group">
+                                    <label for="file"></label>
+                                    <input class="form-control" type="file" name="file" id="file" required>
+                                </div>
+                            </div>
+                            <div class="col-7 col-md-12 col-xl-7 col-lg-7">
                                 <div class="form-group">
                                     <label for="schedule">Test Schedule:</label>
                                     <select class="form-control form-select" name="schedule_id" id="schedule" required>
@@ -98,34 +105,6 @@
                                                 {{  Carbon::parse($schedule->daily_end_time)->format('h:m a') }}
                                             </option>
                                         @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-4 col-md-12 col-lg-4 col-xl-4">
-                                <div class="form-group">
-                                    <label for="file"></label>
-                                    <input class="form-control" type="file" name="file" id="file" required>
-                                </div>
-                            </div>
-                            <div class="col-4 col-md-12 col-lg-4 col-xl-4">
-                                <div class="form-group">
-                                    <label for="sheet">Sheet Number:</label>
-                                    <input class="form-control" type="number" name="sheet" id="sheet"
-                                           placeholder="Sheet Number (e.g 1)" required>
-                                </div>
-                            </div>
-                            <div class="col-4 col-md-12 col-lg-4 col-xl-4">
-                                <div class="form-group">
-                                    <label for="column">Column:</label>
-                                    <select class="form-control form-select" name="column" id="column">
-                                        <option value="A">A</option>
-                                        <option value="B">B</option>
-                                        <option value="C">C</option>
-                                        <option value="D">D</option>
-                                        <option value="E">E</option>
-                                        <option value="F">F</option>
                                     </select>
                                 </div>
                             </div>
