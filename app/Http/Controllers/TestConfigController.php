@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\Upload;
 use App\Models\Candidate;
 use App\Models\CandidateStudent;
 use App\Models\ExamsDate;
@@ -30,8 +31,6 @@ use Illuminate\Support\Facades\Session;
 
 class TestConfigController extends Controller
 {
-    //
-
     public function __construct()
     {
         $this->middleware('auth:admin');
@@ -236,33 +235,35 @@ class TestConfigController extends Controller
     public function uploadSingle(Request $request)
     {
         try {
-            $candidate_id = Candidate::where(['matric_number' => $request->candidate_number])->first()->id;
+            $candidates = explode(',', $request->candidate_number);
+            $schedule_id = $request->schedule_id;
+            $candidate_ids = Candidate::whereIn('matric_number', $candidates)->pluck('id')->toArray();
             $subjects = TestSubject::where(['test_config_id' => $request->test_config_id])->pluck('subject_id');
-            $schedule = CandidateStudent::where(['candidate_id' => $candidate_id, 'schedule_id' => $request->schedule_id])
+            $schedules = CandidateStudent::where(['schedule_id' => $schedule_id])
+                ->whereIn('candidate_id', $candidate_ids)
                 ->whereIn('subject_id', $subjects)
                 ->get();
 
-            if (count($schedule))
-                return back()->with(['success' => false, 'message' => 'Oops! Candidate with this number: '
+            if (count($schedules))
+                return back()->with(['success' => false, 'message' => 'Oops! Candidate(s) with this number: '
                     . $request->candidate_number . ' was already scheduled for this test']);
 
+            if (count($candidate_ids) == 0)
+                return back()->with(['success' => false, 'message' => 'Oops! Candidate(s) record(s) not found!']);
+
             $records = [];
-            foreach ($subjects as $subject_id) {
-                $records[] = [
-                    'candidate_id' => $candidate_id,
-                    'schedule_id' => $request->schedule_id,
-                    'subject_id' => $subject_id
-                ];
+            foreach ($candidate_ids as $candidate_id) {
+                foreach ($subjects as $subject_id) {
+                    $records[] = [
+                        'candidate_id' => $candidate_id,
+                        'schedule_id' => $request->schedule_id,
+                        'subject_id' => $subject_id
+                    ];
+                }
             }
+            CandidateStudent::upsert($records, []);
 
-            if (CandidateStudent::upsert($records, []))
-                return back()->with(['success' => true, 'message' => 'Candidate successfully scheduled for this test']);
-
-//            $schedule->candidate_id = $request->candidate_number;
-//            $schedule->schedule_id = $request->schedule_id;
-//            if ($schedule->save())
-
-            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+            return $this->updateBatches($schedule_id);
         } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
@@ -271,20 +272,86 @@ class TestConfigController extends Controller
     public function bulkUpload(Request $request)
     {
         try {
-//            $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
+            // $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
             $file = $request->file;
-            $sheet = 'Sheet1';
-//            $collection = Excel::toArray([], $file);
-//            $rows = $collection->firstWhere('title', $sheet);
-//            foreach ($rows as $row) {
-//                echo $row['A'] . '<br>';
-//            }
+            $schedule_id = $request->schedule_id;
+            $test_config_id = $request->test_config_id;
+
+            $rows = $this->getRecordFromExcel(Upload::class, $file);
+            array_shift($rows); // Assuming this removes the header row
+
+            $candidates = Candidate::whereIn('matric_number', $rows)->get();
+            $ids = $candidates->pluck('id')->toArray();
+            $numbers = $candidates->pluck('matric_number')->toArray();
+
+            $rows = array_column($rows, 0);
+
+            $missing = array_values(array_diff($rows, $numbers));
+
+            $subjects = TestSubject::where(['test_config_id' => $test_config_id])->pluck('subject_id');
+
+            $schedules = CandidateStudent::with('candidate')->where(['schedule_id' => $schedule_id])
+                ->whereIn('subject_id', $subjects)
+                ->whereIn('candidate_id', $ids)
+                ->get();
+
+            if (count($ids) == count($schedules) / count($subjects))
+                return back()->with(['success' => false, 'message' => 'Oops! All of the candidates were already scheduled for this test']);
+            else {
+                $scheduled_ids = [];
+                foreach ($schedules as $schedule) {
+                    if ($schedule->subject_id == $subjects[0]) {
+                        $scheduled_ids[] = $schedule->candidate->id;
+                    }
+                }
+
+                $scheduled = count($scheduled_ids);
+                $tmp = array_values(array_diff($ids, $scheduled_ids));
+                $ids = $tmp;
+            }
+
+            $chunks = array_chunk($ids, 1000);
+
+            $records = [];
+            foreach ($chunks as $chunk) {
+                foreach ($chunk as $candidate_id) {
+                    foreach ($subjects as $subject_id) {
+                        $records[] = [
+                            'candidate_id' => $candidate_id,
+                            'schedule_id' => $schedule_id,
+                            'subject_id' => $subject_id,
+                            'enabled' => 1
+                        ];
+                    }
+                }
 
 
-            return $request;
+                CandidateStudent::upsert($records, ['candidate_id', 'schedule_id', 'subject_id'], ['candidate_id', 'schedule_id', 'subject_id']);
+                $records = [];
+            }
+
+            $success = count($ids);
+
+            $this->updateBatches($schedule_id);
+
+            return view('pages.author.test.config.upload-report', compact('success', 'scheduled', 'missing'));
         } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
+    }
+
+    private function updateBatches($schedule_id)
+    {
+        $schedule = Scheduling::with('venue')->find($schedule_id);
+        $venueCap = $schedule->venue->capacity;
+        $candidates = $schedule->candidate_students()->distinct('candidate_id')->count();
+        $batches = ceil($candidates / $venueCap);
+
+        $schedule->maximum_batch = $batches;
+        if ($schedule->save())
+            return back()->with(['success' => true, 'message' => 'Candidate(s) successfully scheduled for this test']);
+
+        return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
     }
 
     public function mappings($config_id)
