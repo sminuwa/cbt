@@ -33,7 +33,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{route('admin.questions.authoring')}}">
+                            <a href="{{route('admin.questions.authoring.index')}}">
                                 <i class="fas fa-question"></i>
                                 <span>Question Authoring</span>
                             </a>
@@ -57,6 +57,7 @@
                             </a>
                         </li>
                     @endif
+
                     @if(Request::is('*test/config*') && !Request::is('*test/config'))
                         @php $config = Session::get('config'); @endphp
                         <li class="{{Request::is('*basics')?'active':''}}">
@@ -108,6 +109,47 @@
                             </a>
                         </li>
                     @endif
+
+                    @if(Request::is('*questions/authoring*') //&& !Request::is('*questions/authoring')
+)
+                        <li class="{{Request::is('*author')?'active':''}}">
+                            <a href="{{ route('admin.questions.authoring.author') }}">
+                                <i class="fas fa-newspaper"></i>
+                                <span>Author Question</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*edit*')?'active':''}}">
+                            <a href="{{ route('admin.questions.authoring.edit.questions') }}">
+                                <i class="fas fa-edit"></i>
+                                <span>Modify Existing Questions</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*preview*')?'active':''}}">
+                            <a href="{{ route('admin.questions.authoring.preview') }}">
+                                <i class="fas fa-display"></i>
+                                <span>Preview Questions</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <i class="fas fa-table-list"></i>
+                                <span>Change Subject</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <i class="fas fa-list"></i>
+                                <span>Change Question Topic</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <i class="fas fa-repeat"></i>
+                                <span>Change Difficulty Level</span>
+                            </a>
+                        </li>
+                    @endif
+
                     <li>
                         <a href="{{ route('auth.admin.logout') }}">
                             <i class="fas fa-sign-out-alt"></i>
