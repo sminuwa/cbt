@@ -90,18 +90,22 @@ Route::name('admin.')->prefix('adm')->group(function () {
         });
     });
 
-    Route::prefix('questions')->group(function () {
-        Route::get('authoring', [QuestionController::class, 'author'])->name('questions.authoring');
-        Route::post('authoring', [QuestionController::class, 'authorPost'])->name('questions.authoring.post');
-        Route::get('authoring/questions/review/{subject}/{topic}', [QuestionController::class, 'review'])->name('questions.authoring.review');
-        Route::post('authoring/store', [QuestionController::class, 'store'])->name('questions.authoring.store');
-        Route::get('authoring/completed', [QuestionController::class, 'completed'])->name('questions.authoring.completed');
-        Route::get('preview', [QuestionController::class, 'preview'])->name('questions.authoring.preview');
-        Route::post('preview/load', [QuestionController::class, 'loadPreview'])->name('questions.authoring.load.preview');
-        Route::get('edit/{question}', [QuestionController::class, 'editQuestion'])->name('questions.authoring.edit.question');
-        Route::post('store/question', [QuestionController::class, 'storeQuestion'])->name('questions.authoring.store.question');
+    Route::name('questions.')->prefix('questions')->group(function () {
+        Route::name('authoring.')->prefix('authoring')->group(function () {
+            Route::get('/', [QuestionController::class, 'index'])->name('index');
+            Route::get('/author', [QuestionController::class, 'author'])->name('author');
+            Route::post('/author', [QuestionController::class, 'authorPost'])->name('post');
+            Route::get('/review/{subject}/{topic}', [QuestionController::class, 'review'])->name('review');
+            Route::post('/store', [QuestionController::class, 'store'])->name('store');
+            Route::get('/completed', [QuestionController::class, 'completed'])->name('completed');
+            Route::get('/preview', [QuestionController::class, 'preview'])->name('preview');
+            Route::post('/preview/load', [QuestionController::class, 'loadPreview'])->name('load.preview');
+            Route::get('/edit/questions', [QuestionController::class, 'editQuestions'])->name('edit.questions');
+            Route::get('/edit/{question}', [QuestionController::class, 'editQuestion'])->name('edit.question');
+            Route::post('/store/question', [QuestionController::class, 'storeQuestion'])->name('store.question');
 
-        Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('questions.topics');
+            Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('topics');
+        });
     });
 
     Route::name('reports.')->prefix('reports')->group(function () {

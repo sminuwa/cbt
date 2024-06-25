@@ -18,6 +18,11 @@ class QuestionController extends Controller
         $this->middleware('auth:admin');
     }
 
+    public function index()
+    {
+        return view('pages.admin.dashboard.index');
+    }
+
     public function author()
     {
         return view('pages.admin.questions.questions-authoring');
@@ -106,11 +111,26 @@ class QuestionController extends Controller
 
     public function loadPreview(Request $request)
     {
-        $questions = QuestionBank::where(
-            ['subject_id' => $request->subject_id, 'topic_id' => $request->topic_id, 'author' => Auth::user()->id]
-        )->get();
+        $where = [];
+        $preview = $request->preview;
 
-        return view('pages.admin.questions.ajax.ajax-preview-questions', compact('questions'));
+        if ($request->difficulty_level != '%')
+            $where[] = ['difficulty_level' => $request->difficulty_level];
+
+        $questions = QuestionBank::where([
+            'subject_id' => $request->subject_id,
+            'topic_id' => $request->topic_id,
+            'author' => Auth::user()->id])
+            ->where($where);
+
+        $questions = $questions->get();
+
+        return view('pages.admin.questions.ajax.ajax-preview-questions', compact('questions', 'preview'));
+    }
+
+    public function editQuestions()
+    {
+        return view('pages.admin.questions.edit-questions-index');
     }
 
     public function editQuestion(QuestionBank $question)
@@ -137,7 +157,7 @@ class QuestionController extends Controller
             $option->save();
         }
 
-        return redirect(route('admin.questions.authoring.preview'));
+        return redirect(route('admin.questions.authoring.edit.questions'));
     }
 
     private function clearTemps($subjectId, $topicId)

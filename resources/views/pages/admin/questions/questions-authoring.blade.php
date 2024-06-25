@@ -58,7 +58,7 @@
         $(function () {
             $('#subject_id').on('change', function () {
                 let id = $(this).val();
-                $.get('{{ route('admin.questions.topics',[':id']) }}'.replace(':id', id), function (data) {
+                $.get('{{ route('admin.questions.authoring.topics',[':id']) }}'.replace(':id', id), function (data) {
                     $('#topic_id').html(data)
                 })
             })

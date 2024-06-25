@@ -38,7 +38,7 @@
                                     <option value="">Select Subject</option>
                                     @foreach(\App\Models\Subject::all() as $subject)
                                         <option
-                                                value="{{$subject->id}}" {{ $question->subject_id==$subject->id?'selected':'' }}>{{ $subject->name }}</option>
+                                            value="{{$subject->id}}" {{ $question->subject_id==$subject->id?'selected':'' }}>{{ $subject->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -51,7 +51,7 @@
                                     <option value="">Select Topic</option>
                                     @foreach(\App\Models\Topic::all() as $topic)
                                         <option
-                                                value="{{ $topic->id }}" {{ $topic->id==$question->topic_id?'selected':'' }}>{{ $topic->name }}</option>
+                                            value="{{ $topic->id }}" {{ $topic->id==$question->topic_id?'selected':'' }}>{{ $topic->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -63,13 +63,13 @@
                                         id="difficulty_level" required>
                                     <option value="">Select Difficulty</option>
                                     <option value="simple"
-                                            {{ $question->difficulty_level=='simple'?'selected':'' }}>Simple
+                                        {{ $question->difficulty_level=='simple'?'selected':'' }}>Simple
                                     </option>
                                     <option value="difficult"
-                                            {{ $question->difficulty_level=='difficult'?'selected':'' }}>Difficult
+                                        {{ $question->difficulty_level=='difficult'?'selected':'' }}>Difficult
                                     </option>
                                     <option value="moredifficult"
-                                            {{ $question->difficulty_level=='moredifficult'?'selected':'' }}>Mode
+                                        {{ $question->difficulty_level=='moredifficult'?'selected':'' }}>Mode
                                         Difficult
                                     </option>
                                 </select>
@@ -102,7 +102,7 @@
                     @foreach($question->answer_options as $option)
                         <div class="row mb-4">
                             <label
-                                    class="col-form-label col-lg-1">{{ \App\Helper::indexToChar($loop->index) }}</label>
+                                class="col-form-label col-lg-1">{{ \App\Helper::indexToChar($loop->index) }}</label>
                             <div class="col-lg-11">
                                 <div class="input-group">
                                         <span class="input-group-text">
@@ -130,7 +130,7 @@
         $(function () {
             $('#subject_id').on('change', function () {
                 let id = $(this).val();
-                $.get('{{ route('admin.questions.topics',[':id']) }}'.replace(':id', id), function (data) {
+                $.get('{{ route('admin.questions.authoring.topics',[':id']) }}'.replace(':id', id), function (data) {
                     $('#topic_id').html(data)
                 })
             })
