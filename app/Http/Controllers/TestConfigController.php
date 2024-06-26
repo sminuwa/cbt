@@ -9,6 +9,7 @@ use App\Models\ExamsDate;
 use App\Models\FacultyScheduleMapping;
 use App\Models\QuestionBank;
 use App\Models\QuestionPreviewer;
+use App\Models\ScheduledCandidate;
 use App\Models\Scheduling;
 use App\Models\Subject;
 use App\Models\TestCompositor;
@@ -231,71 +232,74 @@ class TestConfigController extends Controller
         $schedules = Scheduling::with('venue')->where(['test_config_id' => $config_id])->get();
         return view('pages.author.test.config.upload-options', compact('config_id', 'schedules'));
     }
-
-    public function uploadSingle(Request $request)
-    {
-        try {
-            $candidates = explode(',', $request->candidate_number);
-            $schedule_id = $request->schedule_id;
-            $candidate_ids = Candidate::whereIn('matric_number', $candidates)->pluck('id')->toArray();
-            $subjects = TestSubject::where(['test_config_id' => $request->test_config_id])->pluck('subject_id');
-            $schedules = CandidateStudent::where(['schedule_id' => $schedule_id])
-                ->whereIn('candidate_id', $candidate_ids)
-                ->whereIn('subject_id', $subjects)
-                ->get();
-
-            if (count($schedules))
-                return back()->with(['success' => false, 'message' => 'Oops! Candidate(s) with this number: '
-                    . $request->candidate_number . ' was already scheduled for this test']);
-
-            if (count($candidate_ids) == 0)
-                return back()->with(['success' => false, 'message' => 'Oops! Candidate(s) record(s) not found!']);
-
-            $records = [];
-            foreach ($candidate_ids as $candidate_id) {
-                foreach ($subjects as $subject_id) {
-                    $records[] = [
-                        'candidate_id' => $candidate_id,
-                        'schedule_id' => $request->schedule_id,
-                        'subject_id' => $subject_id
-                    ];
-                }
-            }
-            CandidateStudent::upsert($records, []);
-
-            return $this->updateBatches($schedule_id);
-        } catch (Exception $e) {
-            return back()->with(['success' => false, 'message' => $e->getMessage()]);
-        }
-    }
-
+//    public function uploadSingle(Request $request)
+//    {
+//        try {
+//            $schedule_id = $request->schedule_id;
+//            $candidates = Candidate::select(['id', 'matric_number'])->whereIn('matric_number', '873r')->get();
+//            $subjects = TestSubject::where(['test_config_id' => $request->test_config_id])->pluck('subject_id');
+//            $schedules = CandidateStudent::where(['schedule_id' => $schedule_id])
+//                ->whereIn('candidate_id', $candidates->pluck('id')->toArray())
+//                ->whereIn('subject_id', $subjects)
+//                ->get();
+//
+//            if (count($schedules))
+//                return back()->with(['success' => false, 'message' => 'Oops! Candidate(s) with this number: '
+//                    . $request->candidate_number . ' was already scheduled for this test']);
+//
+//            if (count($candidates) == 0)
+//                return back()->with(['success' => false, 'message' => 'Oops! Candidate(s) record(s) not found!']);
+//
+//            $records = [];
+//            $scheduled = [];
+//            $exam_type_id = Subject::find($subjects[0])->exam_type_id;
+//
+//            foreach ($candidates as $candidate) {
+//                foreach ($subjects as $subject_id) {
+//                    $records[] = [
+//                        'candidate_id' => $candidate->id,
+//                        'schedule_id' => $request->schedule_id,
+//                        'subject_id' => $subject_id
+//                    ];
+//                }
+//            }
+//            CandidateStudent::upsert($records, ['candidate_id', 'schedule_id', 'subject_id']);
+//
+//            return $this->updateBatches($schedule_id);
+//        } catch (Exception $e) {
+//            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+//        }
+//    }
     public function bulkUpload(Request $request)
     {
         try {
-            // $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
-            $file = $request->file;
             $schedule_id = $request->schedule_id;
             $test_config_id = $request->test_config_id;
+            if (isset($request->file)) {
+                //  $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
+                $file = $request->file;
+                $rows = $this->getRecordFromExcel(Upload::class, $file);
+                array_shift($rows);
 
-            $rows = $this->getRecordFromExcel(Upload::class, $file);
-            array_shift($rows); // Assuming this removes the header row
+                $rows = array_column($rows, 0);
+            } else {
+                $rows = explode(',', $request->candidate_number);
+            }
 
-            $candidates = Candidate::whereIn('matric_number', $rows)->get();
-            $ids = $candidates->pluck('id')->toArray();
+            $candidates = Candidate::select(['id', 'matric_number'])->whereIn('matric_number', $rows)->get();
             $numbers = $candidates->pluck('matric_number')->toArray();
-
-            $rows = array_column($rows, 0);
 
             $missing = array_values(array_diff($rows, $numbers));
 
             $subjects = TestSubject::where(['test_config_id' => $test_config_id])->pluck('subject_id');
 
             $schedules = CandidateStudent::with('candidate')->where(['schedule_id' => $schedule_id])
+                ->whereIn('candidate_id', $candidates->pluck('id')->toArray())
                 ->whereIn('subject_id', $subjects)
-                ->whereIn('candidate_id', $ids)
                 ->get();
 
-            if (count($ids) == count($schedules) / count($subjects))
+            $size = count($candidates);
+            if ($size != 0 && $size == count($schedules) / count($subjects))
                 return back()->with(['success' => false, 'message' => 'Oops! All of the candidates were already scheduled for this test']);
             else {
                 $scheduled_ids = [];
@@ -306,31 +310,40 @@ class TestConfigController extends Controller
                 }
 
                 $scheduled = count($scheduled_ids);
-                $tmp = array_values(array_diff($ids, $scheduled_ids));
-                $ids = $tmp;
+                $tmp = array_values(array_diff($candidates->toArray(), $scheduled_ids));
+                $candidates = $tmp;
             }
 
-            $chunks = array_chunk($ids, 1000);
+            $chunks = array_chunk($candidates, 1000);
 
+            $scs = [];
             $records = [];
+            $exam_type_id = Subject::find($subjects[0])->exam_type_id;
+
             foreach ($chunks as $chunk) {
-                foreach ($chunk as $candidate_id) {
+                foreach ($chunk as $candidate) {
                     foreach ($subjects as $subject_id) {
                         $records[] = [
-                            'candidate_id' => $candidate_id,
+                            'candidate_id' => $candidate['id'],
                             'schedule_id' => $schedule_id,
                             'subject_id' => $subject_id,
                             'enabled' => 1
                         ];
                     }
+                    $scs[] = [
+                        'exam_type_id' => $exam_type_id,
+                        'candidate_id' => $candidate['id'],
+                        'reg_number' => $candidate['matric_number'],
+                    ];
                 }
 
 
                 CandidateStudent::upsert($records, ['candidate_id', 'schedule_id', 'subject_id'], ['candidate_id', 'schedule_id', 'subject_id']);
+                ScheduledCandidate::upsert($scs, ['reg_number', 'candidate_id', 'exam_type_id']);
                 $records = [];
             }
 
-            $success = count($ids);
+            $success = count($candidates);
 
             $this->updateBatches($schedule_id);
 
