@@ -42,7 +42,7 @@
         <div class="card-body p-3">
             <div class="tab-content">
                 <div class="tab-pane" id="single-candidate">
-                    <form method="post" action="{{route('admin.test.config.upload.single')}}">
+                    <form method="post" action="{{route('admin.test.config.upload.list')}}">
                         @csrf
                         <input type="hidden" name="test_config_id" value="{{$config_id}}">
                         <div class="row">

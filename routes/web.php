@@ -55,7 +55,7 @@ Route::name('admin.')->prefix('adm')->group(function () {
             Route::post('/schedules/reschedule', [TestConfigController::class, 'reschedule'])->name('schedules.reschedule');
 
             Route::get('/{config}/upload-candidates/options', [TestConfigController::class, 'uploadOptions'])->name('upload.options');
-            Route::post('/upload-candidates/single', [TestConfigController::class, 'uploadSingle'])->name('upload.single');
+            //  Route::post('/upload-candidates/single', [TestConfigController::class, 'uploadSingle'])->name('upload.single');
             Route::post('/upload-candidates/list', [TestConfigController::class, 'bulkUpload'])->name('upload.list');
 
             Route::get('/{config}/mappings', [TestConfigController::class, 'mappings'])->name('mappings');
