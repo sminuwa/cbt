@@ -1,22 +1,32 @@
 @if(count($questions)>0)
     <form action="" method="post">
         @csrf
-        <div class="row mb-4">
-            <div class="col-12 d-flex justify-content-end">
-                Select all <input style="margin-left: 10px; margin-right: 25px;" id="check-all" type="checkbox">
+
+        @if($preview)
+            <div class="row mb-4">
+                <div class="col-12 d-flex justify-content-end">
+                    Select all <input style="margin-left: 10px; margin-right: 25px;" id="check-all" type="checkbox">
+                </div>
             </div>
-        </div>
+        @endif
         @foreach($questions as $question)
             <div
-                class="card border-{{$question->difficulty_level=='simple'?'info':($question->difficulty_level=='moderate'?'warning':'danger')}}">
+                    class="card border-{{$question->difficulty_level=='simple'?'info':($question->difficulty_level=='moderate'?'warning':'danger')}}">
                 <div
-                    class="card-header @if(!$preview) @endifborder-{{$question->difficulty_level=='simple'?'info':($question->difficulty_level=='moderate'?'warning':'danger')}} @endif">
+                        class="card-header @if(!$preview) @endifborder-{{$question->difficulty_level=='simple'?'info':($question->difficulty_level=='moderate'?'warning':'danger')}} @endif">
                     <div class="row">
                         <div class="col-12">
                             <h4 class="card-title">
                                 @if(!$preview)
                                     ({{$loop->iteration}})
-                                @endif {{ $question->title }}</h4>
+                                @endif
+                                @php
+                                    $title = $question->title;
+                                    $title = str_replace('<p>', '', $title);
+                                    $title = str_replace('</p>', '', $title);
+                                    echo $title;
+                                @endphp
+                            </h4>
                         </div>
                         <div class="mt-4 d-flex justify-content-end">
                             @if(!$preview)
@@ -39,7 +49,14 @@
                             <div class="row pb-3 pt-2">
                                 <ol class="list-group list-group-flush ordered-list">
                                     @foreach($question->answer_options as $option)
-                                        <li class="list-group-item {{$option->correctness=='1'?'list-group-item-success':''}}">{{ $option->question_option }}</li>
+                                        <li class="list-group-item {{$option->correctness=='1'?'list-group-item-success':''}}">
+                                            @php
+                                                $option = $option->question_option;
+                                                $option = str_replace('<p>', '', $option);
+                                                $option = str_replace('</p>', '', $option);
+                                                echo $option;
+                                            @endphp
+                                        </li>
                                     @endforeach
                                 </ol>
                             </div>
@@ -48,9 +65,11 @@
                 @endif
             </div>
         @endforeach
-        <div class="d-flex justify-content-end">
-            <input class="btn btn-sm btn-info text-white" type="submit" value="Preview Selected">
-        </div>
+        @if($preview)
+            <div class="d-flex justify-content-end">
+                <input class="btn btn-sm btn-info text-white" type="submit" value="Preview Selected">
+            </div>
+        @endif
     </form>
 @else
     <div class="card border-info">

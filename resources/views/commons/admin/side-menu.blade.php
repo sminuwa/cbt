@@ -130,24 +130,6 @@
                                 <span>Preview Questions</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="">
-                                <i class="fas fa-table-list"></i>
-                                <span>Change Subject</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="">
-                                <i class="fas fa-list"></i>
-                                <span>Change Question Topic</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="">
-                                <i class="fas fa-repeat"></i>
-                                <span>Change Difficulty Level</span>
-                            </a>
-                        </li>
                     @endif
 
                     <li>
