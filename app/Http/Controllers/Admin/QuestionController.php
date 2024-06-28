@@ -115,7 +115,7 @@ class QuestionController extends Controller
         $preview = $request->preview;
 
         if ($request->difficulty_level != '%')
-            $where[] = ['difficulty_level' => $request->difficulty_level];
+            $where = ['difficulty_level' => $request->difficulty_level];
 
         $questions = QuestionBank::where([
             'subject_id' => $request->subject_id,
