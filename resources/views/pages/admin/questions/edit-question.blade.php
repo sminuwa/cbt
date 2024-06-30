@@ -38,7 +38,7 @@
                                     <option value="">Select Subject</option>
                                     @foreach(\App\Models\Subject::all() as $subject)
                                         <option
-                                                value="{{$subject->id}}" {{ $question->subject_id==$subject->id?'selected':'' }}>{{ $subject->name }}</option>
+                                            value="{{$subject->id}}" {{ $question->subject_id==$subject->id?'selected':'' }}>{{ $subject->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -51,7 +51,7 @@
                                     <option value="">Select Topic</option>
                                     @foreach(\App\Models\Topic::all() as $topic)
                                         <option
-                                                value="{{ $topic->id }}" {{ $topic->id==$question->topic_id?'selected':'' }}>{{ $topic->name }}</option>
+                                            value="{{ $topic->id }}" {{ $topic->id==$question->topic_id?'selected':'' }}>{{ $topic->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -63,13 +63,13 @@
                                         id="difficulty_level" required>
                                     <option value="">Select Difficulty</option>
                                     <option value="simple"
-                                            {{ $question->difficulty_level=='simple'?'selected':'' }}>Simple
+                                        {{ $question->difficulty_level=='simple'?'selected':'' }}>Simple
                                     </option>
                                     <option value="difficult"
-                                            {{ $question->difficulty_level=='difficult'?'selected':'' }}>Difficult
+                                        {{ $question->difficulty_level=='difficult'?'selected':'' }}>Difficult
                                     </option>
                                     <option value="moredifficult"
-                                            {{ $question->difficulty_level=='moredifficult'?'selected':'' }}>Mode
+                                        {{ $question->difficulty_level=='moredifficult'?'selected':'' }}>Mode
                                         Difficult
                                     </option>
                                 </select>
@@ -92,9 +92,10 @@
                         <div class="col-12 col-md-12 col-lg-12 col-xl-12">
                             <div class="form-group">
                                 <label for="title">Question:</label>
-                                <input class="form-control" type="text" name="title" id="title"
-                                       value="{{ $question->title }}"
-                                       placeholder="Question" required>
+                                <textarea class="form-control editor" name="title" id="title" placeholder="Question"
+                                          required>
+                                    {{ $question->title }}
+                                </textarea>
                             </div>
                         </div>
                     </div>
@@ -102,14 +103,16 @@
                     @foreach($question->answer_options as $option)
                         <div class="row mb-4">
                             <label
-                                    class="col-form-label col-lg-1">{{ \App\Helper::indexToChar($loop->index) }}</label>
+                                class="col-form-label col-lg-1">Opt-{{ \App\Helper::indexToChar($loop->index) }}</label>
                             <div class="col-lg-11">
                                 <div class="input-group">
                                         <span class="input-group-text">
                                             <input type="radio" name="correctness"
-                                                   {{ $option->correctness==1?'checked':'' }} value="{{ $option->id }}"></span>
-                                    <input type="text" name="question_option[]" class="form-control"
-                                           value="{{ $option->question_option }}">
+                                                   {{ $option->correctness==1?'checked':'' }} value="{{ $option->id }}">
+                                        </span>
+                                    <textarea class="form-control editor" name="question_option[]" id="" cols="30" rows="10">
+                                        {{ $option->question_option }}
+                                    </textarea>
                                 </div>
                             </div>
                         </div>
@@ -126,11 +129,21 @@
 @endsection
 
 @section('script')
+    <script src="{{ asset('js/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            height: 250,
+            license_key: 'gpl',
+            selector: 'textarea.editor', // Replace this CSS selector to match the placeholder element for TinyMCE
+            plugins: 'code table lists',
+            toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | indent outdent | bullist numlist | code | table'
+        });
+    </script>
     <script>
         $(function () {
             $('#subject_id').on('change', function () {
                 let id = $(this).val();
-                $.get('{{ route('admin.questions.topics',[':id']) }}'.replace(':id', id), function (data) {
+                $.get('{{ route('admin.questions.authoring.topics',[':id']) }}'.replace(':id', id), function (data) {
                     $('#topic_id').html(data)
                 })
             })

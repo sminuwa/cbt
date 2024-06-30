@@ -33,7 +33,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{route('admin.questions.authoring')}}">
+                            <a href="{{route('admin.questions.authoring.index')}}">
                                 <i class="fas fa-question"></i>
                                 <span>Question Authoring</span>
                             </a>
@@ -57,6 +57,7 @@
                             </a>
                         </li>
                     @endif
+
                     @if(Request::is('*test/config*') && !Request::is('*test/config'))
                         @php $config = Session::get('config'); @endphp
                         <li class="{{Request::is('*basics')?'active':''}}">
@@ -71,7 +72,7 @@
                                 <span>Test Dates</span>
                             </a>
                         </li>
-                        <li class="{{Request::is('*schedules')?'active':''}}">
+                        <li class="{{Request::is('*schedules*')?'active':''}}">
                             <a href="{{ route('admin.test.config.schedules',[$config]) }}">
                                 <i class="fas fa-calendar-check"></i>
                                 <span>Test Schedules</span>
@@ -101,13 +102,36 @@
                                 <span>Preview Test Questions</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="">
+                        <li class="{{Request::is('*manage*')?'active':''}}">
+                            <a href="{{ route('admin.test.config.manage.users',[$config]) }}">
                                 <i class="fas fa-users"></i>
                                 <span>Manage Users</span>
                             </a>
                         </li>
                     @endif
+
+                    @if(Request::is('*questions/authoring*') //&& !Request::is('*questions/authoring')
+)
+                        <li class="{{Request::is('*author')?'active':''}}">
+                            <a href="{{ route('admin.questions.authoring.author') }}">
+                                <i class="fas fa-newspaper"></i>
+                                <span>Author Question</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*edit*')?'active':''}}">
+                            <a href="{{ route('admin.questions.authoring.edit.questions') }}">
+                                <i class="fas fa-edit"></i>
+                                <span>Modify Existing Questions</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*preview*')?'active':''}}">
+                            <a href="{{ route('admin.questions.authoring.preview') }}">
+                                <i class="fas fa-display"></i>
+                                <span>Preview Questions</span>
+                            </a>
+                        </li>
+                    @endif
+
                     <li>
                         <a href="{{ route('auth.admin.logout') }}">
                             <i class="fas fa-sign-out-alt"></i>

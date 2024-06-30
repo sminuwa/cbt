@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class CandidateStudent
- * 
+ *
  * @property int $id
  * @property int $schedule_id
  * @property int $candidate_id
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $enabled
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property ScheduledCandidate $scheduled_candidate
  * @property Scheduling $scheduling
  * @property Subject $subject
@@ -29,33 +29,38 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CandidateStudent extends Model
 {
-	protected $table = 'candidate_students';
+    protected $table = 'candidate_students';
 
-	protected $casts = [
-		'schedule_id' => 'int',
-		'candidate_id' => 'int',
-		'subject_id' => 'int',
-		'add_index' => 'int',
-		'enabled' => 'bool'
-	];
+    protected $casts = [
+        'schedule_id' => 'int',
+        'candidate_id' => 'int',
+        'subject_id' => 'int',
+        'add_index' => 'int',
+        'enabled' => 'bool'
+    ];
 
-	protected $fillable = [
-		'add_index',
-		'enabled'
-	];
+    protected $fillable = [
+        'add_index',
+        'enabled'
+    ];
 
-	public function scheduled_candidate()
-	{
-		return $this->belongsTo(ScheduledCandidate::class, 'candidate_id');
-	}
+    public function scheduled_candidate()
+    {
+        return $this->belongsTo(ScheduledCandidate::class, 'candidate_id');
+    }
 
-	public function scheduling()
-	{
-		return $this->belongsTo(Scheduling::class, 'schedule_id');
-	}
+    public function candidate()
+    {
+        return $this->belongsTo(Candidate::class);
+    }
 
-	public function subject()
-	{
-		return $this->belongsTo(Subject::class);
-	}
+    public function scheduling()
+    {
+        return $this->belongsTo(Scheduling::class, 'schedule_id');
+    }
+
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
 }

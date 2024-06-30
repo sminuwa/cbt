@@ -2,17 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\Upload;
 use App\Models\Candidate;
 use App\Models\CandidateStudent;
 use App\Models\ExamsDate;
 use App\Models\FacultyScheduleMapping;
 use App\Models\QuestionBank;
+use App\Models\QuestionPreviewer;
+use App\Models\ScheduledCandidate;
 use App\Models\Scheduling;
 use App\Models\Subject;
+use App\Models\TestCompositor;
 use App\Models\TestConfig;
+use App\Models\TestInvigilator;
 use App\Models\TestQuestion;
 use App\Models\TestSection;
 use App\Models\TestSubject;
+use App\Models\User;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -26,8 +32,6 @@ use Illuminate\Support\Facades\Session;
 
 class TestConfigController extends Controller
 {
-    //
-
     public function __construct()
     {
         $this->middleware('auth:admin');
@@ -131,7 +135,10 @@ class TestConfigController extends Controller
     public function storeSchedule(Request $request): RedirectResponse
     {
         try {
-            $schedule = new Scheduling();
+            if (isset($request->id))
+                $schedule = Scheduling::find($request->id);
+            else
+                $schedule = new Scheduling();
             $schedule->fill($request->all());
             if ($schedule->save())
                 return back()->with(['success' => true, 'message' => 'Test Schedule successfully saved']);
@@ -141,45 +148,223 @@ class TestConfigController extends Controller
         }
     }
 
+    public function deleteSchedule(Scheduling $scheduling)
+    {
+        $candidates = $scheduling->candidate_students()->distinct('candidate_id')->count();
+        if ($candidates > 0)
+            return view('pages.author.test.config.displacement-options', compact('candidates', 'scheduling'));
+        else
+            if ($scheduling->delete()) return back()->with(['success' => true, 'message' => 'Test Schedule successfully deleted']);
+
+        return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+    }
+
+    public function removeAndDeleteSchedule(Scheduling $scheduling)
+    {
+        $config = $scheduling->test_config;
+        $remove = CandidateStudent::where(['schedule_id' => $scheduling->id])->delete();
+        if ($remove) {
+            if ($scheduling->delete())
+                return redirect(route('admin.test.config.schedules', [$config->id]))->with(['success' => true, 'message' => 'Affected Candidate(s) removed and Test Schedule successfully deleted']);
+        }
+
+        return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+    }
+
+    public function otherSchedules(Scheduling $scheduling, $size)
+    {
+        $schedule_id = $scheduling->id;
+        $others = Scheduling::with('venue')
+            ->where(['test_config_id' => $scheduling->test_config_id])
+            ->whereNot('id', $scheduling->id)
+            ->get();
+
+        $candidates = CandidateStudent::select(['schedule_id', 'candidate_id', 'venues.id as venue_id'])
+            ->join('schedulings', 'schedulings.id', '=', 'candidate_students.schedule_id')
+            ->join('venues', 'venues.id', '=', 'schedulings.venue_id')
+            ->where('schedule_id', '!=', $scheduling->id)
+            ->distinct()
+            ->get();
+
+        foreach ($others as $other) {
+            foreach ($candidates as $candidate) {
+                if ($candidate->schedule_id == $other->id && $candidate->venue_id == $other->venue->id)
+                    $other->venue->capacity -= 1;
+            }
+        }
+        $schedules = $others;
+
+        return view('pages.author.test.config.ajax.schedules', compact('schedules', 'size', 'schedule_id'));
+    }
+
+    public function reschedule(Request $request)
+    {
+        try {
+            $candidates = CandidateStudent::where(['schedule_id' => $request->from]);
+            $size = count($candidates->get());
+            if ($candidates->update(['schedule_id' => $request->to])) {
+                $schedule = Scheduling::find($request->from);
+                $config = $schedule->test_config_id;
+
+                if ($schedule->delete())
+                    return [
+                        'success' => true,
+                        'url' => route('admin.test.config.schedules', [$config]),
+                        'message' => $size . ' candidate(s) successfully rescheduled and the old schedule deleted'
+                    ];
+            }
+
+            return [
+                'success' => false,
+                'url' => route('admin.test.config.schedules', [$config]),
+                'message' => 'Oops! Look like something went wrong'
+            ];
+        } catch (Exception $e) {
+            return ['success' => false,
+                'url' => route('admin.test.config.schedules', [$config]),
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
     public function uploadOptions($config_id)
     {
         $schedules = Scheduling::with('venue')->where(['test_config_id' => $config_id])->get();
         return view('pages.author.test.config.upload-options', compact('config_id', 'schedules'));
     }
-
-    public function uploadSingle(Request $request)
+//    public function uploadSingle(Request $request)
+//    {
+//        try {
+//            $schedule_id = $request->schedule_id;
+//            $candidates = Candidate::select(['id', 'matric_number'])->whereIn('matric_number', '873r')->get();
+//            $subjects = TestSubject::where(['test_config_id' => $request->test_config_id])->pluck('subject_id');
+//            $schedules = CandidateStudent::where(['schedule_id' => $schedule_id])
+//                ->whereIn('candidate_id', $candidates->pluck('id')->toArray())
+//                ->whereIn('subject_id', $subjects)
+//                ->get();
+//
+//            if (count($schedules))
+//                return back()->with(['success' => false, 'message' => 'Oops! Candidate(s) with this number: '
+//                    . $request->candidate_number . ' was already scheduled for this test']);
+//
+//            if (count($candidates) == 0)
+//                return back()->with(['success' => false, 'message' => 'Oops! Candidate(s) record(s) not found!']);
+//
+//            $records = [];
+//            $scheduled = [];
+//            $exam_type_id = Subject::find($subjects[0])->exam_type_id;
+//
+//            foreach ($candidates as $candidate) {
+//                foreach ($subjects as $subject_id) {
+//                    $records[] = [
+//                        'candidate_id' => $candidate->id,
+//                        'schedule_id' => $request->schedule_id,
+//                        'subject_id' => $subject_id
+//                    ];
+//                }
+//            }
+//            CandidateStudent::upsert($records, ['candidate_id', 'schedule_id', 'subject_id']);
+//
+//            return $this->updateBatches($schedule_id);
+//        } catch (Exception $e) {
+//            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+//        }
+//    }
+    public function bulkUpload(Request $request)
     {
         try {
-            $candidate_id = Candidate::where(['matric_number' => $request->candidate_number])->first()->id;
-            $subjects = TestSubject::where(['test_config_id' => $request->test_config_id])->pluck('subject_id');
-            $schedule = CandidateStudent::where(['candidate_id' => $candidate_id, 'schedule_id' => $request->schedule_id])
+            $schedule_id = $request->schedule_id;
+            $test_config_id = $request->test_config_id;
+            if (isset($request->file)) {
+                //  $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
+                $file = $request->file;
+                $rows = $this->getRecordFromExcel(Upload::class, $file);
+                array_shift($rows);
+
+                $rows = array_column($rows, 0);
+            } else {
+                $rows = explode(',', $request->candidate_number);
+            }
+
+            $candidates = Candidate::select(['id', 'matric_number'])->whereIn('matric_number', $rows)->get();
+            $numbers = $candidates->pluck('matric_number')->toArray();
+
+            $missing = array_values(array_diff($rows, $numbers));
+
+            $subjects = TestSubject::where(['test_config_id' => $test_config_id])->pluck('subject_id');
+
+            $schedules = CandidateStudent::with('candidate')->where(['schedule_id' => $schedule_id])
+                ->whereIn('candidate_id', $candidates->pluck('id')->toArray())
                 ->whereIn('subject_id', $subjects)
                 ->get();
 
-            if (count($schedule))
-                return back()->with(['success' => false, 'message' => 'Oops! Candidate with this number: '
-                    . $request->candidate_number . ' was already scheduled for this test']);
+            $size = count($candidates);
+            if ($size != 0 && $size == count($schedules) / count($subjects))
+                return back()->with(['success' => false, 'message' => 'Oops! All of the candidates were already scheduled for this test']);
+            else {
+                $scheduled_ids = [];
+                foreach ($schedules as $schedule) {
+                    if ($schedule->subject_id == $subjects[0]) {
+                        $scheduled_ids[] = $schedule->candidate->id;
+                    }
+                }
 
-            $records = [];
-            foreach ($subjects as $subject_id) {
-                $records[] = [
-                    'candidate_id' => $candidate_id,
-                    'schedule_id' => $request->schedule_id,
-                    'subject_id' => $subject_id
-                ];
+                $scheduled = count($scheduled_ids);
+                $tmp = array_values(array_diff($candidates->toArray(), $scheduled_ids));
+                $candidates = $tmp;
             }
 
-            if (CandidateStudent::insert($records))
-                return back()->with(['success' => true, 'message' => 'Candidate successfully scheduled for this test']);
+            $chunks = array_chunk($candidates, 1000);
 
-//            $schedule->candidate_id = $request->candidate_number;
-//            $schedule->schedule_id = $request->schedule_id;
-//            if ($schedule->save())
+            $scs = [];
+            $records = [];
+            $exam_type_id = Subject::find($subjects[0])->exam_type_id;
 
-            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
-        } catch (\Exception $e) {
+            foreach ($chunks as $chunk) {
+                foreach ($chunk as $candidate) {
+                    foreach ($subjects as $subject_id) {
+                        $records[] = [
+                            'candidate_id' => $candidate['id'],
+                            'schedule_id' => $schedule_id,
+                            'subject_id' => $subject_id,
+                            'enabled' => 1
+                        ];
+                    }
+                    $scs[] = [
+                        'exam_type_id' => $exam_type_id,
+                        'candidate_id' => $candidate['id'],
+                        'reg_number' => $candidate['matric_number'],
+                    ];
+                }
+
+
+                CandidateStudent::upsert($records, ['candidate_id', 'schedule_id', 'subject_id'], ['candidate_id', 'schedule_id', 'subject_id']);
+                ScheduledCandidate::upsert($scs, ['reg_number', 'candidate_id', 'exam_type_id']);
+                $records = [];
+            }
+
+            $success = count($candidates);
+
+            $this->updateBatches($schedule_id);
+
+            return view('pages.author.test.config.upload-report', compact('success', 'scheduled', 'missing'));
+        } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
+    }
+
+    private function updateBatches($schedule_id)
+    {
+        $schedule = Scheduling::with('venue')->find($schedule_id);
+        $venueCap = $schedule->venue->capacity;
+        $candidates = $schedule->candidate_students()->distinct('candidate_id')->count();
+        $batches = ceil($candidates / $venueCap);
+
+        $schedule->maximum_batch = $batches;
+        if ($schedule->save())
+            return back()->with(['success' => true, 'message' => 'Candidate(s) successfully scheduled for this test']);
+
+        return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
     }
 
     public function mappings($config_id)
@@ -286,7 +471,7 @@ class TestConfigController extends Controller
             if ($section->save())
                 return back()->with(['success' => true, 'message' => 'Test Section successfully saved']);
             return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -361,7 +546,7 @@ class TestConfigController extends Controller
 
             return view('pages.author.test.config.ajax.questions',
                 ['questions' => $paginator, 'statistics' => $statistics, 'page' => $currentPage, 'pageSize' => $perPage]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $e->getMessage();
         }
     }
@@ -380,7 +565,7 @@ class TestConfigController extends Controller
                 $question->test_section_id = $section_id;
                 $question->save();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -401,4 +586,159 @@ class TestConfigController extends Controller
         return view('pages.author.test.config.composition-preview-questions', compact('testSubject'));
     }
 
+    public function manageUsers(TestConfig $config)
+    {
+        $config_id = $config->id;
+        $compIds = TestCompositor::where('test_config_id', $config_id)
+            ->distinct('user_id')
+            ->pluck('user_id');
+
+        $invIds = TestInvigilator::where('test_config_id', $config_id)
+            ->distinct('user_id')
+            ->pluck('user_id');
+
+        $preIds = QuestionPreviewer::where('test_config_id', $config_id)
+            ->distinct('user_id')
+            ->pluck('user_id');
+
+        $userIds = $compIds->merge($invIds)->unique();
+        $userIds = $userIds->merge($preIds)->unique();
+
+        $users = User::select(['id', 'personnel_no as number', 'display_name as name'])
+            ->whereIn('id', $userIds)
+            ->get();
+
+        $users->load([
+            'compositor_subjects' => function ($query) use ($config_id) {
+                $query->select(['subjects.subject_code', 'subjects.name'])
+                    ->where('test_compositors.test_config_id', $config_id);
+            },
+            'previewer_subjects' => function ($query) use ($config_id) {
+                $query->select(['subjects.subject_code', 'subjects.name'])
+                    ->where('question_previewers.test_config_id', $config_id);
+            },
+            'test_invigilators'
+        ]);
+
+        return view('pages.author.test.config.manage-users', compact('config', 'users'));
+    }
+
+    public function searchCompositor(Request $request)
+    {
+        $user = User::where(['personnel_no' => $request->user_number])->first();
+        $subjects = TestSubject::with('subject')
+            ->select(['subject_id'])
+            ->where(['test_config_id' => $request->config_id])
+            ->get();
+
+        return view('pages.author.test.config.ajax.compositor', compact('user', 'subjects'));
+    }
+
+    public function addCompositor(Request $request)
+    {
+        try {
+            $compositors = [];
+            $ids = $request->subjects;
+            $user_id = $request->user_id;
+            $test_config = $request->test_config_id;
+
+            foreach ($ids as $subject_id) {
+                $compositors[] = [
+                    'user_id' => $user_id,
+                    'test_config_id' => $test_config,
+                    'subject_id' => $subject_id
+                ];
+            }
+
+            if (TestCompositor::upsert($compositors, []))
+                return back()->with(['success' => true, 'message' => 'User successfully added as a compositor for the selected subject(s)']);
+
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function removeCompositor($config, $user_id)
+    {
+        try {
+            TestCompositor::where(['test_config_id' => $config, 'user_id' => $user_id])->delete();
+            return back()->with(['success' => true, 'message' => 'User successfully removed as a compositor for the selected subject(s)']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function addInvigilator(Request $request)
+    {
+        try {
+            $user = User::where('personnel_no', $request->staff)->first();
+            if (isset($user)) {
+                $user_id = $user->id;
+                $scheduling_id = $request->scheduling_id;
+                $test_config_id = $request->test_config_id;
+                $invigilator = TestInvigilator::where(['user_id' => $user_id, 'scheduling_id' => $scheduling_id, 'test_config_id' => $test_config_id])->first();
+                if (isset($invigilator))
+                    return back()->with(['success' => true, 'message' => 'User was already added as an invigilator for this test schedule)']);
+
+                $invigilator[] = [
+                    'user_id' => $user_id,
+                    'scheduling_id' => $scheduling_id,
+                    'test_config_id' => $test_config_id,
+                    'pass_key' => $request->pass_key
+                ];
+                if (TestInvigilator::upsert($invigilator, []))
+                    return back()->with(['success' => true, 'message' => 'User successfully added as an invigilator for this test schedule)']);
+
+            }
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function removeInvigilator($config_id, $user_id)
+    {
+        try {
+            TestInvigilator::where(['test_config_id' => $config_id, 'user_id' => $user_id])->delete();
+            return back()->with(['success' => true, 'message' => 'User successfully removed as an invigilator for this test']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function addPreviewer(Request $request)
+    {
+        try {
+            $previewers = [];
+            $ids = $request->subjects;
+            $user_id = $request->user_id;
+            $test_config = $request->test_config_id;
+
+            foreach ($ids as $subject_id) {
+                $previewers[] = [
+                    'user_id' => $user_id,
+                    'test_config_id' => $test_config,
+                    'subject_id' => $subject_id
+                ];
+            }
+
+            if (QuestionPreviewer::upsert($previewers, []))
+                return back()->with(['success' => true, 'message' => 'User successfully added as a questions previewer for the selected subject(s)']);
+
+            return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function removePreviewer($config, $user_id)
+    {
+        try {
+            QuestionPreviewer::where(['test_config_id' => $config, 'user_id' => $user_id])->delete();
+            return back()->with(['success' => true, 'message' => 'User successfully removed as a questions previewer for the selected schedule(s)']);
+        } catch (Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 }
