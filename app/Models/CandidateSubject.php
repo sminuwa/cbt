@@ -27,13 +27,13 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models
  */
-class CandidateStudent extends Model
+class CandidateSubject extends Model
 {
-    protected $table = 'candidate_students';
+    protected $table = 'candidate_subjects';
 
     protected $casts = [
         'schedule_id' => 'int',
-        'candidate_id' => 'int',
+        'scheduled_candidate_id' => 'int',
         'subject_id' => 'int',
         'add_index' => 'int',
         'enabled' => 'bool'

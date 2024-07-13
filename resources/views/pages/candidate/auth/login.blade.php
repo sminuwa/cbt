@@ -1,3 +1,4 @@
+@php use App\Models\TestConfig; @endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,26 +43,28 @@
                 <div>
                     <div><a class="logo" href="#"><img class="img-fluid for-dark" src="{{ asset('candidate/assets/images/logo/logo.png') }}" alt="looginpage" width="100"><img class="img-fluid for-light" src="{{ asset('candidate/assets/images/logo/logo_dark.png') }}" alt="looginpage" width="100"></a></div>
                     <div class="login-main">
-                        <form class="theme-form" action="{{ route('candidate.test.instruction') }}">
+                        <form class="theme-form" action="{{ route('candidate.auth.login') }}" method="POST">
                             <h4>Sign in </h4>
                             <p>Enter your Exam No & password to login</p>
+{{--                            @csrf--}}
+                            @include('components.alert')
                             <div class="form-group">
                                 <label class="col-form-label">Exam Type</label>
-                                <select class="form-control" type="text" required="" placeholder="Exam No.">
-                                    <option>-- Select Exam -- </option>
-                                    <option>JCHEW National Exam</option>
-                                    <option>CHEW National Exam</option>
-                                    <option>CHO National Exam</option>
+                                <select name="test_id" class="form-control" type="text" required>
+                                    <option value="">-- Select Exam -- </option>
+                                    @foreach($exams as $exam)
+                                        <option value="{{ $exam->id }}">{{ $exam->code }} - {{ $exam->type }} - {{ $exam->session }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label">Exam No.</label>
-                                <input class="form-control" type="text" required="" placeholder="Exam No.">
+                                <input class="form-control" type="text" name="username" required="" placeholder="Exam No.">
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label">Password </label>
                                 <div class="form-input position-relative">
-                                    <input class="form-control" type="password" name="login[password]" required="" placeholder="*********">
+                                    <input class="form-control" type="password" name="password" required="" placeholder="*********">
                                     <div class="show-hide"> <span class="show"></span></div>
                                 </div>
                             </div>

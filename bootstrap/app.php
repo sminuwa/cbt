@@ -23,7 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
 //        if(!Auth::guard('admin')->check())
 //            $middleware->redirectGuestsTo('auth/adm/login');
 //        else
-            $middleware->redirectGuestsTo('auth/login');
+        $middleware->redirectGuestsTo('auth/login');
+        $middleware->validateCsrfTokens(except: [
+            'stripe/*',
+            'candidate/auth/login',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

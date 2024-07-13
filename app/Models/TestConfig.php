@@ -9,6 +9,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\JoinClause;
 
 /**
  * Class TestConfig
@@ -154,4 +155,24 @@ class TestConfig extends Model
     {
         return $this->hasMany(TimeControl::class, 'test_config_id');
     }
+
+    public function scopeExam($query){
+        return $query->join('test_codes', function(JoinClause $join_code){
+            return $join_code->on('test_configs.test_code_id', '=', 'test_codes.id');
+        })->join('schedulings', function(JoinClause $join_scheduling){
+            return $join_scheduling->on('test_configs.id', '=', 'schedulings.test_config_id')
+                ->whereDate('schedulings.date',date('Y-m-d'))
+                ->whereTime('schedulings.daily_start_time', '<=', date('H:i:s'))
+                ->whereTime('schedulings.daily_end_time', '>=', date('H:i:s'));
+        })->join('test_types', function(JoinClause $join_type){
+            return $join_type->on('test_configs.test_type_id', '=', 'test_types.id');
+        })->where('test_configs.status', 1)
+            ->select(
+            'test_configs.*',
+            'test_codes.name as code',
+            'test_types.name as type',
+            'schedulings.id as schedule_id',
+        );
+    }
+
 }

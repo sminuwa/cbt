@@ -10,6 +10,7 @@ class TestController extends Controller
     //
 
     public function question(){
+
         return view('pages.candidate.test.question');
     }
 
