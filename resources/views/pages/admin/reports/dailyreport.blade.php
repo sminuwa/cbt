@@ -25,7 +25,18 @@
         <x-head.tinymce-config/>
         <div class="row patient-graph-col">
             <div class="col-12">
-                <h4 class="mb-5 mt-5">Daily Report</h4>
+                <div class="card border-info">
+                    <div class="card-header">
+                        <div class="row">
+                            <div>
+                                <h4 class="card-title d-flex justify-content-between">
+                                    <span>Daily Report</span>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0" style="padding: 1px !important;"></div>
+                </div>
                 <form id="report-form" method="post">
                     @csrf
                     <div class="row pb-3 pt-2">
