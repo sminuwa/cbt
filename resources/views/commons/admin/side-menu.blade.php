@@ -45,7 +45,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="">
+                            <a href="{{route('admin.reports.index')}}">
                                 <i class="fas fa-bar-chart"></i>
                                 <span>Reports</span>
                             </a>
@@ -128,6 +128,21 @@
                             <a href="{{ route('admin.questions.authoring.preview') }}">
                                 <i class="fas fa-display"></i>
                                 <span>Preview Questions</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if(Request::is('*report*'))
+                        <li class="{{Request::is('*daily*')?'active':''}}">
+                            <a href="{{route('admin.reports.daily.index')}}">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Daily Report</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*by-test-code*')?'active':''}}">
+                            <a href="{{route('admin.reports.testcode.index')}}">
+                                <i class="fas fa-code"></i>
+                                <span>By Test Code</span>
                             </a>
                         </li>
                     @endif

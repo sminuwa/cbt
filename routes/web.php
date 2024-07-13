@@ -108,15 +108,18 @@ Route::name('admin.')->prefix('adm')->group(function () {
         });
     });
 
-    Route::name('reports.')->prefix('reports')->group(function () {
-        Route::name('testcode.')->prefix('by-test-code')->group(function () {
-            Route::get('/', [ReportController::class, 'index'])->name('index');
-            Route::post('generate', [ReportController::class, 'generateByCode'])->name('generate');
-        });
+    Route::controller(ReportController::class)->group(function () {
+        Route::name('reports.')->prefix('reports')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::name('testcode.')->prefix('by-test-code')->group(function () {
+                Route::get('/', 'testCode')->name('index');
+                Route::post('generate', 'generateByCode')->name('generate');
+            });
 
-        Route::name('daily.')->prefix('daily')->group(function () {
-            Route::get('/', [ReportController::class, 'daily'])->name('index');
-            Route::post('generate', [ReportController::class, 'generateDaily'])->name('generate');
+            Route::name('daily.')->prefix('daily')->group(function () {
+                Route::get('/', 'daily')->name('index');
+                Route::post('generate', 'generateDaily')->name('generate');
+            });
         });
     });
 
