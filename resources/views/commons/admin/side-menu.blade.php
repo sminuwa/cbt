@@ -142,7 +142,7 @@
                         <li class="{{Request::is('*by-test-code*')?'active':''}}">
                             <a href="{{route('admin.reports.testcode.index')}}">
                                 <i class="fas fa-code"></i>
-                                <span>By Test Code</span>
+                                <span>By Cadre/Programme</span>
                             </a>
                         </li>
                     @endif

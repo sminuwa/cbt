@@ -32,9 +32,9 @@
                     <div class="row pb-3 pt-2">
                         <div class="col-12 col-md-6 col-lg-4 col-xl-4">
                             <div class="form-group">
-                                <label for="subject_id">Subject:</label>
+                                <label for="subject_id">Paper:</label>
                                 <select class="form-control form-select" name="subject_id" id="subject_id" required>
-                                    <option value="">Select Subject</option>
+                                    <option value="">Select Paper</option>
                                     @foreach(Subject::all() as $subject)
                                         <option value="{{$subject->id}}">{{ $subject->name }}</option>
                                     @endforeach
@@ -43,16 +43,15 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-4 col-xl-4">
                             <div class="form-group">
-                                <label for="topic_id">Topic:</label>
-                                <select class="form-control form-select" name="topic_id" id="topic_id"
-                                        required>
-                                    <option value="">Select Topic</option>
+                                <label for="topic_id">Subject:</label>
+                                <select class="form-control form-select" name="topic_id" id="topic_id" required>
+                                    <option value="">Select Subject</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-12 col-md-6 col-lg-4 col-xl-4">
                             <div class="form-group">
-                                <label for="difficulty_level">Topic:</label>
+                                <label for="difficulty_level">Difficulty:</label>
                                 <select class="form-control form-select" name="difficulty_level" id="difficulty_level"
                                         required>
                                     <option value="">Select Difficulty Level</option>

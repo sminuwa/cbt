@@ -13,7 +13,7 @@
                         <div class="row">
                             <div>
                                 <h4 class="card-title d-flex justify-content-between">
-                                    <span>Report By Test Code</span>
+                                    <span>Report By Cadre/Programme</span>
                                 </h4>
                             </div>
                         </div>
@@ -36,19 +36,19 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div class="form-group">
-                                <label for="semester">Test Semester:</label>
+                                <label for="semester">Test Period:</label>
                                 <select class="form-control form-select" name="semester" id="semester" required>
-                                    <option value="">Select Test Semester</option>
-                                    <option value="1">September Main Exam</option>
-                                    <option value="2">December Resit</option>
+                                    <option value="">Select Test Period</option>
+                                    <option value="1">April</option>
+                                    <option value="2">September</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div class="form-group">
-                                <label for="test_code_id">Test Code:</label>
+                                <label for="test_code_id">Cadre/Programme:</label>
                                 <select class="form-control form-select" name="test_code_id" id="test_code_id" required>
-                                    <option value="">Select Test Code</option>
+                                    <option value="">Select</option>
                                     @foreach(TestCode::all() as $code)
                                         <option value="{{$code->id}}">{{ $code->name }}</option>
                                     @endforeach
@@ -57,9 +57,9 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div class="form-group">
-                                <label for="test_type_id">Test Type:</label>
+                                <label for="test_type_id">Type:</label>
                                 <select class="form-control form-select" name="test_type_id" id="test_type_id" required>
-                                    <option value="">Select Test Type</option>
+                                    <option value="">Select Type</option>
                                     @foreach(TestType::all() as $type)
                                         <option value="{{$type->id}}">{{ $type->name }}</option>
                                     @endforeach
