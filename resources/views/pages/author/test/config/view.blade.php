@@ -35,7 +35,7 @@
                         <li><a href="" class="mb-2">Upload Candidate List</a></li>
                         <li>
                             <a href="{{ route('admin.test.config.subjects',[$config->id]) }}" class="mb-2">
-                                Test Subjects
+                                Test Papers
                             </a>
                         </li>
                         <li>

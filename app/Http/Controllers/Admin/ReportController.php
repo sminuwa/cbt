@@ -23,7 +23,7 @@ class ReportController extends Controller
 
     public function daily()
     {
-        return view('pages.admin.reports.dailyreport');
+        return view('pages.admin.reports.test-reports');
     }
 
     public function generateByCode(Request $request)

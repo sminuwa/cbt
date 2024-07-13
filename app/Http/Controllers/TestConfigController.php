@@ -34,7 +34,7 @@ class TestConfigController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin');
+        //
     }
 
     public function index(Request $request): Factory|\Illuminate\Foundation\Application|View|Application

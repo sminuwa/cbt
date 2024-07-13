@@ -57,7 +57,7 @@
                             </div>
                             <div id="centre-div" class="col-12 col-md-12 col-lg-3 col-xl-3" style="display: none">
                                 <div class="form-group">
-                                    <label for="availability">Centre:</label>
+                                    <label for="availability">Institution/Centre:</label>
                                     @php
                                         $centres=Centre::all();
                                     @endphp
