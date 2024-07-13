@@ -11,7 +11,6 @@ use App\Http\Controllers\TopicController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-
     return view('pages.admin.dashboard.index');
 });
 
@@ -120,6 +119,7 @@ Route::name('admin.')->prefix('adm')->group(function () {
                 Route::get('/', 'daily')->name('index');
                 Route::post('generate', 'generateDaily')->name('generate');
             });
+
         });
     });
 
@@ -129,4 +129,5 @@ Route::name('admin.')->prefix('adm')->group(function () {
 
         Route::get('/{venue}/batches/capacity', [MiscController::class, 'batchCapacity'])->name('batches.capacity');
     });
+
 });
