@@ -1,3 +1,4 @@
+@php use App\Models\TestCode;use App\Models\TestType; @endphp
 @extends('layouts.app')
 @section('css')
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatables/datatables.min.css') }}">
@@ -7,24 +8,60 @@
         <x-head.tinymce-config/>
         <div class="row patient-graph-col">
             <div class="col-12">
-                <h4 class="mb-5 mt-5">Report By Test Code</h4>
+                <div class="card border-info">
+                    <div class="card-header">
+                        <div class="row">
+                            <div>
+                                <h4 class="card-title d-flex justify-content-between">
+                                    <span>Report By Test Code</span>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0" style="padding: 1px !important;"></div>
+                </div>
                 <form id="preview-form" method="post">
                     @csrf
                     <div class="row pb-3 pt-2">
-                        <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div class="form-group">
                                 <label for="year">Year:</label>
-                                <input id="year" class="form-control" type="date" name="year" placeholder="Year of Exam"
-                                       required>
+                                <select class="form-control form-select" name="year" id="year" required>
+                                    <option value="">Select Year</option>
+                                    @foreach($years as $year)
+                                        <option value="{{$year}}">{{ $year }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div class="form-group">
-                                <label for="subject_id">Test Code:</label>
-                                <select class="form-control form-select" name="subject_id" id="subject_id" required>
+                                <label for="semester">Test Semester:</label>
+                                <select class="form-control form-select" name="semester" id="semester" required>
+                                    <option value="">Select Test Semester</option>
+                                    <option value="1">September Main Exam</option>
+                                    <option value="2">December Resit</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
+                            <div class="form-group">
+                                <label for="test_code_id">Test Code:</label>
+                                <select class="form-control form-select" name="test_code_id" id="test_code_id" required>
                                     <option value="">Select Test Code</option>
-                                    @foreach(\App\Models\TestCode::all() as $code)
+                                    @foreach(TestCode::all() as $code)
                                         <option value="{{$code->id}}">{{ $code->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
+                            <div class="form-group">
+                                <label for="test_type_id">Test Type:</label>
+                                <select class="form-control form-select" name="test_type_id" id="test_type_id" required>
+                                    <option value="">Select Test Type</option>
+                                    @foreach(TestType::all() as $type)
+                                        <option value="{{$type->id}}">{{ $type->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -54,14 +91,15 @@
             $('#preview-form').on('submit', function (e) {
                 e.preventDefault()
                 $.post('{{ route('admin.reports.testcode.generate') }}', $(this).serialize(), function (response) {
-                    $('#questions-div').html(response)
-                    jQuery('#report').DataTable({
-                        layout: {
-                            topStart: {
-                                buttons: ['csv', 'excel', 'pdf']
-                            }
-                        }
-                    })
+                    console.log(response)
+                    // $('#questions-div').html(response)
+                    // jQuery('#report').DataTable({
+                    //     layout: {
+                    //         topStart: {
+                    //             buttons: ['csv', 'excel', 'pdf']
+                    //         }
+                    //     }
+                    // })
                 })
             })
         })
