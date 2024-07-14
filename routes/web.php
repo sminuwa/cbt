@@ -117,6 +117,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
 
             Route::name('summary.')->prefix('summary')->group(function () {
                 Route::get('/report', 'reportSummary')->name('reports');
+                Route::post('/report/generate', 'generateReport')->name('generate.report');
                 Route::get('/question', 'questionSummary')->name('question');
                 Route::get('/presentation', 'presentationSummary')->name('presentation');
             });
@@ -133,6 +134,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
         Route::get('/{scheduling}/faculty/mappings', [MiscController::class, 'facultyMappings'])->name('faculty.mappings');
 
         Route::get('/{venue}/batches/capacity', [MiscController::class, 'batchCapacity'])->name('batches.capacity');
+        Route::get('test/config/{year}/{type}/{code}', [MiscController::class, 'testConfig'])->name('test.config');
     });
 
 });
