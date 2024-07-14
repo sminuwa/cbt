@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ExamType;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 
 class ExamTypeController extends Controller
@@ -18,21 +19,31 @@ class ExamTypeController extends Controller
         return view('pages.toolbox.candidate_type', compact('candidateTypes'));
     }
 
-    public function create()
-    {
-        return view('candidate_types.create');
-    }
 
     public function store(Request $request)
     {
         $request->validate([
-            'candidatetypename' => 'required|string|max:255',
+            'etype' => 'required|string|max:255',
         ]);
 
-        ExamType::create([
-            'name' => $request->input('candidatetypename'),
-        ]);
+        try {
+            if (isset($request->id))
+                $examtype = ExamType::find($request->id);
+            else
+                $examtype = new ExamType();
+            $examtype->name = $request->etype;
+            if ($examtype->save())
+                return back()->with(['success' => 'Exam Type saved successfully.']);
 
-        return redirect()->route('candidateTypes.index')->with('success', 'Saved successfully');
+            return back()->with(['error' => 'Oops! Looks like something went wrong.']);
+        } catch (Exception $e) {
+            return back()->with(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function destroy(ExamType $examType)
+    {
+        $examType->delete();
+        return response()->json(['success' => 'Exam Type deleted successfully.']);
     }
 }

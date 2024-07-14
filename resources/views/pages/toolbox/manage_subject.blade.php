@@ -23,40 +23,46 @@
                 <div class="row">
                     <div>
                         <h4 class="card-title d-flex justify-content-between">
-                            <span>Manage Exam Type</span>
+                            <span>Manage Subjects</span>
                         </h4>
                     </div>
                 </div>
             </div>
             <div class="card-body pt-4">
-                <a style="width: 18%" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" href="#add_new_examtype"><i
-                        class="fa fa-plus"></i> New Exam Type</a>
+                <a style="width: 18%" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" href="#add_new_subject"><i
+                        class="fa fa-plus"></i> New subject</a>
             </div>
 
             <table id="table" class="table table-bordered table-striped center">
                 <thead>
                 <tr>
                     <th style="width: 5%">#</th>
+                    <th>Exam Type</th>
+                    <th>Subject Code</th>
                     <th>Name</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 @php $index=1 @endphp
-                @foreach($candidateTypes as $index => $candidateType)
+                @foreach($subjects as $index => $subject)
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td>{{ $candidateType->name }}</td>
+                        <td>{{ $subject->exam_type->name }}</td>
+                        <td>{{ $subject->subject_code }}</td>
+                        <td>{{ $subject->name }}</td>
                         <td>
                             <a class="btn btn-sm btn-primary edit"
                                data-bs-toggle="modal"
-                               href="#add_new_examtype"
-                               data-id="{{$candidateType->id}}"
-                               data-name="{{$candidateType->name}}">
+                               href="#add_new_subject"
+                               data-id="{{$subject->id}}"
+                               data-name="{{$subject->name}}"
+                               data-exam_type_id="{{$subject->exam_type_id}}"
+                               data-subject_code="{{$subject->subject_code}}">
                                 <i class="fa fa-edit"> Edit</i>
                             </a>
                             <a class="btn btn-sm btn-danger delete" data-bs-toggle="modal"
-                               href="#delete_etype" data-id="{{$candidateType->id}}"><i class="fa fa-trash"></i>
+                               href="#delete_center" data-id="{{$subject->id}}"><i class="fa fa-trash"></i>
                                 Delete</a>
                         </td>
                     </tr>
@@ -71,27 +77,44 @@
 
 @section('script')
 
-    <div class="modal fade custom-modal" id="add_new_examtype">
+    <div class="modal fade custom-modal" id="add_new_subject">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add/Edit Exam Type</h5>
+                    <h5 class="modal-title">Add/Edit Subject</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
-                <form action="{{route('toolbox.candidate-types.store')}}" method="post">
+                <form action="{{route('toolbox.subject.store')}}" method="post">
                     @csrf
-                    <input type="hidden" id="etype_id" name="id"/>
+                    <input type="hidden" id="subject_id" name="id"/>
                     <div class="modal-body">
                         <div class="hours-info">
                             <div class="row hours-cont">
                                 <div class="col-12 col-md-12">
                                     <div class="row">
-
                                         <div class="col-12 col-md-6">
                                             <div class="mb-6">
                                                 <label for="etype" class="mb-6">Exam Type</label>
-                                                <input type="text" id="etype" name="etype" class="form-control">
+                                                <select name="etype" id="etype" class="form-control">
+                                                    <option value="">--Select Exam Type--</option>
+                                                    @foreach($examsTypes as $examsType)
+                                                        <option value="{{$examsType->id}}">{{$examsType->name}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <div class="mb-6">
+                                                <label for="scode" class="mb-6">Subject Code</label>
+                                                <input type="text" id="scode" name="scode" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <div class="mb-6">
+                                                <label for="sname" class="mb-6">Subject Title</label>
+                                                <input type="text" id="sname" name="sname"
+                                                       class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -107,11 +130,11 @@
         </div>
     </div>
 
-    <div class="modal fade custom-modal" id="delete_etype">
+    <div class="modal fade custom-modal" id="delete_center">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Delete Exam Type</h5>
+                    <h5 class="modal-title">Delete Subject</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -119,6 +142,7 @@
                     <input type="hidden" name="id" id="id">
                 </div>
                 <div class="modal-footer">
+                    {{--                    <button type="button" class="btn btn-sm btn-secondary submit-btn text-light" data-dismiss="modal">Cancel</button>--}}
                     <button type="button" id="btnDelete" class="btn btn-sm btn-danger submit-btn text-light"><i class="fa fa-trash-o"></i>
                         Delete
                     </button>
@@ -134,15 +158,19 @@
             $('#addEdit').modal('hide');
 
             $(document).on('click', '.add', function () {
-                $('#etype').val($(this).data('name'))
+                $('#etype').val('')
+                $('#sname').val('')
+                $('#scode').val('')
                 $('#form').attr('method', 'post')
-                $('#form').attr('action', '{{route('toolbox.candidate-types.store')}}')
+                $('#form').attr('action', '{{route('toolbox.subject.store')}}')
             })
+
             $(document).on('click', '.edit', function () {
                 let _id = $(this).data('id')
 
-                $('#etype_id').val(_id)
-                $('#etype').val($(this).data('name'))
+                $('#subject_id').val(_id)
+                $('#etype').val($(this).data('exam_type_id'))
+                $('#sname').val($(this).data('name'))
                 $('#scode').val($(this).data('subject_code'))
             })
 
@@ -153,7 +181,7 @@
             $('#btnDelete').on('click', function () {
                 let id = $(".modal-body #id").val()
                 console.log(id)
-                $.get('{{route('toolbox.candidate-types.delete',[':id'])}}'.replace(':id', id),
+                $.get('{{route('toolbox.subject.delete',[':id'])}}'.replace(':id', id),
                     function (response) {
                         console.log(response)
                         $('#delete').modal('hide')

@@ -177,7 +177,7 @@
                             </a>
                         </li>
                         <li class="{{Request::is('*subjects')?'active':''}}">
-                            <a href="#">
+                            <a href="{{route('toolbox.subject.home')}}">
                                 <span>Manage Subject</span>
                             </a>
                         </li>
@@ -187,14 +187,14 @@
                             </a>
                         </li>
                         <li class="{{Request::is('*candidates')?'active':''}}">
-                            <a href="#">
+                            <a href="{{route('toolbox.candidate_upload.upload.candidate')}}">
                                 <span>Manage Candidates</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*candidate_upload')?'active':''}}">
                             <a href="#">
                                 <i class="fas fa-upload"></i>
-                                <span>Upload Candidate</span>
+                                <span>Upload Candidate Image(s)</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*invigilator_toolkit*')?'active':''}}">
