@@ -39,6 +39,7 @@ class TestSubject extends Model
 	];
 
 	protected $fillable = [
+        'id',
 		'title',
 		'instruction',
 		'total_mark'

@@ -32,7 +32,7 @@ class Venue extends Model
 {
     protected $table = 'venues';
 
-    protected $casts = [
+    protected $casts = ['id',
         'centre_id' => 'int',
         'host_id' => 'int',
         'capacity' => 'int'

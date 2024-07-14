@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class QuestionBank
- * 
+ *
  * @property int $id
  * @property string $title
  * @property string|null $difficulty_level
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $topic_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Subject|null $subject
  * @property Collection|AnswerOption[] $answer_options
  * @property Collection|TestQuestion[] $test_questions
@@ -43,6 +43,7 @@ class QuestionBank extends Model
 	];
 
 	protected $fillable = [
+        'id',
 		'title',
 		'difficulty_level',
 		'questiontime',

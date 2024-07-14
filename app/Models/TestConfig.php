@@ -58,7 +58,7 @@ class TestConfig extends Model
 {
     protected $table = 'test_configs';
 
-    protected $casts = [
+    protected $casts = ['id',
         'total_mark' => 'float',
         'test_code_id' => 'int',
         'test_type_id' => 'int',

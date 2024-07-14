@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 class TestController extends Controller
 {
     //
-
     public function question(){
         //logic to get questions from question
         $presentation_records = $err = $errors = [];
@@ -57,7 +56,13 @@ class TestController extends Controller
         if(!empty($errors)) {
             return back()->with('error',implode(', ',$errors).'.');
         }
-        return view('pages.candidate.test.question');
+
+        $test_questions = Presentation::selectRaw("
+            question_bank_id,
+            (SELECT question_bank_id FROM scores where scores.question_bank_id = question_bank_id limit 1) as has_score
+            ")->distinct()->get();
+
+        return view('pages.candidate.test.question', compact('test_questions'));
     }
 
 }
