@@ -171,7 +171,8 @@ $remaining_seconds = session('remaining_seconds');
         <!-- Page Sidebar Ends-->
         <div class="page-body">
 {{--            @yield('content')--}}
-            @json($test)
+            @json($test_questions)
+{{--            @json($scheduled_candidate)--}}
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-4 col-xl-4 ">
@@ -193,9 +194,9 @@ $remaining_seconds = session('remaining_seconds');
                                     <h5>Duration: {{$test->duration ?? 0}} mins</h5>
                                     <span>Questions navigation</span>
                                     <div class="btn-group btn-group-square">
-                                        @for($i = 1; $i<=70; $i++)
-                                            <a class="btn border-none btn-{{ $i > 30 ? 'outline-':'' }}primary btn-sm btn-question {{ $i <30 ? 'disabled':'' }}"  href="javascript:;">
-                                                {!!  $i < 30 ? $i:$i  !!}
+                                        @for($i = 1; $i<=50; $i++)
+                                            <a class="btn border-none btn-{{ $i > 10 ? 'outline-':'' }}primary btn-sm btn-question {{ $i <30 ? 'disabled':'' }}"  href="javascript:;">
+                                                {!!  $i < 10 ? $i:$i  !!}
                                             </a>
                                         @endfor
                                     </div>
@@ -208,7 +209,12 @@ $remaining_seconds = session('remaining_seconds');
                         <div class="card">
                             <div class="card-header border-l-warning border-3">
                                 <h4 class="card-title">
-                                    Subject :: {{ $test->test_code->name }} (Paper I)
+                                    Programme Code :: {{ $test->test_code->name }}
+                                    @foreach($candidate_subjects as $subject)
+                                        (
+                                        <a href="" class="text-primary">{{ $subject->name }}</a>
+                                        ) @if(!$loop->last) | @endif
+                                    @endforeach
                                 </h4>
                             </div>
                             <div class="card-body">
