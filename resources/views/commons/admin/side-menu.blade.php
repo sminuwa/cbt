@@ -1,5 +1,5 @@
 @php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
-        <!-- Profile Sidebar -->
+    <!-- Profile Sidebar -->
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
         <div class="widget-profile pro-widget-content">
@@ -87,7 +87,7 @@
                         <li class="{{Request::is('*subjects*')?'active':''}}">
                             <a href="{{ route('admin.test.config.subjects',[$config]) }}">
                                 <i class="fas fa-list"></i>
-                                <span>Test Subjects</span>
+                                <span>Test Papers</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*composition*')?'active':''}}">
@@ -134,15 +134,33 @@
 
                     @if(Request::is('*report*'))
                         <li class="{{Request::is('*daily*')?'active':''}}">
-                            <a href="{{route('admin.reports.daily.index')}}">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span>Daily Report</span>
+                            <a href="{{route('admin.reports.test.index')}}">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Test Reports</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*daily*')?'active':''}}">
+                            <a href="{{route('admin.reports.summary.reports')}}">
+                                <i class="fas fa-chart-column"></i>
+                                <span>Report Summary</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*daily*')?'active':''}}">
+                            <a href="">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Question Summary</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*by-test-code*')?'active':''}}">
-                            <a href="{{route('admin.reports.testcode.index')}}">
-                                <i class="fas fa-code"></i>
-                                <span>By Cadre/Programme</span>
+                            <a href="">
+                                <i class="fas fa-display"></i>
+                                <span>Presentation Summary</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*by-test-code*')?'active':''}}">
+                            <a href="">
+                                <i class="fas fa-users"></i>
+                                <span>Active Candidates</span>
                             </a>
                         </li>
                     @endif

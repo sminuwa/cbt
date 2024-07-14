@@ -30,7 +30,7 @@
                         <div class="row">
                             <div>
                                 <h4 class="card-title d-flex justify-content-between">
-                                    <span>Daily Report</span>
+                                    <span>Test Reports</span>
                                 </h4>
                             </div>
                         </div>
@@ -64,10 +64,10 @@
         $(function () {
             $('#report-form').on('submit', function (e) {
                 e.preventDefault()
-                $.post('{{ route('admin.reports.daily.generate') }}', $(this).serialize(), function (response) {
-                    console.log(response)
-                    // $('#report-preview-div').html(response)
-                })
+                {{--$.post('{{ route('admin.reports.daily.generate') }}', $(this).serialize(), function (response) {--}}
+                {{--    console.log(response)--}}
+                {{--    // $('#report-preview-div').html(response)--}}
+                {{--})--}}
             })
         })
     </script>

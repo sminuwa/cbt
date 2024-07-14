@@ -15,6 +15,17 @@ class ReportController extends Controller
         return view('pages.admin.reports.index');
     }
 
+    public function testReports()
+    {
+        return view('pages.admin.reports.test-reports');
+    }
+
+    public function reportSummary()
+    {
+        $years = TestConfig::select('session')->groupBy('session')->orderBy('session', 'desc')->get()->pluck('session');
+        return view('pages.admin.reports.report-summary', compact('years'));
+    }
+
     public function testCode()
     {
         $years = TestConfig::select('session')->groupBy('session')->orderBy('session', 'desc')->get()->pluck('session');

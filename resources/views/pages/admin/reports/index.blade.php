@@ -14,8 +14,11 @@
             </div>
         </div>
         <div class="card-body pt-4">
-            <a class="btn btn-info btn-sm text-white" href="">Daily Reports</a>
-            <a class="btn btn-info btn-sm text-white" href="">Report By Cadre/Programme</a>
+            <a style="width: 18%" class="btn btn-outline-info btn-sm" href="">Test Reports</a>
+            <a style="width: 18%" class="btn btn-outline-info btn-sm" href="">Report Summary</a>
+            <a style="width: 20%" class="btn btn-outline-info btn-sm" href="">Question Summary</a>
+            <a style="width: 20%" class="btn btn-outline-info btn-sm" href="">Presentation Summary</a>
+            <a style="width: 20%" class="btn btn-outline-info btn-sm" href="">Active Candidates</a>
         </div>
     </div>
 
