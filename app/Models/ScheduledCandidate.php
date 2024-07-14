@@ -92,7 +92,6 @@ class ScheduledCandidate extends Model
                 'candidate_subjects.subject_id',
                 'subjects.name',
                 'exam_types.name as exam_type',
-
             );
     }
 

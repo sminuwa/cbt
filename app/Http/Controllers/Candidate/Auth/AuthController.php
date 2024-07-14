@@ -32,7 +32,7 @@ class AuthController extends Controller
         $test = $test->exam()->first();
         // check if the exam type is still available
         if(!$test) return back()->with('error', 'Exam Type is Invalid.')->withInput();
-        $credentials = ["exam_no" => $username, "password" => $password];
+        $credentials = ["indexing" => $username, "password" => $password];
         if (Auth::guard("web")->attempt($credentials)) {
             //check candidate's schedules and compare with the selected test schedules
             $candidate = auth()->user();

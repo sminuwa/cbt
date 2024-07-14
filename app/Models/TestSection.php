@@ -9,6 +9,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\JoinClause;
 
 /**
  * Class TestSection
@@ -62,5 +63,20 @@ class TestSection extends Model
     public function test_questions()
     {
         return $this->hasMany(TestQuestion::class);
+    }
+
+
+    public function scopeForSubjects($query, $subject_id, $test_id, $question_administration){
+        $query = $query
+            ->join('test_subjects', function(JoinClause $joinTQ){
+                return $joinTQ->on('test_subjects.id', '=', 'test_sections.test_subject_id');
+            })
+            ->where('test_subjects.subject_id', $subject_id)
+            ->where('test_subjects.test_config_id', $test_id)
+            ->select('test_sections.*');
+        if($question_administration == 'random'){
+            $query->inRandomOrder();
+        }
+        return $query;
     }
 }
