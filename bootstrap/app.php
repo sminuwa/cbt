@@ -19,12 +19,15 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
+
+        //
+//        if(!Auth::guard('admin')->check())
+//            $middleware->redirectGuestsTo('auth/adm/login');
+//        else
         $middleware->redirectGuestsTo('auth/login');
-        $middleware->alias([
-            'api-auth' => \App\Http\Middleware\AuthApiMiddleware::class
-        ]);
-        $middleware->validateCsrfTokens(except:[
-            'api/*'
+        $middleware->validateCsrfTokens(except: [
+            'stripe/*',
+            'candidate/auth/login',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

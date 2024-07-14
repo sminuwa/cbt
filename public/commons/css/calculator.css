@@ -1,21 +1,22 @@
 
 .calculator {
     position: fixed;
-    bottom: 1rem;
-    right: 1rem;
+    bottom: 2.5rem;
+    right: 5rem;
     background-color: var(--bg-color);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 0.5rem;
-    padding: 1rem;
+    padding: .5rem;
     width: 16rem;
     z-index: 9999;
+    transition: ease 2s;
 }
 
 .calculator-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    /*margin-bottom: 1rem;*/
 }
 
 .calculator-title {
@@ -38,6 +39,7 @@
     color: var(--text-color);
     border-radius: 0.25rem;
     margin-bottom: 1rem;
+    margin-top: 1rem;
 }
 
 .calculator-grid {

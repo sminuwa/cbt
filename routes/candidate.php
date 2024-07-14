@@ -12,12 +12,13 @@ use App\Http\Controllers\TopicController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::name('auth.')->prefix('auth')->group(function(){
-    Route::get('/', [AuthController::class,'index'])->name('login');
+Route::controller(AuthController::class)->name('auth.')->prefix('auth')->group(function(){
+    Route::get('/', 'index');
+    Route::post('/login','login')->name('login');
 });
 
 
-Route::name('test.')->prefix('test')->group(function(){
+Route::middleware('auth:web')->name('test.')->prefix('test')->group(function(){
 //    Route::get('/',[TestController::class,'start'])->name('start');
     Route::get('/instruction',[MiscController::class,'instruction'])->name('instruction');
     Route::get('/question{start?}',[TestController::class,'question'])->name('question');

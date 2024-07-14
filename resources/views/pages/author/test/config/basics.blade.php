@@ -34,7 +34,7 @@
                             </div>
                             <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                                 <div class="form-group">
-                                    <label for="time_padding">Pending Time:</label>
+                                    <label for="time_padding">Padding Time:</label>
                                     <input class="form-control" type="number" name="time_padding" id="time_padding"
                                            value="{{$config->time_padding}}" placeholder="Time (min)" required>
                                 </div>

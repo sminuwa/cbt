@@ -20,7 +20,7 @@
             <div class="row">
                 <div>
                     <h4 class="card-title d-flex justify-content-between">
-                        <span>Test Subjects</span>
+                        <span>Test Papers</span>
                     </h4>
                 </div>
             </div>
@@ -58,7 +58,7 @@
     </div>
     <div class="card border-info">
         <div class="card-header border-info">
-            Registered Test Subjects
+            Registered Test Papers
         </div>
         <div class="card-body p-3">
             <div class="row">

@@ -1,4 +1,5 @@
 @php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
+
 <!-- Profile Sidebar -->
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
@@ -25,116 +26,93 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    @if(config('app.user_data.type'))
-                        @if(Request::is('*dashboard*'))
-                            <li>
-                                <a href="{{route('admin.test.config.index')}}">
-                                    <i class="fas fa-cog"></i>
-                                    <span>Test Configuration</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{route('admin.questions.authoring.index')}}">
-                                    <i class="fas fa-question"></i>
-                                    <span>Question Authoring</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="">
-                                    <i class="fas fa-toolbox"></i>
-                                    <span>Admin Toolbox</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="">
-                                    <i class="fas fa-bar-chart"></i>
-                                    <span>Reports</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="">
-                                    <i class="fas fa-users"></i>
-                                    <span>Manage Users</span>
-                                </a>
-                            </li>
-                        @endif
+                    @if(Request::is('*dashboard*'))
+                        <li>
+                            <a href="{{route('admin.test.config.index')}}">
+                                <i class="fas fa-cog"></i>
+                                <span>Test Configuration</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{route('admin.questions.authoring.index')}}">
+                                <i class="fas fa-question"></i>
+                                <span>Question Authoring</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <i class="fas fa-toolbox"></i>
+                                <span>Admin Toolbox</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{route('admin.reports.index')}}">
+                                <i class="fas fa-bar-chart"></i>
+                                <span>Reports</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <i class="fas fa-users"></i>
+                                <span>Manage Users</span>
+                            </a>
+                        </li>
+                    @endif
 
-                        @if(Request::is('*test/config*') && !Request::is('*test/config'))
-                            @php $config = Session::get('config'); @endphp
-                            <li class="{{Request::is('*basics')?'active':''}}">
-                                <a href="{{route('admin.test.config.basics',[$config])}}">
-                                    <i class="fas fa-cogs"></i>
-                                    <span>Basic Configurations</span>
-                                </a>
-                            </li>
-                            <li class="{{Request::is('*dates')?'active':''}}">
-                                <a href="{{ route('admin.test.config.dates',[$config]) }}">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span>Test Dates</span>
-                                </a>
-                            </li>
-                            <li class="{{Request::is('*schedules*')?'active':''}}">
-                                <a href="{{ route('admin.test.config.schedules',[$config]) }}">
-                                    <i class="fas fa-calendar-check"></i>
-                                    <span>Test Schedules</span>
-                                </a>
-                            </li>
-                            <li class="{{Request::is('*upload*')?'active':''}}">
-                                <a href="{{route('admin.test.config.upload.options',[$config])}}">
-                                    <i class="fas fa-upload"></i>
-                                    <span>Upload Candidate List</span>
-                                </a>
-                            </li>
-                            <li class="{{Request::is('*subjects*')?'active':''}}">
-                                <a href="{{ route('admin.test.config.subjects',[$config]) }}">
-                                    <i class="fas fa-list"></i>
-                                    <span>Test Subjects</span>
-                                </a>
-                            </li>
-                            <li class="{{Request::is('*composition*')?'active':''}}">
-                                <a href="{{ route('admin.test.config.composition',[$config]) }}">
-                                    <i class="fas fa-edit"></i>
-                                    <span>Test Composition</span>
-                                </a>
-                            </li>
-                            <li class="{{Request::is('*preview*')?'active':''}}">
-                                <a href="{{ route('admin.test.config.composition.preview',[$config]) }}">
-                                    <i class="fas fa-display"></i>
-                                    <span>Preview Test Questions</span>
-                                </a>
-                            </li>
-                            <li class="{{Request::is('*manage*')?'active':''}}">
-                                <a href="{{ route('admin.test.config.manage.users',[$config]) }}">
-                                    <i class="fas fa-users"></i>
-                                    <span>Manage Users</span>
-                                </a>
-                            </li>
-                        @endif
+                    @if(Request::is('*test/config*') && !Request::is('*test/config'))
+                        @php $config = Session::get('config'); @endphp
+                        <li class="{{Request::is('*basics')?'active':''}}">
+                            <a href="{{route('admin.test.config.basics',[$config])}}">
+                                <i class="fas fa-cogs"></i>
+                                <span>Basic Configurations</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*dates')?'active':''}}">
+                            <a href="{{ route('admin.test.config.dates',[$config]) }}">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Test Dates</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*schedules*')?'active':''}}">
+                            <a href="{{ route('admin.test.config.schedules',[$config]) }}">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Test Schedules</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*upload*')?'active':''}}">
+                            <a href="{{route('admin.test.config.upload.options',[$config])}}">
+                                <i class="fas fa-upload"></i>
+                                <span>Upload Candidate List</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*subjects*')?'active':''}}">
+                            <a href="{{ route('admin.test.config.subjects',[$config]) }}">
+                                <i class="fas fa-list"></i>
+                                <span>Test Papers</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*composition*')?'active':''}}">
+                            <a href="{{ route('admin.test.config.composition',[$config]) }}">
+                                <i class="fas fa-edit"></i>
+                                <span>Test Composition</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*preview*')?'active':''}}">
+                            <a href="{{ route('admin.test.config.composition.preview',[$config]) }}">
+                                <i class="fas fa-display"></i>
+                                <span>Preview Test Questions</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*manage*')?'active':''}}">
+                            <a href="{{ route('admin.test.config.manage.users',[$config]) }}">
+                                <i class="fas fa-users"></i>
+                                <span>Manage Users</span>
+                            </a>
+                        </li>
+                    @endif
 
-                        @if(Request::is('*questions/authoring*'))
-{{--                                //&& !Request::is('*questions/authoring')--}}
-
-                            <li class="{{Request::is('*author')?'active':''}}">
-                                <a href="{{ route('admin.questions.authoring.author') }}">
-                                    <i class="fas fa-newspaper"></i>
-                                    <span>Author Question</span>
-                                </a>
-                            </li>
-                            <li class="{{Request::is('*edit*')?'active':''}}">
-                                <a href="{{ route('admin.questions.authoring.edit.questions') }}">
-                                    <i class="fas fa-edit"></i>
-                                    <span>Modify Existing Questions</span>
-                                </a>
-                            </li>
-                            <li class="{{Request::is('*preview*')?'active':''}}">
-                                <a href="{{ route('admin.questions.authoring.preview') }}">
-                                    <i class="fas fa-display"></i>
-                                    <span>Preview Questions</span>
-                                </a>
-                            </li>
-                        @endif
-
-                    @else
+                    @if(Request::is('*questions/authoring*'))
+                        {{--                                //&& !Request::is('*questions/authoring')--}}
 
                         <li class="{{Request::is('*dashboard')?'active':''}}">
                             <a href="{{ route('admin.exams.setup.index') }}">
@@ -142,14 +120,45 @@
                                 <span>Setup Exams</span>
                             </a>
                         </li>
-
-                    @endif
-                    <li>
-                        <a href="{{ route('auth.admin.logout') }}">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
-                        </a>
-                    </li>
+                        @if(Request::is('*report*'))
+                            <li class="{{Request::is('*daily*')?'active':''}}">
+                                <a href="{{route('admin.reports.test.index')}}">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <span>Test Reports</span>
+                                </a>
+                            </li>
+                            <li class="{{Request::is('*daily*')?'active':''}}">
+                                <a href="{{route('admin.reports.summary.reports')}}">
+                                    <i class="fas fa-chart-column"></i>
+                                    <span>Report Summary</span>
+                                </a>
+                            </li>
+                            <li class="{{Request::is('*daily*')?'active':''}}">
+                                <a href="">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Question Summary</span>
+                                </a>
+                            </li>
+                            <li class="{{Request::is('*by-test-code*')?'active':''}}">
+                                <a href="">
+                                    <i class="fas fa-display"></i>
+                                    <span>Presentation Summary</span>
+                                </a>
+                            </li>
+                            <li class="{{Request::is('*by-test-code*')?'active':''}}">
+                                <a href="">
+                                    <i class="fas fa-users"></i>
+                                    <span>Active Candidates</span>
+                                </a>
+                            </li>
+                        @endif
+                        <li>
+                            <a href="{{ route('auth.admin.logout') }}">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </a>
+                        </li>
+                        @endif
                 </ul>
             </nav>
         </div>

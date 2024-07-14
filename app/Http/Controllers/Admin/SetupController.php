@@ -3,10 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminAnswerOption;
+use App\Models\AdminCandidate;
+use App\Models\AdminCandidateSubject;
 use App\Models\AdminCentre;
 use App\Models\AdminExamType;
+use App\Models\AdminQuestionBank;
+use App\Models\AdminScheduleCandidate;
+use App\Models\AdminSubject;
 use App\Models\AdminTestCode;
+use App\Models\AdminTestCompositor;
+use App\Models\AdminTestConfig;
+use App\Models\AdminTestInvigilator;
+use App\Models\AdminTestQuestion;
+use App\Models\AdminTestSection;
+use App\Models\AdminTestSubject;
 use App\Models\AdminTestType;
+use App\Models\AdminUser;
 use App\Models\AdminVenue;
 use App\Models\PullStatus;
 use App\Services\BackupAndTruncateService;
@@ -165,18 +178,38 @@ class SetupController extends Controller
 
                 DB::transaction(function () use ($data) {
 
-                    AdminCentre::query()->delete();
-                    AdminExamType::query()->delete();
-                    AdminTestType::query()->delete();
-                    AdminVenue::query()->delete();
+                    AdminCandidate::query()->delete();
+                    AdminCandidateSubject::query()->delete();
+                    AdminScheduleCandidate::query()->delete();
+                    AdminSubject::query()->delete();
+                    AdminTestCompositor::query()->delete();
+                    AdminTestConfig::query()->delete();
+                    AdminTestInvigilator::query()->delete();
+                    AdminTestQuestion::query()->delete();
+                    AdminTestSection::query()->delete();
+                    AdminTestSubject::query()->delete();
+                    AdminAnswerOption::query()->delete();
+                    AdminUser::where('id','>',4)->delete();
+                    AdminCandidateSubject::query()->delete();
+                    AdminQuestionBank::query()->delete();
                     // Insert new data
-                    AdminCentre::insert($data['centres']);
-                    AdminExamType::insert($data['exam_types']);
-                    AdminTestType::insert($data['test_types']);
-                    AdminVenue::insert($data['venues']);
+
+                    AdminCandidate::insert($data['']);
+                    AdminCandidateSubject::insert($data['']);
+                    AdminScheduleCandidate::insert($data['']);
+                    AdminAnswerOption::insert($data['']);
+                    AdminSubject::insert($data['subjects']);
+                    AdminTestCompositor::insert($data['test_compositors']);
+                    AdminTestConfig::insert($data['test_configs']);
+                    AdminTestInvigilator::insert($data['test_invigilators']);
+                    AdminTestQuestion::insert($data['test_questions']);
+                    AdminTestSection::insert($data['test_sections']);
+                    AdminTestSubject::insert($data['test_subjects']);
+                    AdminUser::insert($data['users']);
+                    AdminQuestionBank::insert($data['question_banks']);
                     // Log the pull
                     PullStatus::create([
-                        'resource' => 'basic-data',
+                        'resource' => 'test-data',
                         'pull_date' => now(),
                         'status' => 'SUCCESS',
                         'message' => 'Data pulled and inserted successfully'

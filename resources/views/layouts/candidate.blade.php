@@ -36,6 +36,7 @@
     <link id="color" rel="stylesheet" href="{{ asset('candidate/assets/css/color-1.css') }}" media="screen">
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/responsive.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/line-awesome/css/line-awesome.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('commons/css/calculator.css') }}">
     @stack('style')
 </head>
@@ -61,7 +62,7 @@
 
         <!-- Page Sidebar Ends-->
         <div class="page-body">
-            <div class="container-fluid">
+            {{--<div class="container-fluid">
                 <div class="page-title">
                     <div class="row">
                         <div class="col-6">
@@ -79,10 +80,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <!-- Container-fluid starts-->
             @yield('content')
-            <div class="calculator">
+            <div class="calculator border-l-primary border-r-primary border-2 ">
                 <div class="calculator-header">
                     <span class="calculator-title">Calculator</span>
                     <button id="toggle-calculator" class="toggle-button">-</button>

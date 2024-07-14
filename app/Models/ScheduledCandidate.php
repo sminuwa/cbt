@@ -9,6 +9,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\JoinClause;
 
 /**
  * Class ScheduledCandidate
@@ -30,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
 class ScheduledCandidate extends Model
 {
     protected $table = 'scheduled_candidates';
-    protected $primaryKey = 'candidate_id';
+    protected $primaryKey = 'id';
 
     protected $casts = [
         'candidate_type_id' => 'int'
@@ -44,26 +45,60 @@ class ScheduledCandidate extends Model
 
     public function exam_type()
     {
-        return $this->belongsTo(ExamType::class, 'candidate_type_id');
+        return $this->belongsTo(ExamType::class, 'exam_type_id');
     }
 
     public function candidate_students()
     {
-        return $this->hasMany(CandidateStudent::class, 'candidate_id');
+        return $this->hasMany(CandidateSubject::class, 'scheduled_candidate_id');
     }
 
     public function endorsements()
     {
-        return $this->hasMany(Endorsement::class, 'candidate_id');
+        return $this->hasMany(Endorsement::class, 'scheduled_candidate_id');
     }
 
     public function feed_back()
     {
-        return $this->hasMany(FeedBack::class, 'candidate_id');
+        return $this->hasMany(FeedBack::class, 'scheduled_candidate_id');
     }
 
     public function time_controls()
     {
-        return $this->hasMany(TimeControl::class, 'candidate_id');
+        return $this->hasMany(TimeControl::class, 'scheduled_candidate_id');
+    }
+
+
+    public function scopeForCandidate($query,$schedule_id, $candidate_id = null){
+        if(is_null($candidate_id))
+            $candidate_id = auth()->id();
+        return $query->where('scheduled_candidates.candidate_id',$candidate_id)
+            ->join('candidates', function(JoinClause $joinCandidate){
+                return $joinCandidate->on('candidates.id', '=','scheduled_candidates.candidate_id');
+            })->join('candidate_subjects',function(JoinClause $joinCS){
+                return $joinCS->on('candidate_subjects.scheduled_candidate_id','=','scheduled_candidates.id');
+            })->join('schedulings',function(JoinClause $joinSchedule){
+                return $joinSchedule->on('schedulings.id','=','candidate_subjects.schedule_id');
+            })->join('subjects',function(JoinClause $joinSubject){
+                return $joinSubject->on('subjects.id','=','candidate_subjects.subject_id');
+            })->join('exam_types', function(JoinClause $joinType){
+                return $joinType->on('exam_types.id', 'scheduled_candidates.exam_type_id');
+            })
+            ->where('candidate_subjects.schedule_id',$schedule_id)
+            ->select(
+                'scheduled_candidates.id',
+                'scheduled_candidates.candidate_id',
+                'candidate_subjects.schedule_id',
+                'candidate_subjects.subject_id',
+                'subjects.name',
+                'exam_types.name as exam_type',
+
+            );
+    }
+
+    public static function check_completion($test_config_id,$candidate_id = null){
+        if(is_null($candidate_id))
+            $candidate_id = auth()->id();
+//        $completion = self::join('')
     }
 }

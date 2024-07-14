@@ -93,11 +93,11 @@
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <div class="mb-3">
-                                                <label class="mb-2" for="semester">Semester</label>
+                                                <label class="mb-2" for="semester">Period</label>
                                                 <select class="form-select form-control" id="semester" required
                                                         name="semester">
-                                                    <option value="1" selected>First</option>
-                                                    <option value="2">Second</option>
+                                                    <option value="1" selected>April</option>
+                                                    <option value="2">September</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -110,10 +110,10 @@
                                     <div class="row">
                                         <div class="col-12 col-md-6">
                                             <div class="mb-3">
-                                                <label for="test_code_id" class="mb-2">Test Code</label>
+                                                <label for="test_code_id" class="mb-2">Cadre/Programme</label>
                                                 <select class="form-select form-control" id="test_code_id" required
                                                         name="test_code_id">
-                                                    <option value="">Select Test Code</option>
+                                                    <option value="">Select</option>
                                                     @foreach(TestCode::orderBy('name')->get() as $code)
                                                         <option value="{{ $code->id }}">{{ $code->name }}</option>
                                                     @endforeach
@@ -122,10 +122,10 @@
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <div class="mb-3">
-                                                <label for="test_type_id" class="mb-2">Test Type</label>
+                                                <label for="test_type_id" class="mb-2">Type</label>
                                                 <select class="form-select form-control" id="test_type_id" required
                                                         name="test_type_id">
-                                                    <option value="">Select Test Type</option>
+                                                    <option value="">Select Type</option>
                                                     @foreach(TestType::orderBy('name')->get() as $type)
                                                         <option value="{{ $type->id }}">{{ $type->name }}</option>
                                                     @endforeach

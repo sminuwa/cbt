@@ -1,3 +1,4 @@
+@php use App\Models\Subject;use App\Models\Topic; @endphp
 @extends('layouts.app')
 @section('css')
     <style>
@@ -32,11 +33,11 @@
                     <div class="row pt-2">
                         <div class="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div class="form-group">
-                                <label for="subject_id">Subject:</label>
+                                <label for="subject_id">Paper:</label>
                                 <select class="form-control form-select" name="subject_id"
                                         id="subject_id" required>
-                                    <option value="">Select Subject</option>
-                                    @foreach(\App\Models\Subject::all() as $subject)
+                                    <option value="">Select Paper</option>
+                                    @foreach(Subject::all() as $subject)
                                         <option
                                             value="{{$subject->id}}" {{ $question->subject_id==$subject->id?'selected':'' }}>{{ $subject->name }}</option>
                                     @endforeach
@@ -45,11 +46,11 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div class="form-group">
-                                <label for="topic_id">Topic:</label>
+                                <label for="topic_id">Subject:</label>
                                 <select class="form-control form-select" name="topic_id" id="topic_id"
                                         required>
-                                    <option value="">Select Topic</option>
-                                    @foreach(\App\Models\Topic::all() as $topic)
+                                    <option value="">Select Subject</option>
+                                    @foreach(Topic::all() as $topic)
                                         <option
                                             value="{{ $topic->id }}" {{ $topic->id==$question->topic_id?'selected':'' }}>{{ $topic->name }}</option>
                                     @endforeach
@@ -110,7 +111,8 @@
                                             <input type="radio" name="correctness"
                                                    {{ $option->correctness==1?'checked':'' }} value="{{ $option->id }}">
                                         </span>
-                                    <textarea class="form-control editor" name="question_option[]" id="" cols="30" rows="10">
+                                    <textarea class="form-control editor" name="question_option[]" id="" cols="30"
+                                              rows="10">
                                         {{ $option->question_option }}
                                     </textarea>
                                 </div>

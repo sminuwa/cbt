@@ -40,7 +40,7 @@
                                 <th style="width: 10%">#</th>
                                 <th>Section Title</th>
                                 <th>Mark Per Quest</th>
-                                <th>Questions Count</th>
+                                <th>Number of Questions</th>
                                 <th>Total Marks</th>
                                 <th style="width: 30%">Action</th>
                             </tr>
@@ -124,7 +124,7 @@
                     </div>
                     <div class="col-4 col-md-12 col-lg-4 col-xl-4">
                         <div class="form-group">
-                            <label for="count">Questions Count:</label>
+                            <label for="count">Number of Questions:</label>
                             <input class="form-control" type="number" name="num_to_answer" id="count" required>
                         </div>
                     </div>

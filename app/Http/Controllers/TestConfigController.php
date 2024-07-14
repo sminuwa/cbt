@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Imports\Upload;
 use App\Models\Candidate;
-use App\Models\CandidateStudent;
+use App\Models\CandidateSubject;
 use App\Models\ExamsDate;
 use App\Models\FacultyScheduleMapping;
 use App\Models\QuestionBank;
@@ -34,7 +34,7 @@ class TestConfigController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin');
+        //
     }
 
     public function index(Request $request): Factory|\Illuminate\Foundation\Application|View|Application
@@ -150,7 +150,7 @@ class TestConfigController extends Controller
 
     public function deleteSchedule(Scheduling $scheduling)
     {
-        $candidates = $scheduling->candidate_students()->distinct('candidate_id')->count();
+        $candidates = $scheduling->candidate_students()->distinct('scheduled_candidate_id')->count();
         if ($candidates > 0)
             return view('pages.author.test.config.displacement-options', compact('candidates', 'scheduling'));
         else
@@ -162,7 +162,7 @@ class TestConfigController extends Controller
     public function removeAndDeleteSchedule(Scheduling $scheduling)
     {
         $config = $scheduling->test_config;
-        $remove = CandidateStudent::where(['schedule_id' => $scheduling->id])->delete();
+        $remove = CandidateSubject::where(['schedule_id' => $scheduling->id])->delete();
         if ($remove) {
             if ($scheduling->delete())
                 return redirect(route('admin.test.config.schedules', [$config->id]))->with(['success' => true, 'message' => 'Affected Candidate(s) removed and Test Schedule successfully deleted']);
@@ -179,7 +179,7 @@ class TestConfigController extends Controller
             ->whereNot('id', $scheduling->id)
             ->get();
 
-        $candidates = CandidateStudent::select(['schedule_id', 'candidate_id', 'venues.id as venue_id'])
+        $candidates = CandidateSubject::select(['schedule_id', 'scheduled_candidate_id', 'venues.id as venue_id'])
             ->join('schedulings', 'schedulings.id', '=', 'candidate_students.schedule_id')
             ->join('venues', 'venues.id', '=', 'schedulings.venue_id')
             ->where('schedule_id', '!=', $scheduling->id)
@@ -200,7 +200,7 @@ class TestConfigController extends Controller
     public function reschedule(Request $request)
     {
         try {
-            $candidates = CandidateStudent::where(['schedule_id' => $request->from]);
+            $candidates = CandidateSubject::where(['schedule_id' => $request->from]);
             $size = count($candidates->get());
             if ($candidates->update(['schedule_id' => $request->to])) {
                 $schedule = Scheduling::find($request->from);
@@ -238,8 +238,8 @@ class TestConfigController extends Controller
 //            $schedule_id = $request->schedule_id;
 //            $candidates = Candidate::select(['id', 'matric_number'])->whereIn('matric_number', '873r')->get();
 //            $subjects = TestSubject::where(['test_config_id' => $request->test_config_id])->pluck('subject_id');
-//            $schedules = CandidateStudent::where(['schedule_id' => $schedule_id])
-//                ->whereIn('candidate_id', $candidates->pluck('id')->toArray())
+//            $schedules = CandidateSubject::where(['schedule_id' => $schedule_id])
+//                ->whereIn('scheduled_candidate_id', $candidates->pluck('id')->toArray())
 //                ->whereIn('subject_id', $subjects)
 //                ->get();
 //
@@ -257,13 +257,13 @@ class TestConfigController extends Controller
 //            foreach ($candidates as $candidate) {
 //                foreach ($subjects as $subject_id) {
 //                    $records[] = [
-//                        'candidate_id' => $candidate->id,
+//                        'scheduled_candidate_id' => $candidate->id,
 //                        'schedule_id' => $request->schedule_id,
 //                        'subject_id' => $subject_id
 //                    ];
 //                }
 //            }
-//            CandidateStudent::upsert($records, ['candidate_id', 'schedule_id', 'subject_id']);
+//            CandidateSubject::upsert($records, ['scheduled_candidate_id', 'schedule_id', 'subject_id']);
 //
 //            return $this->updateBatches($schedule_id);
 //        } catch (Exception $e) {
@@ -293,8 +293,8 @@ class TestConfigController extends Controller
 
             $subjects = TestSubject::where(['test_config_id' => $test_config_id])->pluck('subject_id');
 
-            $schedules = CandidateStudent::with('candidate')->where(['schedule_id' => $schedule_id])
-                ->whereIn('candidate_id', $candidates->pluck('id')->toArray())
+            $schedules = CandidateSubject::with('candidate')->where(['schedule_id' => $schedule_id])
+                ->whereIn('scheduled_candidate_id', $candidates->pluck('id')->toArray())
                 ->whereIn('subject_id', $subjects)
                 ->get();
 
@@ -324,7 +324,7 @@ class TestConfigController extends Controller
                 foreach ($chunk as $candidate) {
                     foreach ($subjects as $subject_id) {
                         $records[] = [
-                            'candidate_id' => $candidate['id'],
+                            'scheduled_candidate_id' => $candidate['id'],
                             'schedule_id' => $schedule_id,
                             'subject_id' => $subject_id,
                             'enabled' => 1
@@ -333,13 +333,13 @@ class TestConfigController extends Controller
                     $scs[] = [
                         'exam_type_id' => $exam_type_id,
                         'candidate_id' => $candidate['id'],
-                        'reg_number' => $candidate['matric_number'],
+//                        'reg_number' => $candidate['matric_number'],
                     ];
                 }
 
 
-                CandidateStudent::upsert($records, ['candidate_id', 'schedule_id', 'subject_id'], ['candidate_id', 'schedule_id', 'subject_id']);
-                ScheduledCandidate::upsert($scs, ['reg_number', 'candidate_id', 'exam_type_id']);
+                CandidateSubject::upsert($records, ['scheduled_candidate_id', 'schedule_id', 'subject_id'], ['scheduled_candidate_id', 'schedule_id', 'subject_id']);
+                ScheduledCandidate::upsert($scs, ['candidate_id', 'exam_type_id']);
                 $records = [];
             }
 
@@ -357,7 +357,7 @@ class TestConfigController extends Controller
     {
         $schedule = Scheduling::with('venue')->find($schedule_id);
         $venueCap = $schedule->venue->capacity;
-        $candidates = $schedule->candidate_students()->distinct('candidate_id')->count();
+        $candidates = $schedule->candidate_students()->distinct('scheduled_candidate_id')->count();
         $batches = ceil($candidates / $venueCap);
 
         $schedule->maximum_batch = $batches;

@@ -25,33 +25,15 @@
         </div>
         <div class="nav-right col-xxl-7 col-xl-6 col-md-7 col-8 pull-right right-header p-0 ms-auto">
             <ul class="nav-menus">
-                <li class="d-md-block d-none">
-                    <div class="form search-form mb-0">
-                        <div class="input-group"><span class="input-icon">
-                      <svg>
-                        <use href="assets/svg/icon-sprite.svg#search-header"></use>
-                      </svg>
-                      <input class="w-100" type="search" placeholder="Search"></span></div>
-                    </div>
-                </li>
-                <li class="d-md-none d-block">
-                    <div class="form search-form mb-0">
-                        <div class="input-group"> <span class="input-show">
-                      <svg id="searchIcon">
-                        <use href="assets/svg/icon-sprite.svg#search-header"></use>
-                      </svg>
-                      <div id="searchInput">
-                        <input type="search" placeholder="Search">
-                      </div></span></div>
-                    </div>
-                </li>
 
-                <li>
-                    <div class="mode"><i class="moon" data-feather="moon"> </i></div>
-                </li>
+                <div class="clock" id="clock">02:00:00</div> Time left
+{{--                <li>--}}
+{{--                    <div class="mode"><i class="moon" data-feather="moon"> </i></div>--}}
+{{--                </li>--}}
 
                 <li class="profile-nav onhover-dropdown">
-                    <div class="media profile-media"><img class="b-r-10" src="{!! logo(25,25) !!}" alt="">
+                    <div class="media profile-media">
+                        <img class="b-r-10" src="{{ asset('candidate/assets/images/avtar/16.jpg') }}" width="35"  alt="">
                         <div class="media-body d-xxl-block d-none box-col-none">
                             <div class="d-flex align-items-center gap-2"> <span>Alex Mora </span><i class="middle fa fa-angle-down"> </i></div>
                             <p class="mb-0 font-roboto">Admin</p>

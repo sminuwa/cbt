@@ -31,7 +31,7 @@ Route::name('auth.')->prefix('auth/')->group(function () {
 });
 
 
-Route::name('admin.')->prefix('adm')->group(function () {
+Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function () {
 
     Route::name('dashboard.')->prefix('dashboard')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
@@ -109,17 +109,24 @@ Route::name('admin.')->prefix('adm')->group(function () {
         });
     });
 
-    Route::name('reports.')->prefix('reports')->group(function () {
-        Route::name('testcode.')->prefix('by-test-code')->group(function () {
-            Route::get('/', [ReportController::class, 'index'])->name('index');
-            Route::post('generate', [ReportController::class, 'generateByCode'])->name('generate');
-        });
+    Route::controller(ReportController::class)->group(function () {
+        Route::name('reports.')->prefix('reports')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::name('test.')->prefix('test')->group(function () {
+                Route::get('/', 'testReports')->name('index');
+                Route::post('generate', 'generateDaily')->name('generate');
+            });
 
+            Route::name('summary.')->prefix('summary')->group(function () {
+                Route::get('/report', 'reportSummary')->name('reports');
+                Route::get('/question', 'questionSummary')->name('question');
+                Route::get('/presentation', 'presentationSummary')->name('presentation');
+            });
 
-
-        Route::name('daily.')->prefix('daily')->group(function () {
-            Route::get('/', [ReportController::class, 'daily'])->name('index');
-            Route::post('generate', [ReportController::class, 'generateDaily'])->name('generate');
+            Route::name('active.')->prefix('active')->group(function () {
+                Route::get('/candidates', 'testCode')->name('index');
+                Route::post('generate', 'generateByCode')->name('generate');
+            });
         });
     });
 

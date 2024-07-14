@@ -10,7 +10,7 @@
             <td>{{ $user->display_name }}</td>
         </tr>
         <tr style="border-bottom: 0px solid rgba(0,0,0,0) !important;">
-            <td>Subject(s):</td>
+            <td>Paper(s):</td>
             <td>
                 <table class="table table-bordered">
                     @foreach($subjects as $subject)

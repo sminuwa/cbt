@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property TestConfig|null $test_config
  * @property Venue|null $venue
- * @property Collection|CandidateStudent[] $candidate_students
+ * @property Collection|CandidateSubject[] $candidate_students
  * @property ExamsDateFacultyMapping $exams_date_faculty_mapping
  * @property ExamsDateProgrammeMapping $exams_date_programme_mapping
  * @property ExamsDateStateMapping $exams_date_state_mapping
@@ -37,17 +37,17 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Scheduling extends Model
 {
-	protected $table = 'schedulings';
+    protected $table = 'schedulings';
 
-	protected $casts = [
-		'test_config_id' => 'int',
-		'venue_id' => 'int',
-		'date' => 'datetime',
-		'maximum_batch' => 'int',
-		'no_per_schedule' => 'int',
-		'daily_start_time' => 'datetime',
-		'daily_end_time' => 'datetime'
-	];
+    protected $casts = [
+        'test_config_id' => 'int',
+        'venue_id' => 'int',
+        'date' => 'datetime',
+        'maximum_batch' => 'int',
+        'no_per_schedule' => 'int',
+        'daily_start_time' => 'datetime',
+        'daily_end_time' => 'datetime'
+    ];
 
 	protected $fillable = [
         'id',
@@ -59,44 +59,43 @@ class Scheduling extends Model
 		'daily_start_time',
 		'daily_end_time'
 	];
+    public function test_config()
+    {
+        return $this->belongsTo(TestConfig::class, 'test_config_id');
+    }
 
-	public function test_config()
-	{
-		return $this->belongsTo(TestConfig::class, 'test_config_id');
-	}
+    public function venue()
+    {
+        return $this->belongsTo(Venue::class);
+    }
 
-	public function venue()
-	{
-		return $this->belongsTo(Venue::class);
-	}
+    public function candidate_students()
+    {
+        return $this->hasMany(CandidateSubject::class, 'schedule_id');
+    }
 
-	public function candidate_students()
-	{
-		return $this->hasMany(CandidateStudent::class, 'schedule_id');
-	}
+    public function exams_date_faculty_mapping()
+    {
+        return $this->hasOne(ExamsDateFacultyMapping::class);
+    }
 
-	public function exams_date_faculty_mapping()
-	{
-		return $this->hasOne(ExamsDateFacultyMapping::class);
-	}
+    public function exams_date_programme_mapping()
+    {
+        return $this->hasOne(ExamsDateProgrammeMapping::class);
+    }
 
-	public function exams_date_programme_mapping()
-	{
-		return $this->hasOne(ExamsDateProgrammeMapping::class);
-	}
+    public function exams_date_state_mapping()
+    {
+        return $this->hasOne(ExamsDateStateMapping::class);
+    }
 
-	public function exams_date_state_mapping()
-	{
-		return $this->hasOne(ExamsDateStateMapping::class);
-	}
+    public function faculty_schedule_mapping()
+    {
+        return $this->hasOne(FacultyScheduleMapping::class);
+    }
 
-	public function faculty_schedule_mapping()
-	{
-		return $this->hasOne(FacultyScheduleMapping::class);
-	}
-
-	public function test_invigilators()
-	{
-		return $this->hasMany(TestInvigilator::class);
-	}
+    public function test_invigilators()
+    {
+        return $this->hasMany(TestInvigilator::class);
+    }
 }

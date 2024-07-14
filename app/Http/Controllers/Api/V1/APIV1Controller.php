@@ -12,6 +12,7 @@ use App\Models\Subject;
 use App\Models\TestCode;
 use App\Models\TestCompositor;
 use App\Models\TestConfig;
+use App\Models\TestInvigilator;
 use App\Models\TestQuestion;
 use App\Models\TestSection;
 use App\Models\TestSubject;
@@ -67,6 +68,7 @@ class APIV1Controller extends Controller
             $questionBankIds = $data['test_questions'] ->pluck('question_bank_id');//question_bank_id
             $data['question_banks'] = QuestionBank::whereIn('id',$questionBankIds)->get();
             $data['exams_dates'] = ExamsDate::whereIn('test_config_id',$testConfigIds)->get();
+            $data['test_invigilators'] = TestInvigilator::whereIn('test_config_id',$testConfigIds)->get();
 
             return response()->json(['status'=>1,'data'=>$data]);
         }
