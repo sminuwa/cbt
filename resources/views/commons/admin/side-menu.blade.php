@@ -142,7 +142,7 @@
                                 <span>Test Reports</span>
                             </a>
                         </li>
-                        <li class="{{Request::is('*daily*')?'active':''}}">
+                        <li class="{{Request::is('*summary/report')?'active':''}}">
                             <a href="{{route('admin.reports.summary.reports')}}">
                                 <i class="fas fa-chart-column"></i>
                                 <span>Report Summary</span>

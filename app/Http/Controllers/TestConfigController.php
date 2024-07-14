@@ -236,7 +236,7 @@ class TestConfigController extends Controller
 //    {
 //        try {
 //            $schedule_id = $request->schedule_id;
-//            $candidates = Candidate::select(['id', 'matric_number'])->whereIn('matric_number', '873r')->get();
+//            $candidates = Candidate::select(['id', 'indexing'])->whereIn('indexing', '873r')->get();
 //            $subjects = TestSubject::where(['test_config_id' => $request->test_config_id])->pluck('subject_id');
 //            $schedules = CandidateSubject::where(['schedule_id' => $schedule_id])
 //                ->whereIn('scheduled_candidate_id', $candidates->pluck('id')->toArray())
@@ -286,8 +286,8 @@ class TestConfigController extends Controller
                 $rows = explode(',', $request->candidate_number);
             }
 
-            $candidates = Candidate::select(['id', 'matric_number'])->whereIn('matric_number', $rows)->get();
-            $numbers = $candidates->pluck('matric_number')->toArray();
+            $candidates = Candidate::select(['id', 'indexing'])->whereIn('indexing', $rows)->get();
+            $numbers = $candidates->pluck('indexing')->toArray();
 
             $missing = array_values(array_diff($rows, $numbers));
 
@@ -333,7 +333,7 @@ class TestConfigController extends Controller
                     $scs[] = [
                         'exam_type_id' => $exam_type_id,
                         'candidate_id' => $candidate['id'],
-//                        'reg_number' => $candidate['matric_number'],
+//                        'reg_number' => $candidate['indexing'],
                     ];
                 }
 

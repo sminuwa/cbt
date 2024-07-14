@@ -13,7 +13,7 @@
                         <div class="row">
                             <div>
                                 <h4 class="card-title d-flex justify-content-between">
-                                    <span>Report By Cadre/Programme</span>
+                                    <span>Report Summary</span>
                                 </h4>
                             </div>
                         </div>
@@ -25,7 +25,7 @@
                     <div class="row pb-3 pt-2">
                         <div class="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div class="form-group">
-                                <label for="year">Year:</label>
+                                <label for="test_type_id">Year:</label>
                                 <select class="form-control form-select" name="year" id="year" required>
                                     <option value="">Select Year</option>
                                     @foreach($years as $year)
@@ -36,20 +36,21 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div class="form-group">
-                                <label for="semester">Test Period:</label>
-                                <select class="form-control form-select" name="semester" id="semester" required>
-                                    <option value="">Select Test Period</option>
-                                    <option value="1">April</option>
-                                    <option value="2">September</option>
+                                <label for="year">Test Type:</label>
+                                <select class="form-control form-select" name="type_id" id="type_id" required>
+                                    <option value="">Select Test Type</option>
+                                    @foreach(TestType::orderBy('name')->get() as $type)
+                                        <option value="{{$type->id}}">{{ $type->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
                         <div class="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div class="form-group">
-                                <label for="test_code_id">Cadre/Programme:</label>
-                                <select class="form-control form-select" name="test_code_id" id="test_code_id" required>
-                                    <option value="">Select</option>
-                                    @foreach(TestCode::all() as $code)
+                                <label for="year">Cadre/Programme:</label>
+                                <select class="form-control form-select" name="code_id" id="code_id" required>
+                                    <option value="">Select Cadre</option>
+                                    @foreach(TestCode::orderBy('name')->get() as $code)
                                         <option value="{{$code->id}}">{{ $code->name }}</option>
                                     @endforeach
                                 </select>
@@ -57,12 +58,9 @@
                         </div>
                         <div class="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div class="form-group">
-                                <label for="test_type_id">Type:</label>
-                                <select class="form-control form-select" name="test_type_id" id="test_type_id" required>
-                                    <option value="">Select Type</option>
-                                    @foreach(TestType::all() as $type)
-                                        <option value="{{$type->id}}">{{ $type->name }}</option>
-                                    @endforeach
+                                <label for="test_code_id">Test:</label>
+                                <select class="form-control form-select" name="test_config_id" id="test_id" required>
+                                    <option value="">Select</option>
                                 </select>
                             </div>
                         </div>
@@ -88,18 +86,20 @@
     <script src="{{ asset('assets/plugins/datatables/datatables.min.js') }}"></script>
     <script>
         $(function () {
+            $('#type_id, #code_id, #year').on('change', function () {
+                const type = $('#type_id').val(), code = $('#code_id').val(), year = $('#year').val()
+                if (type !== '' && code !== '' && year !== '') {
+                    $.get('{{route('admin.misc.test.config',[':y',':t',':c'])}}'.replace(':y', year).replace(':t', type).replace(':c', code)
+                        , function (response) {
+                            $('#test_id').html(response)
+                        }
+                    )
+                }
+            })
             $('#preview-form').on('submit', function (e) {
                 e.preventDefault()
-                $.post('{{ route('admin.reports.active.generate') }}', $(this).serialize(), function (response) {
+                $.post('{{ route('admin.reports.summary.generate.report') }}', $(this).serialize(), function (response) {
                     console.log(response)
-                    // $('#questions-div').html(response)
-                    // jQuery('#report').DataTable({
-                    //     layout: {
-                    //         topStart: {
-                    //             buttons: ['csv', 'excel', 'pdf']
-                    //         }
-                    //     }
-                    // })
                 })
             })
         })
