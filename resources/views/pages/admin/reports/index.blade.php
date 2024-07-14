@@ -15,7 +15,7 @@
         </div>
         <div class="card-body pt-4">
             <a class="btn btn-info btn-sm text-white" href="">Daily Reports</a>
-            <a class="btn btn-info btn-sm text-white" href="">Report By Test Code</a>
+            <a class="btn btn-info btn-sm text-white" href="">Report By Cadre/Programme</a>
         </div>
     </div>
 

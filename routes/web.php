@@ -107,7 +107,7 @@ Route::name('admin.')->prefix('adm')->group(function () {
         });
     });
 
-    Route::controller(ReportController::class)->group(function () {
+    Route::middleware('auth:admin')->controller(ReportController::class)->group(function () {
         Route::name('reports.')->prefix('reports')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::name('testcode.')->prefix('by-test-code')->group(function () {
