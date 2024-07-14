@@ -12,6 +12,10 @@ class Candidate extends Authenticatable
     use  HasFactory, Notifiable;
 
 
+    public function fullname(){
+        return ($this->surname ?? null).' '.($this->firstname ?? null). ' '.($this->other_name ?? null);
+    }
+
     public function exam_type(){
 
     }
