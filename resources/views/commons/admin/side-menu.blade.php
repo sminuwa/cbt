@@ -1,11 +1,4 @@
-<<<<<<< HEAD
 @php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
-
-<!-- Profile Sidebar -->
-=======
-@php use Illuminate\Support\Facades\Auth;use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
-    <!-- Profile Sidebar -->
->>>>>>> 773a5288156f80d106de2153b93e0d069e0f0d7a
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
         <div class="widget-profile pro-widget-content">
@@ -14,7 +7,7 @@
                     <img src="/assets/img/patients/patient.jpg" alt="User Image">
                 </a>
                 @php
-                   $user= Auth::user();
+                    $user = auth()->user();
                 @endphp
                 <div class="profile-det-info">
                     <h3>{{$user->display_name}}</h3>
@@ -156,7 +149,7 @@
                     @endif
 
 
-{{--                    admin tool box menus--}}
+                    {{--                    admin tool box menus--}}
                     @if(Request::is('*toolbox/*') && !Request::is('*toolbox/'))
                         <li class="{{Request::is('*manage_centers')?'active':''}}">
                             <a href="{{route('toolbox.center_venue.home')}}">
