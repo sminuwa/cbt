@@ -163,9 +163,15 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::get('sub/delete/{subject}', [SubjectsController::class,'destroy'])->name('delete');
     });
 
-    Route::name('candidate_upload.')->prefix('subjects')->group(function () {
-        Route::get('upload-candidate-data', [CandidateUploadController::class, 'index'])->name('upload.candidate');
+    Route::name('candidate_upload.')->prefix('candidate_upload')->group(function () {
+        Route::get('upload-cand', [CandidateUploadController::class, 'index'])->name('upload.candidate');
         Route::post('upload-candidate-data', [CandidateUploadController::class, 'upload'])->name('upload.candidate.data');
+
+    });
+
+    Route::name('candidate_image_upload.')->prefix('candidate_image_upload')->group(function () {
+        Route::get('upload-candidate', [CandidateUploadController::class, 'imageIndex'])->name('upload.images');
+        Route::post('upload-candidate-image', [CandidateUploadController::class, 'imageUpload'])->name('upload.image.data');
 
     });
 });

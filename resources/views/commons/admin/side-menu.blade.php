@@ -192,7 +192,7 @@
                             </a>
                         </li>
                         <li class="{{Request::is('*candidate_upload')?'active':''}}">
-                            <a href="#">
+                            <a href="{{route('toolbox.candidate_image_upload.upload.images')}}">
                                 <i class="fas fa-upload"></i>
                                 <span>Upload Candidate Image(s)</span>
                             </a>
