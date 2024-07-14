@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\SetupController;
+use App\Http\Controllers\Api\V1\APIV1Controller;
 use App\Http\Controllers\Auth\CandidateLoginController;
 use App\Http\Controllers\Auth\UserLoginController;
 use App\Http\Controllers\CandidateUploadController;
@@ -156,7 +158,6 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('venue/store', [VenueController::class,'store'])->name('venue.store');
         Route::get('venue/delete/{venue}', [VenueController::class,'destroy'])->name('venue.delete');
     });
-
     Route::name('subject.')->prefix('subjects')->group(function () {
         Route::get('/', [SubjectsController::class, 'index'])->name('home');
         Route::post('sub/store', [SubjectsController::class,'create'])->name('store');
@@ -174,5 +175,17 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('upload-candidate-image', [CandidateUploadController::class, 'imageUpload'])->name('upload.image.data');
 
     });
+    Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
+        Route::get('/', [SetupController::class, 'index'])->name('index');
+        Route::post('pull/basic', [SetupController::class, 'pullBasicResource'])->name('pull.basic');
+        Route::post('pull/test', [SetupController::class, 'pullTestResource'])->name('pull.test');
+    });
 });
 
+Route::name('api.v1.')->prefix('api/v1/')->group(function () {
+    Route::name('resource.')->prefix('resource/')->group(function () {
+        Route::post('basic/', [APIV1Controller::class, 'basicData'])->name('basic');
+        Route::post('test/', [APIV1Controller::class, 'testData'])->name('test');
+    });
+
+})->middleware('api-auth');

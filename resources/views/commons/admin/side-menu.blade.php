@@ -1,5 +1,11 @@
+<<<<<<< HEAD
+@php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
+
+<!-- Profile Sidebar -->
+=======
 @php use Illuminate\Support\Facades\Auth;use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
     <!-- Profile Sidebar -->
+>>>>>>> 773a5288156f80d106de2153b93e0d069e0f0d7a
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
         <div class="widget-profile pro-widget-content">
@@ -113,35 +119,16 @@
                         </li>
                     @endif
 
-                    @if(Request::is('*questions/authoring*') //&& !Request::is('*questions/authoring')
-)
-                        <li class="{{Request::is('*author')?'active':''}}">
-                            <a href="{{ route('admin.questions.authoring.author') }}">
-                                <i class="fas fa-newspaper"></i>
-                                <span>Author Question</span>
-                            </a>
-                        </li>
-                        <li class="{{Request::is('*edit*')?'active':''}}">
-                            <a href="{{ route('admin.questions.authoring.edit.questions') }}">
-                                <i class="fas fa-edit"></i>
-                                <span>Modify Existing Questions</span>
-                            </a>
-                        </li>
-                        <li class="{{Request::is('*preview*')?'active':''}}">
-                            <a href="{{ route('admin.questions.authoring.preview') }}">
-                                <i class="fas fa-display"></i>
-                                <span>Preview Questions</span>
-                            </a>
-                        </li>
-                    @endif
+                    @if(Request::is('*questions/authoring*'))
+                        {{--                                //&& !Request::is('*questions/authoring')--}}
 
-                    @if(Request::is('*report*'))
-                        <li class="{{Request::is('*daily*')?'active':''}}">
-                            <a href="{{route('admin.reports.test.index')}}">
-                                <i class="fas fa-chart-bar"></i>
-                                <span>Test Reports</span>
+                        <li class="{{Request::is('*dashboard')?'active':''}}">
+                            <a href="{{ route('admin.exams.setup.index') }}">
+                                <i class="fas fa-lock-open"></i>
+                                <span>Setup Exams</span>
                             </a>
                         </li>
+
                         <li class="{{Request::is('*summary/report')?'active':''}}">
                             <a href="{{route('admin.reports.summary.reports')}}">
                                 <i class="fas fa-chart-column"></i>

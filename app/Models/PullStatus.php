@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Score extends Model
+class PullStatus extends Model
 {
     use HasFactory;
-    protected $guarded =[];
+    protected $fillable = ['resource', 'pull_date', 'status', 'message'];
 }

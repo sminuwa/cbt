@@ -35,6 +35,7 @@ class TestQuestion extends Model
 		'question_bank_id' => 'int',
 		'version' => 'int'
 	];
+    protected $guarded = [];
 
 	public function question_bank()
 	{

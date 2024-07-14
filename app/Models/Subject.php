@@ -38,6 +38,7 @@ class Subject extends Model
 	];
 
 	protected $fillable = [
+        'id',
 		'subject_code',
 		'exam_type_id',
 		'name'

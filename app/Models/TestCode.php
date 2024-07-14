@@ -12,12 +12,12 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TestCode
- * 
+ *
  * @property int $id
  * @property string $name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|TestConfig[] $test_configs
  *
  * @package App\Models
@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
 class TestCode extends Model
 {
 	protected $table = 'test_codes';
+    protected $guarded=[];
 
 	public function test_configs()
 	{
