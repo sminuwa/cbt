@@ -22,7 +22,8 @@ class Candidate extends Authenticatable
             ->join('schedulings', 'schedulings.id', 'candidate_subjects.schedule_id')
             ->join('test_configs','test_configs.id', 'schedulings.test_config_id')
             ->where('test_configs.id', $test_id)
-            ->select('scheduled_candidates.id')
+            ->select('scheduled_candidates.*')
+            ->with('exam_type')
             ->first();
     }
 
@@ -40,6 +41,12 @@ class Candidate extends Authenticatable
         if($control)
             return $control;
         return false;
+    }
+
+    public function presentation($test_config_id,$scheduled_candidate_id){
+        return Presentation::where(['test_config_id'=>$test_config_id, 'scheduled_candidate_id'=>$scheduled_candidate_id])
+            ->get();
+
     }
 
     public function loginTask(){

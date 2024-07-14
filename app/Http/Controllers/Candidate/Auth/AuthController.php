@@ -54,6 +54,8 @@ class AuthController extends Controller
             if($time_difference > $duration) return back()->with('error', 'Your exam time has elapsed.')->withInput();
             $remaining_seconds = $test->duration * 60 - $timeControl->elapsed;
             Session::put('candidate', $candidate);
+            Session::put('scheduled_candidate', $scheduled_candidate);
+            Session::put('candidate_subjects', $candidate_subjects);
             Session::put('time_difference', $time_difference);
             Session::put('remaining_seconds', $remaining_seconds);
             Session::put('test', $test);
@@ -63,7 +65,6 @@ class AuthController extends Controller
 
         return back()->with('error', 'Invalid credentials')->withInput();
     }
-
 
 
 
