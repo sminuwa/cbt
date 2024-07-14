@@ -30,6 +30,10 @@ class Candidate extends Authenticatable
         'enabled',
     ];
 
+    public function scheduledCandidates()
+    {
+        return $this->hasMany(ScheduledCandidate::class);
+    }
 
     public function fullname(){
         return ($this->surname ?? null).' '.($this->firstname ?? null). ' '.($this->other_name ?? null);
