@@ -18,7 +18,7 @@
                                 <p>The process of questions authoring is now completed successfully. Click the
                                     bottom below to go back<br>
 
-                                    <a href="{{route('admin.questions.authoring')}}"
+                                    <a href="{{route('admin.questions.authoring.index')}}"
                                        class="btn btn-sm btn-info mt-5 text-light">Go Back</a>
                                 </p>
                             </div>

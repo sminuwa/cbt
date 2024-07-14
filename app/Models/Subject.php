@@ -12,14 +12,14 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Subject
- * 
+ *
  * @property int $id
  * @property string $subject_code
  * @property int|null $exam_type_id
  * @property string $name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property ExamType|null $exam_type
  * @property Collection|CandidateStudent[] $candidate_students
  * @property Collection|QuestionBank[] $question_banks

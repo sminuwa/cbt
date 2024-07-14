@@ -8,6 +8,7 @@
         "php": "^8.2",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
+        "maatwebsite/excel": "^3.1",
         "tinymce/tinymce": "^7.0"
     },
     "require-dev": {
@@ -28,7 +29,9 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helper.php"
+            "app/Helper.php",
+            "app/Helpers/General.php",
+            "app/Helpers/Modal.php"
         ]
     },
     "autoload-dev": {

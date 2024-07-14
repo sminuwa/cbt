@@ -29,7 +29,7 @@
     </div>
     <div class="card border-info">
         <div class="card-header border-info">
-            Available Test Subjects
+            Available Test Papers
         </div>
         <div class="card-body p-3">
             <div class="row">

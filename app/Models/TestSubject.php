@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TestSubject
- * 
+ *
  * @property int $id
  * @property int $test_id
  * @property int $subject_id
@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float|null $total_mark
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Subject $subject
  * @property TestConfig $test_config
  * @property Collection|TestSection[] $test_sections
@@ -33,7 +33,7 @@ class TestSubject extends Model
 	protected $table = 'test_subjects';
 
 	protected $casts = [
-		'test_id' => 'int',
+		'test_config_id' => 'int',
 		'subject_id' => 'int',
 		'total_mark' => 'float'
 	];
@@ -51,7 +51,7 @@ class TestSubject extends Model
 
 	public function test_config()
 	{
-		return $this->belongsTo(TestConfig::class, 'test_id');
+		return $this->belongsTo(TestConfig::class, 'test_config_id');
 	}
 
 	public function test_sections()
