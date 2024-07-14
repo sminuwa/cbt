@@ -5,9 +5,12 @@ use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Auth\CandidateLoginController;
 use App\Http\Controllers\Auth\UserLoginController;
+use App\Http\Controllers\CentreController;
+use App\Http\Controllers\ExamTypeController;
 use App\Http\Controllers\MiscController;
 use App\Http\Controllers\TestConfigController;
 use App\Http\Controllers\TopicController;
+use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,13 +19,13 @@ Route::get('/', function () {
 });
 
 
-Route::name('auth.')->prefix('auth/')->group(function () {
-    Route::name('admin.')->prefix('adm/')->group(function () {
+        Route::name('auth.')->prefix('auth/')->group(function () {
+        Route::name('admin.')->prefix('adm/')->group(function () {
         Route::get('login', [UserLoginController::class, 'showLoginForm'])->name('login')->middleware('guest');
         Route::post('login', [UserLoginController::class, 'login'])->name('login.proc');
         Route::get('logout', [UserLoginController::class, 'logout'])->name('logout');
     });
-    Route::name('candidate.')->prefix('/')->group(function () {
+        Route::name('candidate.')->prefix('/')->group(function () {
         Route::get('login', [CandidateLoginController::class, 'showLoginForm'])->name('login');
         Route::post('login', [CandidateLoginController::class, 'login'])->name('login.proc');
         Route::get('logout', [CandidateLoginController::class, 'logout'])->name('logout');
@@ -30,7 +33,7 @@ Route::name('auth.')->prefix('auth/')->group(function () {
 });
 
 
-Route::name('admin.')->prefix('adm')->group(function () {
+    Route::name('admin.')->prefix('adm')->group(function () {
 
     Route::name('dashboard.')->prefix('dashboard')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
@@ -106,3 +109,21 @@ Route::name('admin.')->prefix('adm')->group(function () {
         Route::get('/{venue}/batches/capacity', [MiscController::class, 'batchCapacity'])->name('batches.capacity');
     });
 });
+Route::name('toolbox.')->prefix('toolbox')->group(function () {
+    Route::name('candidate-types.')->prefix('candidate-types')->group(function () {
+        Route::get('/', [ExamTypeController::class, 'index'])->name('index');
+        Route::resource('toolbox/candidate-types', ExamTypeController::class)->except(['show']);
+        Route::get('/candidate-types/create', [ExamTypeController::class, 'create'])->name('create');
+        Route::post('/candidate-types', [ExamTypeController::class, 'store'])->name('store');
+    });
+    Route::name('center_venue.')->prefix('center_venue')->group(function () {
+        Route::get('/', [CentreController::class, 'index'])->name('home');
+        Route::post('centre/store', [CentreController::class,'store'])->name('center.store');
+        Route::post('centre/edit/{id}', [CentreController::class,'edit'])->name('center.edit');
+        Route::post('centre/delete', [CentreController::class,'destroy'])->name('center.destroy');
+        Route::post('venue/store', [VenueController::class,'store'])->name('venue.store');
+        Route::post('venue/edit', [VenueController::class,'edit'])->name('venue.edit');
+        Route::post('venue/delete', [VenueController::class,'destroy'])->name('venue.delete');
+    });
+});
+

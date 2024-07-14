@@ -9,7 +9,7 @@
 									<span></span>
 								</span>
                 </a>
-                <a href="index.html" class="navbar-brand logo">
+                <a href="#" class="navbar-brand logo">
                     <img src="{{asset("assets/img/logo.png")}}" class="img-fluid" alt="Logo">
                 </a>
             </div>
