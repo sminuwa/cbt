@@ -8,4 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Score extends Model
 {
     use HasFactory;
+
+    public function answerOption()
+    {
+        return $this->belongsTo(AnswerOption::class);
+    }
+
+    public function questionBank()
+    {
+        return $this->belongsTo(QuestionBank::class);
+    }
+
+    public function scheduledCandidate()
+    {
+        return $this->belongsTo(ScheduledCandidate::class);
+    }
 }

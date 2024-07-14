@@ -42,6 +42,11 @@ class ScheduledCandidate extends Model
         'reg_number'
     ];
 
+    public function candidate()
+    {
+        return $this->belongsTo(Candidate::class);
+    }
+
     public function exam_type()
     {
         return $this->belongsTo(ExamType::class, 'exam_type_id');
