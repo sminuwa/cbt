@@ -153,7 +153,7 @@
                     @if(Request::is('*toolbox/*') && !Request::is('*toolbox/'))
                         <li class="{{Request::is('*manage_centers')?'active':''}}">
                             <a href="{{route('toolbox.center_venue.home')}}">
-                                <span>Manage Centers/Venues</span>
+                                <span>Manage Institution/Center/Venue</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*subjects')?'active':''}}">
@@ -163,7 +163,7 @@
                         </li>
                         <li class="{{Request::is('*candidate_type')?'active':''}}">
                             <a href="{{ route('toolbox.candidate-types.index') }}">
-                                <span>Manage Candidate Type</span>
+                                <span>Manage Exam Type</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*candidates')?'active':''}}">
@@ -178,7 +178,7 @@
                             </a>
                         </li>
                         <li class="{{Request::is('*invigilator_toolkit*')?'active':''}}">
-                            <a href="#">
+                            <a href="{{route('toolbox.candidate_image_upload.invigilator')}}">
                                 <span>Invigilator Toolkit</span>
                             </a>
                         </li>

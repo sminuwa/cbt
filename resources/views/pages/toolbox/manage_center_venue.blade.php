@@ -3,17 +3,17 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            @if(Session::has('success'))
+            @if(session()->has('success'))
                 <div class="alert alert-success">
-                    {{ Session::get('success') }}
+                    {{ session()->get('success') }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
             @endif
-            @if(Session::has('error'))
+            @if(session()->has('error'))
                 <div class="alert alert-danger">
-                    {{ Session::get('error') }}
+                    {{ session()->get('error') }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -27,7 +27,7 @@
                 <div class="row">
                     <div>
                         <h4 class="card-title d-flex justify-content-between">
-                            <span>Manage Centers/Venues</span>
+                            <span>Manage Institutions Centers/Venues</span>
                         </h4>
                     </div>
                 </div>
@@ -96,7 +96,7 @@
                 </div>
                 <form action="{{ route('toolbox.center_venue.center.store') }}" method="post">
                     @csrf
-                    <input type="hidden" id="type_id" value="0" name="type_id"/>
+                    <input type="hidden" id="type_id" name="type_id"/>
                     <div class="modal-body">
                         <div class="hours-info">
                             <div class="row hours-cont">
@@ -139,7 +139,7 @@
                 </div>
                 <form action="{{route('toolbox.center_venue.venue.store')}}" method="post">
                     @csrf
-                    <input type="hidden" id="venue_id" value="0" name="id"/>
+                    <input type="hidden" id="venue_id"  name="id"/>
                     <div class="modal-body">
                         <div class="hours-info">
                             <div class="row hours-cont">
