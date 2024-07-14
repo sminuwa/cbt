@@ -58,8 +58,10 @@
                                     <label for="availability">Test Availability:</label>
                                     <select class="form-control form-select" name="availability" id="availability"
                                             required>
-                                        <option value="0">Unavailable</option>
-                                        <option value="1">Available</option>
+                                        <option {{$config->active_version==0?'selected':''}} value="0">Unavailable
+                                        </option>
+                                        <option {{$config->active_version==1?'selected':''}} value="1">Available
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -74,7 +76,7 @@
                                             Login
                                         </option>
                                         <option
-                                            value="on starttime"{{$config->starting_mode=='on starttime'?'selected':''}}>
+                                                value="on starttime"{{$config->starting_mode=='on starttime'?'selected':''}}>
                                             On Start Time
                                         </option>
                                     </select>
@@ -106,7 +108,7 @@
                                         <option value="All" {{$config->display_mode=='All'?'selected':''}}>All at once
                                         </option>
                                         <option
-                                            value="single question" {{ $config->display_mode=='single question'?'selected':'' }}>
+                                                value="single question" {{ $config->display_mode=='single question'?'selected':'' }}>
                                             Step by step
                                         </option>
                                     </select>
@@ -120,11 +122,11 @@
                                     <select class="form-control form-select" name="question_administration"
                                             id="question_administration" required>
                                         <option
-                                            value="linear"{{$config->question_administration=='linear'?'selected':''}}>
+                                                value="linear"{{$config->question_administration=='linear'?'selected':''}}>
                                             Linear
                                         </option>
                                         <option
-                                            value="random" {{$config->question_administration=='random'?'Selected':''}}>
+                                                value="random" {{$config->question_administration=='random'?'Selected':''}}>
                                             Random
                                         </option>
                                     </select>
@@ -138,11 +140,11 @@
                                     <select class="form-control form-select" name="option_administration"
                                             id="option_administration" required>
                                         <option
-                                            value="linear" {{$config->option_administration=='linear'?'selected':''}}>
+                                                value="linear" {{$config->option_administration=='linear'?'selected':''}}>
                                             Linear
                                         </option>
                                         <option
-                                            value="random" {{$config->option_administration=='random'?'selected':''}}>
+                                                value="random" {{$config->option_administration=='random'?'selected':''}}>
                                             Random
                                         </option>
                                     </select>

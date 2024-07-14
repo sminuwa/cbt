@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Faculty;
 use App\Models\FacultyScheduleMapping;
 use App\Models\Scheduling;
+use App\Models\TestConfig;
 use App\Models\Venue;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Request;
 
 class MiscController extends Controller
 {
@@ -43,6 +45,17 @@ class MiscController extends Controller
     public function batchCapacity(Venue $venue)
     {
         return $venue;
+    }
+
+    public function testConfig($year, $type, $code)
+    {
+        $configs = TestConfig::with(['test_type', 'test_code'])
+            ->select(['id', 'session', 'semester', 'test_type_id', 'test_code_id'])
+            ->orderBy('session', 'desc')
+            ->where(['session' => $year, 'test_type_id' => $type, 'test_code_id' => $code])
+            ->get();
+
+        return view('pages.admin.reports.ajax.tests', compact('configs'));
     }
 
 }

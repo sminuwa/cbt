@@ -1,4 +1,4 @@
-@php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
+@php use Illuminate\Support\Facades\Auth;use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
     <!-- Profile Sidebar -->
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
@@ -7,11 +7,14 @@
                 <a href="#" class="booking-doc-img">
                     <img src="/assets/img/patients/patient.jpg" alt="User Image">
                 </a>
+                @php
+                   $user= Auth::user();
+                @endphp
                 <div class="profile-det-info">
-                    <h3>Sylux Endyusa Dimitri</h3>
+                    <h3>{{$user->display_name}}</h3>
                     <div class="patient-details">
-                        <h5><i class="fas fa-birthday-cake"></i> 24 Jul 1983, 38 years</h5>
-                        <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Moscow, Russia</h5>
+                        <h5><i class="fas fa-user"></i> {{$user->personnel_no}}</h5>
+                        <h5 class="mb-0"><i class="fas fa-envelope"></i> {{$user->email}}</h5>
                     </div>
                 </div>
             </div>
@@ -39,7 +42,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="">
+                            <a href="{{route('toolbox.candidate-types.index')}}">
                                 <i class="fas fa-toolbox"></i>
                                 <span>Admin Toolbox</span>
                             </a>
@@ -139,7 +142,7 @@
                                 <span>Test Reports</span>
                             </a>
                         </li>
-                        <li class="{{Request::is('*daily*')?'active':''}}">
+                        <li class="{{Request::is('*summary/report')?'active':''}}">
                             <a href="{{route('admin.reports.summary.reports')}}">
                                 <i class="fas fa-chart-column"></i>
                                 <span>Report Summary</span>
@@ -165,6 +168,41 @@
                         </li>
                     @endif
 
+
+{{--                    admin tool box menus--}}
+                    @if(Request::is('*toolbox/*') && !Request::is('*toolbox/'))
+                        <li class="{{Request::is('*manage_centers')?'active':''}}">
+                            <a href="{{route('toolbox.center_venue.home')}}">
+                                <span>Manage Centers/Venues</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*subjects')?'active':''}}">
+                            <a href="{{route('toolbox.subject.home')}}">
+                                <span>Manage Subject</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*candidate_type')?'active':''}}">
+                            <a href="{{ route('toolbox.candidate-types.index') }}">
+                                <span>Manage Candidate Type</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*candidates')?'active':''}}">
+                            <a href="{{route('toolbox.candidate_upload.upload.candidate')}}">
+                                <span>Manage Candidates</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*candidate_upload')?'active':''}}">
+                            <a href="#">
+                                <i class="fas fa-upload"></i>
+                                <span>Upload Candidate Image(s)</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*invigilator_toolkit*')?'active':''}}">
+                            <a href="#">
+                                <span>Invigilator Toolkit</span>
+                            </a>
+                        </li>
+                    @endif
                     <li>
                         <a href="{{ route('auth.admin.logout') }}">
                             <i class="fas fa-sign-out-alt"></i>
