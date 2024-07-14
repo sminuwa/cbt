@@ -37,6 +37,7 @@ class ScheduledCandidate extends Model
     ];
 
     protected $fillable = [
+        'id',
         'candidate_type_id',
         'reg_number'
     ];

@@ -50,6 +50,7 @@ class Scheduling extends Model
 	];
 
 	protected $fillable = [
+        'id',
 		'test_config_id',
 		'venue_id',
 		'date',

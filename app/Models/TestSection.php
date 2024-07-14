@@ -44,6 +44,7 @@ class TestSection extends Model
     ];
 
     protected $fillable = [
+        'id',
         'title',
         'instruction',
         'mark_per_question',

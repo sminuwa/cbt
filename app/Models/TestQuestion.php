@@ -11,14 +11,14 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TestQuestion
- * 
+ *
  * @property int $id
  * @property int $test_section_id
  * @property int $question_bank_id
  * @property int $version
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property QuestionBank $question_bank
  * @property TestSection $test_section
  *
@@ -33,6 +33,7 @@ class TestQuestion extends Model
 		'question_bank_id' => 'int',
 		'version' => 'int'
 	];
+    protected $guarded = [];
 
 	public function question_bank()
 	{

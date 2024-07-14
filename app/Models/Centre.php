@@ -12,14 +12,14 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Centre
- * 
+ *
  * @property int $id
  * @property string|null $name
  * @property string $location
  * @property string $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|Venue[] $venues
  *
  * @package App\Models
@@ -28,7 +28,7 @@ class Centre extends Model
 {
 	protected $table = 'centres';
 
-	protected $fillable = [
+	protected $fillable = ['id',
 		'name',
 		'location',
 		'status'

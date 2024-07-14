@@ -126,6 +126,11 @@ return [
     ],
 
 
-
+    "user_data"=>[
+        "type"=>env("CHPRBN_CBT_USER")=="_ADM_MX_",
+        "api_key"=>env("CHPRBN_CBT_API_KEY"),
+        "secret_key"=>env("CHPRBN_CBT_SECRET_KEY"),
+        "server_address"=>env("CHPRBN_SERV_ADDR")
+    ]
 
 ];
