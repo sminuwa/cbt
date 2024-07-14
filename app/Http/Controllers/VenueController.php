@@ -22,7 +22,7 @@ class VenueController extends Controller
             $venue = new Venue();
             $venue->centre_id = $request->center;
             $venue->name = $request->name;
-            $venue->location = $request->venue_location;
+            $venue->location = $request->venueLocation;
             $venue->capacity = $request->capacity;
             if ($venue->save())
                 return back()->with(['success' => 'Venue saved successfully.']);

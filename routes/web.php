@@ -173,6 +173,7 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
     Route::name('candidate_image_upload.')->prefix('candidate_image_upload')->group(function () {
         Route::get('upload-candidate', [CandidateUploadController::class, 'imageIndex'])->name('upload.images');
         Route::post('upload-candidate-image', [CandidateUploadController::class, 'imageUpload'])->name('upload.image.data');
+        Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('invigilator');
 
     });
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {

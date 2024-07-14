@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Imports\CandidatesImport;
+use App\Models\ExamType;
+use App\Models\TestConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -82,9 +84,11 @@ public function imageIndex()
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function invigilator()
     {
-        //
+        $candidateTypes = ExamType::all();
+        $testConfigs = TestConfig::exam()->get();
+        return view('pages.toolbox.invigilator_panel',compact('testConfigs'));
     }
 
     /**

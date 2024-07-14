@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-@php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
-
-<!-- Profile Sidebar -->
-=======
 @php use Illuminate\Support\Facades\Auth;use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
+
     <!-- Profile Sidebar -->
->>>>>>> 773a5288156f80d106de2153b93e0d069e0f0d7a
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
         <div class="widget-profile pro-widget-content">
@@ -14,7 +9,7 @@
                     <img src="/assets/img/patients/patient.jpg" alt="User Image">
                 </a>
                 @php
-                   $user= Auth::user();
+                    $user= Auth::user();
                 @endphp
                 <div class="profile-det-info">
                     <h3>{{$user->display_name}}</h3>
@@ -156,11 +151,11 @@
                     @endif
 
 
-{{--                    admin tool box menus--}}
+                    {{--                    admin tool box menus--}}
                     @if(Request::is('*toolbox/*') && !Request::is('*toolbox/'))
                         <li class="{{Request::is('*manage_centers')?'active':''}}">
                             <a href="{{route('toolbox.center_venue.home')}}">
-                                <span>Manage Centers/Venues</span>
+                                <span>Manage Institution/Center/Venue</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*subjects')?'active':''}}">
@@ -170,7 +165,7 @@
                         </li>
                         <li class="{{Request::is('*candidate_type')?'active':''}}">
                             <a href="{{ route('toolbox.candidate-types.index') }}">
-                                <span>Manage Candidate Type</span>
+                                <span>Manage Exam Type</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*candidates')?'active':''}}">
@@ -185,7 +180,7 @@
                             </a>
                         </li>
                         <li class="{{Request::is('*invigilator_toolkit*')?'active':''}}">
-                            <a href="#">
+                            <a href="{{route('toolbox.candidate_image_upload.invigilator')}}">
                                 <span>Invigilator Toolkit</span>
                             </a>
                         </li>
