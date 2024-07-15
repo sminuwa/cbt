@@ -22,13 +22,13 @@ Route::get('/', function () {
 });
 
 
-        Route::name('auth.')->prefix('auth/')->group(function () {
-        Route::name('admin.')->prefix('adm/')->group(function () {
+Route::name('auth.')->prefix('auth/')->group(function () {
+    Route::name('admin.')->prefix('adm/')->group(function () {
         Route::get('login', [UserLoginController::class, 'showLoginForm'])->name('login')->middleware('guest');
         Route::post('login', [UserLoginController::class, 'login'])->name('login.proc');
         Route::get('logout', [UserLoginController::class, 'logout'])->name('logout');
     });
-        Route::name('candidate.')->prefix('/')->group(function () {
+    Route::name('candidate.')->prefix('/')->group(function () {
         Route::get('login', [CandidateLoginController::class, 'showLoginForm'])->name('login');
         Route::post('login', [CandidateLoginController::class, 'login'])->name('login.proc');
         Route::get('logout', [CandidateLoginController::class, 'logout'])->name('logout');
@@ -118,7 +118,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
         Route::name('reports.')->prefix('reports')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::name('test.')->prefix('test')->group(function () {
-                Route::get('/', 'testReports')->name('index');
+                Route::get('/report', 'testReports')->name('index');
                 Route::post('generate', 'generateDaily')->name('generate');
             });
 
@@ -130,8 +130,8 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
             });
 
             Route::name('active.')->prefix('active')->group(function () {
-                Route::get('/candidates', 'testCode')->name('index');
-                Route::post('generate', 'generateByCode')->name('generate');
+                Route::get('/candidates', 'activeCandidates')->name('index');
+                Route::post('generate', 'generateActiveCandidates')->name('generate');
             });
         });
     });
@@ -144,24 +144,25 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
         Route::get('test/config/{year}/{type}/{code}', [MiscController::class, 'testConfig'])->name('test.config');
     });
 });
+
 Route::name('toolbox.')->prefix('toolbox')->group(function () {
     Route::name('candidate-types.')->prefix('candidate-types')->group(function () {
         Route::get('/', [ExamTypeController::class, 'index'])->name('index');
-        Route::post('etype/store', [ExamTypeController::class,'store'])->name('store');
-        Route::get('etype/delete/{examType}', [ExamTypeController::class,'destroy'])->name('delete');
+        Route::post('etype/store', [ExamTypeController::class, 'store'])->name('store');
+        Route::get('etype/delete/{examType}', [ExamTypeController::class, 'destroy'])->name('delete');
     });
     Route::name('center_venue.')->prefix('center_venue')->group(function () {
         Route::get('/', [CentreController::class, 'index'])->name('home');
-        Route::post('centre/store', [CentreController::class,'store'])->name('center.store');
-        Route::post('centre/edit/{id}', [CentreController::class,'edit'])->name('center.edit');
-        Route::post('centre/delete', [CentreController::class,'destroy'])->name('center.destroy');
-        Route::post('venue/store', [VenueController::class,'store'])->name('venue.store');
-        Route::get('venue/delete/{venue}', [VenueController::class,'destroy'])->name('venue.delete');
+        Route::post('centre/store', [CentreController::class, 'store'])->name('center.store');
+        Route::post('centre/edit/{id}', [CentreController::class, 'edit'])->name('center.edit');
+        Route::post('centre/delete', [CentreController::class, 'destroy'])->name('center.destroy');
+        Route::post('venue/store', [VenueController::class, 'store'])->name('venue.store');
+        Route::get('venue/delete/{venue}', [VenueController::class, 'destroy'])->name('venue.delete');
     });
     Route::name('subject.')->prefix('subjects')->group(function () {
         Route::get('/', [SubjectsController::class, 'index'])->name('home');
-        Route::post('sub/store', [SubjectsController::class,'create'])->name('store');
-        Route::get('sub/delete/{subject}', [SubjectsController::class,'destroy'])->name('delete');
+        Route::post('sub/store', [SubjectsController::class, 'create'])->name('store');
+        Route::get('sub/delete/{subject}', [SubjectsController::class, 'destroy'])->name('delete');
     });
 
     Route::name('candidate_upload.')->prefix('candidate_upload')->group(function () {

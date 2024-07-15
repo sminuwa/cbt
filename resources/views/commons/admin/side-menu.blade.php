@@ -135,7 +135,7 @@
                     @endif
 
                     @if(Request::is('*report*'))
-                        <li class="{{Request::is('*daily*')?'active':''}}">
+                        <li class="{{Request::is('*test/report*')?'active':''}}">
                             <a href="{{route('admin.reports.test.index')}}">
                                 <i class="fas fa-chart-bar"></i>
                                 <span>Test Reports</span>
@@ -159,8 +159,8 @@
                                 <span>Presentation Summary</span>
                             </a>
                         </li>
-                        <li class="{{Request::is('*by-test-code*')?'active':''}}">
-                            <a href="">
+                        <li class="{{Request::is('*active*')?'active':''}}">
+                            <a href="{{route('admin.reports.active.index')}}">
                                 <i class="fas fa-users"></i>
                                 <span>Active Candidates</span>
                             </a>
