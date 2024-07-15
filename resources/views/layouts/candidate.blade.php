@@ -73,6 +73,19 @@
         .btn-group > :not(.btn-check:first-child) + .btn, .btn-group > .btn-group:not(:first-child) {
             margin-left: 0;
         }
+
+
+
+
+
+        .wizard-step h2 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="box-layout">
@@ -171,7 +184,7 @@ $remaining_seconds = session('remaining_seconds');
         <!-- Page Sidebar Ends-->
         <div class="page-body">
 {{--            @yield('content')--}}
-            @json($test_questions)
+{{--            @json($all_test_questions)--}}
 {{--            @json($scheduled_candidate)--}}
             <div class="container-fluid">
                 <div class="row">
@@ -192,13 +205,23 @@ $remaining_seconds = session('remaining_seconds');
                                 <div class="mt-2" style="text-align:left;">
                                     <h5>Exam: {{ $test->test_code->name }} {{ $test->session }}</h5>
                                     <h5>Duration: {{$test->duration ?? 0}} mins</h5>
-                                    <span>Questions navigation</span>
+
+
+                                    <div class="border-t-primary border-3 my-2" style="border-radius:5px">
+                                        <span>Questions navigation</span>
+                                        <br>
                                     <div class="btn-group btn-group-square">
-                                        @for($i = 1; $i<=50; $i++)
+                                        {{--@for($i = 1; $i<=50; $i++)
                                             <a class="btn border-none btn-{{ $i > 10 ? 'outline-':'' }}primary btn-sm btn-question {{ $i <30 ? 'disabled':'' }}"  href="javascript:;">
                                                 {!!  $i < 10 ? $i:$i  !!}
                                             </a>
-                                        @endfor
+                                        @endfor--}}
+                                        @foreach($all_test_questions as $q)
+                                            <a href="javascript:;" class="q{{ $q->question_bank_id }} btn btn-{{ $q->question_bank_id != $q->has_score ? 'outline-':'' }}primary btn-sm btn-question " >
+                                                {!!  $q->question_bank_id == $q->has_score ? $loop->iteration:$loop->iteration  !!}
+                                            </a>
+                                        @endforeach
+                                    </div>
                                     </div>
                                 </div>
                             </div>
@@ -209,55 +232,49 @@ $remaining_seconds = session('remaining_seconds');
                         <div class="card">
                             <div class="card-header border-l-warning border-3">
                                 <h4 class="card-title">
-                                    Programme Code :: {{ $test->test_code->name }}
+                                    {{--{{ $test->test_code->name }}--}}
+
                                     @foreach($candidate_subjects as $subject)
-                                        (
+
                                         <a href="" class="text-primary">{{ $subject->name }}</a>
-                                        ) @if(!$loop->last) | @endif
+                                         @if(!$loop->last) | @endif
+
                                     @endforeach
+
                                 </h4>
                             </div>
                             <div class="card-body">
-                                <div class="text-center m-4">
-                                    <h5>SECTION: A</h5>
-                                    <h5>Instruction: Answer all</h5>
-                                </div>
-                                <div class="card-wrapper border rounded-3 fill-radios h-100 radio-toolbar checkbox-checked">
-                                    <h6 class="sub-title">The following is a form of periodontal surgical proccedures:</h6>
-                                    <div class="form-check radio radio-primary" style="width:100%">
-                                        <input class="form-check-input" id="radio111" type="radio" name="radio3" value="option1">
-                                        <label class="form-check-label" for="radio111">A. Product</label>
-                                    </div>
-                                    <div class="form-check radio radio-primary">
-                                        <input class="form-check-input" id="radio333" type="radio" name="radio3" value="option3">
-                                        <label class="form-check-label" for="radio333">B. Order history </label>
-                                    </div>
-                                    <div class="form-check radio radio-primary">
-                                        <input class="form-check-input" id="radio444" type="radio" name="radio3" value="option3">
-                                        <label class="form-check-label" for="radio444">C. Invoice </label>
-                                    </div>
-                                    <div class="form-check radio radio-primary">
-                                        <input class="form-check-input" id="radio666" type="radio" name="radio3" value="option3">
-                                        <label class="form-check-label" for="radio666">D. Wishlist</label>
-                                    </div>
-                                </div>
+{{--                                @json($question_papers)--}}
+                                <form id="wizardForm">
+
+
+                                    @foreach($question_array as $question_paper)
+                                        <div id="{{ $question_paper['question_bank_id'] }}" class="wizard-step @if(!$loop->first) hidden @endif">
+                                            <div class="text-center m-4">
+                                                <h5>{{ $question_paper['section_title'] }}</h5>
+                                                <h5>Instruction: {{ strip_tags($question_paper['section_instruction']) }}</h5>
+                                            </div>
+                                            <div class="card-wrapper border rounded-3 fill-radios h-100 radio-toolbar checkbox-checked">
+                                                <h6 class="sub-title">{{ $question_paper['question_name'] }}</h6>
+                                                @foreach($question_paper['answer_options'] as $answer_option)
+                                                    <div id="{{ $question_paper['question_bank_id'] }}{{ $answer_option['answer_option_id'] }}" class="form-check radio radio-primary" style="width:100%">
+                                                        <input @if($answer_option['answer_option_id'] == $answer_option['selected_answer_option']) checked @endif class="form-check-input" id="{{$answer_option['answer_option_id']}}" type="radio" name="radio3"  value="option1">
+                                                        <label class="form-check-label" for="{{$answer_option['answer_option_id']}}">{{ chr(64+ $loop->iteration) }}. {{ $answer_option['answer_name'] }}</label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </form>
 
                             </div>
                             <div class="card-footer">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <button class="btn btn-square btn-outline-primary" type="button" title="btn btn-square btn-outline-primary">
-                                            <i class="las la-arrow-left"></i> Previous
-                                        </button>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="float-end">
-                                            <button class="btn btn-square btn-outline-primary" type="button" title="btn btn-square btn-outline-primary">
-                                                Next <i class="las la-arrow-right"></i>
-                                            </button>
-                                        </div>
-                                    </div>
+                                <button type="button" id="prevBtn" class="btn btn-square btn-outline-primary">Previous</button>
+                                <div class="float-end">
+                                    <button type="button" id="nextBtn" class="btn btn-square btn-outline-primary">Next</button>
+                                    <button type="submit" id="submitBtn" class="btn btn-square btn-primary hidden">Submit</button>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -337,15 +354,6 @@ $remaining_seconds = session('remaining_seconds');
 <script src="{{ asset('candidate/assets/js/slick/slick.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/slick/slick.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/header-slick.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/apex-chart/apex-chart.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/apex-chart/stock-prices.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/apex-chart/moment.min.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/echart/esl.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/echart/config.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/echart/pie-chart/facePrint.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/echart/pie-chart/testHelper.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/echart/pie-chart/custom-transition-texture.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/echart/data/symbols.js') }}"></script>
 <!-- calendar js-->
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.en.js') }}"></script>
@@ -359,6 +367,54 @@ $remaining_seconds = session('remaining_seconds');
 {{--<script src="assets/js/theme-customizer/customizer.js"></script>--}}
 
 @stack('script')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const steps = document.querySelectorAll('.wizard-step');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        let currentStep = 0;
+        function showStep(step) {
+            steps.forEach((el, index) => {
+                el.classList.toggle('hidden', index !== step);
+            });
+            prevBtn.classList.toggle('hidden', step === 0);
+            nextBtn.classList.toggle('hidden', step === steps.length - 1);
+            submitBtn.classList.toggle('hidden', step !== steps.length - 1);
+            let qid = steps[step].id;
+            let qlist = $('.q'+qid);
+            qlist.removeClass('btn-outline-primary');
+            qlist.addClass('btn-primary');
+            qlist.prevAll().addClass('btn-primary')
+            qlist.nextAll().removeClass('btn-primary')
+            qlist.nextAll().addClass('btn-outline-primary')
+            // qlist.prev()
+            console.log(qlist)
+            // alert(qid);
+        }
+        function updateReview() {
+
+        }
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                if (currentStep === steps.length - 1) updateReview();
+                showStep(currentStep);
+            }
+        });
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        });
+        document.getElementById('wizardForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Form submitted successfully!');
+        });
+        showStep(currentStep);
+    });
+</script>
 <script>
     function startTimer(duration, display) {
         let timer = duration, hours, minutes, seconds;
@@ -374,13 +430,13 @@ $remaining_seconds = session('remaining_seconds');
             display.textContent = hours + ":" + minutes + ":" + seconds;
 
             // Change color to red when 15 minutes (900 seconds) are left
-            if (timer <= 900) {
+            if (timer <= 600) {
                 display.style.color = 'red';
             }
 
             if (--timer < -{{($test->time_padding ?? 0) * 60}}) {
                 clearInterval(interval);
-                alert("Time's up!");
+                alert("Time is up!");
             }
         }, 1000);
     }

@@ -22,5 +22,6 @@ Route::middleware('auth:web')->name('test.')->prefix('test')->group(function(){
 //    Route::get('/',[TestController::class,'start'])->name('start');
     Route::get('/instruction',[MiscController::class,'instruction'])->name('instruction');
     Route::get('/question{start?}',[TestController::class,'question'])->name('question');
+    Route::get('/nativation/{question}/{subject}/{}',[TestController::class,'question'])->name('navitation');
 });
 Route::view('test','pages.candidate.test.instruction');
