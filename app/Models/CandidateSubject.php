@@ -39,10 +39,7 @@ class CandidateSubject extends Model
         'enabled' => 'bool'
     ];
 
-    protected $fillable = [
-        'add_index',
-        'enabled'
-    ];
+    protected $guarded = [];
 
     public function scheduled_candidate()
     {

@@ -3,15 +3,15 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            @if(Session::has('success'))
+            @if(session()->has('success'))
                 <div class="alert alert-success">
-                    {{ Session::get('success') }}
+                    {{ session()->get('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
             @endif
-            @if(Session::has('error'))
+            @if(session()->has('error'))
                 <div class="alert alert-danger">
-                    {{ Session::get('error') }}
+                    {{ session()->get('error') }}
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
             @endif
@@ -33,7 +33,7 @@
 
         <div class="alert alert-warning">
             <b style="color:red;">NOTE:</b> You can upload from Excel workbook .xls or .xlsx format. Click
-            <a style="color:orange; font-style: italic;" target="_blank" href="{{ asset('assets/file/student_list_upload_template.xlsx') }}">here</a> to download the template.
+            <a style="color:orange; font-style: italic;" target="_blank" href="{{ asset('assets/candidate_list_upload_template.xlsx') }}">here</a> to download the template.
         </div>
         <br>
     <div>

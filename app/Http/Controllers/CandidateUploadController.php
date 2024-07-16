@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Imports\CandidatesImport;
+use App\Models\ExamType;
+use App\Models\TestConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+
 //use Maatwebsite\Excel;
-use Maatwebsite\Excel\Excel;
 
 //use Vtiful\Kernel\Excel;
 
@@ -44,28 +47,48 @@ class CandidateUploadController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+public function imageIndex()
+{
+    return view('pages.toolbox.candidate_image_upload');
+}
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function imageUpload(Request $request)
     {
-        //
+        // Adjust memory limit and execution time if needed
+        // ini_set("memory_limit", "256M");
+        // ini_set('max_execution_time', 300);
+
+        $request->validate([
+            'files.*' => 'required|file|mimes:jpg|max:2048', // Validate file types and size
+        ]);
+
+        $path = public_path('candidate_pics'); // Define your upload directory
+        $successMessage = '';
+
+        foreach ($request->file('files') as $file) {
+            $fileName = $file->getClientOriginalName();
+            $fileExtension = $file->getClientOriginalExtension();
+
+            if ($file->isValid() && in_array($fileExtension, ['jpg', 'png'])) {
+                $file->move($path, $fileName); // Move uploaded file to specified directory
+
+                $successMessage .= "Image '$fileName' uploaded successfully!<br>";
+            } else {
+                $successMessage .= "Error uploading '$fileName': Invalid format or something went wrong.<br>";
+            }
+        }
+
+        return back()->with('success', "Images uploaded successfully!");
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function invigilator()
     {
-        //
+        $candidateTypes = ExamType::all();
+        $testConfigs = TestConfig::exam()->get();
+        return view('pages.toolbox.invigilator_panel',compact('testConfigs'));
     }
 
     /**

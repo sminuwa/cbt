@@ -32,19 +32,13 @@ class Venue extends Model
 {
     protected $table = 'venues';
 
-    protected $casts = [
+    protected $casts = ['id',
         'centre_id' => 'int',
         'host_id' => 'int',
         'capacity' => 'int'
     ];
 
-    protected $fillable = [
-        'centre_id',
-        'host_id',
-        'name',
-        'location',
-        'capacity'
-    ];
+    protected $guarded = [];
 
     public function centre()
     {

@@ -49,16 +49,7 @@ class Scheduling extends Model
         'daily_end_time' => 'datetime'
     ];
 
-    protected $fillable = [
-        'test_config_id',
-        'venue_id',
-        'date',
-        'maximum_batch',
-        'no_per_schedule',
-        'daily_start_time',
-        'daily_end_time'
-    ];
-
+	protected $guarded = [];
     public function test_config()
     {
         return $this->belongsTo(TestConfig::class, 'test_config_id');

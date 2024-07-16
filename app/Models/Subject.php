@@ -37,11 +37,7 @@ class Subject extends Model
 		'exam_type_id' => 'int'
 	];
 
-	protected $fillable = [
-		'subject_code',
-		'exam_type_id',
-		'name'
-	];
+	protected $guarded = [];
 
 	public function exam_type()
 	{

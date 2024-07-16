@@ -1,5 +1,4 @@
-@php use Illuminate\Support\Facades\Auth;use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
-    <!-- Profile Sidebar -->
+@php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
         <div class="widget-profile pro-widget-content">
@@ -8,7 +7,7 @@
                     <img src="/assets/img/patients/patient.jpg" alt="User Image">
                 </a>
                 @php
-                   $user= Auth::user();
+                    $user = auth()->user();
                 @endphp
                 <div class="profile-det-info">
                     <h3>{{$user->display_name}}</h3>
@@ -60,6 +59,12 @@
                             </a>
                         </li>
                     @endif
+                    <li class="{{Request::is('*dashboard')?'active':''}}">
+                        <a href="{{ route('admin.exams.setup.index') }}">
+                            <i class="fas fa-lock-open"></i>
+                            <span>Setup Exams</span>
+                        </a>
+                    </li>
 
                     @if(Request::is('*test/config*') && !Request::is('*test/config'))
                         @php $config = Session::get('config'); @endphp
@@ -113,6 +118,12 @@
                         </li>
                     @endif
 
+<<<<<<< HEAD
+                    @if(Request::is('*questions/authoring*'))
+                        {{--                                //&& !Request::is('*questions/authoring')--}}
+
+
+=======
                     @if(Request::is('*questions/authoring*') //&& !Request::is('*questions/authoring')
 )
                         <li class="{{Request::is('*author')?'active':''}}">
@@ -134,9 +145,10 @@
                             </a>
                         </li>
                     @endif
+>>>>>>> 2c269cf28839fa7c73d661cebcda53f084f34abd
 
                     @if(Request::is('*report*'))
-                        <li class="{{Request::is('*daily*')?'active':''}}">
+                        <li class="{{Request::is('*test/report*')?'active':''}}">
                             <a href="{{route('admin.reports.test.index')}}">
                                 <i class="fas fa-chart-bar"></i>
                                 <span>Test Reports</span>
@@ -160,8 +172,8 @@
                                 <span>Presentation Summary</span>
                             </a>
                         </li>
-                        <li class="{{Request::is('*by-test-code*')?'active':''}}">
-                            <a href="">
+                        <li class="{{Request::is('*active*')?'active':''}}">
+                            <a href="{{route('admin.reports.active.index')}}">
                                 <i class="fas fa-users"></i>
                                 <span>Active Candidates</span>
                             </a>
@@ -169,11 +181,11 @@
                     @endif
 
 
-{{--                    admin tool box menus--}}
+                    {{--                    admin tool box menus--}}
                     @if(Request::is('*toolbox/*') && !Request::is('*toolbox/'))
                         <li class="{{Request::is('*manage_centers')?'active':''}}">
                             <a href="{{route('toolbox.center_venue.home')}}">
-                                <span>Manage Centers/Venues</span>
+                                <span>Manage Institution/Center/Venue</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*subjects')?'active':''}}">
@@ -183,7 +195,7 @@
                         </li>
                         <li class="{{Request::is('*candidate_type')?'active':''}}">
                             <a href="{{ route('toolbox.candidate-types.index') }}">
-                                <span>Manage Candidate Type</span>
+                                <span>Manage Exam Type</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*candidates')?'active':''}}">
@@ -192,13 +204,13 @@
                             </a>
                         </li>
                         <li class="{{Request::is('*candidate_upload')?'active':''}}">
-                            <a href="#">
+                            <a href="{{route('toolbox.candidate_image_upload.upload.images')}}">
                                 <i class="fas fa-upload"></i>
                                 <span>Upload Candidate Image(s)</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*invigilator_toolkit*')?'active':''}}">
-                            <a href="#">
+                            <a href="{{route('toolbox.candidate_image_upload.invigilator')}}">
                                 <span>Invigilator Toolkit</span>
                             </a>
                         </li>

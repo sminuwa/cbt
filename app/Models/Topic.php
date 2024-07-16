@@ -32,10 +32,7 @@ class Topic extends Model
 		'subject_id' => 'int'
 	];
 
-	protected $fillable = [
-		'subject_id',
-		'name'
-	];
+	protected $guarded = [];
 
 	public function subject()
 	{

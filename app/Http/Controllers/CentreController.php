@@ -27,7 +27,7 @@ class CentreController extends Controller
             ['name' => $request->name, 'location' => $request->centreLocation, 'status' => 'Active']
         );
 
-        return response()->json(['success' => 'Centre saved successfully.']);
+        return back()->with('success', 'Centre saved successfully.');
     }
 
     public function edit($id)

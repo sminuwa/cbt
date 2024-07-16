@@ -38,9 +38,15 @@ class ScheduledCandidate extends Model
     ];
 
     protected $fillable = [
+        'id',
         'candidate_type_id',
         'reg_number'
     ];
+
+    public function candidate()
+    {
+        return $this->belongsTo(Candidate::class);
+    }
 
     public function exam_type()
     {
