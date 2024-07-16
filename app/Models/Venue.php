@@ -38,13 +38,7 @@ class Venue extends Model
         'capacity' => 'int'
     ];
 
-    protected $fillable = [
-        'centre_id',
-        'host_id',
-        'name',
-        'location',
-        'capacity'
-    ];
+    protected $guarded = [];
 
     public function centre()
     {

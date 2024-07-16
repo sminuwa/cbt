@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-
-@php use Illuminate\Support\Facades\Auth;use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
-    <!-- Profile Sidebar -->
-=======
 @php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
->>>>>>> 2c269cf28839fa7c73d661cebcda53f084f34abd
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
         <div class="widget-profile pro-widget-content">

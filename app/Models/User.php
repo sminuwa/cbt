@@ -51,16 +51,7 @@ class User extends Authenticatable
         'password'
     ];
 
-    protected $fillable = [
-        'username',
-        'password',
-        'display_name',
-        'email',
-        'personnel_no',
-        'enabled',
-        'question',
-        'answer'
-    ];
+    protected $guarded = [];
 
     public function test_compositors()
     {

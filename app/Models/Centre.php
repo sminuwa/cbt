@@ -28,11 +28,7 @@ class Centre extends Model
 {
 	protected $table = 'centres';
 
-	protected $fillable = ['id',
-		'name',
-		'location',
-		'status'
-	];
+	protected $guarded = [];
 
 	public function venues()
 	{

@@ -76,30 +76,7 @@ class TestConfig extends Model
         'allow_calc' => 'bool'
     ];
 
-    protected $fillable = [
-        'test_category',
-        'total_mark',
-        'test_code_id',
-        'test_type_id',
-        'session',
-        'semester',
-        'daily_start_time',
-        'daily_end_time',
-        'duration',
-        'starting_mode',
-        'display_mode',
-        'question_administration',
-        'option_administration',
-        'versions',
-        'active_version',
-        'initiated_by',
-        'date_initiated',
-        'status',
-        'endorsement',
-        'pass_key',
-        'time_padding',
-        'allow_calc'
-    ];
+    protected $guarded = [];
 
     public function test_code()
     {

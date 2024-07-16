@@ -178,8 +178,7 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('upload-candidate-data', [CandidateUploadController::class, 'upload'])->name('upload.candidate.data');
 
     });
-<<<<<<< HEAD
-=======
+
 
     Route::name('candidate_image_upload.')->prefix('candidate_image_upload')->group(function () {
         Route::get('upload-candidate', [CandidateUploadController::class, 'imageIndex'])->name('upload.images');
@@ -192,7 +191,6 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('pull/basic', [SetupController::class, 'pullBasicResource'])->name('pull.basic');
         Route::post('pull/test', [SetupController::class, 'pullTestResource'])->name('pull.test');
     });
->>>>>>> 2c269cf28839fa7c73d661cebcda53f084f34abd
 });
 
 Route::name('api.v1.')->prefix('api/v1/')->group(function () {
