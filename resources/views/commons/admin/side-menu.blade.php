@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 
 @php use Illuminate\Support\Facades\Auth;use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
     <!-- Profile Sidebar -->
+=======
+@php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
+>>>>>>> 2c269cf28839fa7c73d661cebcda53f084f34abd
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
         <div class="widget-profile pro-widget-content">
@@ -9,7 +13,7 @@
                     <img src="/assets/img/patients/patient.jpg" alt="User Image">
                 </a>
                 @php
-                   $user= Auth::user();
+                    $user = auth()->user();
                 @endphp
                 <div class="profile-det-info">
                     <h3>{{$user->display_name}}</h3>
@@ -120,11 +124,42 @@
                         </li>
                     @endif
 
+<<<<<<< HEAD
                     @if(Request::is('*questions/authoring*'))
                         {{--                                //&& !Request::is('*questions/authoring')--}}
 
 
+=======
+                    @if(Request::is('*questions/authoring*') //&& !Request::is('*questions/authoring')
+)
+                        <li class="{{Request::is('*author')?'active':''}}">
+                            <a href="{{ route('admin.questions.authoring.author') }}">
+                                <i class="fas fa-newspaper"></i>
+                                <span>Author Question</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*edit*')?'active':''}}">
+                            <a href="{{ route('admin.questions.authoring.edit.questions') }}">
+                                <i class="fas fa-edit"></i>
+                                <span>Modify Existing Questions</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*preview*')?'active':''}}">
+                            <a href="{{ route('admin.questions.authoring.preview') }}">
+                                <i class="fas fa-display"></i>
+                                <span>Preview Questions</span>
+                            </a>
+                        </li>
+                    @endif
+>>>>>>> 2c269cf28839fa7c73d661cebcda53f084f34abd
 
+                    @if(Request::is('*report*'))
+                        <li class="{{Request::is('*test/report*')?'active':''}}">
+                            <a href="{{route('admin.reports.test.index')}}">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Test Reports</span>
+                            </a>
+                        </li>
                         <li class="{{Request::is('*summary/report')?'active':''}}">
                             <a href="{{route('admin.reports.summary.reports')}}">
                                 <i class="fas fa-chart-column"></i>
@@ -143,8 +178,8 @@
                                 <span>Presentation Summary</span>
                             </a>
                         </li>
-                        <li class="{{Request::is('*by-test-code*')?'active':''}}">
-                            <a href="">
+                        <li class="{{Request::is('*active*')?'active':''}}">
+                            <a href="{{route('admin.reports.active.index')}}">
                                 <i class="fas fa-users"></i>
                                 <span>Active Candidates</span>
                             </a>
@@ -152,11 +187,11 @@
                     @endif
 
 
-{{--                    admin tool box menus--}}
+                    {{--                    admin tool box menus--}}
                     @if(Request::is('*toolbox/*') && !Request::is('*toolbox/'))
                         <li class="{{Request::is('*manage_centers')?'active':''}}">
                             <a href="{{route('toolbox.center_venue.home')}}">
-                                <span>Manage Centers/Venues</span>
+                                <span>Manage Institution/Center/Venue</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*subjects')?'active':''}}">
@@ -166,7 +201,7 @@
                         </li>
                         <li class="{{Request::is('*candidate_type')?'active':''}}">
                             <a href="{{ route('toolbox.candidate-types.index') }}">
-                                <span>Manage Candidate Type</span>
+                                <span>Manage Exam Type</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*candidates')?'active':''}}">
@@ -175,13 +210,13 @@
                             </a>
                         </li>
                         <li class="{{Request::is('*candidate_upload')?'active':''}}">
-                            <a href="#">
+                            <a href="{{route('toolbox.candidate_image_upload.upload.images')}}">
                                 <i class="fas fa-upload"></i>
                                 <span>Upload Candidate Image(s)</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*invigilator_toolkit*')?'active':''}}">
-                            <a href="#">
+                            <a href="{{route('toolbox.candidate_image_upload.invigilator')}}">
                                 <span>Invigilator Toolkit</span>
                             </a>
                         </li>

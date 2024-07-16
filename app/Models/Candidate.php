@@ -9,8 +9,31 @@ use Illuminate\Notifications\Notifiable;
 
 class Candidate extends Authenticatable
 {
-    use  HasFactory, Notifiable;
+//    use  HasFactory, Notifiable;
+    use HasFactory;
 
+    protected $fillable = [
+        'indexing',
+        'programme_id',
+        'firstname',
+        'surname',
+        'other_names',
+        'gender',
+        'dob',
+        'lga_id',
+        'country_id',
+        'exam_year',
+        'password',
+        'nin',
+        'remember_token',
+        'api_token',
+        'enabled',
+    ];
+
+    public function scheduledCandidates()
+    {
+        return $this->hasMany(ScheduledCandidate::class);
+    }
 
     public function fullname(){
         return ($this->surname ?? null).' '.($this->firstname ?? null). ' '.($this->other_name ?? null);
