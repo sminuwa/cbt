@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-@php use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
 
-<!-- Profile Sidebar -->
-=======
 @php use Illuminate\Support\Facades\Auth;use Illuminate\Support\Facades\Request;use Illuminate\Support\Facades\Session; @endphp
     <!-- Profile Sidebar -->
->>>>>>> 773a5288156f80d106de2153b93e0d069e0f0d7a
 <div class="col-md-5 col-lg-4 col-xl-3 theiaStickySidebar">
     <div class="profile-sidebar">
         <div class="widget-profile pro-widget-content">
@@ -66,6 +61,12 @@
                             </a>
                         </li>
                     @endif
+                    <li class="{{Request::is('*dashboard')?'active':''}}">
+                        <a href="{{ route('admin.exams.setup.index') }}">
+                            <i class="fas fa-lock-open"></i>
+                            <span>Setup Exams</span>
+                        </a>
+                    </li>
 
                     @if(Request::is('*test/config*') && !Request::is('*test/config'))
                         @php $config = Session::get('config'); @endphp
@@ -122,12 +123,7 @@
                     @if(Request::is('*questions/authoring*'))
                         {{--                                //&& !Request::is('*questions/authoring')--}}
 
-                        <li class="{{Request::is('*dashboard')?'active':''}}">
-                            <a href="{{ route('admin.exams.setup.index') }}">
-                                <i class="fas fa-lock-open"></i>
-                                <span>Setup Exams</span>
-                            </a>
-                        </li>
+
 
                         <li class="{{Request::is('*summary/report')?'active':''}}">
                             <a href="{{route('admin.reports.summary.reports')}}">

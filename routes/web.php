@@ -143,7 +143,16 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
         Route::get('/{venue}/batches/capacity', [MiscController::class, 'batchCapacity'])->name('batches.capacity');
         Route::get('test/config/{year}/{type}/{code}', [MiscController::class, 'testConfig'])->name('test.config');
     });
+
+    Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
+        Route::get('/', [SetupController::class, 'index'])->name('index');
+        Route::post('pull/basic', [SetupController::class, 'pullBasicResource'])->name('pull.basic');
+        Route::post('pull/test', [SetupController::class, 'pullTestResource'])->name('pull.test');
+        Route::post('pull/candidate', [SetupController::class, 'pullCandidateResource'])->name('pull.candidate');
+        Route::post('pull/candidate/picture', [SetupController::class, 'pullCandidatePictures'])->name('pull.candidate.pictures');
+    });
 });
+
 Route::name('toolbox.')->prefix('toolbox')->group(function () {
     Route::name('candidate-types.')->prefix('candidate-types')->group(function () {
         Route::get('/', [ExamTypeController::class, 'index'])->name('index');
@@ -169,11 +178,6 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('upload-candidate-data', [CandidateUploadController::class, 'upload'])->name('upload.candidate.data');
 
     });
-    Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
-        Route::get('/', [SetupController::class, 'index'])->name('index');
-        Route::post('pull/basic', [SetupController::class, 'pullBasicResource'])->name('pull.basic');
-        Route::post('pull/test', [SetupController::class, 'pullTestResource'])->name('pull.test');
-    });
 });
 
 
@@ -182,6 +186,8 @@ Route::name('api.v1.')->prefix('api/v1/')->group(function () {
     Route::name('resource.')->prefix('resource/')->group(function () {
         Route::post('basic/', [APIV1Controller::class, 'basicData'])->name('basic');
         Route::post('test/', [APIV1Controller::class, 'testData'])->name('test');
+        Route::post('candidate/', [APIV1Controller::class, 'candidateData'])->name('candidate');
+        Route::post('candidate/picture', [APIV1Controller::class, 'candidatePictures'])->name('candidate.picture');
     });
 
 })->middleware('api-auth');
