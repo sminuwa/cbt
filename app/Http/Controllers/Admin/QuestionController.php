@@ -55,7 +55,7 @@ class QuestionController extends Controller
             }
         }
 
-        return redirect(route('admin.questions.authoring.review', [request('subject_id'), request('topic_id')]));
+        return ['url' => route('admin.questions.authoring.review', [request('subject_id'), request('topic_id')])];
     }
 
     public function review($subjectId, $topicId)

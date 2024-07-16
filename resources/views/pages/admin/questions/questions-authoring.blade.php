@@ -16,7 +16,7 @@
                         </div>
                         <div class="card-body pt-2 pb-2 mt-1 mb-1">
                             <div class="row">
-                                <form method="post" action="{{ route('admin.questions.authoring.post') }}">
+                                <form id="authoringForm" method="post" action="">
                                     @csrf
                                     <div class="row pb-3 pt-2">
                                         <div class="col-12 col-md-6 col-lg-3 col-xl-3">
@@ -128,6 +128,13 @@
                 $.post('{{route('admin.questions.authoring.topics.add')}}', $(this).serialize(), function (response) {
                     console.log(response)
                     if (!response.success) alert(response.message)
+                })
+            })
+
+            $('#authoringForm').on('submit', function (e) {
+                e.preventDefault()
+                $.post('{{ route('admin.questions.authoring.post') }}', $(this).serialize(), function (response) {
+                    window.open(response.url, '_blank')
                 })
             })
         })
