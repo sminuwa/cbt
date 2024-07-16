@@ -383,6 +383,7 @@ $remaining_seconds = session('remaining_seconds');
             submitBtn.classList.toggle('hidden', step !== steps.length - 1);
             let qid = steps[step].id;
             let qlist = $('.q'+qid);
+
             qlist.removeClass('btn-outline-primary');
             qlist.addClass('btn-primary');
             qlist.prevAll().addClass('btn-primary')

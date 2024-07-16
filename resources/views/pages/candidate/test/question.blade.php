@@ -3,9 +3,6 @@
 @section('content')
 
 
-
-
-
 @endsection
 
 @push('style')
