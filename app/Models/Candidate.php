@@ -23,6 +23,9 @@ class Candidate extends Authenticatable
         return ($this->surname ?? null).' '.($this->firstname ?? null). ' '.($this->other_name ?? null);
     }
 
+    public function passport(){
+
+    }
     public function exam_type(){
 
     }

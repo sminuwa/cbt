@@ -10,7 +10,7 @@
     "page-wrapper " + localStorage.getItem("page-wrapper")
   );
   if (localStorage.getItem("page-wrapper") === null) {
-    $(".page-wrapper").addClass("compact-wrapper");
+    $(".page-wrapper").addClass("horizontal-wrapper");
   }
 
   // left sidebar and vertical menu
@@ -289,9 +289,9 @@
   var menuWrapperSize = getMenuWrapperSize();
 
   if (menuWrapperSize >= "1660") {
-    var sliderLimit = -3500; 
+    var sliderLimit = -3500;
   } else if (menuWrapperSize >= "1440") {
-    var sliderLimit = -3600; 
+    var sliderLimit = -3600;
   } else {
     var sliderLimit = -4200;
   }

@@ -23,5 +23,7 @@ Route::middleware('auth:web')->name('test.')->prefix('test')->group(function(){
     Route::get('/instruction',[MiscController::class,'instruction'])->name('instruction');
     Route::get('/question{start?}',[TestController::class,'question'])->name('question');
     Route::get('/nativation/{question}/{subject}/{}',[TestController::class,'question'])->name('navitation');
+    Route::get('/answering',[TestController::class,'answering'])->name('answering');
+    Route::get('/time_control',[TestController::class,'time_control'])->name('time_control');
 });
 Route::view('test','pages.candidate.test.instruction');

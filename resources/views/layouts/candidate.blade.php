@@ -26,7 +26,6 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/slick-theme.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/scrollbar.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/animate.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/echart.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/date-picker.css') }}">
     <!-- Plugins css Ends-->
     <!-- Bootstrap css-->
@@ -103,29 +102,19 @@ $remaining_seconds = session('remaining_seconds');
     </div>
 </div>
 <!-- loader ends-->
-<!-- tap on top starts-->
-<div class="tap-top"><i data-feather="chevrons-up"></i></div>
-<!-- tap on tap ends-->
 <!-- page-wrapper Start-->
 <div class="page-wrapper horizontal-wrapper" id="pageWrapper">
     <!-- Page Header Start-->
 {{--    @include('commons.candidate.header')--}}
     <div class="page-header">
         <div class="header-wrapper row m-0">
-            <form class="form-inline search-full col" action="index.html#" method="get">
-                <div class="form-group w-100">
-                    <div class="Typeahead Typeahead--twitterUsers">
-                        <div class="u-posRelative">
-                            <input class="demo-input Typeahead-input form-control-plaintext w-100" type="text" placeholder="Search Riho .." name="q" title="" autofocus>
-                            <div class="spinner-border Typeahead-spinner" role="status"><span class="sr-only">Loading... </span></div><i class="close-search" data-feather="x"></i>
-                        </div>
-                        <div class="Typeahead-menu"> </div>
-                    </div>
-                </div>
-            </form>
             <div class="header-logo-wrapper col-auto p-0">
-                <div class="logo-wrapper"> <a href="#"><img class="img-fluid for-light" src="{!! logo() !!}" alt="logo-light"><img class="img-fluid for-dark" src="{!! logo() !!}" alt="logo-dark"></a></div>
-                <div class="toggle-sidebar"> <i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i></div>
+                <div class="logo-wrapper">
+                    <a href="#">
+                        <img class="img-fluid for-light" src="{!! logo() !!}" alt="logo-light">
+                        <img class="img-fluid for-dark" src="{!! logo() !!}" alt="logo-dark">
+                    </a>
+                </div>
             </div>
             <div class="left-header col-xxl-5 col-xl-6 col-lg-5 col-md-4 col-sm-3 p-0">
                 <div> <a class="toggle-sidebar" href="#"> <i class="iconly-Category icli"> </i></a>
@@ -141,38 +130,14 @@ $remaining_seconds = session('remaining_seconds');
             </div>
             <div class="nav-right col-xxl-7 col-xl-6 col-md-7 col-8 pull-right right-header p-0 ms-auto">
                 <ul class="nav-menus">
-
                     <div class="clock" id="clock">00:00:00</div> Time left
-                    {{--                <li>--}}
-                    {{--                    <div class="mode"><i class="moon" data-feather="moon"> </i></div>--}}
-                    {{--                </li>--}}
-
-                    <li class="profile-nav onhover-dropdown">
+                    <li class="profile-nav">
                         <div class="media profile-media">
                             <img class="b-r-10" src="{{ asset('candidate/assets/images/avtar/16.jpg') }}" width="35"  alt="">
-                            <div class="media-body d-xxl-block d-none box-col-none">
-                                <div class="d-flex align-items-center gap-2"> <span>Alex Mora </span><i class="middle fa fa-angle-down"> </i></div>
-                                <p class="mb-0 font-roboto">Admin</p>
-                            </div>
                         </div>
-                        <ul class="profile-dropdown onhover-show-div">
-                            <li><a href="user-profile.html"><i data-feather="user"></i><span>My Profile</span></a></li>
-                            <li><a href="letter-box.html"><i data-feather="mail"></i><span>Inbox</span></a></li>
-                            <li> <a href="edit-profile.html"> <i data-feather="settings"></i><span>Settings</span></a></li>
-                            <li><a class="btn btn-pill btn-outline-primary btn-sm" href="login.html">Log Out</a></li>
-                        </ul>
                     </li>
                 </ul>
             </div>
-            <script class="result-template" type="text/x-handlebars-template">
-                <div class="ProfileCard u-cf">
-                    <div class="ProfileCard-avatar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay m-0"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg></div>
-                    <div class="ProfileCard-details">
-                        <div class="ProfileCard-realName"></div>
-                    </div>
-                </div>
-            </script>
-            <script class="empty-template" type="text/x-handlebars-template"><div class="EmptyMessage">Your search turned up 0 results. This most likely means the backend is down, yikes!</div></script>
         </div>
     </div>
 
@@ -188,7 +153,7 @@ $remaining_seconds = session('remaining_seconds');
 {{--            @json($scheduled_candidate)--}}
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-4 col-xl-4 ">
+                    <div class="col-md-4 col-xl-4">
                         <div class="card social-profile">
                             <div class="card-body">
                                 <div class="border-l-primary border-r-primary border-3" style="border-radius: 8px;">
@@ -206,22 +171,20 @@ $remaining_seconds = session('remaining_seconds');
                                     <h5>Exam: {{ $test->test_code->name }} {{ $test->session }}</h5>
                                     <h5>Duration: {{$test->duration ?? 0}} mins</h5>
 
-
                                     <div class="border-t-primary border-3 my-2" style="border-radius:5px">
                                         <span>Questions navigation</span>
                                         <br>
-                                    <div class="btn-group btn-group-square">
-                                        {{--@for($i = 1; $i<=50; $i++)
-                                            <a class="btn border-none btn-{{ $i > 10 ? 'outline-':'' }}primary btn-sm btn-question {{ $i <30 ? 'disabled':'' }}"  href="javascript:;">
-                                                {!!  $i < 10 ? $i:$i  !!}
-                                            </a>
-                                        @endfor--}}
-                                        @foreach($all_test_questions as $q)
-                                            <a href="javascript:;" class="q{{ $q->question_bank_id }} btn btn-{{ $q->question_bank_id != $q->has_score ? 'outline-':'' }}primary btn-sm btn-question " >
-                                                {!!  $q->question_bank_id == $q->has_score ? $loop->iteration:$loop->iteration  !!}
-                                            </a>
-                                        @endforeach
-                                    </div>
+                                        <div class="btn-group btn-group-square">
+                                            @foreach($all_test_questions as $q)
+                                                <a href="javascript:;"
+                                                   class="q{{ $q->question_bank_id }} btn btn-{{ $q->question_bank_id != $q->has_score ? 'outline-':'' }}primary btn-sm btn-question "
+                                                   question_id="{{ $q->question_bank_id }}"
+                                                   step="{{ $loop->index }}"
+                                                >
+                                                    {!!  $q->question_bank_id == $q->has_score ? $loop->iteration:$loop->iteration  !!}
+                                                </a>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -235,10 +198,8 @@ $remaining_seconds = session('remaining_seconds');
                                     {{--{{ $test->test_code->name }}--}}
 
                                     @foreach($candidate_subjects as $subject)
-
                                         <a href="" class="text-primary">{{ $subject->name }}</a>
                                          @if(!$loop->last) | @endif
-
                                     @endforeach
 
                                 </h4>
@@ -249,7 +210,8 @@ $remaining_seconds = session('remaining_seconds');
 
 
                                     @foreach($question_array as $question_paper)
-                                        <div id="{{ $question_paper['question_bank_id'] }}" class="wizard-step @if(!$loop->first) hidden @endif">
+{{--                                        @json($question_paper)--}}
+                                        <div step="{{ $loop->index }}" id="{{ $question_paper['question_bank_id'] }}" class="wizard-step @if(!$loop->first) hidden @endif">
                                             <div class="text-center m-4">
                                                 <h5>{{ $question_paper['section_title'] }}</h5>
                                                 <h5>Instruction: {{ strip_tags($question_paper['section_instruction']) }}</h5>
@@ -258,7 +220,20 @@ $remaining_seconds = session('remaining_seconds');
                                                 <h6 class="sub-title">{{ $question_paper['question_name'] }}</h6>
                                                 @foreach($question_paper['answer_options'] as $answer_option)
                                                     <div id="{{ $question_paper['question_bank_id'] }}{{ $answer_option['answer_option_id'] }}" class="form-check radio radio-primary" style="width:100%">
-                                                        <input @if($answer_option['answer_option_id'] == $answer_option['selected_answer_option']) checked @endif class="form-check-input" id="{{$answer_option['answer_option_id']}}" type="radio" name="radio3"  value="option1">
+                                                        <input
+                                                            @if($answer_option['answer_option_id'] == $answer_option['selected_answer_option']) checked @endif
+                                                            class="form-check-input answer_option"
+                                                            id="{{$answer_option['answer_option_id']}}"
+                                                            type="radio"
+                                                            name="q{{ $question_paper['question_bank_id'] }}"
+                                                            scheduled_candidate_id="{{ $scheduled_candidate->id }}"
+                                                            test_config_id="{{ $question_paper['test_config_id'] }}"
+                                                            test_section_id="{{ $answer_option['test_section_id'] }}"
+                                                            mark_per_question="{{ $question_paper['mark_per_question'] }}"
+                                                            question_bank_id="{{ $question_paper['question_bank_id'] }}"
+                                                            answer_option_id="{{ $answer_option['answer_option_id'] }}"
+                                                            scoring_mode="normal"
+                                                            value="">
                                                         <label class="form-check-label" for="{{$answer_option['answer_option_id']}}">{{ chr(64+ $loop->iteration) }}. {{ $answer_option['answer_name'] }}</label>
                                                     </div>
                                                 @endforeach
@@ -363,8 +338,8 @@ $remaining_seconds = session('remaining_seconds');
 <!-- Theme js-->
 <script src="{{ asset('candidate/assets/js/script.js') }}"></script>
 <script src="{{ asset('commons/js/calculator.js') }}"></script>
+{{--<script src="{{ asset('candidate/assets/js/theme-customizer/customizer.js') }}"></script>--}}
 {{--<script src="{{ asset('commons/js/timer.js') }}"></script>--}}
-{{--<script src="assets/js/theme-customizer/customizer.js"></script>--}}
 
 @stack('script')
 <script>
@@ -377,12 +352,15 @@ $remaining_seconds = session('remaining_seconds');
         function showStep(step) {
             steps.forEach((el, index) => {
                 el.classList.toggle('hidden', index !== step);
+                console.log(step)
             });
             prevBtn.classList.toggle('hidden', step === 0);
             nextBtn.classList.toggle('hidden', step === steps.length - 1);
             submitBtn.classList.toggle('hidden', step !== steps.length - 1);
             let qid = steps[step].id;
+            let qstep = steps[step].step;
             let qlist = $('.q'+qid);
+            // console.log(qstep)
 
             qlist.removeClass('btn-outline-primary');
             qlist.addClass('btn-primary');
@@ -390,7 +368,7 @@ $remaining_seconds = session('remaining_seconds');
             qlist.nextAll().removeClass('btn-primary')
             qlist.nextAll().addClass('btn-outline-primary')
             // qlist.prev()
-            console.log(qlist)
+            // console.log(qlist)
             // alert(qid);
         }
         function updateReview() {
@@ -401,20 +379,76 @@ $remaining_seconds = session('remaining_seconds');
                 currentStep++;
                 if (currentStep === steps.length - 1) updateReview();
                 showStep(currentStep);
+                // console.log(currentStep)
             }
         });
         prevBtn.addEventListener('click', () => {
             if (currentStep > 0) {
                 currentStep--;
                 showStep(currentStep);
+                // console.log(currentStep)
             }
         });
         document.getElementById('wizardForm').addEventListener('submit', (e) => {
             e.preventDefault();
             alert('Form submitted successfully!');
         });
+
+
+        $('body').on('click', '.btn-question', function(){
+            currentStep = parseInt($(this).attr('step'));
+            showStep(currentStep)
+            // console.log(currentStep)
+
+            // alert($(this).attr('step'))
+        })
+
+        $('body').on('click', '.answer_option', function(){
+            let scheduled_candidate_id = $(this).attr('scheduled_candidate_id')
+            let test_config_id = $(this).attr('test_config_id')
+            let test_section_id = $(this).attr('test_section_id')
+            let mark_per_question = $(this).attr('mark_per_question')
+            let question_bank_id = $(this).attr('question_bank_id')
+            let answer_option_id = $(this).attr('answer_option_id')
+            let scoring_mode = $(this).attr('scoring_mode')
+            $.get('{{ route('candidate.test.answering') }}',
+                {
+                    scheduled_candidate_id,
+                    test_config_id,
+                    test_section_id,
+                    mark_per_question,
+                    question_bank_id,
+                    answer_option_id,
+                    scoring_mode
+                },
+                function(){
+                    console.log('Saving answer')
+            }).done(function(data){
+                console.log(data)
+            }).fail(function(data){
+                console.log(data)
+            })
+        })
+
         showStep(currentStep);
     });
+
+    function time_control(){
+        $.get('{{ route('candidate.test.time_control') }}',
+            {
+                test_config_id: '{{ $test->id }}',
+                scheduled_candidate_id,
+            },
+            function(){
+                console.log('Saving answer')
+            }).done(function(data){
+            console.log(data)
+        }).fail(function(data){
+            console.log(data)
+        })
+    }
+
+
 </script>
 <script>
     function startTimer(duration, display) {

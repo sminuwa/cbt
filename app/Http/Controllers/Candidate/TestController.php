@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Candidate;
 use App\Http\Controllers\Controller;
 use App\Models\AnswerOption;
 use App\Models\Presentation;
+use App\Models\Score;
 use App\Models\TestQuestion;
 use App\Models\TestSection;
 use Illuminate\Http\Request;
@@ -77,6 +78,7 @@ class TestController extends Controller
             $get_questions = Presentation::selectRaw("
                 presentations.question_bank_id as question_bank_id,
                 test_sections.title as section_title,
+                test_sections.mark_per_question as mark_per_question,
                 test_sections.instruction as section_instruction,
                 test_subjects.test_config_id,
                 question_banks.title as question_name
@@ -107,46 +109,49 @@ class TestController extends Controller
                 ->where(['test_subjects.subject_id'=>$subject_id, 'test_subjects.test_config_id'=>$test_config_id, 'question_banks.id'=>$q->question_bank_id])->get();
                 foreach($get_answers as $a){
                     $answer_array[] = [
+                        'test_section_id'=>$a->test_section_id,
                         'answer_option_id'=>$a->answer_option_id,
                         'answer_name'=>$a->answer_name,
                         'selected_answer_option'=>$a->selected_answer_option,
                     ];
                 }
                 $question_array[] = [
+                    'test_config_id'=>$q->test_config_id,
                     'question_bank_id'=>$q->question_bank_id,
                     'section_title'=>$q->section_title,
                     'section_instruction'=>$q->section_instruction,
+                    'mark_per_question'=>$q->mark_per_question,
                     'question_name'=>$q->question_name,
                     'answer_options'=>$answer_array,
                 ];
-
             }
-
-            /*$paper_info = [];
-            foreach($pre as $p){
-                $paper_info[] = [
-                    'test_config_id'=>$p->answer_option_id,
-                    'section_title'=>$p->section_title,
-                    'section_instruction'=>$p->section_instruction,
-                    'question_bank_id'=>$p->question_bank_id,
-                    'answer_option_id'=>$p->answer_option_id,
-                    'selected_answer_option'=>$p->selected_answer_option,
-                    'question_name'=>$p->question_name,
-                    'answer_name'=>$p->answer_name,
-                ];
-            }
-            $question_papers[] = [
-                'subject_id' => $subject->subject_id,
-                'schedule_id' => $subject->schedule_id,
-                'candidate_id' => $subject->candidate_id,
-                'paper_name' => $subject->name,
-                'exam_type' => $subject->exam_type,
-                'paper_info' => $paper_info
-            ];*/
-
         }
         $question_array = (object)array_filter($question_array);
         return view('pages.candidate.test.question', compact('all_test_questions','question_array'));
+    }
+
+    public function answering(Request $request){
+        $scores = Score::where([
+            'scheduled_candidate_id' => $request->scheduled_candidate_id,
+            'test_config_id' => $request->test_config_id,
+            'question_bank_id' => $request->question_bank_id,
+        ])->first();
+        if(!$scores)
+            $scores = new Score();
+        $scores->scheduled_candidate_id = $request->scheduled_candidate_id;
+        $scores->test_config_id = $request->test_config_id;
+        $scores->point_scored = $request->mark_per_question;
+        $scores->question_bank_id = $request->question_bank_id;
+        $scores->answer_option_id = $request->answer_option_id;
+        $scores->time_elapse = now();
+        $scores->scoring_mode = $request->scoring_mode;
+        if($scores->save())
+            return true;
+        return false;
+    }
+
+    public function time_control(){
+        return 'Tracking time';
     }
 
 }
