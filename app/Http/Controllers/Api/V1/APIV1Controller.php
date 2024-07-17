@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\AnswerOption;
+use App\Models\Candidate;
+use App\Models\CandidateSubject;
 use App\Models\Centre;
 use App\Models\ExamsDate;
 use App\Models\ExamType;
 use App\Models\QuestionBank;
+use App\Models\ScheduledCandidate;
 use App\Models\Scheduling;
 use App\Models\Subject;
 use App\Models\TestCode;
@@ -20,6 +24,7 @@ use App\Models\TestType;
 use App\Models\User;
 use App\Models\Venue;
 use Illuminate\Http\Request;
+use ZipArchive;
 
 class APIV1Controller extends Controller
 {
@@ -67,6 +72,7 @@ class APIV1Controller extends Controller
             $data['test_questions'] = TestQuestion::whereIn('test_section_id',$testSectionIds)->get();//test_section_id
             $questionBankIds = $data['test_questions'] ->pluck('question_bank_id');//question_bank_id
             $data['question_banks'] = QuestionBank::whereIn('id',$questionBankIds)->get();
+            $data['answer_options'] = AnswerOption::whereIn('question_bank_id',$questionBankIds)->get();
             $data['exams_dates'] = ExamsDate::whereIn('test_config_id',$testConfigIds)->get();
             $data['test_invigilators'] = TestInvigilator::whereIn('test_config_id',$testConfigIds)->get();
 
@@ -76,5 +82,73 @@ class APIV1Controller extends Controller
         return response()->json(['status'=>0,'error'=>'Invalid Credentials'],403);
     }
 
+    public function candidateData(Request $request)
+    {
 
+        $api_key = $request->header('api_key');
+        $secretKey = $request->header('secret_key');
+        $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
+        if($center){
+            $venueIds = Venue::where('centre_id',$center->id)->pluck('id');
+
+            $data = [];
+
+            //Use venue Ids to get Schedules for today
+            $data['schedules'] = Scheduling::whereIn('venue_id',$venueIds)->whereDate("date",today())->get();
+            $data['candidate_subjects'] = CandidateSubject::whereIn('schedule_id',$data['schedules']->pluck('id'))->get();
+            $scheduledCandidateIds = $data['candidate_subjects']->pluck('scheduled_candidate_id');
+            $data['scheduled_candidates'] = ScheduledCandidate::whereIn('id',$scheduledCandidateIds)->get();
+            $candidateIds = $data['scheduled_candidates']->pluck('candidate_id');
+            $data['candidates'] = Candidate::whereIn('id',$candidateIds)->get();
+            return response()->json(['status'=>1,'data'=>$data]);
+        }
+
+        return response()->json(['status'=>0,'error'=>'Invalid Credentials'],403);
+
+    }
+
+    public function candidatePictures(Request $request)
+    {
+        $api_key = $request->header('api_key');
+        $secretKey = $request->header('secret_key');
+        $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
+        if($center){
+            $venueIds = Venue::where('centre_id',$center->id)->pluck('id');
+
+            $data = [];
+
+            //Use venue Ids to get Schedules for today
+            $data['schedules'] = Scheduling::whereIn('venue_id',$venueIds)->whereDate("date",today())->get();
+            $data['candidate_subjects'] = CandidateSubject::whereIn('schedule_id',$data['schedules']->pluck('id'))->get();
+            $scheduledCandidateIds = $data['candidate_subjects']->pluck('scheduled_candidate_id');
+            $data['scheduled_candidates'] = ScheduledCandidate::whereIn('id',$scheduledCandidateIds)->get();
+            $candidateIds = $data['scheduled_candidates']->pluck('candidate_id');
+            $candidates = Candidate::whereIn('id',$candidateIds)->get();
+
+            $zip = new ZipArchive();
+            $filename = preg_replace('/[^A-Za-z0-9]/', '_', $center->name);
+
+            // Append the current date
+            $date = date('Y_m_d'); // Format the date as needed, e.g., 'Y-m-d' for '2024-07-15'
+            $filename .= '_' . $date;
+            $zipFileName = "{$filename}.zip";
+            $zipFilePath = storage_path("app/{$zipFileName}");
+            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+
+                foreach ($candidates as $candidate) {
+                    $img_path = preg_replace('/[^A-Za-z0-9]/', '_', $candidate->indexing).'.jpg';
+                    if ($candidate->indexing && public_path("candidate_pics/".$img_path)) {
+                        $imagePath = public_path("candidate_pics/".$img_path);
+                        $zip->addFile($imagePath, basename($imagePath));
+                    }
+                }
+
+                $zip->close();
+            }
+
+            return response()->download($zipFilePath)->deleteFileAfterSend(true);
+        }
+
+        return response()->json(['status'=>0,'error'=>'Invalid Credentials'],403);
+    }
 }

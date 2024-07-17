@@ -38,10 +38,7 @@ class TestInvigilator extends Model
         'scheduling_id' => 'int'
     ];
 
-    protected $fillable = [
-        'id',
-        'pass_key'
-    ];
+    protected $guarded = [];
 
     public function user()
     {

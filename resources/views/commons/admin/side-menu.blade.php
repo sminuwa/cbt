@@ -59,6 +59,12 @@
                             </a>
                         </li>
                     @endif
+                    <li class="{{Request::is('*dashboard')?'active':''}}">
+                        <a href="{{ route('admin.exams.setup.index') }}">
+                            <i class="fas fa-lock-open"></i>
+                            <span>Setup Exams</span>
+                        </a>
+                    </li>
 
                     @if(Request::is('*test/config*') && !Request::is('*test/config'))
                         @php $config = Session::get('config'); @endphp

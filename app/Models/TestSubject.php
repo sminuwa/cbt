@@ -38,12 +38,7 @@ class TestSubject extends Model
 		'total_mark' => 'float'
 	];
 
-	protected $fillable = [
-        'id',
-		'title',
-		'instruction',
-		'total_mark'
-	];
+	protected $guarded = [];
 
 	public function subject()
 	{

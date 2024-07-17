@@ -151,6 +151,14 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
 
         Route::get('test/{config}/subjects', [MiscController::class, 'testSubjects'])->name('test.subjects');
     });
+
+    Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
+        Route::get('/', [SetupController::class, 'index'])->name('index');
+        Route::post('pull/basic', [SetupController::class, 'pullBasicResource'])->name('pull.basic');
+        Route::post('pull/test', [SetupController::class, 'pullTestResource'])->name('pull.test');
+        Route::post('pull/candidate', [SetupController::class, 'pullCandidateResource'])->name('pull.candidate');
+        Route::post('pull/candidate/picture', [SetupController::class, 'pullCandidatePictures'])->name('pull.candidate.pictures');
+    });
 });
 
 Route::name('toolbox.')->prefix('toolbox')->group(function () {
@@ -179,6 +187,7 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
 
     });
 
+
     Route::name('candidate_image_upload.')->prefix('candidate_image_upload')->group(function () {
         Route::get('upload-candidate', [CandidateUploadController::class, 'imageIndex'])->name('upload.images');
         Route::post('upload-candidate-image', [CandidateUploadController::class, 'imageUpload'])->name('upload.image.data');
@@ -196,6 +205,8 @@ Route::name('api.v1.')->prefix('api/v1/')->group(function () {
     Route::name('resource.')->prefix('resource/')->group(function () {
         Route::post('basic/', [APIV1Controller::class, 'basicData'])->name('basic');
         Route::post('test/', [APIV1Controller::class, 'testData'])->name('test');
+        Route::post('candidate/', [APIV1Controller::class, 'candidateData'])->name('candidate');
+        Route::post('candidate/picture', [APIV1Controller::class, 'candidatePictures'])->name('candidate.picture');
     });
 
 })->middleware('api-auth');

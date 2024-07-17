@@ -109,6 +109,66 @@
 
                             </td>
                         </tr>
+                        <tr>
+                            <th>2</th>
+                            <td>Test Config Data</td>
+                            <td>{{ isset($results['test-data'])?"Pulled Today":"Pending" }}</td>
+                            <td>
+
+                                <a href="#"
+                                   class="btn btn-info text-light btn-sm pull-btn2">
+                                    <i class="fa fa-download"></i> Pull
+                                </a>
+                                <span class="loading-icon">
+                                    <span class="lds-facebook">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </span>
+                                </span>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>3</th>
+                            <td>Candidate Data</td>
+                            <td>{{ isset($results['candidate-data'])?"Pulled Today":"Pending" }}</td>
+                            <td>
+
+                                <a href="#"
+                                   class="btn btn-info text-light btn-sm pull-btn3">
+                                    <i class="fa fa-download"></i> Pull
+                                </a>
+                                <span class="loading-icon">
+                                    <span class="lds-facebook">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </span>
+                                </span>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>4</th>
+                            <td>Candidate Pictures</td>
+                            <td>{{ isset($results['candidate-pictures'])?"Pulled Today":"Pending" }}</td>
+                            <td>
+
+                                <a href="#"
+                                   class="btn btn-info text-light btn-sm pull-btn4">
+                                    <i class="fa fa-download"></i> Pull
+                                </a>
+                                <span class="loading-icon">
+                                    <span class="lds-facebook">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </span>
+                                </span>
+
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -122,87 +182,6 @@
 @endsection
 
 @section('script')
-    <div class="modal fade custom-modal" id="add_new_config">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add New Test Config</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    </button>
-
-                </div>
-                <form action="{{ route('admin.test.config.store') }}" method="post">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="hours-info">
-                            <div class="row hours-cont">
-                                <div class="col-12 col-md-12">
-                                    <div class="row">
-                                        <div class="col-12 col-md-6">
-                                            <div class="mb-3">
-                                                @php
-                                                    $now = date('Y');
-                                                    $years = range($now - 2, $now + 2);
-                                                @endphp
-                                                <label for="session" class="mb-2">Year</label>
-                                                <select class="form-select form-control" id="session" name="session"
-                                                        required>
-                                                    @foreach($years as $year)
-                                                        <option
-                                                            value="{{ $year }}" {{$year==$now?'selected':''}} >{{ $year }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            <div class="mb-3">
-                                                <label class="mb-2" for="semester">Semester</label>
-                                                <select class="form-select form-control" id="semester" required
-                                                        name="semester">
-                                                    <option value="1" selected>First</option>
-                                                    <option value="2">Second</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row hours-cont">
-                                <div class="col-12 col-md-12">
-                                    <div class="row">
-                                        <div class="col-12 col-md-6">
-                                            <div class="mb-3">
-                                                <label for="test_code_id" class="mb-2">Test Code</label>
-                                                <select class="form-select form-control" id="test_code_id" required
-                                                        name="test_code_id">
-                                                    <option value="">Select Test Code</option>
-
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-6">
-                                            <div class="mb-3">
-                                                <label for="test_type_id" class="mb-2">Test Type</label>
-                                                <select class="form-select form-control" id="test_type_id" required
-                                                        name="test_type_id">
-                                                    <option value="">Select Test Type</option>
-
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer submit-section text-end">
-                        <button type="submit" class="btn btn-sm btn-info submit-btn text-light">Create Test</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
     <script src="/assets/plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="/assets/plugins/datatables/datatables.min.js"></script>
@@ -216,6 +195,151 @@
                 searching: false,
                 info: false  // Disable info display
             });
+
+            $('.pull-btn2').click(function () {
+                var btn = $(this);
+                var loadingIcon = btn.siblings('.loading-icon');
+                var resourceId = btn.data('id');
+
+                btn.hide();
+                loadingIcon.show();
+
+                $.ajax({
+                    url: '{{route('admin.exams.setup.pull.test')}}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        if (response.success) {
+                            btn.closest('tr').find('td:eq(1)').text('Updated'); // Update status
+                            loadingIcon.hide();
+                            btn.show();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Data pulled and inserted successfully!'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Failed',
+                                text: 'Failed to pull resource'
+                            });
+                            loadingIcon.hide();
+                            btn.show();
+                        }
+                    },
+                    error: function (response) {
+                        console.log(response);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred'
+                        });
+                        loadingIcon.hide();
+                        btn.show();
+                    }
+                });
+            });//pull.candidate.pictures
+
+            $('.pull-btn3').click(function () {
+                var btn = $(this);
+                var loadingIcon = btn.siblings('.loading-icon');
+                var resourceId = btn.data('id');
+
+                btn.hide();
+                loadingIcon.show();
+
+                $.ajax({
+                    url: '{{route('admin.exams.setup.pull.candidate')}}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        if (response.success) {
+                            btn.closest('tr').find('td:eq(1)').text('Updated'); // Update status
+                            loadingIcon.hide();
+                            btn.show();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Data pulled and inserted successfully!'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Failed',
+                                text: 'Failed to pull resource'
+                            });
+                            loadingIcon.hide();
+                            btn.show();
+                        }
+                    },
+                    error: function (response) {
+                        console.log(response);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred'
+                        });
+                        loadingIcon.hide();
+                        btn.show();
+                    }
+                });
+            });//pull.candidate.pictures
+
+            $('.pull-btn4').click(function () {
+                var btn = $(this);
+                var loadingIcon = btn.siblings('.loading-icon');
+                var resourceId = btn.data('id');
+
+                btn.hide();
+                loadingIcon.show();
+
+                $.ajax({
+                    url: '{{route('admin.exams.setup.pull.candidate.pictures')}}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        if (response.success) {
+                            btn.closest('tr').find('td:eq(1)').text('Updated'); // Update status
+                            loadingIcon.hide();
+                            btn.show();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Data pulled and inserted successfully!'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Failed',
+                                text: 'Failed to pull resource'
+                            });
+                            loadingIcon.hide();
+                            btn.show();
+                        }
+                    },
+                    error: function (response) {
+                        console.log(response);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred'
+                        });
+                        loadingIcon.hide();
+                        btn.show();
+                    }
+                });
+            });//pull.candidate.pictures
+
 
             $('.pull-btn').click(function () {
                 var btn = $(this);
