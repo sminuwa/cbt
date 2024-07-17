@@ -118,8 +118,7 @@
                         </li>
                     @endif
 
-                    @if(Request::is('*questions/authoring*') //&& !Request::is('*questions/authoring')
-)
+                    @if(Request::is('*questions/authoring*'))
                         <li class="{{Request::is('*author')?'active':''}}">
                             <a href="{{ route('admin.questions.authoring.author') }}">
                                 <i class="fas fa-newspaper"></i>

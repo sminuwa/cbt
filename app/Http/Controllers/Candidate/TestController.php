@@ -40,10 +40,11 @@ class TestController extends Controller
                     }
                 }
             }
+
             foreach(array_chunk($presentation_records, 1000) as $key => $p) {
                 if(!Presentation::upsert($p, ['scheduled_candidate_id', 'test_config_id','test_section_id', 'question_bank_id','answer_option_id'])) {
                     reset_auto_increment('presentations');
-                    $err[] = 'Something went wrong. [Graduands chunk upload]';
+                    $err[] = 'Something went wrong.';
                 }
                 if(count($err) == 0){
                     reset_auto_increment('presentations');
@@ -58,15 +59,24 @@ class TestController extends Controller
             return back()->with('error',implode(', ',$errors).'.');
         }
 
+        $test_config_id = $test->id;
         $all_test_questions = Presentation::selectRaw("
-            question_bank_id,
-            (SELECT question_bank_id
-                FROM scores
-                WHERE scores.question_bank_id = presentations.question_bank_id
-                AND scores.scheduled_candidate_id = presentations.scheduled_candidate_id
-                AND scores.test_config_id = presentations.test_config_id
-                LIMIT 1) as has_score
-            ")->distinct()->get();
+                presentations.question_bank_id as question_bank_id,
+                test_sections.title as section_title,
+                test_sections.mark_per_question as mark_per_question,
+                test_sections.instruction as section_instruction,
+                test_subjects.test_config_id,
+                question_banks.title as question_name
+            ")->join('test_sections', 'test_sections.id', 'presentations.test_section_id')
+            ->join('question_banks', 'question_banks.id', 'presentations.question_bank_id')
+            ->join('test_subjects', 'test_subjects.id', 'test_sections.test_subject_id')
+            ->where([
+
+                'test_subjects.test_config_id'=>$test_config_id,
+                'scheduled_candidate_id'=>$scheduled_candidate->id
+            ])
+            ->distinct()
+            ->get();
 
 
         $question_papers = $question_array = $answer_array = [];
@@ -74,7 +84,6 @@ class TestController extends Controller
         foreach($candidate_subjects as $subject){
             $subject_id = $subject->subject_id;
             $test_config_id = $test->id;
-
             $get_questions = Presentation::selectRaw("
                 presentations.question_bank_id as question_bank_id,
                 test_sections.title as section_title,
@@ -85,9 +94,13 @@ class TestController extends Controller
             ")->join('test_sections', 'test_sections.id', 'presentations.test_section_id')
                 ->join('question_banks', 'question_banks.id', 'presentations.question_bank_id')
                 ->join('test_subjects', 'test_subjects.id', 'test_sections.test_subject_id')
+                ->where([
+                    'test_subjects.subject_id'=>$subject_id,
+                    'test_subjects.test_config_id'=>$test_config_id,
+                    'scheduled_candidate_id'=>$scheduled_candidate->id
+                ])
                 ->distinct()
-                ->where(['test_subjects.subject_id'=>$subject_id, 'test_subjects.test_config_id'=>$test_config_id])->get();
-
+                ->get();
             foreach($get_questions as $q){
                 $answer_array = [];
                 $get_answers = Presentation::selectRaw("
@@ -106,7 +119,12 @@ class TestController extends Controller
                 ->join('test_subjects', 'test_subjects.id', 'test_sections.test_subject_id')
                 ->join('answer_options', 'answer_options.id', 'presentations.answer_option_id')
                 ->distinct()
-                ->where(['test_subjects.subject_id'=>$subject_id, 'test_subjects.test_config_id'=>$test_config_id, 'question_banks.id'=>$q->question_bank_id])->get();
+                ->where([
+                    'presentations.scheduled_candidate_id'=>$scheduled_candidate->id,
+                    'test_subjects.subject_id'=>$subject_id,
+                    'test_subjects.test_config_id'=>$test_config_id,
+                    'question_banks.id'=>$q->question_bank_id
+                ])->get();
                 foreach($get_answers as $a){
                     $answer_array[] = [
                         'test_section_id'=>$a->test_section_id,

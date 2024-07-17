@@ -42,6 +42,9 @@
         /*.radio-toolbar input[type="radio"] {
             display: none;
         }*/
+        .border-white{
+            border-color: #fff !important;
+        }
         .radio-toolbar input[type="radio"]:checked+label {
             background-color: #006666;
             color:#ffffff;
@@ -177,7 +180,7 @@ $remaining_seconds = session('remaining_seconds');
                                         <div class="btn-group btn-group-square">
                                             @foreach($all_test_questions as $q)
                                                 <a href="javascript:;"
-                                                   class="q{{ $q->question_bank_id }} btn btn-{{ $q->question_bank_id != $q->has_score ? 'outline-':'' }}primary btn-sm btn-question "
+                                                   class="q{{ $q->question_bank_id }} btn btn-{{ $q->question_bank_id != $q->has_score ? 'outline-':'' }}primary btn-sm btn-question"
                                                    question_id="{{ $q->question_bank_id }}"
                                                    step="{{ $loop->index }}"
                                                 >
@@ -214,10 +217,10 @@ $remaining_seconds = session('remaining_seconds');
                                         <div step="{{ $loop->index }}" id="{{ $question_paper['question_bank_id'] }}" class="wizard-step @if(!$loop->first) hidden @endif">
                                             <div class="text-center m-4">
                                                 <h5>{{ $question_paper['section_title'] }}</h5>
-                                                <h5>Instruction: {{ strip_tags($question_paper['section_instruction']) }}</h5>
+                                                <h5>Instruction: {{ strip_tags($question_paper['section_instruction'],'<img>') }}</h5>
                                             </div>
                                             <div class="card-wrapper border rounded-3 fill-radios h-100 radio-toolbar checkbox-checked">
-                                                <h6 class="sub-title">{{ $question_paper['question_name'] }}</h6>
+                                                <h6 class="sub-title">Q {{ $loop->iteration }}. {{ strip_tags($question_paper['question_name'],'<img>') }}</h6>
                                                 @foreach($question_paper['answer_options'] as $answer_option)
                                                     <div id="{{ $question_paper['question_bank_id'] }}{{ $answer_option['answer_option_id'] }}" class="form-check radio radio-primary" style="width:100%">
                                                         <input
@@ -234,7 +237,7 @@ $remaining_seconds = session('remaining_seconds');
                                                             answer_option_id="{{ $answer_option['answer_option_id'] }}"
                                                             scoring_mode="normal"
                                                             value="">
-                                                        <label class="form-check-label" for="{{$answer_option['answer_option_id']}}">{{ chr(64+ $loop->iteration) }}. {{ $answer_option['answer_name'] }}</label>
+                                                        <label class="form-check-label" for="{{$answer_option['answer_option_id']}}">{{ chr(64+ $loop->iteration) }}. {{ strip_tags($answer_option['answer_name'],'<img>') }}</label>
                                                     </div>
                                                 @endforeach
                                             </div>
@@ -363,9 +366,9 @@ $remaining_seconds = session('remaining_seconds');
             // console.log(qstep)
 
             qlist.removeClass('btn-outline-primary');
-            qlist.addClass('btn-primary');
-            qlist.prevAll().addClass('btn-primary')
-            qlist.nextAll().removeClass('btn-primary')
+            qlist.addClass('btn-primary text-white border-white');
+            qlist.prevAll().addClass('btn-primary text-white border-white ')
+            qlist.nextAll().removeClass('btn-primary text-white border-white')
             qlist.nextAll().addClass('btn-outline-primary')
             // qlist.prev()
             // console.log(qlist)
@@ -469,7 +472,7 @@ $remaining_seconds = session('remaining_seconds');
                 display.style.color = 'red';
             }
 
-            if (--timer < -{{($test->time_padding ?? 0) * 60}}) {
+            if (--timer < -{{( $test->time_padding ?? 0) * 60 }}) {
                 clearInterval(interval);
                 alert("Time is up!");
             }
@@ -482,6 +485,28 @@ $remaining_seconds = session('remaining_seconds');
         const display = document.querySelector('#clock');
         startTimer(twoHours, display);
     };
+
+
+    var interval = 50000;
+    var stopBlinking = false;
+
+    function blink(selector) {
+        if(stopBlinking)
+            return false;
+
+        $(selector).fadeOut('slow', function() {
+            $(this).fadeIn('slow', function() {
+                blink(this);
+            });
+        });
+    }
+
+    blink("#clock");
+
+    setInterval(function(){
+        stopBlinking = !stopBlinking;
+        blink("#clock");
+    }, interval);
 </script>
 </body>
 </html>
