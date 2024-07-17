@@ -58,9 +58,9 @@
                                     <label for="availability">Test Availability:</label>
                                     <select class="form-control form-select" name="availability" id="availability"
                                             required>
-                                        <option {{$config->active_version==0?'selected':''}} value="0">Unavailable
+                                        <option {{$config->status==0?'selected':''}} value="0">Unavailable
                                         </option>
-                                        <option {{$config->active_version==1?'selected':''}} value="1">Available
+                                        <option {{$config->status==1?'selected':''}} value="1">Available
                                         </option>
                                     </select>
                                 </div>

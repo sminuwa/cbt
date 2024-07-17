@@ -59,7 +59,7 @@
                             </a>
                         </li>
                     @endif
-                    <li class="{{Request::is('*dashboard')?'active':''}}">
+                    <li class="{{Request::is('*exams/setup')?'active':''}}">
                         <a href="{{ route('admin.exams.setup.index') }}">
                             <i class="fas fa-lock-open"></i>
                             <span>Setup Exams</span>

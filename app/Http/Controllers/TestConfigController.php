@@ -79,6 +79,7 @@ class TestConfigController extends Controller
             if ($config) {
                 $config->duration = $request->duration;
                 $config->pass_key = $request->pass_key;
+                $config->status = $request->availability;
                 $config->allow_calc = $request->allow_calc;
                 $config->endorsement = $request->endorsement;
                 $config->time_padding = $request->time_padding;
