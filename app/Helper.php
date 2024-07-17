@@ -26,19 +26,20 @@ class Helper
             // Remove the difficulty indicator from the question text
             $questionText = preg_replace('/\{[SMD]\}/', '', $questionText);
             $questionText = str_replace('<br>', '', $questionText);
-            $questionText = str_replace('&nbsp;', '', $questionText);
+            $questionText = strip_tags(str_replace('&nbsp;', '', $questionText),'<img>');
             $questionText = str_replace('</span></p> <p class="MsoNormal"><span lang="EN">', '', $questionText);
+
             // Remove the last element (empty string) from the array
 //            array_pop($parts);
 
             $options = [];
             foreach ($parts as $option) {
                 $isCorrect = strpos($option, $delimeters['answer']) !== false;
-                $optionText = trim(str_replace($delimeters['answer'], '', $option));
-                $optionText = trim(str_replace('<br>', '', $optionText));
-                $optionText = trim(str_replace('&nbsp;', '', $optionText));
-                $optionText = trim(str_replace('<br style="mso-special-character: line-break;"><!--[endif]--></span></p>', '', $optionText));
-                $optionText = trim(str_replace('</span></p> <p class="MsoNormal"><span lang="EN">', '', $optionText));
+                $optionText = strip_tags(trim(str_replace($delimeters['answer'], '', $option)),'<img>');
+                $optionText = strip_tags(trim(str_replace('<br>', '', $optionText)),'<img>');
+                $optionText = strip_tags(trim(str_replace('&nbsp;', '', $optionText)),'<img>');
+                $optionText = strip_tags(trim(str_replace('<br style="mso-special-character: line-break;"><!--[endif]--></span></p>', '', $optionText)),'<img>');
+
                 $options[] = (object)[
                     'text' => $optionText,
                     'isCorrect' => $isCorrect

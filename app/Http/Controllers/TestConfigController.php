@@ -87,6 +87,7 @@ class TestConfigController extends Controller
                 $config->starting_mode = $request->starting_mode;
                 $config->option_administration = $request->option_administration;
                 $config->question_administration = $request->question_administration;
+                $config->status = $request->availability;
                 if ($config->save())
                     return back()->with(['success' => true, 'message' => 'Test Configurations successfully saved']);
             }

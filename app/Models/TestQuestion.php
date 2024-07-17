@@ -53,30 +53,35 @@ class TestQuestion extends Model
             join('question_banks', 'question_banks.id', 'test_questions.question_bank_id')
             ->where('test_questions.test_section_id', $section->id)
             ->where('question_banks.difficulty_level', 'simple')
-            ->limit($section->num_of_simple)
-            ->select('test_questions.*');
-        if($question_administration == 'random'){
-            $simple->inRandomOrder();
-        }
+            ->limit($section->num_of_easy)
+            ->select('test_questions.*', 'question_banks.difficulty_level')
+            ->groupBy('question_banks.id')
+            ->havingRaw("(SELECT count(id) FROM answer_options WHERE question_bank_id = question_banks.id) > 1")
+            ->inRandomOrder();
+
         $moderate = self::
         join('question_banks', 'question_banks.id', 'test_questions.question_bank_id')
             ->where('test_questions.test_section_id', $section->id)
             ->where('question_banks.difficulty_level', 'moderate')
             ->limit($section->num_of_moderate)
-            ->select('test_questions.*');
-        if($question_administration == 'random'){
-            $moderate->inRandomOrder();
-        }
+            ->select('test_questions.*', 'question_banks.difficulty_level')
+            ->groupBy('question_banks.id')
+            ->havingRaw("(SELECT count(id) FROM answer_options WHERE question_bank_id = question_banks.id) > 1")
+            ->inRandomOrder();
+
         $difficult = self::
         join('question_banks', 'question_banks.id', 'test_questions.question_bank_id')
             ->where('test_questions.test_section_id', $section->id)
             ->where('question_banks.difficulty_level', 'difficult')
             ->limit($section->num_of_difficult)
-            ->select('test_questions.*');
-        if($question_administration == 'random'){
-            $difficult->inRandomOrder();
-        }
-        $question = $simple->union($moderate)->union($difficult)->get();
+            ->select('test_questions.*', 'question_banks.difficulty_level')
+            ->groupBy('question_banks.id')
+            ->havingRaw("(SELECT count(id) FROM answer_options WHERE question_bank_id = question_banks.id) > 1")
+            ->inRandomOrder();
+
+        $question = $simple->union($moderate)->union($difficult);
+        if($question_administration == 'random') $question = $question->inRandomOrder();
+        $question = $question->limit($section->num_to_answer)->get();
         return $question;
     }
 }
