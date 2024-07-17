@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Presentation;
 use App\Models\Score;
 use App\Models\TestConfig;
+use App\Models\TestQuestion;
 use App\Models\TestSubject;
 use App\Models\TimeControl;
 use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Exception;
 
 class ReportController extends Controller
 {
@@ -95,6 +97,49 @@ class ReportController extends Controller
                 ->get();
 
             return view('pages.admin.reports.ajax.report-summary', compact('reports'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function questionSummary()
+    {
+        $configs = TestConfig::with(['test_type', 'test_code'])
+            ->select(['id', 'session', 'semester', 'test_type_id', 'test_code_id'])
+            ->orderBy('session', 'desc')
+            ->get();
+
+        return view('pages.admin.reports.question-summary', compact('configs'));
+    }
+
+    public function generateQuestionSummary(Request $request)
+    {
+        try {
+            $where = [];
+            $subject_id = $request->test_subject_id;
+            $config_id = $request->test_config_id;
+
+            if ($subject_id != '%')
+                $where[] = ['subject_id', $subject_id];
+
+            $where[] = ['test_config_id', $config_id];
+
+            $report = [];
+
+            $subjects = TestSubject::with('subject')->where($where)->get()->pluck('subject');
+            foreach ($subjects as $subject) {
+                $obj = [];
+                $questions = TestQuestion::join('test_sections', 'test_sections.id', '=', 'test_questions.test_section_id')
+                    ->join('test_subjects', 'test_subjects.id', '=', 'test_sections.test_subject_id')
+                    ->where(['test_config_id' => $config_id, 'test_subjects.id' => $subject->id])->pluck('question_bank_id');
+
+                $obj['subject'] = $subject->subject_code . ' - ' . $subject->name;
+                $obj['questions'] = $questions;
+
+                $report[] = $obj;
+            }
+
+            return $report;
         } catch (\Exception $e) {
             return $e->getMessage();
         }

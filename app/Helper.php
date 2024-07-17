@@ -27,6 +27,7 @@ class Helper
             $questionText = preg_replace('/\{[SMD]\}/', '', $questionText);
             $questionText = str_replace('<br>', '', $questionText);
             $questionText = str_replace('&nbsp;', '', $questionText);
+            $questionText = str_replace('</span></p> <p class="MsoNormal"><span lang="EN">', '', $questionText);
             // Remove the last element (empty string) from the array
 //            array_pop($parts);
 
@@ -37,6 +38,7 @@ class Helper
                 $optionText = trim(str_replace('<br>', '', $optionText));
                 $optionText = trim(str_replace('&nbsp;', '', $optionText));
                 $optionText = trim(str_replace('<br style="mso-special-character: line-break;"><!--[endif]--></span></p>', '', $optionText));
+                $optionText = trim(str_replace('</span></p> <p class="MsoNormal"><span lang="EN">', '', $optionText));
                 $options[] = (object)[
                     'text' => $optionText,
                     'isCorrect' => $isCorrect

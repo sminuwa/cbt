@@ -1,6 +1,20 @@
 @php use App\Models\Subject; @endphp
 @extends('layouts.app')
-
+@section('css')
+    <style>
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 1000;
+        }
+    </style>
+@endsection
 @section('content')
 
     <div class="row">
@@ -15,7 +29,7 @@
                             <h4 class="card-title">Question Authoring</h4>
                         </div>
                         <div class="card-body pt-2 pb-2 mt-1 mb-1">
-                            <div class="row">
+                            <div id="form" class="row">
                                 <form id="authoringForm" method="post" action="">
                                     @csrf
                                     <div class="row pb-3 pt-2">
@@ -53,6 +67,7 @@
                                     <input class="btn btn-sm btn-info mt-3 text-light" type="submit" value="Submit">
                                 </form>
                             </div>
+                            <div id="loading" style="display: none;">Loading...</div>
                         </div>
                     </div>
                 </div>
@@ -126,14 +141,22 @@
             $('#add-subject').on('submit', function (e) {
                 e.preventDefault()
                 $.post('{{route('admin.questions.authoring.topics.add')}}', $(this).serialize(), function (response) {
-                    console.log(response)
                     if (!response.success) alert(response.message)
+                    $('#add_new_subject').modal('hide')
+                    fetchSubjects($('#subject_id').val())
                 })
             })
 
             $('#authoringForm').on('submit', function (e) {
                 e.preventDefault()
+
+                const form = $('#form')
+                const loader = $('#loading')
+                form.hide()
+                loader.show()
                 $.post('{{ route('admin.questions.authoring.post') }}', $(this).serialize(), function (response) {
+                    form.show()
+                    loader.hide()
                     window.open(response.url, '_blank')
                 })
             })

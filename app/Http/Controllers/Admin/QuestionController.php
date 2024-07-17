@@ -160,6 +160,11 @@ class QuestionController extends Controller
         return redirect(route('admin.questions.authoring.edit.questions'));
     }
 
+    public function moveQuestions()
+    {
+        return view('pages.admin.questions.move-questions');
+    }
+
     private function clearTemps($subjectId, $topicId)
     {
         $questions = QuestionBankTemp::where(['subject_id' => $subjectId, 'topic_id' => $topicId, 'author' => Auth::user()->id])->get();

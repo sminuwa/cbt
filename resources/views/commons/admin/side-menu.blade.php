@@ -35,7 +35,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{route('admin.questions.authoring.index')}}">
+                            <a href="{{route('admin.questions.authoring.author')}}">
                                 <i class="fas fa-question"></i>
                                 <span>Question Authoring</span>
                             </a>
@@ -112,8 +112,7 @@
                         </li>
                     @endif
 
-                    @if(Request::is('*questions/authoring*') //&& !Request::is('*questions/authoring')
-)
+                    @if(Request::is('*questions/authoring*') /*&& !Request::is('*questions/authoring')*/)
                         <li class="{{Request::is('*author')?'active':''}}">
                             <a href="{{ route('admin.questions.authoring.author') }}">
                                 <i class="fas fa-newspaper"></i>
@@ -124,6 +123,12 @@
                             <a href="{{ route('admin.questions.authoring.edit.questions') }}">
                                 <i class="fas fa-edit"></i>
                                 <span>Modify Existing Questions</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*move*')?'active':''}}">
+                            <a href="{{ route('admin.questions.authoring.move.questions') }}">
+                                <i class="fas fa-shuffle"></i>
+                                <span>Move Questions</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*preview*')?'active':''}}">
@@ -147,8 +152,8 @@
                                 <span>Report Summary</span>
                             </a>
                         </li>
-                        <li class="{{Request::is('*daily*')?'active':''}}">
-                            <a href="">
+                        <li class="{{Request::is('*summary/question*')?'active':''}}">
+                            <a href="{{route('admin.reports.summary.question')}}">
                                 <i class="fas fa-chart-line"></i>
                                 <span>Question Summary</span>
                             </a>
@@ -177,7 +182,7 @@
                         </li>
                         <li class="{{Request::is('*subjects')?'active':''}}">
                             <a href="{{route('toolbox.subject.home')}}">
-                                <span>Manage Subject</span>
+                                <span>Manage Papers</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*candidate_type')?'active':''}}">
