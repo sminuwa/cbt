@@ -176,6 +176,13 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('invigilator');
 
     });
+
+    Route::name('invigilator.')->prefix('invigilator')->group(function () {
+        Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('index');
+        Route::post('/increase-time', [CandidateUploadController::class, 'viewCandidateTime'])->name('increase-time.view');
+        Route::post('/save-time', [CandidateUploadController::class, 'saveTimeAdjustment'])->name('save-time.adjust');
+
+    });
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
         Route::get('/', [SetupController::class, 'index'])->name('index');
         Route::post('pull/basic', [SetupController::class, 'pullBasicResource'])->name('pull.basic');

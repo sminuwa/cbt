@@ -6,6 +6,7 @@ use App\Imports\CandidatesImport;
 use App\Models\ExamType;
 use App\Models\TestConfig;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -86,15 +87,25 @@ public function imageIndex()
      */
     public function invigilator()
     {
+
         $candidateTypes = ExamType::all();
         $testConfigs = TestConfig::exam()->get();
-        return view('pages.toolbox.invigilator_panel',compact('testConfigs'));
+
+        $candidateTypes = DB::table('exam_types')->get();
+        $examTypes = DB::table('test_configs')
+            ->join('test_codes', 'test_configs.test_code_id', '=', 'test_codes.id')
+            ->join('test_types', 'test_configs.test_type_id', '=', 'test_types.id')
+            ->join('exams_dates', 'exams_dates.test_config_id', '=', 'test_configs.id')
+            ->where('exams_dates.date', '=', now()->format('Y-m-d'))
+            ->select('test_configs.id', 'test_codes.name', 'test_types.name', 'session', 'semester')
+            ->get();
+        return view('pages.toolbox.invigilator_panel',compact('testConfigs','examTypes','candidateTypes'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function viewCandidateTime(Request $request, string $id)
     {
         //
     }

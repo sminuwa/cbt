@@ -77,9 +77,56 @@
                                 <div id="second-step" style='display:none;'></div>
                             </form>
                         </div>
+                </div>
 
                         <div class="tab-pane" id="time_control">
-
+                            <form id="frm2" class="style-frm" method="post" action="{{ route('toolbox.invigilator.increase-time.view') }}">
+                                @csrf
+                                <fieldset><legend>Enter Candidate's Details</legend>
+                                    <div id="cand_data">
+                                        <table>
+                                            <tr>
+                                                <td><b> Candidate Type</b></td>
+                                                <td>
+                                                    <select name="candidatetype_inc" id="candidatetype_inc" class="form-control">
+                                                        <option value="">--Select Candidate Type --</option>
+                                                        @foreach($candidateTypes as $type)
+                                                            <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><b> Exam Type</b></td>
+                                                <td>
+                                                    <select name="testid_inc" id="testid_inc" class="form-control">
+                                                        <option value="">Select Category</option>
+                                                        @foreach($examTypes as $exam)
+                                                            <option value="{{ $exam->testid }}">{{ strtoupper($exam->testname) }}-{{ $exam->testtypename }}-{{ $exam->session }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><b> Username</b></td>
+                                                <td> <input type="text" name="username_inc" value="" class="form-control"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td>
+                                                    <button type="submit" name="inc_time" id="inc_time" class="btn btn-primary">View Candidate's Time Usage</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </form>
+                            <div id="cand_data2" style="display:none"></div>
+                        </div>
                         </div>
 
                         <div class="tab-pane" id="reset_password">
