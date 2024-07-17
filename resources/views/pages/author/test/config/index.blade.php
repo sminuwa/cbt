@@ -56,6 +56,20 @@
             </div>
         @endforeach
     </div>
+    @if(count($configs) == 0)
+        <div class="card border-info">
+            <div class="card-header">
+                <h4 class="card-title">&nbsp;</h4>
+            </div>
+            <div class="card-body pt-2 pb-2  mt-1 mb-1">
+                <div class="row">
+                    <div class="row pb-5 pt-5">
+                        <p class="text-center"> No Configuration created yet. Use the button above to add new.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 @endsection
 
 @section('script')
@@ -81,7 +95,8 @@
                                                     $years = range($now - 2, $now + 2);
                                                 @endphp
                                                 <label for="session" class="mb-2">Year</label>
-                                                <select class="form-select form-control" id="session" name="session"
+                                                <select class="form-select form-control" id="session"
+                                                        name="session"
                                                         required>
                                                     @foreach($years as $year)
                                                         <option
@@ -110,11 +125,13 @@
                                         <div class="col-12 col-md-6">
                                             <div class="mb-3">
                                                 <label for="test_code_id" class="mb-2">Cadre/Programme</label>
-                                                <select class="form-select form-control" id="test_code_id" required
+                                                <select class="form-select form-control" id="test_code_id"
+                                                        required
                                                         name="test_code_id">
                                                     <option value="">Select</option>
                                                     @foreach(TestCode::orderBy('name')->get() as $code)
-                                                        <option value="{{ $code->id }}">{{ $code->name }}</option>
+                                                        <option
+                                                            value="{{ $code->id }}">{{ $code->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -122,11 +139,13 @@
                                         <div class="col-12 col-md-6">
                                             <div class="mb-3">
                                                 <label for="test_type_id" class="mb-2">Type</label>
-                                                <select class="form-select form-control" id="test_type_id" required
+                                                <select class="form-select form-control" id="test_type_id"
+                                                        required
                                                         name="test_type_id">
                                                     <option value="">Select Type</option>
                                                     @foreach(TestType::orderBy('name')->get() as $type)
-                                                        <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                        <option
+                                                            value="{{ $type->id }}">{{ $type->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -137,7 +156,8 @@
                         </div>
                     </div>
                     <div class="modal-footer submit-section text-end">
-                        <button type="submit" class="btn btn-sm btn-info submit-btn text-light">Create Test</button>
+                        <button type="submit" class="btn btn-sm btn-info submit-btn text-light">Create Test
+                        </button>
                     </div>
                 </form>
             </div>

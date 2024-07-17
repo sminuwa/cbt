@@ -5,7 +5,6 @@ use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SetupController;
 use App\Http\Controllers\Api\V1\APIV1Controller;
-use App\Http\Controllers\Auth\CandidateLoginController;
 use App\Http\Controllers\Auth\UserLoginController;
 use App\Http\Controllers\CandidateUploadController;
 use App\Http\Controllers\CentreController;
@@ -28,11 +27,12 @@ Route::name('auth.')->prefix('auth/')->group(function () {
         Route::post('login', [UserLoginController::class, 'login'])->name('login.proc');
         Route::get('logout', [UserLoginController::class, 'logout'])->name('logout');
     });
-    Route::name('candidate.')->prefix('/')->group(function () {
-        Route::get('login', [CandidateLoginController::class, 'showLoginForm'])->name('login');
-        Route::post('login', [CandidateLoginController::class, 'login'])->name('login.proc');
-        Route::get('logout', [CandidateLoginController::class, 'logout'])->name('logout');
-    });
+
+//    Route::name('candidate.')->prefix('/')->group(function () {
+//        Route::get('login', [CandidateLoginController::class, 'showLoginForm'])->name('login');
+//        Route::post('login', [CandidateLoginController::class, 'login'])->name('login.proc');
+//        Route::get('logout', [CandidateLoginController::class, 'logout'])->name('logout');
+//    });
 });
 
 
@@ -110,7 +110,10 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
             Route::get('/edit/{question}', [QuestionController::class, 'editQuestion'])->name('edit.question');
             Route::post('/store/question', [QuestionController::class, 'storeQuestion'])->name('store.question');
 
+            Route::get('/move/questions', [QuestionController::class, 'moveQuestions'])->name('move.questions');
+
             Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('topics');
+            Route::post('topics/add', [TopicController::class, 'storeTopic'])->name('topics.add');
         });
     });
 
@@ -125,7 +128,10 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
             Route::name('summary.')->prefix('summary')->group(function () {
                 Route::get('/report', 'reportSummary')->name('reports');
                 Route::post('/report/generate', 'generateReport')->name('generate.report');
+
                 Route::get('/question', 'questionSummary')->name('question');
+                Route::post('/question/generate', 'generateQuestionSummary')->name('generate.question');
+
                 Route::get('/presentation', 'presentationSummary')->name('presentation');
             });
 
@@ -142,6 +148,8 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
 
         Route::get('/{venue}/batches/capacity', [MiscController::class, 'batchCapacity'])->name('batches.capacity');
         Route::get('test/config/{year}/{type}/{code}', [MiscController::class, 'testConfig'])->name('test.config');
+
+        Route::get('test/{config}/subjects', [MiscController::class, 'testSubjects'])->name('test.subjects');
     });
 
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {

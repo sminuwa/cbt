@@ -31,7 +31,7 @@
         <div class="col-12 col-lg-12 col-xl-12 col-md-6">
             <div class="card border-info">
                 <div class="card-header border-info">
-                    Add Subject
+                    Add Paper
                 </div>
                 <div class="card-body">
                     <div class="profile-box">

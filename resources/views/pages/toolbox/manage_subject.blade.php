@@ -23,22 +23,23 @@
                 <div class="row">
                     <div>
                         <h4 class="card-title d-flex justify-content-between">
-                            <span>Manage Subjects</span>
+                            <span>Manage Papers</span>
                         </h4>
                     </div>
                 </div>
             </div>
             <div class="card-body pt-4">
-                <a style="width: 18%" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" href="#add_new_subject"><i
-                        class="fa fa-plus"></i> New subject</a>
+                <a style="width: 18%" class="btn btn-outline-info btn-sm" data-bs-toggle="modal"
+                   href="#add_new_subject">
+                    <i class="fa fa-plus"></i> New paper</a>
             </div>
 
-            <table id="table" class="table table-bordered table-striped center">
+            <table id="table" class="table table-bordered center">
                 <thead>
                 <tr>
                     <th style="width: 5%">#</th>
                     <th>Exam Type</th>
-                    <th>Subject Code</th>
+                    <th>Paper Code</th>
                     <th>Name</th>
                     <th>Actions</th>
                 </tr>
@@ -52,15 +53,13 @@
                         <td>{{ $subject->subject_code }}</td>
                         <td>{{ $subject->name }}</td>
                         <td>
-                            <a class="btn btn-sm btn-primary edit"
+                            <a class="btn btn-sm btn-warning edit text-white"
                                data-bs-toggle="modal"
                                href="#add_new_subject"
                                data-id="{{$subject->id}}"
                                data-name="{{$subject->name}}"
                                data-exam_type_id="{{$subject->exam_type_id}}"
-                               data-subject_code="{{$subject->subject_code}}">
-                                <i class="fa fa-edit"> Edit</i>
-                            </a>
+                               data-subject_code="{{$subject->subject_code}}">Modify </a>
                             <a class="btn btn-sm btn-danger delete" data-bs-toggle="modal"
                                href="#delete_center" data-id="{{$subject->id}}"><i class="fa fa-trash"></i>
                                 Delete</a>
@@ -81,7 +80,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add/Edit Subject</h5>
+                    <h5 class="modal-title">Add/Edit Paper</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
@@ -106,15 +105,14 @@
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <div class="mb-6">
-                                                <label for="scode" class="mb-6">Subject Code</label>
+                                                <label for="scode" class="mb-6">Paper Code</label>
                                                 <input type="text" id="scode" name="scode" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <div class="mb-6">
-                                                <label for="sname" class="mb-6">Subject Title</label>
-                                                <input type="text" id="sname" name="sname"
-                                                       class="form-control">
+                                                <label for="sname" class="mb-6">Paper Title</label>
+                                                <input type="text" id="sname" name="sname" class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -134,7 +132,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Delete Subject</h5>
+                    <h5 class="modal-title">Delete Paper</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -143,8 +141,8 @@
                 </div>
                 <div class="modal-footer">
                     {{--                    <button type="button" class="btn btn-sm btn-secondary submit-btn text-light" data-dismiss="modal">Cancel</button>--}}
-                    <button type="button" id="btnDelete" class="btn btn-sm btn-danger submit-btn text-light"><i class="fa fa-trash-o"></i>
-                        Delete
+                    <button type="button" id="btnDelete" class="btn btn-sm btn-danger submit-btn text-light">
+                        <i class="fa fa-trash-o"></i> Delete
                     </button>
                 </div>
 

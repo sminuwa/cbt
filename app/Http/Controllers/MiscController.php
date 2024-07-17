@@ -6,6 +6,7 @@ use App\Models\Faculty;
 use App\Models\FacultyScheduleMapping;
 use App\Models\Scheduling;
 use App\Models\TestConfig;
+use App\Models\TestSubject;
 use App\Models\Venue;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -56,6 +57,13 @@ class MiscController extends Controller
             ->get();
 
         return view('pages.admin.reports.ajax.tests', compact('configs'));
+    }
+
+    public function testSubjects($config)
+    {
+        $subjects = TestSubject::with('subject')->select(['subject_id'])->where('test_config_id', $config)->get();
+
+        return view('pages.admin.reports.ajax.subjects', compact('subjects'));
     }
 
 }
