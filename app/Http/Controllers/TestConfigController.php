@@ -134,7 +134,7 @@ class TestConfigController extends Controller
         return view('pages.author.test.config.schedules', compact('schedules', 'config_id'));
     }
 
-    public function storeSchedule(Request $request): RedirectResponse
+    public function storeSchedule(Request $request)
     {
         try {
             if (isset($request->id))
