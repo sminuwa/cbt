@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Imports\CandidatesImport;
+use App\Models\Candidate;
 use App\Models\ExamType;
 use App\Models\TestConfig;
+use DateInterval;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -113,8 +116,41 @@ public function imageIndex()
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function saveTimeAdjustment(Request $request)
     {
-        //
+        $timespent = $request->input('timespent') * 60;
+        $candid = $request->input('candid');
+        $examtype = $request->input('examtyp');
+
+        $starttime = DB::table('time_controls')
+            ->where('candidate_id', $candid)
+            ->where('test_config_id', $examtype)
+            ->value('start_time');
+
+        $stimedt = new DateTime("2014-01-01 " . $starttime);
+        $ctime = $stimedt->add(new DateInterval("PT" . $timespent . "S"));
+
+        $updated = DB::table('time_controls')
+            ->where('candidate_id', $candid)
+            ->where('test_config_id', $examtype)
+            ->update(['curent_time' => $ctime->format("H:i:s"), 'elapsed' => $timespent]);
+
+        return $updated ? response()->json(1) : response()->json(0);
+    }
+
+    public function resetCandidatePassword()
+    {
+        $this->validate($request, [
+            "index_number" => "required",
+            "npassword" => "required|min:3|confirmed"
+        ]);
+        $candidate = Candidate::where(['username' => $request->username])->first();
+        if ($candidate) {
+            $candidate->password = bcrypt($request->password);
+            $candidate->save();
+            return redirect()->back()->withErrors(['message' => "Password Reset for {{$request->username}} to {{$request->password}}"]);
+        }
+        return redirect()->back()->withErrors(["error" => "Invalid UserName"]);
+
     }
 }

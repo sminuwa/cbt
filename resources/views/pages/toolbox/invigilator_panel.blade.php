@@ -80,7 +80,7 @@
                 </div>
 
                         <div class="tab-pane" id="time_control">
-                            <form id="frm2" class="style-frm" method="post" action="{{ route('toolbox.invigilator.increase-time.view') }}">
+                            <form id="frm2" method="post" action="{{ route('toolbox.invigilator.increase-time.view') }}">
                                 @csrf
                                 <fieldset><legend>Enter Candidate's Details</legend>
                                     <div id="cand_data">
@@ -97,10 +97,10 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td><b> Exam Type</b></td>
+                                                <td>Exam</td>
                                                 <td>
                                                     <select name="testid_inc" id="testid_inc" class="form-control">
-                                                        <option value="">Select Category</option>
+                                                        <option value="">--Select Exam--</option>
                                                         @foreach($examTypes as $exam)
                                                             <option value="{{ $exam->testid }}">{{ strtoupper($exam->testname) }}-{{ $exam->testtypename }}-{{ $exam->session }}</option>
                                                         @endforeach
@@ -117,10 +117,6 @@
                                                     <button type="submit" name="inc_time" id="inc_time" class="btn btn-primary">View Candidate's Time Usage</button>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
                                         </table>
                                     </div>
                                 </fieldset>
@@ -130,7 +126,38 @@
                         </div>
 
                         <div class="tab-pane" id="reset_password">
-
+                            <form action="{{route('toolbox.invigilator.reset_password')}}" method="post">
+                                @csrf
+                                <div class="modal-body">
+                                    <div class="hours-info">
+                                        <div class="row hours-cont">
+                                            <div class="col-12 col-md-12">
+                                                <div class="row">
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="mb-6">
+                                                            <label for="index_number" class="mb-6">Indexing Number</label>
+                                                            <input type="text" id="index_number" name="index_number" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="mb-6">
+                                                            <label for="npassword" class="mb-6">Enter New Password</label>
+                                                            <input type="text" id="npassword" name="npassword" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="mb-6">
+                                                            <label for="rnpassword" class="mb-6">Paper Title</label>
+                                                            <input type="text" id="rnpassword" name="rnpassword" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-primary submit-btn text-light">Save</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -146,5 +173,37 @@
                         let time_control = $('#time_control-div')
                         let reset_password = $('#reset_password-div')
                     })
+
+                    $(document).ready(function() {
+                        $("#testid_inc").select2();
+                    });
+
+                    $(document).on("submit", "#frm2", function(event) {
+                        event.preventDefault();
+                        $.ajax({
+                            type: 'post',
+                            url: '{{ route('toolbox.invigilator.increase-time.view') }}',
+                            data: $("#frm2").serialize()
+                        }).done(function(msg) {
+                            $("#cand_data2").empty().html(msg).slideDown();
+                            $("#cand_data").slideUp();
+                        });
+                    });
+
+                    $(document).on("click", "#btn-bk-step3", function(event) {
+                        $("#cand_data").slideDown();
+                        $("#cand_data2").slideUp();
+                    });
+
+                    $(document).on("click", "#btn-nxt-step3", function(event) {
+                        event.preventDefault();
+                        $.ajax({
+                            type: 'post',
+                            url: '{{ route('toolbox.invigilator.save-time.adjust') }}',
+                            data: $("#frm3").serialize()
+                        }).done(function(msg) {
+                            alert(msg == 1 ? "Time was adjusted successfully!" : "Operation was not successful!");
+                        });
+                    });
                 </script>
 @endsection

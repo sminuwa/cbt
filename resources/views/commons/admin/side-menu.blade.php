@@ -202,7 +202,7 @@
                             </a>
                         </li>
                         <li class="{{Request::is('*invigilator_toolkit*')?'active':''}}">
-                            <a href="{{route('toolbox.candidate_image_upload.invigilator')}}">
+                            <a href="{{route('toolbox.invigilator.index')}}">
                                 <span>Invigilator Toolkit</span>
                             </a>
                         </li>
