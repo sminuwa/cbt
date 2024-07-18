@@ -59,12 +59,6 @@
                             </a>
                         </li>
                     @endif
-                    <li class="{{Request::is('*exams/setup')?'active':''}}">
-                        <a href="{{ route('admin.exams.setup.index') }}">
-                            <i class="fas fa-lock-open"></i>
-                            <span>Setup Exams</span>
-                        </a>
-                    </li>
 
                     @if(Request::is('*test/config*') && !Request::is('*test/config'))
                         @php $config = Session::get('config'); @endphp
@@ -213,6 +207,12 @@
                             </a>
                         </li>
                     @endif
+                    <li class="{{Request::is('*exams/setup')?'active':''}}">
+                        <a href="{{ route('admin.exams.setup.index') }}">
+                            <i class="fas fa-lock-open"></i>
+                            <span>Setup Exams</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="{{ route('auth.admin.logout') }}">
                             <i class="fas fa-sign-out-alt"></i>
