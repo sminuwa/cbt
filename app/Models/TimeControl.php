@@ -43,14 +43,7 @@ class TimeControl extends Model
 		'elapsed' => 'int'
 	];
 
-	protected $fillable = [
-		'id',
-		'completed',
-		'start_time',
-		'current_time',
-		'elapsed',
-		'ip'
-	];
+	protected $guarded = [];
 
 	public function scheduled_candidate()
 	{

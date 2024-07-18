@@ -5,7 +5,6 @@ use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SetupController;
 use App\Http\Controllers\Api\V1\APIV1Controller;
-use App\Http\Controllers\Auth\CandidateLoginController;
 use App\Http\Controllers\Auth\UserLoginController;
 use App\Http\Controllers\CandidateUploadController;
 use App\Http\Controllers\CentreController;
@@ -22,17 +21,18 @@ Route::get('/', function () {
 });
 
 
-        Route::name('auth.')->prefix('auth/')->group(function () {
-        Route::name('admin.')->prefix('adm/')->group(function () {
+Route::name('auth.')->prefix('auth/')->group(function () {
+    Route::name('admin.')->prefix('adm/')->group(function () {
         Route::get('login', [UserLoginController::class, 'showLoginForm'])->name('login')->middleware('guest');
         Route::post('login', [UserLoginController::class, 'login'])->name('login.proc');
         Route::get('logout', [UserLoginController::class, 'logout'])->name('logout');
     });
-        Route::name('candidate.')->prefix('/')->group(function () {
-        Route::get('login', [CandidateLoginController::class, 'showLoginForm'])->name('login');
-        Route::post('login', [CandidateLoginController::class, 'login'])->name('login.proc');
-        Route::get('logout', [CandidateLoginController::class, 'logout'])->name('logout');
-    });
+
+//    Route::name('candidate.')->prefix('/')->group(function () {
+//        Route::get('login', [CandidateLoginController::class, 'showLoginForm'])->name('login');
+//        Route::post('login', [CandidateLoginController::class, 'login'])->name('login.proc');
+//        Route::get('logout', [CandidateLoginController::class, 'logout'])->name('logout');
+//    });
 });
 
 
@@ -110,7 +110,10 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
             Route::get('/edit/{question}', [QuestionController::class, 'editQuestion'])->name('edit.question');
             Route::post('/store/question', [QuestionController::class, 'storeQuestion'])->name('store.question');
 
+            Route::get('/move/questions', [QuestionController::class, 'moveQuestions'])->name('move.questions');
+
             Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('topics');
+            Route::post('topics/add', [TopicController::class, 'storeTopic'])->name('topics.add');
         });
     });
 
@@ -118,20 +121,23 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
         Route::name('reports.')->prefix('reports')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::name('test.')->prefix('test')->group(function () {
-                Route::get('/', 'testReports')->name('index');
+                Route::get('/report', 'testReports')->name('index');
                 Route::post('generate', 'generateDaily')->name('generate');
             });
 
             Route::name('summary.')->prefix('summary')->group(function () {
                 Route::get('/report', 'reportSummary')->name('reports');
                 Route::post('/report/generate', 'generateReport')->name('generate.report');
+
                 Route::get('/question', 'questionSummary')->name('question');
+                Route::post('/question/generate', 'generateQuestionSummary')->name('generate.question');
+
                 Route::get('/presentation', 'presentationSummary')->name('presentation');
             });
 
             Route::name('active.')->prefix('active')->group(function () {
-                Route::get('/candidates', 'testCode')->name('index');
-                Route::post('generate', 'generateByCode')->name('generate');
+                Route::get('/candidates', 'activeCandidates')->name('index');
+                Route::post('generate', 'generateActiveCandidates')->name('generate');
             });
         });
     });
@@ -142,26 +148,37 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
 
         Route::get('/{venue}/batches/capacity', [MiscController::class, 'batchCapacity'])->name('batches.capacity');
         Route::get('test/config/{year}/{type}/{code}', [MiscController::class, 'testConfig'])->name('test.config');
+
+        Route::get('test/{config}/subjects', [MiscController::class, 'testSubjects'])->name('test.subjects');
+    });
+
+    Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
+        Route::get('/', [SetupController::class, 'index'])->name('index');
+        Route::post('pull/basic', [SetupController::class, 'pullBasicResource'])->name('pull.basic');
+        Route::post('pull/test', [SetupController::class, 'pullTestResource'])->name('pull.test');
+        Route::post('pull/candidate', [SetupController::class, 'pullCandidateResource'])->name('pull.candidate');
+        Route::post('pull/candidate/picture', [SetupController::class, 'pullCandidatePictures'])->name('pull.candidate.pictures');
     });
 });
+
 Route::name('toolbox.')->prefix('toolbox')->group(function () {
     Route::name('candidate-types.')->prefix('candidate-types')->group(function () {
         Route::get('/', [ExamTypeController::class, 'index'])->name('index');
-        Route::post('etype/store', [ExamTypeController::class,'store'])->name('store');
-        Route::get('etype/delete/{examType}', [ExamTypeController::class,'destroy'])->name('delete');
+        Route::post('etype/store', [ExamTypeController::class, 'store'])->name('store');
+        Route::get('etype/delete/{examType}', [ExamTypeController::class, 'destroy'])->name('delete');
     });
     Route::name('center_venue.')->prefix('center_venue')->group(function () {
         Route::get('/', [CentreController::class, 'index'])->name('home');
-        Route::post('centre/store', [CentreController::class,'store'])->name('center.store');
-        Route::post('centre/edit/{id}', [CentreController::class,'edit'])->name('center.edit');
-        Route::post('centre/delete', [CentreController::class,'destroy'])->name('center.destroy');
-        Route::post('venue/store', [VenueController::class,'store'])->name('venue.store');
-        Route::get('venue/delete/{venue}', [VenueController::class,'destroy'])->name('venue.delete');
+        Route::post('centre/store', [CentreController::class, 'store'])->name('center.store');
+        Route::post('centre/edit/{id}', [CentreController::class, 'edit'])->name('center.edit');
+        Route::post('centre/delete', [CentreController::class, 'destroy'])->name('center.destroy');
+        Route::post('venue/store', [VenueController::class, 'store'])->name('venue.store');
+        Route::get('venue/delete/{venue}', [VenueController::class, 'destroy'])->name('venue.delete');
     });
     Route::name('subject.')->prefix('subjects')->group(function () {
         Route::get('/', [SubjectsController::class, 'index'])->name('home');
-        Route::post('sub/store', [SubjectsController::class,'create'])->name('store');
-        Route::get('sub/delete/{subject}', [SubjectsController::class,'destroy'])->name('delete');
+        Route::post('sub/store', [SubjectsController::class, 'create'])->name('store');
+        Route::get('sub/delete/{subject}', [SubjectsController::class, 'destroy'])->name('delete');
     });
 
     Route::name('candidate_upload.')->prefix('candidate_upload')->group(function () {
@@ -169,6 +186,7 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('upload-candidate-data', [CandidateUploadController::class, 'upload'])->name('upload.candidate.data');
 
     });
+
 
     Route::name('candidate_image_upload.')->prefix('candidate_image_upload')->group(function () {
         Route::get('upload-candidate', [CandidateUploadController::class, 'imageIndex'])->name('upload.images');
@@ -194,6 +212,8 @@ Route::name('api.v1.')->prefix('api/v1/')->group(function () {
     Route::name('resource.')->prefix('resource/')->group(function () {
         Route::post('basic/', [APIV1Controller::class, 'basicData'])->name('basic');
         Route::post('test/', [APIV1Controller::class, 'testData'])->name('test');
+        Route::post('candidate/', [APIV1Controller::class, 'candidateData'])->name('candidate');
+        Route::post('candidate/picture', [APIV1Controller::class, 'candidatePictures'])->name('candidate.picture');
     });
 
 })->middleware('api-auth');

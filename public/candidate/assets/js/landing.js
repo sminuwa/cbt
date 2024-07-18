@@ -6,7 +6,7 @@
 
   // dubai layout
   $(".default-view").click(function () {
-    localStorage.setItem("page-wrapper", "compact-wrapper");
+    localStorage.setItem("page-wrapper", "horizontal-wrapper");
   });
 
   $(".los-view").click(function () {
@@ -75,7 +75,7 @@
     $("html, body").animate(
       {
         scrollTop: 0,
-      }, 
+      },
       600
     );
     return false;

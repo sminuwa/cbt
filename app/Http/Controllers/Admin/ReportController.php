@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Presentation;
 use App\Models\Score;
 use App\Models\TestConfig;
+use App\Models\TestQuestion;
 use App\Models\TestSubject;
+use App\Models\TimeControl;
 use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Exception;
 
 class ReportController extends Controller
 {
@@ -37,7 +40,7 @@ class ReportController extends Controller
                 'questionBank.subject',
                 'scheduledCandidate.candidate'
             ])
-                ->whereHas('answerOption', function($query) {
+                ->whereHas('answerOption', function ($query) {
                     $query->where('correctness', 1);
                 })
                 ->where('test_config_id', $request->test_config_id)
@@ -99,10 +102,53 @@ class ReportController extends Controller
         }
     }
 
-    public function testCode()
+    public function questionSummary()
     {
-        $years = TestConfig::select('session')->groupBy('session')->orderBy('session', 'desc')->get()->pluck('session');
-        return view('pages.admin.reports.report-by-test-code', compact('years'));
+        $configs = TestConfig::with(['test_type', 'test_code'])
+            ->select(['id', 'session', 'semester', 'test_type_id', 'test_code_id'])
+            ->orderBy('session', 'desc')
+            ->get();
+
+        return view('pages.admin.reports.question-summary', compact('configs'));
+    }
+
+    public function generateQuestionSummary(Request $request)
+    {
+        try {
+            $where = [];
+            $subject_id = $request->test_subject_id;
+            $config_id = $request->test_config_id;
+
+            if ($subject_id != '%')
+                $where[] = ['subject_id', $subject_id];
+
+            $where[] = ['test_config_id', $config_id];
+
+            $report = [];
+
+            $subjects = TestSubject::with('subject')->where($where)->get()->pluck('subject');
+            foreach ($subjects as $subject) {
+                $obj = [];
+                $questions = TestQuestion::join('test_sections', 'test_sections.id', '=', 'test_questions.test_section_id')
+                    ->join('test_subjects', 'test_subjects.id', '=', 'test_sections.test_subject_id')
+                    ->where(['test_config_id' => $config_id, 'test_subjects.id' => $subject->id])->pluck('question_bank_id');
+
+                $obj['subject'] = $subject->subject_code . ' - ' . $subject->name;
+                $obj['questions'] = $questions;
+
+                $report[] = $obj;
+            }
+
+            return $report;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function activeCandidates()
+    {
+        $exams = TestConfig::exam()->get();
+        return view('pages.admin.reports.active-candidates', compact('exams'));
     }
 
     public function daily()
@@ -110,23 +156,21 @@ class ReportController extends Controller
         return view('pages.admin.reports.test-reports');
     }
 
-    public function generateByCode(Request $request)
+    public function generateActiveCandidates(Request $request)
     {
-        $testConfig = TestConfig::where([
-            'session' => $request->year, 'semester' => $request->semester,
-            'test_code_id' => $request->test_code_id, 'test_type_id' => $request->test_type_id
-        ])->get()->first();
+        try {
+            $actives = DB::table('time_controls')
+                ->join('candidates', 'candidates.id', '=', 'time_controls.scheduled_candidate_id')
+                ->select('indexing',
+                    DB::raw('concat(candidates.surname," ",candidates.firstname," ",candidates.other_names) as name'),
+                    'ip as address')
+                ->where(['test_config_id' => $request->test_config_id, 'completed' => 0])
+                ->get();
 
-        $message = '';
-        if (!$testConfig)
-            $message = 'No record matched';
-        else {
-            Presentation::where(['' => $testConfig->id])->distinct('candidate_id')->get();
+            return view('pages.admin.reports.ajax.active', compact('actives'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
-
-        $reports = Topic::all();
-
-        return view('pages.admin.reports.ajax.testcode', compact('reports'));
     }
 
     public function generateDaily(Request $request)

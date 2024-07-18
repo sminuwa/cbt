@@ -26,9 +26,7 @@ class TestType extends Model
 {
 	protected $table = 'test_types';
 
-	protected $fillable = ['id',
-		'name'
-	];
+	protected $guarded = [];
 
 	public function test_configs()
 	{

@@ -31,10 +31,7 @@ class ExamsDate extends Model
         'date' => 'datetime'
     ];
 
-    protected $fillable = [
-        'test_config_id',
-        'date'
-    ];
+    protected $guarded = [];
 
     public function test_config()
     {

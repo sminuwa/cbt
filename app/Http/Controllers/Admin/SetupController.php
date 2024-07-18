@@ -9,7 +9,7 @@ use App\Models\AdminCandidateSubject;
 use App\Models\AdminCentre;
 use App\Models\AdminExamType;
 use App\Models\AdminQuestionBank;
-use App\Models\AdminScheduleCandidate;
+use App\Models\AdminScheduledCandidate;
 use App\Models\AdminSubject;
 use App\Models\AdminTestCode;
 use App\Models\AdminTestCompositor;
@@ -27,6 +27,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Request;
+use ZipArchive;
 
 class SetupController extends Controller
 {
@@ -147,8 +148,8 @@ class SetupController extends Controller
         // Define headers if necessary
         $headers = [
             'Accept' => 'application/json',
-            'api_key'=>config("user_data.api_key"),
-            'secret_key'=>config("user_data.secret_key")
+            'api_key'=>env("CHPRBN_CBT_API_KEY"),
+            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
         ];
 
         // Fetch data from the API
@@ -157,19 +158,26 @@ class SetupController extends Controller
 //        return $response['status'];
         if ($response['status']==1) {
             // Get the data from the response
-            $data = $response['data'];
+            $data = $response['data']['data'];
             $indexes = [
                 'schedules','test_configs','test_compositors','users',
                 'test_subjects','subjects','test_sections','test_questions',
-                'question_banks','exams_dates'
+                'question_banks','exams_dates','answer_options'
             ];
 
             foreach ($indexes as $index){
                 foreach ($data[$index] as &$obj) {
                     $obj['created_at'] = Carbon::parse($obj['created_at'])->format('Y-m-d H:i:s');
                     $obj['updated_at'] = Carbon::parse($obj['updated_at'])->format('Y-m-d H:i:s');
+                    if(isset($obj['date'])){
+                        $obj['date'] = Carbon::parse($obj['date'])->format('Y-m-d H:i:s');
+                    }
+                    if(isset($obj['date_initiated'])){
+                        $obj['date_initiated'] = Carbon::parse($obj['date_initiated'])->format('Y-m-d H:i:s');
+                    }
                 }
             }
+//            return $data;
 
             // Start a transaction
 
@@ -180,7 +188,7 @@ class SetupController extends Controller
 
                     AdminCandidate::query()->delete();
                     AdminCandidateSubject::query()->delete();
-                    AdminScheduleCandidate::query()->delete();
+                    AdminScheduledCandidate::query()->delete();
                     AdminSubject::query()->delete();
                     AdminTestCompositor::query()->delete();
                     AdminTestConfig::query()->delete();
@@ -194,10 +202,10 @@ class SetupController extends Controller
                     AdminQuestionBank::query()->delete();
                     // Insert new data
 
-                    AdminCandidate::insert($data['']);
-                    AdminCandidateSubject::insert($data['']);
-                    AdminScheduleCandidate::insert($data['']);
-                    AdminAnswerOption::insert($data['']);
+//                    AdminCandidate::insert($data['']);
+//                    AdminCandidateSubject::insert($data['']);
+//                    AdminScheduledCandidate::insert($data['']);
+                    AdminAnswerOption::insert($data['answer_options']);
                     AdminSubject::insert($data['subjects']);
                     AdminTestCompositor::insert($data['test_compositors']);
                     AdminTestConfig::insert($data['test_configs']);
@@ -223,12 +231,122 @@ class SetupController extends Controller
             }
         } else {
             // Log the failure
-            PullStatus::create([
-                'resource' => 'basic-data',
-                'pull_date' => now()->toDateString(),
-                'status' => 'FAILURE',
-                'message' => 'Failed to fetch data from API'
-            ]);
+
+            return response()->json(['success' => false, 'message' => 'Failed to fetch data from API'], 200);
+        }
+
+    }
+
+    public function pullCandidateResource(Request $request) {
+        $tables = ['admin_candidates', 'admin_candidate_subjects']; // Replace with your table names
+        $this->backupService->backupAndTruncate($tables);
+        $apiUrl = $this->apiUrl('resource/candidate');
+
+        // Define headers if necessary
+        $headers = [
+            'Accept' => 'application/json',
+            'api_key'=>env("CHPRBN_CBT_API_KEY"),
+            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+        ];
+
+        // Fetch data from the API
+        $response = $this->post($apiUrl, [], $headers);
+
+//        return $response['status'];
+        if ($response['status']==1) {
+            // Get the data from the response
+            $data = $response['data']['data'];
+            $indexes = [
+                'candidates','candidate_subjects','scheduled_candidates'
+            ];
+
+            foreach ($indexes as $index){
+                foreach ($data[$index] as &$obj) {
+                    $obj['created_at'] = null;//Carbon::parse($obj['created_at'])->format('Y-m-d H:i:s');
+                    $obj['updated_at'] = null;//Carbon::parse($obj['updated_at'])->format('Y-m-d H:i:s');
+                    if(isset($obj['date'])){
+                        $obj['date'] = Carbon::parse($obj['date'])->format('Y-m-d H:i:s');
+                    }
+                    if(isset($obj['date_initiated'])){
+                        $obj['date_initiated'] = Carbon::parse($obj['date_initiated'])->format('Y-m-d H:i:s');
+                    }
+                }
+            }
+//            return $data;
+
+            // Start a transaction
+
+            try {
+
+
+                DB::transaction(function () use ($data) {
+
+                    AdminCandidate::query()->delete();
+                    AdminCandidateSubject::query()->delete();
+                    AdminScheduledCandidate::query()->delete();
+                    // Insert new data
+
+                    AdminCandidate::insert($data['candidates']);
+                    AdminCandidateSubject::insert($data['candidate_subjects']);
+                    AdminScheduledCandidate::insert($data['scheduled_candidates']);
+                    // Log the pull
+                    PullStatus::create([
+                        'resource' => 'candidate-data',
+                        'pull_date' => now(),
+                        'status' => 'SUCCESS',
+                        'message' => 'Data pulled and inserted successfully'
+                    ]);
+                    // Commit the transaction
+                });
+
+                return response()->json(['success' => true, 'message' => 'Data pulled and inserted successfully']);
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'Failed to pull and insert data', 'error' => $e->getMessage()], 200);
+            }
+        } else {
+            // Log the failure
+
+            return response()->json(['success' => false, 'message' => 'Failed to fetch data from API'], 200);
+        }
+
+    }
+    public function pullCandidatePictures(Request $request)
+    {
+//        $tables = ['admin_candidates', 'admin_candidate_subjects']; // Replace with your table names
+//        $this->backupService->backupAndTruncate($tables);
+        $apiUrl = $this->apiUrl('resource/candidate/picture');
+
+        // Define headers if necessary
+        $headers = [
+            'Accept' => 'application/json',
+            'api_key'=>env("CHPRBN_CBT_API_KEY"),
+            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+        ];
+
+        // Fetch data from the API
+        $response = Http::withHeaders($headers)->post($apiUrl, []);
+
+//        return $response['status'];
+        if ($response->successful()) {
+            $zipFilePath = public_path('user_images.zip');
+            file_put_contents($zipFilePath, $response->body());
+
+            $zip = new ZipArchive;
+            if ($zip->open($zipFilePath) === TRUE) {
+                $zip->extractTo(public_path('candidate_pics'));
+                $zip->close();
+                unlink($zipFilePath); // Delete the zip file after extraction
+                PullStatus::create([
+                    'resource' => 'candidate-pictures',
+                    'pull_date' => now(),
+                    'status' => 'SUCCESS',
+                    'message' => 'Data pulled and inserted successfully'
+                ]);
+                return response()->json(['success' => true, 'message' => 'Download Successful'], 200);
+            }
+            return response()->json(['success' => false, 'message' => 'Invalid Download File'], 200);
+        } else {
+            // Log the failure
 
             return response()->json(['success' => false, 'message' => 'Failed to fetch data from API'], 200);
         }
@@ -253,6 +371,6 @@ class SetupController extends Controller
     }
 
     private function apiUrl($url){
-        return config('user_data.server_address').$url;
+        return env("CHPRBN_SERV_ADDR").$url;
     }
 }

@@ -44,16 +44,7 @@ class TestSection extends Model
         'num_of_difficult' => 'int'
     ];
 
-    protected $fillable = [
-        'id',
-        'title',
-        'instruction',
-        'mark_per_question',
-        'num_to_answer',
-        'num_of_easy',
-        'num_of_moderate',
-        'num_of_difficult'
-    ];
+    protected $guarded = [];
 
     public function test_subject()
     {

@@ -27,9 +27,7 @@ class ExamType extends Model
 {
 	protected $table = 'exam_types';
 
-	protected $fillable = [
-		'name'
-	];
+	protected $guarded = [];
 
 	public function scheduled_candidates()
 	{

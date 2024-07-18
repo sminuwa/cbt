@@ -37,9 +37,7 @@ class TestCompositor extends Model
         'subject_id' => 'int'
     ];
 
-    protected $fillable = [
-        'id'
-    ];
+    protected $guarded = [];
 
     public function subject()
     {

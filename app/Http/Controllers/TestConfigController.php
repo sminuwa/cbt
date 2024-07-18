@@ -79,6 +79,7 @@ class TestConfigController extends Controller
             if ($config) {
                 $config->duration = $request->duration;
                 $config->pass_key = $request->pass_key;
+                $config->status = $request->availability;
                 $config->allow_calc = $request->allow_calc;
                 $config->endorsement = $request->endorsement;
                 $config->time_padding = $request->time_padding;
@@ -86,6 +87,7 @@ class TestConfigController extends Controller
                 $config->starting_mode = $request->starting_mode;
                 $config->option_administration = $request->option_administration;
                 $config->question_administration = $request->question_administration;
+                $config->status = $request->availability;
                 if ($config->save())
                     return back()->with(['success' => true, 'message' => 'Test Configurations successfully saved']);
             }
