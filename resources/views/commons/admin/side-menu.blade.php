@@ -115,10 +115,8 @@
                     @endif
 
                     @if(Request::is('*questions/authoring*'))
-                        {{--                                //&& !Request::is('*questions/authoring')--}}
-
                         <li class="{{Request::is('*dashboard')?'active':''}}">
-                            <a href="{{ route('admin.exams.setup.index') }}">
+                            <a href="#">
                                 <i class="fas fa-lock-open"></i>
                                 <span>Setup Exams</span>
                             </a>
