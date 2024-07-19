@@ -15,8 +15,10 @@
                     <div class="card-body pt-2 pb-2  mt-1 mb-1">
                         <div class="row">
                             <div class="row pb-3 pt-2">
-                                <p>The process of questions authoring is now completed successfully. Click the
-                                    bottom below to go back<br>
+                                <p>The process of questions authoring is now completed successfully.
+                                    <b>({{$duplicates}})</b> duplicate(s) detected and <span
+                                        class="text-danger"><strong>removed</strong></span>. <br>
+                                    Click the bottom below to go back<br>
 
                                     <a href="{{route('admin.questions.authoring.author')}}"
                                        class="btn btn-sm btn-info mt-5 text-light">Go Back</a>
