@@ -3,16 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Presentation;
+use App\Models\Candidate;
 use App\Models\Score;
 use App\Models\TestConfig;
 use App\Models\TestQuestion;
 use App\Models\TestSubject;
-use App\Models\TimeControl;
-use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use PHPUnit\Exception;
 
 class ReportController extends Controller
 {
@@ -104,10 +101,7 @@ class ReportController extends Controller
 
     public function questionSummary()
     {
-        $configs = TestConfig::with(['test_type', 'test_code'])
-            ->select(['id', 'session', 'semester', 'test_type_id', 'test_code_id'])
-            ->orderBy('session', 'desc')
-            ->get();
+        $configs = $this->tests();
 
         return view('pages.admin.reports.question-summary', compact('configs'));
     }
@@ -208,6 +202,60 @@ class ReportController extends Controller
         }
     }
 
+    public function presentationSummary()
+    {
+        $configs = $this->tests();
+
+        return view('pages.admin.reports.presentation-summary', compact('configs'));
+    }
+
+    public function generatePresentationSummary(Request $request)
+    {
+        try {
+            $config = 1;//$request->test_config_id;
+            $candidatesIds = [1];//$request->candidates;
+
+            $testSubjects = TestSubject::with('subject')
+                ->select('subject_id')
+                ->where('test_config_id', $config)
+                ->get();
+
+            $candidates = Candidate::select('id', 'indexing', 'surname', 'firstname', 'other_names')
+                ->whereIn('id', $candidatesIds)
+                ->get();
+
+            foreach ($candidates as $candidate) {
+                $subjects = array();
+                foreach ($testSubjects as $testSubject) {
+                    $subject = $testSubject->subject;
+                    $report = DB::table('presentations')
+                        ->join('test_sections', 'test_sections.id', '=', 'presentations.test_section_id')
+                        ->join('question_banks', 'question_banks.id', '=', 'presentations.question_bank_id')
+                        ->join('test_subjects', 'test_subjects.id', '=', 'test_sections.test_subject_id')
+                        ->select('question_bank_id', 'presentations.scheduled_candidate_id as candidate_id',
+                            'presentations.test_config_id', 'presentations.test_section_id as section_id',
+                            'question_banks.title as question', 'test_sections.title as section', 'test_sections.instruction')
+                        ->where([
+                            'presentations.test_config_id' => $config,
+                            'test_subjects.id' => $subject->id,
+                            'presentations.scheduled_candidate_id' => $candidate->id
+                        ])
+                        ->distinct('presentations.question_bank_id')
+                        ->get();
+
+                    $subject['report'] = $report;
+                    $subjects[] = $subject;
+                }
+                $candidate['subjects'] = $subjects;
+            }
+
+            return $candidate;
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+        return $request;
+    }
+
     public function activeCandidates()
     {
         $exams = TestConfig::exam()->get();
@@ -241,4 +289,12 @@ class ReportController extends Controller
         return $request;
     }
 
+
+    private function tests()
+    {
+        return TestConfig::with(['test_type', 'test_code'])
+            ->select(['id', 'session', 'semester', 'test_type_id', 'test_code_id'])
+            ->orderBy('session', 'desc')
+            ->get();
+    }
 }

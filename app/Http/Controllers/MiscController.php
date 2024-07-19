@@ -11,6 +11,7 @@ use App\Models\Venue;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
 class MiscController extends Controller
@@ -64,6 +65,18 @@ class MiscController extends Controller
         $subjects = TestSubject::with('subject')->select(['subject_id'])->where('test_config_id', $config)->get();
 
         return view('pages.admin.reports.ajax.subjects', compact('subjects'));
+    }
+
+    public function testCandidates($config)
+    {
+        $candidates = DB::table('presentations')
+            ->join('candidates', 'candidates.id', '=', 'presentations.scheduled_candidate_id')
+            ->select(['candidates.id', 'indexing', 'surname', 'firstname', 'other_names'])
+            ->where('presentations.test_config_id', $config)
+            ->distinct('candidates.id')
+            ->get();
+
+        return view('pages.admin.reports.ajax.candidates', compact('candidates'));
     }
 
 }
