@@ -267,7 +267,7 @@ $time_elapsed = $time_control->elapsed;
                                         <button type="button" id="prevBtn" class="btn btn-square btn-outline-primary">Previous</button>
                                     </div>
                                     <div class="col-md-4 text-center">
-                                        <span class="badge badge-primary">1 / 38</span>
+                                        <h3 class="d-inline"><span class="badge badge-primary" id="attempt-tracker">1 / 38</span></h3>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="float-end">
@@ -382,6 +382,7 @@ $time_elapsed = $time_control->elapsed;
         var remaining_seconds = {{ $remaining_seconds }};
         var every_one_minutes = 0;
         var time_difference = {{ $time_difference }};
+        let attempt_tracker = $('#attempt-tracker');
         function showStep(step, answered = false) {
             steps.forEach((el, index) => {
                 el.classList.toggle('hidden', index !== step);
@@ -612,7 +613,10 @@ $time_elapsed = $time_control->elapsed;
                 });
             });
         }
+
+        attempt_tracker.html('2 / 34')
     });
+
 
 
 
