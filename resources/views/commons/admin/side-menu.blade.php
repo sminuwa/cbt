@@ -158,8 +158,8 @@
                                 <span>Question Summary</span>
                             </a>
                         </li>
-                        <li class="{{Request::is('*by-test-code*')?'active':''}}">
-                            <a href="">
+                        <li class="{{Request::is('*presentation*')?'active':''}}">
+                            <a href="{{route('admin.reports.summary.presentation')}}">
                                 <i class="fas fa-display"></i>
                                 <span>Presentation Summary</span>
                             </a>

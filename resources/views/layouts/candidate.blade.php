@@ -66,7 +66,7 @@
 
         .btn-question{
             padding: 3px 10px;
-            width:45px;
+            width:50px;
         }
 
         .btn-group {
@@ -77,7 +77,11 @@
         }
 
 
-
+        .custom-check-icon::after{
+            content:'\2713';
+            width:20px;
+            height:20px;
+        }
 
 
         .wizard-step h2 {
@@ -96,7 +100,10 @@ $candidate = session('candidate');
 $scheduled_candidate = session('scheduled_candidate');
 $candidate_subjects = session('candidate_subjects');
 $test = session('test');
+$time_difference = session('time_difference');
 $remaining_seconds = session('remaining_seconds');
+$time_control = session('time_control');
+$time_elapsed = $time_control->elapsed;
 ?>
 <!-- loader starts-->
 <div class="loader-wrapper">
@@ -180,7 +187,9 @@ $remaining_seconds = session('remaining_seconds');
                                         <div class="btn-group btn-group-square">
                                             @foreach($all_test_questions as $q)
                                                 <a href="javascript:;"
-                                                   class="q{{ $q->question_bank_id }} btn btn-{{ $q->question_bank_id != $q->has_score ? 'outline-':'' }}primary btn-sm btn-question"
+                                                   class="q{{ $q->question_bank_id }} btn btn-{{ $q->question_bank_id != $q->has_score ? 'outline-':'' }}primary
+                                                   {{ $q->question_bank_id == $q->has_score ? 'custom-check-icon':'' }}
+                                                    btn-sm btn-question"
                                                    question_id="{{ $q->question_bank_id }}"
                                                    step="{{ $loop->index }}"
                                                 >
@@ -204,7 +213,11 @@ $remaining_seconds = session('remaining_seconds');
                                         <a href="" class="text-primary">{{ $subject->name }}</a>
                                          @if(!$loop->last) | @endif
                                     @endforeach
-
+                                    <div class="float-end">
+                                        <button id="submitBtn" onclick="return confirm('Are you sure you want to submit this exam?')" class="submitBtn btn btn-primary btn-sm hidden">
+                                            Submit Exam
+                                        </button>
+                                    </div>
                                 </h4>
                             </div>
                             <div class="card-body">
@@ -214,7 +227,8 @@ $remaining_seconds = session('remaining_seconds');
 
                                     @foreach($question_array as $question_paper)
 {{--                                        @json($question_paper)--}}
-                                        <div step="{{ $loop->index }}" id="{{ $question_paper['question_bank_id'] }}" class="wizard-step @if(!$loop->first) hidden @endif">
+                                        @php $step = $loop->index; @endphp
+                                        <div step="{{ $step }}" id="{{ $question_paper['question_bank_id'] }}" class="wizard-step @if(!$loop->first) hidden @endif">
                                             <div class="text-center m-4">
                                                 <h5>{{ $question_paper['section_title'] }}</h5>
                                                 <h5>Instruction: {{ strip_tags($question_paper['section_instruction'],'<img>') }}</h5>
@@ -229,6 +243,7 @@ $remaining_seconds = session('remaining_seconds');
                                                             id="{{$answer_option['answer_option_id']}}"
                                                             type="radio"
                                                             name="q{{ $question_paper['question_bank_id'] }}"
+                                                            question_step="{{ $step }}"
                                                             scheduled_candidate_id="{{ $scheduled_candidate->id }}"
                                                             test_config_id="{{ $question_paper['test_config_id'] }}"
                                                             test_section_id="{{ $answer_option['test_section_id'] }}"
@@ -250,7 +265,7 @@ $remaining_seconds = session('remaining_seconds');
                                 <button type="button" id="prevBtn" class="btn btn-square btn-outline-primary">Previous</button>
                                 <div class="float-end">
                                     <button type="button" id="nextBtn" class="btn btn-square btn-outline-primary">Next</button>
-                                    <button type="submit" id="submitBtn" class="btn btn-square btn-primary hidden">Submit</button>
+{{--                                    <button type="submit" id="submitBtn" class="submitBtn btn btn-square btn-primary hidden">Submit</button>--}}
                                 </div>
 
                             </div>
@@ -352,10 +367,14 @@ $remaining_seconds = session('remaining_seconds');
         const prevBtn = document.getElementById('prevBtn');
         const submitBtn = document.getElementById('submitBtn');
         let currentStep = 0;
-        function showStep(step) {
+        var time_elapsed = {{ $time_elapsed }};
+        var remaining_seconds = {{ $remaining_seconds }};
+        var every_one_minutes = 0;
+        var time_difference = {{ $time_difference }};
+        function showStep(step, answered = false) {
             steps.forEach((el, index) => {
                 el.classList.toggle('hidden', index !== step);
-                console.log(step)
+                // console.log(step)
             });
             prevBtn.classList.toggle('hidden', step === 0);
             nextBtn.classList.toggle('hidden', step === steps.length - 1);
@@ -367,7 +386,9 @@ $remaining_seconds = session('remaining_seconds');
 
             qlist.removeClass('btn-outline-primary');
             qlist.addClass('btn-primary text-white border-white');
-            qlist.prevAll().addClass('btn-primary text-white border-white ')
+            if(answered === true)
+                qlist.addClass('custom-check-icon');
+            qlist.prevAll().addClass('btn-primary text-white border-white')
             qlist.nextAll().removeClass('btn-primary text-white border-white')
             qlist.nextAll().addClass('btn-outline-primary')
             // qlist.prev()
@@ -396,24 +417,48 @@ $remaining_seconds = session('remaining_seconds');
             e.preventDefault();
             alert('Form submitted successfully!');
         });
+        //time control function
+        function time_control(){
+            let remaining_seconds = parseInt({{$remaining_seconds}});
+            $.get('{{ route('candidate.test.time_control') }}',
+                {
+                    test_config_id: '{{ $test->id }}',
+                    scheduled_candidate_id: '{{ $scheduled_candidate->id }}',
+                    remaining_seconds,
+                },
+                function(){
+                    console.log(remaining_seconds)
+                }).done(function(data){
+                console.log(data)
+            }).fail(function(data){
+                console.log(data)
+            })
+        }
 
+        //submitting question
 
+        $('body').on('click', '.submitBtn', function(e){
+            e.preventDefault();
+            submit_test();
+        })
+        //clicking questions
         $('body').on('click', '.btn-question', function(){
             currentStep = parseInt($(this).attr('step'));
-            showStep(currentStep)
-            // console.log(currentStep)
-
-            // alert($(this).attr('step'))
+            showStep(currentStep);
         })
 
         $('body').on('click', '.answer_option', function(){
-            let scheduled_candidate_id = $(this).attr('scheduled_candidate_id')
-            let test_config_id = $(this).attr('test_config_id')
-            let test_section_id = $(this).attr('test_section_id')
-            let mark_per_question = $(this).attr('mark_per_question')
-            let question_bank_id = $(this).attr('question_bank_id')
-            let answer_option_id = $(this).attr('answer_option_id')
-            let scoring_mode = $(this).attr('scoring_mode')
+            let question_step = $(this).attr('question_step');
+            let scheduled_candidate_id = $(this).attr('scheduled_candidate_id');
+            let test_config_id = $(this).attr('test_config_id');
+            let test_section_id = $(this).attr('test_section_id');
+            let mark_per_question = $(this).attr('mark_per_question');
+            let question_bank_id = $(this).attr('question_bank_id');
+            let answer_option_id = $(this).attr('answer_option_id');
+            let scoring_mode = $(this).attr('scoring_mode');
+            let time_control_id = {{ $time_control->id }};
+            currentStep = parseInt(question_step)
+            showStep(currentStep, true)
             $.get('{{ route('candidate.test.answering') }}',
                 {
                     scheduled_candidate_id,
@@ -422,84 +467,134 @@ $remaining_seconds = session('remaining_seconds');
                     mark_per_question,
                     question_bank_id,
                     answer_option_id,
-                    scoring_mode
+                    scoring_mode,
+                    time_control_id,
+                    remaining_seconds,
+                    time_elapsed
                 },
                 function(){
-                    console.log('Saving answer')
+                    // console.log('Saving answer')
             }).done(function(data){
                 console.log(data)
             }).fail(function(data){
-                console.log(data)
+                // console.log(data)
             })
         })
 
         showStep(currentStep);
+
+        function submit_test(){
+            $.get('{{ route('candidate.test.submit_test') }}',
+                {
+                    time_control_id: {{ $time_control->id }},
+                    remaining_seconds,
+                    time_elapsed
+                },
+                function(){
+                    // console.log('Saving answer')
+                }).done(function(data){
+                    if(data.status){
+                        window.location.href = data.url;
+                        // location = data.url;
+                    }
+                    console.log(data)
+                }).fail(function(data){
+                    // console.log(data)
+                })
+        }
+
+        let remaining_interval = setInterval(function(){
+            //update time control after every one minutes even if no activity
+            if(every_one_minutes >= 10){
+                ++time_difference; // time difference in minutes
+                $.get('{{ route('candidate.test.time_control') }}',
+                    {
+                        time_control_id: {{ $time_control->id }},
+                        remaining_seconds,
+                        time_elapsed
+                    },
+                    function(){
+                        // console.log('Saving answer')
+                    }).done(function(data){
+                    console.log(data)
+                }).fail(function(data){
+                    // console.log(data)
+                })
+                console.log('time difference: '+time_difference+' actual: '+{{ $time_difference }})
+                every_one_minutes = 0;
+            }
+            {{--if(parseInt(time_difference) >= (parseInt({{$test->duration}}) + parseInt({{$test->time_padding}})))--}}
+            ++every_one_minutes;
+            ++time_elapsed;
+            --remaining_seconds;
+            if((time_elapsed / 60) > 30){
+                $('#submitBtn').removeClass('hidden')
+            }
+            if(remaining_seconds < 5 * 60){
+                blink("#clock")
+            }
+            if(remaining_seconds < -{{( $test->time_padding ?? 0) * 60 }}){
+                clearInterval(remaining_interval);
+            }
+        }, 1000)
+
+
+
+        function startTimer(duration, display) {
+            let timer = duration, hours, minutes, seconds;
+            const interval = setInterval(() => {
+                hours = parseInt(timer / 3600, 10);
+                minutes = parseInt((timer % 3600) / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                hours = hours < 10 ? "0" + hours : hours;
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = hours + ":" + minutes + ":" + seconds;
+
+                // Change color to red when 15 minutes (900 seconds) are left
+                if (timer <= 600) {
+                    display.style.color = 'red';
+                }
+                console.log(-{{( $test->time_padding ?? 0) * 60 }} + ' - '+timer)
+                if (--timer < -{{( $test->time_padding ?? 0) * 60 }}) {
+                    clearInterval(interval);
+                    alert('Time is up!')
+                    submit_test()
+                }
+
+
+            }, 1000);
+        }
+        let stopBlinking = false;
+
+        window.onload = function () {
+            // const twoHours = 60 * 60 * 2; // 2 hours in seconds
+            const twoHours = {{ $remaining_seconds }}; // 2 hours in seconds
+            const display = document.querySelector('#clock');
+            startTimer(twoHours, display);
+
+
+        };
+
+        function blink(selector) {
+            if(stopBlinking)
+                return false;
+            $(selector).fadeOut('slow', function() {
+                $(this).fadeIn('slow', function() {
+                    blink(this);
+                });
+            });
+        }
     });
 
-    function time_control(){
-        $.get('{{ route('candidate.test.time_control') }}',
-            {
-                test_config_id: '{{ $test->id }}',
-                scheduled_candidate_id,
-            },
-            function(){
-                console.log('Saving answer')
-            }).done(function(data){
-            console.log(data)
-        }).fail(function(data){
-            console.log(data)
-        })
-    }
+
 
 
 </script>
 <script>
-    function startTimer(duration, display) {
-        let timer = duration, hours, minutes, seconds;
-        const interval = setInterval(() => {
-            hours = parseInt(timer / 3600, 10);
-            minutes = parseInt((timer % 3600) / 60, 10);
-            seconds = parseInt(timer % 60, 10);
 
-            hours = hours < 10 ? "0" + hours : hours;
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-
-            display.textContent = hours + ":" + minutes + ":" + seconds;
-
-            // Change color to red when 15 minutes (900 seconds) are left
-            if (timer <= 600) {
-                display.style.color = 'red';
-            }
-
-            if (--timer < -{{( $test->time_padding ?? 0) * 60 }}) {
-                clearInterval(interval);
-                alert("Time is up!");
-            }
-
-
-        }, 1000);
-    }
-    let stopBlinking = false;
-
-    window.onload = function () {
-        // const twoHours = 60 * 60 * 2; // 2 hours in seconds
-        const twoHours = {{ $remaining_seconds }}; // 2 hours in seconds
-        const display = document.querySelector('#clock');
-        startTimer(twoHours, display);
-        blink("#clock")
-
-    };
-
-    function blink(selector) {
-        if(stopBlinking)
-            return false;
-        $(selector).fadeOut('slow', function() {
-            $(this).fadeIn('slow', function() {
-                blink(this);
-            });
-        });
-    }
 
     /*blink("#clock");
 

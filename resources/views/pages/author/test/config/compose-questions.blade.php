@@ -61,7 +61,7 @@
                     </div>
                     <div class="col-3 col-md-12 col-lg-3 col-xl-3">
                         <div class="form-group">
-                            <label for="topic">Topic:</label>
+                            <label for="topic">Subject:</label>
                             <select class="form-control form-select" name="topic_id" id="topic">
                                 <option value="%">All</option>
                                 @foreach($topics as $topic)

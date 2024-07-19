@@ -112,6 +112,8 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
             Route::post('/store/question', [QuestionController::class, 'storeQuestion'])->name('store.question');
 
             Route::get('/move/questions', [QuestionController::class, 'moveQuestions'])->name('move.questions');
+            Route::post('/load/questions', [QuestionController::class, 'loadQuestions'])->name('load.questions');
+            Route::post('/relocate/questions', [QuestionController::class, 'relocateQuestions'])->name('relocate.questions');
 
             Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('topics');
             Route::post('topics/add', [TopicController::class, 'storeTopic'])->name('topics.add');
@@ -134,6 +136,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
                 Route::post('/question/generate', 'generateQuestionSummary')->name('generate.question');
 
                 Route::get('/presentation', 'presentationSummary')->name('presentation');
+                Route::post('/presentation', 'generatePresentationSummary')->name('generate.presentation');
             });
 
             Route::name('active.')->prefix('active')->group(function () {
@@ -151,6 +154,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
         Route::get('test/config/{year}/{type}/{code}', [MiscController::class, 'testConfig'])->name('test.config');
 
         Route::get('test/{config}/subjects', [MiscController::class, 'testSubjects'])->name('test.subjects');
+        Route::get('test/{config}/candidates', [MiscController::class, 'testCandidates'])->name('test.candidates');
     });
 
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
@@ -200,7 +204,6 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('/increase-time', [CandidateUploadController::class, 'viewCandidateTime'])->name('increase-time.view');
         Route::post('/save-time', [CandidateUploadController::class, 'saveTimeAdjustment'])->name('save-time.adjust');
         Route::post('/reset_password', [CandidateUploadController::class, 'resetCandidatePassword'])->name('reset.password');
-        Route::get('/restore-candidate', [CandidateUploadController::class, 'index'])->name('candidate.restore');
         Route::post('/load-profile', [CandidateUploadController::class, 'loadProfile'])->name('candidate.loadProfile');
     });
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {

@@ -165,6 +165,24 @@ class QuestionController extends Controller
         return view('pages.admin.questions.move-questions');
     }
 
+    public function loadQuestions(Request $request)
+    {
+        $questions = QuestionBank::where(['subject_id' => $request->subject_id, 'topic_id' => $request->topic_id])->get();
+
+        return view('pages.admin.questions.ajax.questions', compact('questions'));
+    }
+
+    public function relocateQuestions(Request $request)
+    {
+        try {
+            QuestionBank::whereIn('id', $request->question_ids)->update(['subject_id' => $request->subject_id, 'topic_id' => $request->topic_id]);
+
+            return back()->with(['success' => true, 'message' => 'Question(s) successfully moved.']);
+        } catch (\Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
     private function clearTemps($subjectId, $topicId)
     {
         $questions = QuestionBankTemp::where(['subject_id' => $subjectId, 'topic_id' => $topicId, 'author' => Auth::user()->id])->get();

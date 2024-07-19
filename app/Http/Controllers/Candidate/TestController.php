@@ -8,7 +8,10 @@ use App\Models\Presentation;
 use App\Models\Score;
 use App\Models\TestQuestion;
 use App\Models\TestSection;
+use App\Models\TimeControl;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class TestController extends Controller
 {
@@ -66,7 +69,11 @@ class TestController extends Controller
                 test_sections.mark_per_question as mark_per_question,
                 test_sections.instruction as section_instruction,
                 test_subjects.test_config_id,
-                question_banks.title as question_name
+                question_banks.title as question_name,
+                (SELECT question_bank_id
+                    FROM scores
+                    WHERE scores.question_bank_id = presentations.question_bank_id
+                    GROUP BY scores.question_bank_id) as has_score
             ")->join('test_sections', 'test_sections.id', 'presentations.test_section_id')
             ->join('question_banks', 'question_banks.id', 'presentations.question_bank_id')
             ->join('test_subjects', 'test_subjects.id', 'test_sections.test_subject_id')
@@ -77,7 +84,6 @@ class TestController extends Controller
             ])
             ->distinct()
             ->get();
-
 
         $question_papers = $question_array = $answer_array = [];
 //        return $candidate_subjects;
@@ -149,6 +155,7 @@ class TestController extends Controller
     }
 
     public function answering(Request $request){
+
         $scores = Score::where([
             'scheduled_candidate_id' => $request->scheduled_candidate_id,
             'test_config_id' => $request->test_config_id,
@@ -163,13 +170,64 @@ class TestController extends Controller
         $scores->answer_option_id = $request->answer_option_id;
         $scores->time_elapse = now();
         $scores->scoring_mode = $request->scoring_mode;
-        if($scores->save())
-            return true;
+        if($scores->save()){
+            //saving time control
+            $time_control_id = $request->time_control_id;
+            $remaining_seconds = $request->remaining_seconds;
+            $time_elapsed = $request->time_elapsed;
+            $time_control = TimeControl::find($time_control_id);
+            $current_time = date('H:i:s');
+            TimeControl::find($time_control_id)->update([
+                'current_time' => $current_time,
+                'elapsed' => $time_elapsed,
+            ]);
+            $time_difference = (strtotime($current_time) - strtotime($time_control->start_time)) / 60;
+            Session::put('time_control', $time_control);
+            Session::put('time_difference', $time_difference);
+            Session::put('remaining_seconds', $remaining_seconds);
+            return $time_control;
+        }
+
         return false;
     }
 
-    public function time_control(){
-        return 'Tracking time';
+    public function time_control(Request $request){
+        $time_control_id = $request->time_control_id;
+        $remaining_seconds = $request->remaining_seconds;
+        $time_elapsed = $request->time_elapsed;
+        $time_control = TimeControl::find($time_control_id);
+        $current_time = date('H:i:s');
+        TimeControl::find($time_control_id)->update([
+            'current_time' => $current_time,
+            'elapsed' => $time_elapsed,
+        ]);
+        $time_difference = (strtotime($current_time) - strtotime($time_control->start_time)) / 60;
+        Session::put('time_control', $time_control);
+        Session::put('time_difference', $time_difference);
+        Session::put('remaining_seconds', $remaining_seconds);
+        return $time_control;
+    }
+
+
+    public function submit_test(Request $request){
+        $time_control_id = $request->time_control_id;
+        $remaining_seconds = $request->remaining_seconds;
+        $time_elapsed = $request->time_elapsed;
+        $time_control = TimeControl::find($time_control_id);
+        $current_time = date('H:i:s');
+        TimeControl::find($time_control_id)->update([
+            'current_time' => $current_time,
+            'elapsed' => $time_elapsed,
+            'completed' => 1,
+        ]);
+        $time_difference = (strtotime($current_time) - strtotime($time_control->start_time)) / 60;
+        Session::put('time_control', $time_control);
+        Session::put('time_difference', $time_difference);
+        Session::put('remaining_seconds', $remaining_seconds);
+
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        return ['status'=>true, 'message'=>'Time is Up','url'=>route('candidate.auth.page')];
     }
 
 }

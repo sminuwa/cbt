@@ -22,7 +22,8 @@
                href="{{route('admin.reports.summary.question')}}">
                 Question Summary
             </a>
-            <a style="width: 20%" class="btn btn-outline-info btn-sm" href="">
+            <a style="width: 20%" class="btn btn-outline-info btn-sm"
+               href="{{route('admin.reports.summary.presentation')}}">
                 Presentation Summary
             </a>
             <a style="width: 20%" class="btn btn-outline-info btn-sm" href="{{route('admin.reports.active.index')}}">
