@@ -31,8 +31,6 @@ use Illuminate\Database\Eloquent\Model;
 class TimeControl extends Model
 {
 	protected $table = 'time_controls';
-	public $incrementing = false;
-
 	protected $casts = [
 		'id' => 'int',
 		'test_config_id' => 'int',

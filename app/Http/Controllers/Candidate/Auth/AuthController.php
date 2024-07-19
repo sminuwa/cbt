@@ -42,25 +42,21 @@ class AuthController extends Controller
             if($candidate->test_is_completed($test->id, $scheduled_candidate?->id)) return back()->with('error', 'You have already taken the selected exams.')->withInput();
             $timeControl = $candidate->has_time_control($test->id, $scheduled_candidate?->id);
             $duration = $test->duration; //duration in minute
-            $start_time = date('H:i:s');
-            $current_time = date('H:i:s');
-            $elapsed = 0;
-            $ip = request()->ip();
-            if(!$timeControl){
-                $timeControl = TimeControl::createRecord($test->id,$scheduled_candidate?->id,$start_time,$current_time,0,$ip);
-                if(!$timeControl) return back()->with('error', 'Error creating time control.')->withInput();
-            }
-            $time_difference = (strtotime($timeControl->current_time) - strtotime($timeControl->start_time)) / 60;
-            if($time_difference >= $duration) return back()->with('error', 'Your exam time has elapsed.')->withInput();
-            $remaining_seconds = $test->duration * 60 - $timeControl->elapsed;
             Session::put('candidate', $candidate);
             Session::put('scheduled_candidate', $scheduled_candidate);
             Session::put('candidate_subjects', $candidate_subjects);
-            Session::put('time_difference', $time_difference);
-            Session::put('remaining_seconds', $remaining_seconds);
             Session::put('test', $test);
-            Session::put('time_control', $timeControl);
-            Session::put('time_elapsed', $timeControl->elapsed);
+            if($timeControl){
+                $time_difference = (strtotime($timeControl->current_time) - strtotime($timeControl->start_time)) / 60;
+                if($time_difference >= $duration) return back()->with('error', 'Your exam time has elapsed.')->withInput();
+                $remaining_seconds = $test->duration * 60 - $timeControl->elapsed;
+                Session::put('time_control', $timeControl);
+                Session::put('time_elapsed', $timeControl->elapsed);
+                Session::put('remaining_seconds', $remaining_seconds);
+                Session::put('time_difference', $time_difference);
+                return redirect(route("candidate.test.question"));
+            }
+
             //if question are
             return redirect(route("candidate.test.instruction"));
         }
