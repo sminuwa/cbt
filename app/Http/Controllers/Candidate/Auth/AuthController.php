@@ -51,7 +51,7 @@ class AuthController extends Controller
                 if(!$timeControl) return back()->with('error', 'Error creating time control.')->withInput();
             }
             $time_difference = (strtotime($timeControl->current_time) - strtotime($timeControl->start_time)) / 60;
-            if($time_difference > $duration) return back()->with('error', 'Your exam time has elapsed.')->withInput();
+            if($time_difference >= $duration) return back()->with('error', 'Your exam time has elapsed.')->withInput();
             $remaining_seconds = $test->duration * 60 - $timeControl->elapsed;
             Session::put('candidate', $candidate);
             Session::put('scheduled_candidate', $scheduled_candidate);
@@ -59,6 +59,8 @@ class AuthController extends Controller
             Session::put('time_difference', $time_difference);
             Session::put('remaining_seconds', $remaining_seconds);
             Session::put('test', $test);
+            Session::put('time_control', $timeControl);
+            Session::put('time_elapsed', $timeControl->elapsed);
             //if question are
             return redirect(route("candidate.test.instruction"));
         }
