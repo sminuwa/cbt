@@ -61,7 +61,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td><b>Username</b></td>
+                                                    <td><b>Indexing Number</b></td>
                                                     <td>
                                                         <input type="text" name="username" value="" class="form-control">
                                                     </td>
@@ -74,7 +74,9 @@
                                                 </tr>
                                             </table>
 
-                                <div id="second-step" style='display:none;'></div>
+                                <div id="second-step" style='display:none;'>
+
+                                </div>
                             </form>
                         </div>
                 </div>
@@ -123,10 +125,9 @@
                             </form>
                             <div id="cand_data2" style="display:none"></div>
                         </div>
-                        </div>
 
                         <div class="tab-pane" id="reset_password">
-                            <form action="{{route('toolbox.invigilator.reset_password')}}" method="post">
+                            <form action="{{route('toolbox.invigilator.reset.password')}}" method="post">
                                 @csrf
                                 <div class="modal-body">
                                     <div class="hours-info">
@@ -147,7 +148,7 @@
                                                     </div>
                                                     <div class="col-12 col-md-6">
                                                         <div class="mb-6">
-                                                            <label for="rnpassword" class="mb-6">Paper Title</label>
+                                                            <label for="rnpassword" class="mb-6">Confirm New Password</label>
                                                             <input type="text" id="rnpassword" name="rnpassword" class="form-control">
                                                         </div>
                                                     </div>
@@ -173,7 +174,70 @@
                         let time_control = $('#time_control-div')
                         let reset_password = $('#reset_password-div')
                     })
+                    $(document).ready(function(){
+                        $('#btn-nxt-step1').click(function(e){
+                            e.preventDefault();
 
+                            var examtype = $('#examtype').val();
+                            var username = $('#username').val();
+                            var _token = $('input[name="_token"]').val();
+
+                            $.ajax({
+                                url: "{{ route('candidate.loadProfile') }}",
+                                method: "POST",
+                                data: {
+                                    _token: _token,
+                                    examtype: examtype,
+                                    username: username
+                                },
+                                success: function(response) {
+                                    $('#second-step').html(`
+                        <form class="style-frm">
+                            <fieldset>
+                                <legend>Candidate's Profile</legend>
+                                <div>
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td><b>Full Name:</b></td>
+                                            <td>${response.candName}</td>
+                                            <td rowspan="3" colspan="2">
+                                                <div>
+                                                    <img src="{{ asset('picts') }}/${response.RegNo}.jpg" onerror="this.onerror=null;this.src='{{ asset('assets/img/photo.png') }}';" style="width:150px; height:150px;" alt="image">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Reg No:</b></td>
+                                            <td>${response.RegNo}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Center:</b></td>
+                                            <td>${response.centreName}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Venue:</b></td>
+                                            <td>${response.venueName}</td>
+                                            <td colspan="2"></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" style="text-align:center">
+                                                <button id="btn-bk-step2" class="btn btn-primary">Back</button>
+                                                <button id="btn-nxt-step2" class="btn btn-primary">Restore Candidate</button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </fieldset>
+                        </form>
+                    `);
+                                    $('#second-step').show();
+                                },
+                                error: function(response) {
+                                    alert(response.responseJSON.error);
+                                }
+                            });
+                        });
+                    });
                     $(document).ready(function() {
                         $("#testid_inc").select2();
                     });

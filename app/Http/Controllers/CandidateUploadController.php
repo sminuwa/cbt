@@ -138,19 +138,20 @@ public function imageIndex()
         return $updated ? response()->json(1) : response()->json(0);
     }
 
-    public function resetCandidatePassword()
+    public function resetCandidatePassword(Request $request)
     {
+        //return $request;
         $this->validate($request, [
             "index_number" => "required",
             "npassword" => "required|min:3|confirmed"
         ]);
-        $candidate = Candidate::where(['username' => $request->username])->first();
+        $candidate = Candidate::where(['indexing' => $request->index_number])->first();
         if ($candidate) {
             $candidate->password = bcrypt($request->password);
             $candidate->save();
-            return redirect()->back()->withErrors(['message' => "Password Reset for {{$request->username}} to {{$request->password}}"]);
+            return back()->with("Password Reset for {{$request->username}} to {{$request->password}}");
         }
-        return redirect()->back()->withErrors(["error" => "Invalid UserName"]);
+        return back()->with("Invalid UserName");
 
     }
 }

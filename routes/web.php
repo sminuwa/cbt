@@ -188,7 +188,6 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
 
     });
 
-
     Route::name('candidate_image_upload.')->prefix('candidate_image_upload')->group(function () {
         Route::get('upload-candidate', [CandidateUploadController::class, 'imageIndex'])->name('upload.images');
         Route::post('upload-candidate-image', [CandidateUploadController::class, 'imageUpload'])->name('upload.image.data');
@@ -201,6 +200,8 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('/increase-time', [CandidateUploadController::class, 'viewCandidateTime'])->name('increase-time.view');
         Route::post('/save-time', [CandidateUploadController::class, 'saveTimeAdjustment'])->name('save-time.adjust');
         Route::post('/reset_password', [CandidateUploadController::class, 'resetCandidatePassword'])->name('reset.password');
+        Route::get('/restore-candidate', [CandidateUploadController::class, 'index'])->name('candidate.restore');
+        Route::post('/load-profile', [CandidateUploadController::class, 'loadProfile'])->name('candidate.loadProfile');
     });
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
         Route::get('/', [SetupController::class, 'index'])->name('index');
