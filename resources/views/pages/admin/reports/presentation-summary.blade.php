@@ -1,4 +1,3 @@
-@php use App\Models\TestCode;use App\Models\TestType; @endphp
 @extends('layouts.app')
 @section('css')
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatables/datatables.min.css') }}">
@@ -13,7 +12,7 @@
                         <div class="row">
                             <div>
                                 <h4 class="card-title d-flex justify-content-between">
-                                    <span>Report By Cadre/Programme</span>
+                                    <span>Presentation Summary</span>
                                 </h4>
                             </div>
                         </div>
@@ -23,60 +22,39 @@
                 <form id="preview-form" method="post">
                     @csrf
                     <div class="row pb-3 pt-2">
-                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                            <div class="form-group">
-                                <label for="year">Year:</label>
-                                <select class="form-control form-select" name="year" id="year" required>
-                                    <option value="">Select Year</option>
-                                    @foreach($years as $year)
-                                        <option value="{{$year}}">{{ $year }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                            <div class="form-group">
-                                <label for="semester">Test Period:</label>
-                                <select class="form-control form-select" name="semester" id="semester" required>
-                                    <option value="">Select Test Period</option>
-                                    <option value="1">April</option>
-                                    <option value="2">September</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                            <div class="form-group">
-                                <label for="test_code_id">Cadre/Programme:</label>
-                                <select class="form-control form-select" name="test_code_id" id="test_code_id" required>
-                                    <option value="">Select</option>
-                                    @foreach(TestCode::all() as $code)
-                                        <option value="{{$code->id}}">{{ $code->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                            <div class="form-group">
-                                <label for="test_type_id">Type:</label>
-                                <select class="form-control form-select" name="test_type_id" id="test_type_id" required>
-                                    <option value="">Select Type</option>
-                                    @foreach(TestType::all() as $type)
-                                        <option value="{{$type->id}}">{{ $type->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
                         <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                            <div class="form-group">
+                                <label for="test_config">Test:</label>
+                                <select class="form-control form-select" name="test_config_id" id="test_config"
+                                        required>
+                                    <option value="">Select Test</option>
+                                    @foreach($configs as $config)
+                                        <option value="{{$config->id}}">
+                                            {{ $config->session }} - {{ $config->test_code->name}}
+                                            - {{ $config->test_type->name}}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="form-group">
+                                <label for="test_type_id">Candidate(s):</label>
+                                {{--                                <div style="max-height:300px; overflow: auto;">--}}
+
+                                {{--                                </div>--}}
+                                <select multiple class="form-control form-select" name="candidates[]" id="candidates"
+                                        required>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-2 col-xl-2">
                             <input type="submit" class="btn btn-info text-light mt-4" value="Generate"/>
                         </div>
                     </div>
                 </form>
-                <div class="card card-table">
-                    <div class="card-body">
-                        <div id="questions-div">
-                        </div>
-                    </div>
-                </div>
+                <div id="questions-div"></div>
             </div>
         </div>
     </div>
@@ -88,18 +66,19 @@
     <script src="{{ asset('assets/plugins/datatables/datatables.min.js') }}"></script>
     <script>
         $(function () {
+            $('#test_config').on('change', function () {
+                const id = $(this).val()
+                if (id !== '')
+                    $.get('{{route('admin.misc.test.candidates',[':c'])}}'.replace(':c', id), function (response) {
+                        $('#candidates').html(response)
+                    })
+                else $('#candidates').html('')
+            })
+
             $('#preview-form').on('submit', function (e) {
                 e.preventDefault()
-                $.post('{{ route('admin.reports.testcode.generate') }}', $(this).serialize(), function (response) {
+                $.post('{{ route('admin.reports.summary.generate.presentation') }}', $(this).serialize(), function (response) {
                     console.log(response)
-                    // $('#questions-div').html(response)
-                    // jQuery('#report').DataTable({
-                    //     layout: {
-                    //         topStart: {
-                    //             buttons: ['csv', 'excel', 'pdf']
-                    //         }
-                    //     }
-                    // })
                 })
             })
         })
