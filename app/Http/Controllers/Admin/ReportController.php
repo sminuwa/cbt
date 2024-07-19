@@ -129,17 +129,80 @@ class ReportController extends Controller
             $subjects = TestSubject::with('subject')->where($where)->get()->pluck('subject');
             foreach ($subjects as $subject) {
                 $obj = [];
-                $questions = TestQuestion::join('test_sections', 'test_sections.id', '=', 'test_questions.test_section_id')
+                $questions = TestQuestion::with('question_bank')
+                    ->join('test_sections', 'test_sections.id', '=', 'test_questions.test_section_id')
                     ->join('test_subjects', 'test_subjects.id', '=', 'test_sections.test_subject_id')
-                    ->where(['test_config_id' => $config_id, 'test_subjects.id' => $subject->id])->pluck('question_bank_id');
+                    ->select('question_bank_id')
+                    ->where(['test_config_id' => $config_id, 'test_subjects.id' => $subject->id])->get();
+
+                $qtns = [];
+                foreach ($questions as $q) {
+                    $qtnStat = [];
+                    $question = $q->question_bank;
+                    $options = $q->question_bank->answer_options;
+                    $counts = DB::table('presentations')
+                        ->select(DB::raw('count(distinct scheduled_candidate_id) as presented'))
+                        ->where(['test_config_id' => $config_id, 'question_bank_id' => $question->id])
+                        ->pluck('presented')->first();
+
+                    $qtnStat['id'] = $question->id;
+                    $qtnStat['presented'] = $counts;
+
+                    $correct = 0;
+                    $optionStat = [];
+                    foreach ($options as $option) {
+                        $stat = [];
+                        $stat['correct'] = 0;
+                        if ($option->correctness == 1) {
+                            $correct = $option->id;
+                            $stat['correct'] = 1;
+                        }
+
+                        $counts = DB::table('scores')
+                            ->select(DB::raw('count(*) as total'))
+                            ->where(['test_config_id' => $config_id, 'answer_option_id' => $option->id])
+                            ->pluck('total')->first();
+
+                        $stat['option'] = $option->question_option;
+                        $stat['count'] = $counts;
+
+                        $optionStat[] = $stat;
+                    }
+
+                    $failed = 0;
+                    if ($correct !== 0) {
+                        $counts = DB::table('scores')
+                            ->select(DB::raw('count(distinct scheduled_candidate_id) as correct'))
+                            ->where(['test_config_id' => $config_id, 'question_bank_id' => $question->id, 'answer_option_id' => $correct])
+                            ->pluck('correct')->first();
+                        $correct = $counts;
+
+                        $counts = DB::table('scores')
+                            ->select(DB::raw('count(distinct scheduled_candidate_id) as correct'))
+                            ->where(['test_config_id' => $config_id, 'question_bank_id' => $question->id])
+                            ->where('answer_option_id', '<>', $correct)
+                            ->pluck('correct')->first();
+                        $failed = $counts;
+                    }
+
+                    $qtnStat['failed'] = $failed;
+                    $qtnStat['passed'] = $correct;
+                    $qtnStat['options'] = $optionStat;
+                    $qtnStat['question'] = $question->title;
+                    $qtnStat['no_count'] = $qtnStat['presented'] - ($failed + $correct);
+
+                    $qtns[] = $qtnStat;
+                }
 
                 $obj['subject'] = $subject->subject_code . ' - ' . $subject->name;
-                $obj['questions'] = $questions;
+                $obj['questions'] = $qtns;
 
                 $report[] = $obj;
             }
 
-            return $report;
+            //return $report;
+
+            return view('pages.admin.reports.ajax.question-summary', compact('report'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

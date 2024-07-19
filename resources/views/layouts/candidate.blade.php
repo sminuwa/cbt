@@ -476,24 +476,24 @@ $remaining_seconds = session('remaining_seconds');
                 clearInterval(interval);
                 alert("Time is up!");
             }
+
+
         }, 1000);
     }
+    let stopBlinking = false;
 
     window.onload = function () {
         // const twoHours = 60 * 60 * 2; // 2 hours in seconds
         const twoHours = {{ $remaining_seconds }}; // 2 hours in seconds
         const display = document.querySelector('#clock');
         startTimer(twoHours, display);
+        blink("#clock")
+
     };
-
-
-    var interval = 50000;
-    var stopBlinking = false;
 
     function blink(selector) {
         if(stopBlinking)
             return false;
-
         $(selector).fadeOut('slow', function() {
             $(this).fadeIn('slow', function() {
                 blink(this);
@@ -501,12 +501,12 @@ $remaining_seconds = session('remaining_seconds');
         });
     }
 
-    blink("#clock");
+    /*blink("#clock");
 
     setInterval(function(){
         stopBlinking = !stopBlinking;
         blink("#clock");
-    }, interval);
+    }, 50000);*/
 </script>
 </body>
 </html>
