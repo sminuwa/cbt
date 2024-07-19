@@ -104,7 +104,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
             Route::post('/author', [QuestionController::class, 'authorPost'])->name('post');
             Route::get('/review/{subject}/{topic}', [QuestionController::class, 'review'])->name('review');
             Route::post('/store', [QuestionController::class, 'store'])->name('store');
-            Route::get('/completed', [QuestionController::class, 'completed'])->name('completed');
+            Route::get('/completed/{duplicates}', [QuestionController::class, 'completed'])->name('completed');
             Route::get('/preview', [QuestionController::class, 'preview'])->name('preview');
             Route::post('/preview/load', [QuestionController::class, 'loadPreview'])->name('load.preview');
             Route::get('/edit/questions', [QuestionController::class, 'editQuestions'])->name('edit.questions');
