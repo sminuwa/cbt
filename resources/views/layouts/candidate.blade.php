@@ -262,11 +262,22 @@ $time_elapsed = $time_control->elapsed;
 
                             </div>
                             <div class="card-footer">
-                                <button type="button" id="prevBtn" class="btn btn-square btn-outline-primary">Previous</button>
-                                <div class="float-end">
-                                    <button type="button" id="nextBtn" class="btn btn-square btn-outline-primary">Next</button>
-{{--                                    <button type="submit" id="submitBtn" class="submitBtn btn btn-square btn-primary hidden">Submit</button>--}}
+                                <div class="row">
+                                    <div class="col-md-4 text-left">
+                                        <button type="button" id="prevBtn" class="btn btn-square btn-outline-primary">Previous</button>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <span class="badge badge-primary">1 / 38</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="float-end">
+                                            <button type="button" id="nextBtn" class="btn btn-square btn-outline-primary">Next</button>
+                                            {{--                                    <button type="submit" id="submitBtn" class="submitBtn btn btn-square btn-primary hidden">Submit</button>--}}
+                                        </div>
+                                    </div>
                                 </div>
+
+
 
                             </div>
                         </div>
@@ -384,13 +395,28 @@ $time_elapsed = $time_control->elapsed;
             let qlist = $('.q'+qid);
             // console.log(qstep)
 
-            qlist.removeClass('btn-outline-primary');
-            qlist.addClass('btn-primary text-white border-white');
-            if(answered === true)
-                qlist.addClass('custom-check-icon');
-            qlist.prevAll().addClass('btn-primary text-white border-white')
-            qlist.nextAll().removeClass('btn-primary text-white border-white')
-            qlist.nextAll().addClass('btn-outline-primary')
+            // qlist.nextAll().addClass('btn-outline-primary')
+            $(".btn-question").each(function() {
+                let el = $(this);
+                if(el.hasClass( "custom-check-icon" )) {
+                    el.removeClass('btn-outline-primary');
+                    el.addClass('btn-primary text-white border-white');
+                }else{
+                    el.removeClass('btn-warning btn-primary text-white border-white');
+                    el.addClass('btn-outline-primary');
+                }
+            });
+            if(answered === true) {
+                qlist.addClass('btn-primary custom-check-icon');
+            }
+            qlist.removeClass('btn-primary btn-outline-primary');
+            qlist.addClass('btn-warning text-white border-white');
+            // check_all = querySelectorAll('.custom-check-icon');
+            /*check_all.each((el, index) => {
+                $(this).removeClass('btn-outline-primary');
+                $(this).addClass('btn-primary');
+                // console.log(step)
+            });*/
             // qlist.prev()
             // console.log(qlist)
             // alert(qid);
@@ -537,7 +563,6 @@ $time_elapsed = $time_control->elapsed;
                 clearInterval(remaining_interval);
             }
         }, 1000)
-
 
 
         function startTimer(duration, display) {

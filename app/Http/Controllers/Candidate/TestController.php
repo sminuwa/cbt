@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Candidate;
 use App\Http\Controllers\Controller;
 use App\Models\AnswerOption;
 use App\Models\Presentation;
+use App\Models\ScheduledCandidate;
 use App\Models\Score;
 use App\Models\TestQuestion;
 use App\Models\TestSection;
@@ -19,10 +20,30 @@ class TestController extends Controller
     public function question(){
         //logic to get questions from question
         $presentation_records = $err = $errors = [];
-        $candidate = auth()->user();
         $test = session('test');
+        $candidate = auth()->user();
         $scheduled_candidate = session('scheduled_candidate');
         $candidate_subjects = session('candidate_subjects');
+        //checking time control table and logics
+        $timeControl = $candidate->has_time_control($test->id, $scheduled_candidate?->id);
+        $duration = $test->duration; //duration in minute
+        if(!$timeControl){
+            $start_time = date('H:i:s');
+            $current_time = date('H:i:s');
+            $ip = request()->ip();
+            $timeControl = TimeControl::createRecord($test->id,$scheduled_candidate?->id,$start_time,$current_time,0,$ip);
+            if(!$timeControl) return back()->with('error', 'Error creating time control.')->withInput();
+            $time_difference = (strtotime($timeControl->current_time) - strtotime($timeControl->start_time)) / 60;
+            if($time_difference >= $duration) return back()->with('error', 'Your exam time has elapsed.')->withInput();
+            $remaining_seconds = $test->duration * 60 - $timeControl->elapsed;
+            Session::put('time_difference', $time_difference);
+            Session::put('remaining_seconds', $remaining_seconds);
+            Session::put('time_control', $timeControl);
+            Session::put('time_elapsed', $timeControl->elapsed);
+        }
+
+
+        //generating exam question
         $presentations = $candidate->presentation($test->id,$scheduled_candidate->id);
         if(!$presentations || count($presentations) < 1){
             foreach($candidate_subjects as $key=>$subject) {
