@@ -154,4 +154,56 @@ public function imageIndex()
         return back()->with("Invalid UserName");
 
     }
+
+    public function loadProfile(Request $request)
+    {
+        $examtype = $request->input('examtype');
+        $username = $request->input('username');
+
+        // Fetch student information
+        $student = DB::table('candidates')
+            ->where('indexing', $username)
+            ->first();
+
+        if ($student) {
+            $candName = $student->surname . " " . $student->firstname . " " . $student->othernames;
+
+            // Fetch candidate ID
+            $scheduledCandidate = DB::table('scheduled_candidates')
+                ->where('candidate_id', $username)
+                ->first();
+
+            $schedulecandidateId = $scheduledCandidate->candidateid ?? null;
+
+            // Fetch schedule ID
+            $candidateStudent = DB::table('tblcandidatestudent')
+                ->where('scheduled_candidate_id ', $schedulecandidateId)
+                ->first();
+
+            $scheduleId = $candidateStudent->schedule_id ?? null;
+
+            // Fetch venue name
+            $venue = DB::table('venues')
+                ->join('schedulings', 'venues.id', '=', 'schedulings.venue_id')
+                ->where('schedulings.id', $scheduleId)
+                ->select('venues.name')
+                ->first();
+
+            $venueName = $venue->name ?? null;
+
+            // Fetch centre name
+            $centre = DB::table('centres')
+                ->join('venues', 'centres.id', '=', 'venues.centre_id')
+                ->where('venues.id', $venue->id)
+                ->select('centres.name')
+                ->first();
+
+            $centreName = $centre->name ?? null;
+
+            return view('pages.toolbox.invigilator_panel', compact('candName', 'student', 'venueName', 'centreName'));
+        }
+
+        return redirect()->back()->withErrors(['Candidate not found']);
+    }
+
 }
