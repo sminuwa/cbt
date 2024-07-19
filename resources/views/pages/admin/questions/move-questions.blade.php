@@ -1,29 +1,25 @@
 @php use App\Models\Subject; @endphp
 @extends('layouts.app')
+
 @section('css')
-    <style>
-        .list-group.ordered-list {
-            counter-reset: list-counter;
-        }
-
-        .list-group.ordered-list .list-group-item {
-            position: relative;
-            padding-left: 25px;
-        }
-
-        .list-group.ordered-list .list-group-item::before {
-            content: counter(list-counter, upper-alpha) ".  ";
-            counter-increment: list-counter;
-            position: absolute;
-            left: 0em;
-            top: 0.5em;
-        }
-    </style>
+    <link rel="stylesheet" href="{{asset('assets/plugins/datatables/datatables.min.css')}}">
 @endsection
-@section('content')
 
+@section('content')
+    @if(session()->has('success'))
+        @if(!session('success'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Error!</strong> {{ session('message') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @else
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Success!</strong> {{ session('message') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    @endif
     <div class="row">
-        <x-head.tinymce-config/>
         <div class="row patient-graph-col">
             <div class="col-12">
                 <div class="card border-info">
@@ -70,21 +66,39 @@
 @endsection
 
 @section('script')
+    <!-- Datatables JS -->
+    <script src="{{asset('assets/plugins/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{asset('assets/plugins/datatables/datatables.min.js')}}"></script>
     <script>
         $(function () {
             $('#subject_id').on('change', function () {
                 let id = $(this).val();
-                $.get('{{ route('admin.questions.authoring.topics',[':id']) }}'.replace(':id', id), function (data) {
-                    $('#topic_id').html(data)
-                })
+                fetchTopics(id, $('#topic_id'))
+            })
+
+            $(document).on('click', '#subject_to_id', function () {
+                let id = $(this).val();
+                fetchTopics(id, $('#topic_to_id'))
             })
 
             $('#preview-form').on('submit', function (e) {
                 e.preventDefault()
-                {{--$.post('{{ route('admin.questions.authoring.load.preview') }}', $(this).serialize(), function (response) {--}}
-                {{--    $('#questions-div').html(response)--}}
-                {{--})--}}
+                $.post('{{ route('admin.questions.authoring.load.questions') }}', $(this).serialize(), function (response) {
+                    $('#questions-div').html(response)
+                    $('#questions').DataTable()
+                })
             })
+
+            $(document).on('click', '#check-all', function () {
+                let checked = $(this).is(':checked')
+                $('.selection').prop('checked', checked)
+            })
+
+            function fetchTopics(id, target) {
+                $.get('{{ route('admin.questions.authoring.topics',[':id']) }}'.replace(':id', id), function (data) {
+                    target.html(data)
+                })
+            }
         })
     </script>
 @endsection

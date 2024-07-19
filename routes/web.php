@@ -111,6 +111,8 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
             Route::post('/store/question', [QuestionController::class, 'storeQuestion'])->name('store.question');
 
             Route::get('/move/questions', [QuestionController::class, 'moveQuestions'])->name('move.questions');
+            Route::post('/load/questions', [QuestionController::class, 'loadQuestions'])->name('load.questions');
+            Route::post('/relocate/questions', [QuestionController::class, 'relocateQuestions'])->name('relocate.questions');
 
             Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('topics');
             Route::post('topics/add', [TopicController::class, 'storeTopic'])->name('topics.add');
