@@ -1,6 +1,24 @@
 @extends('layouts.app')
 @section('css')
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatables/datatables.min.css') }}">
+    <style>
+        .list-group.ordered-list {
+            counter-reset: list-counter;
+        }
+
+        .list-group.ordered-list .list-group-item {
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .list-group.ordered-list .list-group-item::before {
+            content: counter(list-counter, upper-alpha) ".  ";
+            counter-increment: list-counter;
+            position: absolute;
+            left: 0em;
+            top: 0.5em;
+        }
+    </style>
 @endsection
 @section('content')
     <div class="row">
@@ -54,7 +72,7 @@
                         </div>
                     </div>
                 </form>
-                <div id="questions-div"></div>
+                <div id="presentation-div"></div>
             </div>
         </div>
     </div>
@@ -78,7 +96,8 @@
             $('#preview-form').on('submit', function (e) {
                 e.preventDefault()
                 $.post('{{ route('admin.reports.summary.generate.presentation') }}', $(this).serialize(), function (response) {
-                    console.log(response)
+                    // console.log(response)
+                    $('#presentation-div').html(response)
                 })
             })
         })
