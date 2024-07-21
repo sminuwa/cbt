@@ -65,8 +65,8 @@
         }
 
         .btn-question{
-            padding: 3px 10px;
-            width:50px;
+            padding: 2px 5px;
+            width:45px;
         }
 
         .btn-group {
@@ -159,7 +159,6 @@ $time_elapsed = $time_control->elapsed;
         <!-- Page Sidebar Ends-->
         <div class="page-body">
 {{--            @yield('content')--}}
-{{--            @json($all_test_questions)--}}
 {{--            @json($scheduled_candidate)--}}
             <div class="container-fluid">
                 <div class="row">
@@ -185,15 +184,15 @@ $time_elapsed = $time_control->elapsed;
                                         <span>Questions navigation</span>
                                         <br>
                                         <div class="btn-group btn-group-square">
-                                            @foreach($all_test_questions as $q)
+                                            @foreach($question_array as $q)
                                                 <a href="javascript:;"
-                                                   class="q{{ $q->question_bank_id }} btn btn-{{ $q->question_bank_id != $q->has_score ? 'outline-':'' }}primary
-                                                   {{ $q->question_bank_id == $q->has_score ? 'custom-check-icon':'' }}
+                                                   class="q{{ $q['question_bank_id'] }} btn btn-{{ $q['question_bank_id'] != $q['has_score'] ? 'outline-':'' }}primary
+                                                   {{ $q['question_bank_id'] == $q['has_score'] ? 'custom-check-icon':'' }}
                                                     btn-sm btn-question"
-                                                   question_id="{{ $q->question_bank_id }}"
+                                                   question_id="{{ $q['question_bank_id'] }}"
                                                    step="{{ $loop->index }}"
                                                 >
-                                                    {!!  $q->question_bank_id == $q->has_score ? $loop->iteration:$loop->iteration  !!}
+                                                    {!!  $q['question_bank_id'] == $q['has_score'] ? $loop->iteration:$loop->iteration  !!}
                                                 </a>
                                             @endforeach
                                         </div>
@@ -205,12 +204,17 @@ $time_elapsed = $time_control->elapsed;
 
                     <div class="col-md-8 col-xl-8">
                         <div class="card">
-                            <div class="card-header border-l-warning border-3">
-                                <h4 class="card-title">
+                            <div class="card-header border-l-warning border-3 ribbon-wrapper-right">
+                                <div class="ribbon ribbon-primary ribbon-clip-right ribbon-right">SAVE 50%</div>
+                                <h4 class="card-title ">
                                     {{--{{ $test->test_code->name }}--}}
 
-                                    @foreach($candidate_subjects as $subject)
-                                        <a href="" class="text-primary">{{ $subject->name }}</a>
+                                    @foreach($candidate_subjects as $s)
+                                        <a
+                                            href="{{ route('candidate.test.goto_paper', ['subject_id'=>$s->subject_id, 'scheduled_candidate_id'=>$scheduled_candidate->id,'test_config_id'=>$test->id]) }}"
+                                            class="text-primary {{ $subject->id == $s->subject_id ? 'text-primary':'text-warning' }}">
+                                            {{ $s->name }}
+                                        </a>
                                          @if(!$loop->last) | @endif
                                     @endforeach
                                     <div class="float-end">
@@ -223,17 +227,14 @@ $time_elapsed = $time_control->elapsed;
                             <div class="card-body">
 {{--                                @json($question_papers)--}}
                                 <form id="wizardForm">
-
-
                                     @foreach($question_array as $question_paper)
-{{--                                        @json($question_paper)--}}
                                         @php $step = $loop->index; @endphp
                                         <div step="{{ $step }}" id="{{ $question_paper['question_bank_id'] }}" class="wizard-step @if(!$loop->first) hidden @endif">
                                             <div class="text-center m-4">
                                                 <h5>{{ $question_paper['section_title'] }}</h5>
                                                 <h5>Instruction: {{ strip_tags($question_paper['section_instruction'],'<img>') }}</h5>
                                             </div>
-                                            <div class="card-wrapper border rounded-3 fill-radios h-100 radio-toolbar checkbox-checked">
+                                            <div class="card-wrapper border rounded-3 fill-radios h-100 radio-toolbar checkbox-checked zoomIn  animated z-0">
                                                 <h6 class="sub-title">Q {{ $loop->iteration }}. {{ strip_tags($question_paper['question_name'],'<img>') }}</h6>
                                                 @foreach($question_paper['answer_options'] as $answer_option)
                                                     <div id="{{ $question_paper['question_bank_id'] }}{{ $answer_option['answer_option_id'] }}" class="form-check radio radio-primary" style="width:100%">

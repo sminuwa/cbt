@@ -55,7 +55,7 @@
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-3 col-xl-3">
                                             <div class="form-group">
-                                                <label for="topic_id">Subject:</label>
+                                                <label for="topic_id">Course/Topic:</label>
                                                 <select class="form-control form-select" name="topic_id" id="topic_id"
                                                         required>
                                                     <option value="">Select Subject</option>
