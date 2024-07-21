@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AnswerOption;
 use App\Models\Candidate;
 use App\Models\Score;
 use App\Models\TestConfig;
 use App\Models\TestQuestion;
-use App\Models\TestSection;
 use App\Models\TestSubject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -129,7 +127,10 @@ class ReportController extends Controller
                     ->join('test_sections', 'test_sections.id', '=', 'test_questions.test_section_id')
                     ->join('test_subjects', 'test_subjects.id', '=', 'test_sections.test_subject_id')
                     ->select('question_bank_id')
-                    ->where(['test_config_id' => $config_id, 'test_subjects.id' => $subject->id])->get();
+                    ->where([
+//                        'test_config_id' => $config_id,
+                        'subject_id' => $subject->id])
+                    ->get();
 
                 $qtns = [];
                 foreach ($questions as $q) {
