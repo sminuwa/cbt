@@ -57,7 +57,7 @@ class UserLoginController extends Controller
 
 //        $this->clearLoginAttempts($request);
 
-        return  redirect()->intended($this->redirectPath());
+        return  redirect()->route("admin.dashboard.index");
     }
 
     protected function redirectPath(){
