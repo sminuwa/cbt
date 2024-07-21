@@ -63,7 +63,7 @@
                                                 <tr>
                                                     <td><b>Indexing Number</b></td>
                                                     <td>
-                                                        <input type="text" name="username" value="" class="form-control">
+                                                        <input type="text" name="username" id="username" class="form-control">
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -166,108 +166,118 @@
 
             @endsection
 
-            @section('script')
-                <script>
-                    $(function () {
-                        let header = $('#header')
-                        let restore = $('#restore-div')
-                        let time_control = $('#time_control-div')
-                        let reset_password = $('#reset_password-div')
-                    })
-                    $(document).ready(function(){
-                        $('#btn-nxt-step1').click(function(e){
-                            e.preventDefault();
+@section('script')
+    <script>
+        $(function () {
+            let header = $('#header')
+            let restore = $('#restore-div')
+            let time_control = $('#time_control-div')
+            let reset_password = $('#reset_password-div')
+        })
 
-                            var examtype = $('#examtype').val();
-                            var username = $('#username').val();
-                            var _token = $('input[name="_token"]').val();
+        //restore candidate details
+        $(document).ready(function () {
+            $('#btn-nxt-step1').click(function (e) {
+                e.preventDefault();
 
-                            $.ajax({
-                                url: "{{ route('toolbox.invigilator.candidate.loadProfile') }}",
-                                method: "POST",
-                                data: {
-                                    _token: _token,
-                                    examtype: examtype,
-                                    username: username
-                                },
-                                success: function(response) {
-                                    $('#second-step').html(`
-                        <form class="style-frm">
-                            <fieldset>
-                                <legend>Candidate's Profile</legend>
-                                <div>
-                                    <table style="width:100%">
-                                        <tr>
-                                            <td><b>Full Name:</b></td>
-                                            <td>${response.candName}</td>
-                                            <td rowspan="3" colspan="2">
-                                                <div>
-                                                    <img src="{{ asset('picts') }}/${response.indexing}.jpg" onerror="this.onerror=null;this.src='{{ asset('assets/img/photo.png') }}';" style="width:150px; height:150px;" alt="image">
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Reg No:</b></td>
-                                            <td>${response.inde}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Center:</b></td>
-                                            <td>${response.centreName}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Venue:</b></td>
-                                            <td>${response.venueName}</td>
-                                            <td colspan="2"></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="4" style="text-align:center">
-                                                <button id="btn-bk-step2" class="btn btn-primary">Back</button>
-                                                <button id="btn-nxt-step2" class="btn btn-primary">Restore Candidate</button>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </fieldset>
-                        </form>
-                    `);
-                                    $('#second-step').show();
-                                },
-                                error: function(response) {
-                                    alert(response.responseJSON.error);
-                                }
-                            });
-                        });
-                    });
-                    $(document).ready(function() {
-                        $("#testid_inc").select2();
-                    });
+                var examtype = $('#examtype').val();
+                var username = $('#username').val();
+                var _token = $('input[name="_token"]').val();
+                //console.log(username, examtype)
 
-                    $(document).on("submit", "#frm2", function(event) {
-                        event.preventDefault();
-                        $.ajax({
-                            type: 'post',
-                            url: '{{ route('toolbox.invigilator.increase-time.view') }}',
-                            data: $("#frm2").serialize()
-                        }).done(function(msg) {
-                            $("#cand_data2").empty().html(msg).slideDown();
-                            $("#cand_data").slideUp();
-                        });
-                    });
+                $.ajax({
+                    url: "{{ route('toolbox.invigilator.candidate.loadProfile') }}",
+                    method: "POST",
+                    data: {
+                        _token: _token,
+                        examtype: examtype,
+                        username: username
+                    },
+                    success: function (response) {
+                        $('#second-step').html(`
+                    <form class="style-frm">
+                        <fieldset>
+                            <legend>Candidate's Profile</legend>
+                            <div>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td><b>Full Name:</b></td>
+                                        <td>${response.candName}</td>
+                                        <td rowspan="3" colspan="2">
+                                            <div>
+                                                <img src="{{ asset('candidate_pics') }}/${response.indexing}.jpg" onerror="this.onerror=null;this.src='{{ asset('assets/img/photo.png') }}';" style="width:150px; height:150px;" alt="image">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Reg No:</b></td>
+                                        <td>${response.indexing}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Center:</b></td>
+                                        <td>${response.centreName}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Venue:</b></td>
+                                        <td>${response.venueName}</td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" style="text-align:center">
+                                            <button id="btn-bk-step2" class="btn btn-primary">Back</button>
+                                            <button id="btn-nxt-step2" class="btn btn-primary">Restore Candidate</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </form>
+                `);
+                        $('#second-step').show();
+                    },
+                    error: function (xhr) {
+                        let errorMessage = "An error occurred";
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            errorMessage = xhr.responseJSON.errors.join(", ");
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        alert(errorMessage);
+                    }
+                });
+            });
+        });
 
-                    $(document).on("click", "#btn-bk-step3", function(event) {
-                        $("#cand_data").slideDown();
-                        $("#cand_data2").slideUp();
-                    });
+        $(document).ready(function () {
+            $("#testid_inc").select2();
+        });
 
-                    $(document).on("click", "#btn-nxt-step3", function(event) {
-                        event.preventDefault();
-                        $.ajax({
-                            type: 'post',
-                            url: '{{ route('toolbox.invigilator.save-time.adjust') }}',
-                            data: $("#frm3").serialize()
-                        }).done(function(msg) {
-                            alert(msg == 1 ? "Time was adjusted successfully!" : "Operation was not successful!");
-                        });
-                    });
-                </script>
+        $(document).on("submit", "#frm2", function (event) {
+            event.preventDefault();
+            $.ajax({
+                type: 'post',
+                url: '{{ route('toolbox.invigilator.increase-time.view') }}',
+                data: $("#frm2").serialize()
+            }).done(function (msg) {
+                $("#cand_data2").empty().html(msg).slideDown();
+                $("#cand_data").slideUp();
+            });
+        });
+
+        $(document).on("click", "#btn-bk-step3", function (event) {
+            $("#cand_data").slideDown();
+            $("#cand_data2").slideUp();
+        });
+
+        $(document).on("click", "#btn-nxt-step3", function (event) {
+            event.preventDefault();
+            $.ajax({
+                type: 'post',
+                url: '{{ route('toolbox.invigilator.save-time.adjust') }}',
+                data: $("#frm3").serialize()
+            }).done(function (msg) {
+                alert(msg == 1 ? "Time was adjusted successfully!" : "Operation was not successful!");
+            });
+        });
+    </script>
 @endsection

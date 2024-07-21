@@ -163,29 +163,48 @@ public function imageIndex()
 
         $studentInfo = DB::table('candidates')
             ->leftJoin('scheduled_candidates', 'candidates.indexing', '=', 'scheduled_candidates.candidate_id')
-            ->leftJoin('candidate_subjetcs', 'scheduled_candidates.candidateid', '=', 'candidate_subjetcs.scheduled_candidate_id')
-            ->leftJoin('schedulings', 'candidate_subjetcs.schedule_id', '=', 'schedulings.id')
+            ->leftJoin('candidate_subjects', 'scheduled_candidates.candidate_id', '=', 'candidate_subjects.scheduled_candidate_id')
+            ->leftJoin('schedulings', 'candidate_subjects.schedule_id', '=', 'schedulings.id')
             ->leftJoin('venues', 'schedulings.venue_id', '=', 'venues.id')
             ->leftJoin('centres', 'venues.centre_id', '=', 'centres.id')
             ->where('candidates.indexing', $username)
             ->select(
+                'candidates.indexing',
                 'candidates.surname',
                 'candidates.firstname',
-                'candidates.othernames',
+                'candidates.other_names',
                 'venues.name as venue_name',
                 'centres.name as centre_name'
             )
             ->first();
 
+        //get test configs
+        $testConfigs = TestConfig::exam()->get();
+        //get exams type
+        $candidateTypes = DB::table('exam_types')->get();
+         $examTypes = DB::table('test_configs')
+            ->join('test_codes', 'test_configs.test_code_id', '=', 'test_codes.id')
+            ->join('test_types', 'test_configs.test_type_id', '=', 'test_types.id')
+            ->join('exams_dates', 'exams_dates.test_config_id', '=', 'test_configs.id')
+            ->where('exams_dates.date', '=', now()->format('Y-m-d'))
+            ->select('test_configs.id', 'test_codes.name', 'test_types.name', 'session', 'semester')
+            ->get();
+
         if ($studentInfo) {
-            $candName = $studentInfo->surname . " " . $studentInfo->firstname . " " . $studentInfo->othernames;
+            $indexing=$studentInfo->indexing;
+            $candName = $studentInfo->surname . " " . $studentInfo->firstname . " " . $studentInfo->other_names;
             $venueName = $studentInfo->venue_name;
             $centreName = $studentInfo->centre_name;
 
-            return view('pages.toolbox.invigilator_panel', compact('candName', 'studentInfo', 'venueName', 'centreName'));
+            return response()->json([
+                'indexing'=>$indexing,
+                'candName' => $candName,
+                'venueName' => $venueName,
+                'centreName' => $centreName,
+            ]);
         }
 
-        return back()->with(['Candidate not found']);
+        return redirect()->back()->withErrors(['Candidate not found']);
     }
 
 }
