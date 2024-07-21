@@ -86,16 +86,16 @@
                                 <span>Test Papers</span>
                             </a>
                         </li>
-                        <li class="{{Request::is('*upload*')?'active':''}}">
-                            <a href="{{route('admin.test.config.upload.options',[$config])}}">
-                                <i class="fas fa-upload"></i>
-                                <span>Upload Candidate List</span>
-                            </a>
-                        </li>
                         <li class="{{Request::is('*composition*')?'active':''}}">
                             <a href="{{ route('admin.test.config.composition',[$config]) }}">
                                 <i class="fas fa-edit"></i>
                                 <span>Test Composition</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*upload*')?'active':''}}">
+                            <a href="{{route('admin.test.config.upload.options',[$config])}}">
+                                <i class="fas fa-upload"></i>
+                                <span>Upload Candidate List</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*preview*')?'active':''}}">
