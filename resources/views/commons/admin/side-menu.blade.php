@@ -80,16 +80,16 @@
                                 <span>Test Schedules</span>
                             </a>
                         </li>
-                        <li class="{{Request::is('*upload*')?'active':''}}">
-                            <a href="{{route('admin.test.config.upload.options',[$config])}}">
-                                <i class="fas fa-upload"></i>
-                                <span>Upload Candidate List</span>
-                            </a>
-                        </li>
                         <li class="{{Request::is('*subjects*')?'active':''}}">
                             <a href="{{ route('admin.test.config.subjects',[$config]) }}">
                                 <i class="fas fa-list"></i>
                                 <span>Test Papers</span>
+                            </a>
+                        </li>
+                        <li class="{{Request::is('*upload*')?'active':''}}">
+                            <a href="{{route('admin.test.config.upload.options',[$config])}}">
+                                <i class="fas fa-upload"></i>
+                                <span>Upload Candidate List</span>
                             </a>
                         </li>
                         <li class="{{Request::is('*composition*')?'active':''}}">
@@ -140,12 +140,12 @@
                     @endif
 
                     @if(Request::is('*report*'))
-                        <li class="{{Request::is('*test/report*')?'active':''}}">
-                            <a href="{{route('admin.reports.test.index')}}">
-                                <i class="fas fa-chart-bar"></i>
-                                <span>Test Reports</span>
-                            </a>
-                        </li>
+                        {{--                        <li class="{{Request::is('*test/report*')?'active':''}}">--}}
+                        {{--                            <a href="{{route('admin.reports.test.index')}}">--}}
+                        {{--                                <i class="fas fa-chart-bar"></i>--}}
+                        {{--                                <span>Test Reports</span>--}}
+                        {{--                            </a>--}}
+                        {{--                        </li>--}}
                         <li class="{{Request::is('*summary/report')?'active':''}}">
                             <a href="{{route('admin.reports.summary.reports')}}">
                                 <i class="fas fa-chart-column"></i>
@@ -202,7 +202,7 @@
                             </a>
                         </li>
                         <li class="{{Request::is('*invigilator_toolkit*')?'active':''}}">
-                            <a href="{{route('toolbox.candidate_image_upload.invigilator')}}">
+                            <a href="{{route('toolbox.invigilator.index')}}">
                                 <span>Invigilator Toolkit</span>
                             </a>
                         </li>

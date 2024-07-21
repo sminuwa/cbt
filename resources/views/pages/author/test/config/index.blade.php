@@ -31,7 +31,11 @@
     </div>
     <div class="row mt-3">
         @php
-            $configs = TestConfig::with(['test_type', 'test_code'])->select(['id','session','semester','test_type_id','test_code_id'])->orderBy('session','desc')->get();
+            $configs = TestConfig::with(['test_type', 'test_code'])
+                ->select(['id','session','semester','test_type_id','test_code_id'])
+                ->orderBy('session','desc')
+                ->orderBy('created_at','desc')
+                ->get();
         @endphp
         @foreach($configs as $config)
             <div class="col-4 col-lg-4 col-xl-4 col-md-6">

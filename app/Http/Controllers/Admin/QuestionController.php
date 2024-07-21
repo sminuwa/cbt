@@ -72,7 +72,19 @@ class QuestionController extends Controller
             ['subject_id' => $request->subject_id, 'topic_id' => $request->topic_id, 'author' => Auth::user()->id]
         )->get();
 
+        $duplicates = 0;
         foreach ($tempQuestions as $tempQuestion) {
+            $isDuplicate = false;
+            $questions = QuestionBank::where(['subject_id' => $request->subject_id])->pluck('title');
+            foreach ($questions as $title) {
+                if (($isDuplicate = $tempQuestion->title == $title)) {
+                    $duplicates++;
+                    break;
+                }
+            }
+
+            if ($isDuplicate) continue;
+
             $question = new QuestionBank();
             $question->title = $tempQuestion->title;
             $question->active = $tempQuestion->active;
@@ -96,12 +108,15 @@ class QuestionController extends Controller
 
             $tempQuestion->delete();
         }
-        return redirect(route('admin.questions.authoring.completed'));
+
+        $this->clearTemps(request('subject_id'), request('topic_id'));
+
+        return redirect(route('admin.questions.authoring.completed', [$duplicates]));
     }
 
-    public function completed()
+    public function completed($duplicates)
     {
-        return view('pages.admin.questions.completed');
+        return view('pages.admin.questions.completed', compact('duplicates'));
     }
 
     public function preview()
