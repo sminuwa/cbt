@@ -66,7 +66,6 @@ class TestController extends Controller
                 }
             }
 
-            return $presentation_records;
             if(!Presentation::upsert($presentation_records, ['scheduled_candidate_id', 'test_config_id','test_section_id', 'question_bank_id','answer_option_id'])) {
                 reset_auto_increment('presentations');
                 $errors[] = 'Something went wrong.';
