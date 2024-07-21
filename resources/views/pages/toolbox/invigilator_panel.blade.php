@@ -183,7 +183,7 @@
                             var _token = $('input[name="_token"]').val();
 
                             $.ajax({
-                                url: "{{ route('candidate.loadProfile') }}",
+                                url: "{{ route('toolbox.invigilator.candidate.loadProfile') }}",
                                 method: "POST",
                                 data: {
                                     _token: _token,
@@ -202,13 +202,13 @@
                                             <td>${response.candName}</td>
                                             <td rowspan="3" colspan="2">
                                                 <div>
-                                                    <img src="{{ asset('picts') }}/${response.RegNo}.jpg" onerror="this.onerror=null;this.src='{{ asset('assets/img/photo.png') }}';" style="width:150px; height:150px;" alt="image">
+                                                    <img src="{{ asset('picts') }}/${response.indexing}.jpg" onerror="this.onerror=null;this.src='{{ asset('assets/img/photo.png') }}';" style="width:150px; height:150px;" alt="image">
                                                 </div>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td><b>Reg No:</b></td>
-                                            <td>${response.RegNo}</td>
+                                            <td>${response.inde}</td>
                                         </tr>
                                         <tr>
                                             <td><b>Center:</b></td>

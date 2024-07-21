@@ -157,53 +157,35 @@ public function imageIndex()
 
     public function loadProfile(Request $request)
     {
+
         $examtype = $request->input('examtype');
         $username = $request->input('username');
 
-        // Fetch student information
-        $student = DB::table('candidates')
-            ->where('indexing', $username)
+        $studentInfo = DB::table('candidates')
+            ->leftJoin('scheduled_candidates', 'candidates.indexing', '=', 'scheduled_candidates.candidate_id')
+            ->leftJoin('candidate_subjetcs', 'scheduled_candidates.candidateid', '=', 'candidate_subjetcs.scheduled_candidate_id')
+            ->leftJoin('schedulings', 'candidate_subjetcs.schedule_id', '=', 'schedulings.id')
+            ->leftJoin('venues', 'schedulings.venue_id', '=', 'venues.id')
+            ->leftJoin('centres', 'venues.centre_id', '=', 'centres.id')
+            ->where('candidates.indexing', $username)
+            ->select(
+                'candidates.surname',
+                'candidates.firstname',
+                'candidates.othernames',
+                'venues.name as venue_name',
+                'centres.name as centre_name'
+            )
             ->first();
 
-        if ($student) {
-            $candName = $student->surname . " " . $student->firstname . " " . $student->othernames;
+        if ($studentInfo) {
+            $candName = $studentInfo->surname . " " . $studentInfo->firstname . " " . $studentInfo->othernames;
+            $venueName = $studentInfo->venue_name;
+            $centreName = $studentInfo->centre_name;
 
-            // Fetch candidate ID
-            $scheduledCandidate = DB::table('scheduled_candidates')
-                ->where('candidate_id', $username)
-                ->first();
-
-            $schedulecandidateId = $scheduledCandidate->candidateid ?? null;
-
-            // Fetch schedule ID
-            $candidateStudent = DB::table('tblcandidatestudent')
-                ->where('scheduled_candidate_id ', $schedulecandidateId)
-                ->first();
-
-            $scheduleId = $candidateStudent->schedule_id ?? null;
-
-            // Fetch venue name
-            $venue = DB::table('venues')
-                ->join('schedulings', 'venues.id', '=', 'schedulings.venue_id')
-                ->where('schedulings.id', $scheduleId)
-                ->select('venues.name')
-                ->first();
-
-            $venueName = $venue->name ?? null;
-
-            // Fetch centre name
-            $centre = DB::table('centres')
-                ->join('venues', 'centres.id', '=', 'venues.centre_id')
-                ->where('venues.id', $venue->id)
-                ->select('centres.name')
-                ->first();
-
-            $centreName = $centre->name ?? null;
-
-            return view('pages.toolbox.invigilator_panel', compact('candName', 'student', 'venueName', 'centreName'));
+            return view('pages.toolbox.invigilator_panel', compact('candName', 'studentInfo', 'venueName', 'centreName'));
         }
 
-        return redirect()->back()->withErrors(['Candidate not found']);
+        return back()->with(['Candidate not found']);
     }
 
 }
