@@ -178,18 +178,6 @@ public function imageIndex()
             )
             ->first();
 
-        //get test configs
-        $testConfigs = TestConfig::exam()->get();
-        //get exams type
-        $candidateTypes = DB::table('exam_types')->get();
-         $examTypes = DB::table('test_configs')
-            ->join('test_codes', 'test_configs.test_code_id', '=', 'test_codes.id')
-            ->join('test_types', 'test_configs.test_type_id', '=', 'test_types.id')
-            ->join('exams_dates', 'exams_dates.test_config_id', '=', 'test_configs.id')
-            ->where('exams_dates.date', '=', now()->format('Y-m-d'))
-            ->select('test_configs.id', 'test_codes.name', 'test_types.name', 'session', 'semester')
-            ->get();
-
         if ($studentInfo) {
             $indexing=$studentInfo->indexing;
             $candName = $studentInfo->surname . " " . $studentInfo->firstname . " " . $studentInfo->other_names;

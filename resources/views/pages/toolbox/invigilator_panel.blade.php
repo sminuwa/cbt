@@ -196,6 +196,7 @@
                     success: function (response) {
                         $('#second-step').html(`
                     <form class="style-frm">
+                    @csrf
                         <fieldset>
                             <legend>Candidate's Profile</legend>
                             <div>
@@ -210,7 +211,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><b>Reg No:</b></td>
+                                        <td><b>Indexing No:</b></td>
                                         <td>${response.indexing}</td>
                                     </tr>
                                     <tr>
@@ -224,7 +225,6 @@
                                     </tr>
                                     <tr>
                                         <td colspan="4" style="text-align:center">
-                                            <button id="btn-bk-step2" class="btn btn-primary">Back</button>
                                             <button id="btn-nxt-step2" class="btn btn-primary">Restore Candidate</button>
                                         </td>
                                     </tr>
