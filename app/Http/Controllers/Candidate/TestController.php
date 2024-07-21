@@ -51,7 +51,6 @@ class TestController extends Controller
                 $sections = TestSection::forSubjects($subject->subject_id, $test->id)->get();
                 foreach($sections as $section){
                     $questions = TestQuestion::forSection($section->id, $test->question_administration);
-                    return $questions;
                     foreach($questions as $question){
                         $answers = AnswerOption::for_questions($question->id, $test->option_administration);
                         foreach($answers as $answer){
