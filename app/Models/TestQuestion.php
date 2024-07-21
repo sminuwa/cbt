@@ -56,8 +56,8 @@ class TestQuestion extends Model
             ->limit($section->num_of_easy)
             ->select('test_questions.*', 'question_banks.difficulty_level')
             ->groupBy('question_banks.id')
-            ->havingRaw("(SELECT count(id) FROM answer_options WHERE question_bank_id = question_banks.id) > 1")
-            ->inRandomOrder();
+            ->havingRaw("(SELECT count(id) FROM answer_options WHERE question_bank_id = question_banks.id) > 1");
+            if($question_administration == 'random') $simple = $simple->inRandomOrder();
 
         $moderate = self::
         join('question_banks', 'question_banks.id', 'test_questions.question_bank_id')
@@ -66,8 +66,8 @@ class TestQuestion extends Model
             ->limit($section->num_of_moderate)
             ->select('test_questions.*', 'question_banks.difficulty_level')
             ->groupBy('question_banks.id')
-            ->havingRaw("(SELECT count(id) FROM answer_options WHERE question_bank_id = question_banks.id) > 1")
-            ->inRandomOrder();
+            ->havingRaw("(SELECT count(id) FROM answer_options WHERE question_bank_id = question_banks.id) > 1");
+            if($question_administration == 'random') $moderate = $moderate->inRandomOrder();
 
         $difficult = self::
         join('question_banks', 'question_banks.id', 'test_questions.question_bank_id')
@@ -76,11 +76,12 @@ class TestQuestion extends Model
             ->limit($section->num_of_difficult)
             ->select('test_questions.*', 'question_banks.difficulty_level')
             ->groupBy('question_banks.id')
-            ->havingRaw("(SELECT count(id) FROM answer_options WHERE question_bank_id = question_banks.id) > 1")
-            ->inRandomOrder();
+            ->havingRaw("(SELECT count(id) FROM answer_options WHERE question_bank_id = question_banks.id) > 1");
+            if($question_administration == 'random') $difficult = $difficult->inRandomOrder();
+
 
         $question = $simple->union($moderate)->union($difficult);
-        if($question_administration == 'random') $question = $question->inRandomOrder();
+//        if($question_administration == 'random') $question = $question->inRandomOrder();
         $question = $question->limit($section->num_to_answer)->get();
         return $question;
     }

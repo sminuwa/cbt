@@ -6,7 +6,7 @@
                     <span>
                         {{$statistics['count']}} questions selected
                         ({{$statistics['easy']}} easy,
-                        {{$statistics['moderate']}} modeerate,
+                        {{$statistics['moderate']}} moderate,
                         {{$statistics['difficult']}} difficult)
                     </span>
                 </h4>

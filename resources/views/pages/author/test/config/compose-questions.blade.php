@@ -114,6 +114,8 @@
 
             function store() {
                 $.post('{{route('admin.test.config.compose.questions.store')}}', q_form.serialize(), function (data) {
+                }).done(function(data){
+                    console.log(data)
                 })
             }
 

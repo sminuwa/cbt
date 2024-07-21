@@ -51,6 +51,7 @@ class TestController extends Controller
                 $sections = TestSection::forSubjects($subject->subject_id, $test->id)->get();
                 foreach($sections as $section){
                     $questions = TestQuestion::forSection($section->id, $test->question_administration);
+                    return $questions;
                     foreach($questions as $question){
                         $answers = AnswerOption::for_questions($question->id, $test->option_administration);
                         foreach($answers as $answer){
@@ -66,16 +67,10 @@ class TestController extends Controller
                 }
             }
 
-            foreach(array_chunk($presentation_records, 1000) as $key => $p) {
-                if(!Presentation::upsert($p, ['scheduled_candidate_id', 'test_config_id','test_section_id', 'question_bank_id','answer_option_id'])) {
-                    reset_auto_increment('presentations');
-                    $err[] = 'Something went wrong.';
-                }
-                if(count($err) == 0){
-                    reset_auto_increment('presentations');
-                }else{
-                    $errors[] = 'Something went wrong while updating papers records for graduands.';
-                }
+            return $presentation_records;
+            if(!Presentation::upsert($presentation_records, ['scheduled_candidate_id', 'test_config_id','test_section_id', 'question_bank_id','answer_option_id'])) {
+                reset_auto_increment('presentations');
+                $errors[] = 'Something went wrong.';
             }
             //getting the question goes here
         }

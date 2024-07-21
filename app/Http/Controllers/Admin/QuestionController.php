@@ -41,7 +41,7 @@ class QuestionController extends Controller
             $bank->topic_id = $request->topic_id;
             $bank->subject_id = $request->subject_id;
             if ($question->difficulty != 'S')
-                $bank->difficulty_level = $question->difficulty == 'M' ? 'moredifficult' : 'difficult';
+                $bank->difficulty_level = $question->difficulty == 'M' ? 'moderate' : 'difficult';
             $bank->save();
 
             $bank_id = $bank->id;
