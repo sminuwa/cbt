@@ -57,7 +57,7 @@ class TestSection extends Model
     }
 
 
-    public function scopeForSubjects($query, $subject_id, $test_id, $question_administration){
+    public function scopeForSubjects($query, $subject_id, $test_id){
         $query = $query
             ->join('test_subjects', function(JoinClause $joinTQ){
                 return $joinTQ->on('test_subjects.id', '=', 'test_sections.test_subject_id');
@@ -65,9 +65,6 @@ class TestSection extends Model
             ->where('test_subjects.subject_id', $subject_id)
             ->where('test_subjects.test_config_id', $test_id)
             ->select('test_sections.*');
-        if($question_administration == 'random'){
-            $query->inRandomOrder();
-        }
         return $query;
     }
 }

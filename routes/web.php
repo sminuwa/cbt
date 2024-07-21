@@ -14,6 +14,7 @@ use App\Http\Controllers\SubjectsController;
 use App\Http\Controllers\TestConfigController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\VenueController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -191,12 +192,19 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
 
     });
 
-
     Route::name('candidate_image_upload.')->prefix('candidate_image_upload')->group(function () {
         Route::get('upload-candidate', [CandidateUploadController::class, 'imageIndex'])->name('upload.images');
         Route::post('upload-candidate-image', [CandidateUploadController::class, 'imageUpload'])->name('upload.image.data');
-        Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('invigilator');
+        //Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('invigilator');
 
+    });
+
+    Route::name('invigilator.')->prefix('invigilator')->group(function () {
+        Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('index');
+        Route::post('/increase-time', [CandidateUploadController::class, 'viewCandidateTime'])->name('increase-time.view');
+        Route::post('/save-time', [CandidateUploadController::class, 'saveTimeAdjustment'])->name('save-time.adjust');
+        Route::post('/reset_password', [CandidateUploadController::class, 'resetCandidatePassword'])->name('reset.password');
+        Route::post('/load-profile', [CandidateUploadController::class, 'loadProfile'])->name('candidate.loadProfile');
     });
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
         Route::get('/', [SetupController::class, 'index'])->name('index');
@@ -214,3 +222,7 @@ Route::name('api.v1.')->prefix('api/v1/')->group(function () {
     });
 
 })->middleware('api-auth');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
