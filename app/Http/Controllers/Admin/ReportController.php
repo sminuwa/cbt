@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AnswerOption;
 use App\Models\Candidate;
 use App\Models\Score;
 use App\Models\TestConfig;
 use App\Models\TestQuestion;
+use App\Models\TestSection;
 use App\Models\TestSubject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -212,48 +214,73 @@ class ReportController extends Controller
     public function generatePresentationSummary(Request $request)
     {
         try {
-            $config = 1;//$request->test_config_id;
-            $candidatesIds = [1];//$request->candidates;
+            $config = $request->test_config_id;
+            $candidatesIds = $request->candidates;
 
             $testSubjects = TestSubject::with('subject')
                 ->select('subject_id')
                 ->where('test_config_id', $config)
                 ->get();
 
+            $subjects = [];
+            foreach ($testSubjects as $testSubject)
+                $subjects[] = $testSubject->subject;
+
+
             $candidates = Candidate::select('id', 'indexing', 'surname', 'firstname', 'other_names')
                 ->whereIn('id', $candidatesIds)
                 ->get();
 
-            foreach ($candidates as $candidate) {
-                $subjects = array();
-                foreach ($testSubjects as $testSubject) {
-                    $subject = $testSubject->subject;
-                    $report = DB::table('presentations')
-                        ->join('test_sections', 'test_sections.id', '=', 'presentations.test_section_id')
-                        ->join('question_banks', 'question_banks.id', '=', 'presentations.question_bank_id')
-                        ->join('test_subjects', 'test_subjects.id', '=', 'test_sections.test_subject_id')
-                        ->select('question_bank_id', 'presentations.scheduled_candidate_id as candidate_id',
-                            'presentations.test_config_id', 'presentations.test_section_id as section_id',
-                            'question_banks.title as question', 'test_sections.title as section', 'test_sections.instruction')
-                        ->where([
-                            'presentations.test_config_id' => $config,
-                            'test_subjects.id' => $subject->id,
-                            'presentations.scheduled_candidate_id' => $candidate->id
-                        ])
-                        ->distinct('presentations.question_bank_id')
-                        ->get();
+            return view('pages.admin.reports.ajax.presentation-summary', compact('candidates', 'subjects', 'config'));
 
-                    $subject['report'] = $report;
-                    $subjects[] = $subject;
+            /*
+            foreach ($candidates as $candidate) {
+                foreach ($subjects as $subject) {
+                    $sections = TestSection::select('id', 'title', 'instruction')
+                        ->where('test_subject_id', $subject->id)->get();
+
+                    foreach ($sections as $section) {
+                        $questions = DB::table('presentations')
+                            ->join('test_sections', 'test_sections.id', '=', 'presentations.test_section_id')
+                            ->join('question_banks', 'question_banks.id', '=', 'presentations.question_bank_id')
+                            ->join('test_subjects', 'test_subjects.id', '=', 'test_sections.test_subject_id')//
+                            ->select('question_banks.id', 'question_banks.title as question')
+                            ->where([
+                                'test_sections.id' => $section->id,
+                                'presentations.test_config_id' => $config,
+                                'presentations.scheduled_candidate_id' => $candidate->id
+                            ])
+                            ->distinct('presentations.question_bank_id')
+                            ->get();
+
+                        foreach ($questions as $question) {
+                            $options = AnswerOption::select('id', 'question_option as option', 'correctness')
+                                ->where('question_bank_id', $question->id)->get();
+                            $selection = Score::select('answer_option_id as selection')
+                                ->where([
+                                    'test_config_id' => $config,
+                                    'question_bank_id' => $question->id,
+                                    'scheduled_candidate_id' => $candidate->id
+                                ])
+                                ->pluck('selection')->first();
+
+                            $question->selection = $selection;
+                            $question->options = $options;
+                        }
+
+                        $section['questions'] = $questions;
+                    }
+
+                    $subject['sections'] = $sections;
                 }
                 $candidate['subjects'] = $subjects;
             }
 
             return $candidate;
-        } catch (Exception $e) {
+            */
+        } catch (\Exception $e) {
             return $e->getMessage();
         }
-        return $request;
     }
 
     public function activeCandidates()
