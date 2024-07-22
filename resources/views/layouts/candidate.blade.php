@@ -83,6 +83,17 @@
             height:20px;
         }
 
+        .ribbon {
+            padding: 0 20px;
+            height: auto;
+            line-height: 30px;
+            clear: left;
+            position: absolute;
+            top: 12px;
+            color: #fff;
+            z-index: 2;
+            border-radius: 10px;
+
 
         .wizard-step h2 {
             font-size: 1.25rem;
@@ -196,6 +207,12 @@ $time_elapsed = $time_control->elapsed;
                                                 </a>
                                             @endforeach
                                         </div>
+                                        <hr>
+                                        <div class="text-center">
+                                            <button id="submitBtn" onclick="return confirm('Are you sure you want to submit this exam?')" class="submitBtn btn btn-primary btn-sm hidden">
+                                                Submit Exam
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -204,24 +221,23 @@ $time_elapsed = $time_control->elapsed;
 
                     <div class="col-md-8 col-xl-8">
                         <div class="card">
-                            <div class="card-header border-l-warning border-3 ribbon-wrapper-right">
-                                <div class="ribbon ribbon-primary ribbon-clip-right ribbon-right">SAVE 50%</div>
-                                <h4 class="card-title ">
-                                    {{--{{ $test->test_code->name }}--}}
-
+                            <div class="card-header border-r-primary border-3 ribbon-wrapper-right">
+                                <div class="ribbon ribbon-primary ribbon-clip-right ribbon-right">
                                     @foreach($candidate_subjects as $s)
                                         <a
                                             href="{{ route('candidate.test.goto_paper', ['subject_id'=>$s->subject_id, 'scheduled_candidate_id'=>$scheduled_candidate->id,'test_config_id'=>$test->id]) }}"
-                                            class="text-primary {{ $subject->id == $s->subject_id ? 'text-primary':'text-warning' }}">
+                                            class="b-r-0 text-white btn btn-{{ $subject->id == $s->subject_id ? 'warning':'light' }}">
                                             {{ $s->name }}
                                         </a>
-                                         @if(!$loop->last) | @endif
+                                        @if(!$loop->last) | @endif
                                     @endforeach
-                                    <div class="float-end">
-                                        <button id="submitBtn" onclick="return confirm('Are you sure you want to submit this exam?')" class="submitBtn btn btn-primary btn-sm hidden">
-                                            Submit Exam
-                                        </button>
-                                    </div>
+                                </div>
+                                <h4 class="card-title ">
+                                    {{--{{ $test->test_code->name }}--}}
+                                    {{ $test->test_code->name }} {{ $test->session }}
+                                    {{--<div class="float-end">
+
+                                    </div>--}}
                                 </h4>
                             </div>
                             <div class="card-body">
@@ -234,7 +250,7 @@ $time_elapsed = $time_control->elapsed;
                                                 <h5>{{ $question_paper['section_title'] }}</h5>
                                                 <h5>Instruction: {{ strip_tags($question_paper['section_instruction'],'<img>') }}</h5>
                                             </div>
-                                            <div class="card-wrapper border rounded-3 fill-radios h-100 radio-toolbar checkbox-checked zoomIn  animated z-0">
+                                            <div class="card-wrapper border rounded-3 fill-radios h-100 radio-toolbar checkbox-checked fadeIn  animated z-0">
                                                 <h6 class="sub-title">Q {{ $loop->iteration }}. {{ strip_tags($question_paper['question_name'],'<img>') }}</h6>
                                                 @foreach($question_paper['answer_options'] as $answer_option)
                                                     <div id="{{ $question_paper['question_bank_id'] }}{{ $answer_option['answer_option_id'] }}" class="form-check radio radio-primary" style="width:100%">
@@ -268,7 +284,7 @@ $time_elapsed = $time_control->elapsed;
                                         <button type="button" id="prevBtn" class="btn btn-square btn-outline-primary">Previous</button>
                                     </div>
                                     <div class="col-md-4 text-center">
-                                        <h3 class="d-inline"><span class="badge badge-primary" id="attempt-tracker">1 / 38</span></h3>
+                                        <h3 class="d-inline"><span class="badge badge-primary" id="attempt-tracker">{{ count($question_answered) }} / {{ count($question_array) }}</span></h3>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="float-end">
@@ -391,7 +407,7 @@ $time_elapsed = $time_control->elapsed;
             });
             prevBtn.classList.toggle('hidden', step === 0);
             nextBtn.classList.toggle('hidden', step === steps.length - 1);
-            submitBtn.classList.toggle('hidden', step !== steps.length - 1);
+            // submitBtn.classList.toggle('hidden', step !== steps.length - 1);
             let qid = steps[step].id;
             let qstep = steps[step].step;
             let qlist = $('.q'+qid);
@@ -485,6 +501,7 @@ $time_elapsed = $time_control->elapsed;
             let answer_option_id = $(this).attr('answer_option_id');
             let scoring_mode = $(this).attr('scoring_mode');
             let time_control_id = {{ $time_control->id }};
+            let test_subject_id = {{ $subject->id }};
             currentStep = parseInt(question_step)
             showStep(currentStep, true)
             $.get('{{ route('candidate.test.answering') }}',
@@ -498,12 +515,14 @@ $time_elapsed = $time_control->elapsed;
                     scoring_mode,
                     time_control_id,
                     remaining_seconds,
-                    time_elapsed
+                    time_elapsed,
+                    test_subject_id
                 },
                 function(){
                     // console.log('Saving answer')
             }).done(function(data){
                 console.log(data)
+                attempt_tracker.html(data.answered + ' / '+ data.total)
             }).fail(function(data){
                 // console.log(data)
             })
@@ -535,11 +554,15 @@ $time_elapsed = $time_control->elapsed;
             //update time control after every one minutes even if no activity
             if(every_one_minutes >= 10){
                 ++time_difference; // time difference in minutes
+                let test_subject_id = {{ $subject->id }};
                 $.get('{{ route('candidate.test.time_control') }}',
                     {
                         time_control_id: {{ $time_control->id }},
+                        scheduled_candidate_id: {{ $scheduled_candidate->id }},
+                        test_config_id: {{ session('test')->id }},
                         remaining_seconds,
-                        time_elapsed
+                        time_elapsed,
+                        test_subject_id
                     },
                     function(){
                         // console.log('Saving answer')
@@ -615,7 +638,16 @@ $time_elapsed = $time_control->elapsed;
             });
         }
 
-        attempt_tracker.html('2 / 34')
+
+        $("body").keydown(function(e) {
+            if(e.keyCode === 37) { // left
+                $("#prevBtn").trigger("click");
+            }
+            else if(e.keyCode === 39) { // right
+                $("#nextBtn").trigger("click");
+            }
+        });
+
     });
 
 

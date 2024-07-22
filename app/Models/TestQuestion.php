@@ -47,6 +47,11 @@ class TestQuestion extends Model
 		return $this->belongsTo(TestSection::class);
 	}
 
+
+    public function answer_options(){
+        return $this->hasMany(AnswerOption::class,'question_bank_id', 'question_bank_id');
+    }
+
     public static function forSection($test_section_id, $question_administration){
         $section = TestSection::find($test_section_id);
         $simple = self::
@@ -82,7 +87,7 @@ class TestQuestion extends Model
 
         $question = $simple->union($moderate)->union($difficult);
 //        if($question_administration == 'random') $question = $question->inRandomOrder();
-        $question = $question->limit($section->num_to_answer)->get();
+        $question = $question->limit($section->num_to_answer)->with('answer_options')->get();
         return $question;
     }
 }
