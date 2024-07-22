@@ -128,7 +128,7 @@ class ReportController extends Controller
                     ->join('test_subjects', 'test_subjects.id', '=', 'test_sections.test_subject_id')
                     ->select('question_bank_id')
                     ->where([
-//                        'test_config_id' => $config_id,
+                        'test_subjects.test_config_id' => $config_id,
                         'subject_id' => $subject->id])
                     ->get();
 
