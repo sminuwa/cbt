@@ -67,6 +67,7 @@
         .btn-question{
             padding: 2px 5px;
             width:45px;
+            max-width:50px;
         }
 
         .btn-group {
