@@ -488,7 +488,7 @@ class TestConfigController extends Controller
     {
         try {
             $where = [];
-            $where[] = ['subject_id', '=', $request->subject_id];
+            $where[] = ['question_banks.subject_id', '=', $request->subject_id];
 
             if ($request->difficulty_level != '%')
                 $where[] = ['difficulty_level', '=', $request->difficulty_level];
@@ -504,7 +504,14 @@ class TestConfigController extends Controller
             if (isset($request->phrase))
                 $where[] = ['title', 'like', '%' . $request->phrase . '%'];
 
-            $questions = QuestionBank::with('answer_options')->where($where)->get();
+            $others_ids = TestSection::where('test_subject_id', $request->subject_id)->where('id', '<>', $request->test_section_id)->pluck('id')->toArray();
+
+            $questions = QuestionBank::with('answer_options')
+//                ->join('test_subjects', 'test_subjects.subject_id', '=', 'question_banks.subject_id')
+//                ->join('test_sections', 'test_sections.test_subject_id', '=', 'test_subjects.id')
+//                ->join('test_questions', 'test_questions.test_section_id', '=', 'test_sections.id')
+//                ->whereNotIn('test_questions.test_section_id', $others_ids)()
+                ->where($where)->get();
 
             $easy = 0;
             $moderate = 0;
