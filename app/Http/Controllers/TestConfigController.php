@@ -444,7 +444,7 @@ class TestConfigController extends Controller
 
     private function registeredSubjects($config_id): Builder
     {
-        return TestSubject::with('subject')
+        return TestSubject::with(['subject', 'test_sections'])
             ->select(['id', 'subject_id'])
             ->where(['test_config_id' => $config_id]);
     }
@@ -559,7 +559,7 @@ class TestConfigController extends Controller
             $section_id = $request->test_section_id;
             $selected_ids = $request->bank_ids;
             foreach ($selected_ids as $id) {
-                $question = TestQuestion::where(['question_bank_id' => $id,'test_section_id'=>$section_id])->first();
+                $question = TestQuestion::where(['question_bank_id' => $id, 'test_section_id' => $section_id])->first();
                 if ($question)
                     continue;
                 $question = new TestQuestion();
