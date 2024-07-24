@@ -504,14 +504,9 @@ class TestConfigController extends Controller
             if (isset($request->phrase))
                 $where[] = ['title', 'like', '%' . $request->phrase . '%'];
 
-            $others_ids = TestSection::where('test_subject_id', $request->subject_id)->where('id', '<>', $request->test_section_id)->pluck('id')->toArray();
-
-            $questions = QuestionBank::with('answer_options')
-//                ->join('test_subjects', 'test_subjects.subject_id', '=', 'question_banks.subject_id')
-//                ->join('test_sections', 'test_sections.test_subject_id', '=', 'test_subjects.id')
-//                ->join('test_questions', 'test_questions.test_section_id', '=', 'test_sections.id')
-//                ->whereNotIn('test_questions.test_section_id', $others_ids)()
-                ->where($where)->get();
+            $others_ids = TestSection::where('test_subject_id', $request->test_subject_id)->where('id', '<>', $request->test_section_id)->pluck('id')->toArray();
+            $nots_ids = TestQuestion::whereIn('test_section_id', $others_ids)->pluck('question_bank_id')->toArray();
+            $questions = QuestionBank::with('answer_options')->where($where)->whereNotIn('id', $nots_ids)->get();
 
             $easy = 0;
             $moderate = 0;

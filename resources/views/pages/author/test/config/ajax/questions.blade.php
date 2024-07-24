@@ -63,7 +63,7 @@
                                href="javascript:;">
                                 Full Question
                             </a>
-                            <span>Difficulty: {{$question->difficulty_level=='simple'?'Easy':($question->difficulty_level=='moderate'?'Medium':'Hard')}}</span>
+                            <span>Difficulty: {{$question->difficulty_level=='simple'?'Simple':($question->difficulty_level=='moderate'?'Moderate':'Difficult')}}</span>
                         </div>
                         <hr>
                     </div>

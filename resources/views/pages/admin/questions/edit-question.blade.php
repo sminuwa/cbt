@@ -66,12 +66,11 @@
                                     <option value="simple"
                                         {{ $question->difficulty_level=='simple'?'selected':'' }}>Simple
                                     </option>
+                                    <option value="moderate"
+                                        {{ $question->difficulty_level=='moderate'?'selected':'' }}>Moderate
+                                    </option>
                                     <option value="difficult"
                                         {{ $question->difficulty_level=='difficult'?'selected':'' }}>Difficult
-                                    </option>
-                                    <option value="moredifficult"
-                                        {{ $question->difficulty_level=='moredifficult'?'selected':'' }}>Mode
-                                        Difficult
                                     </option>
                                 </select>
                             </div>

@@ -46,6 +46,7 @@
                 @csrf
                 <input type="hidden" name="subject_id" value="{{$subject->id}}">
                 <input type="hidden" name="test_section_id" value="{{$testSection->id}}">
+                <input type="hidden" name="test_subject_id" value="{{$testSection->test_subject_id}}">
                 <input type="hidden" id="page" name="page" value="1">
                 <div class="row">
                     <div class="col-3 col-md-12 col-lg-3 col-xl-3">
@@ -53,8 +54,8 @@
                             <label for="difficulty">Difficulty Level:</label>
                             <select class="form-control form-select" name="difficulty_level" id="difficulty">
                                 <option value="%">All</option>
-                                <option value="simple">Easy</option>
-                                <option value="moderate">Medium</option>
+                                <option value="simple">Simple</option>
+                                <option value="moderate">Moderate</option>
                                 <option value="difficult">Difficult</option>
                             </select>
                         </div>
@@ -106,6 +107,7 @@
 
             function loadQuestions() {
                 $.get('{{route('admin.test.config.compose.questions.load')}}', form.serialize(), function (response) {
+                    console.log(response)
                     $('#questions-div').html(response)
                     $(document).find('#section_id').val({{$testSection->id}})
                     q_form = $(document).find('#questions-form')
@@ -114,7 +116,7 @@
 
             function store() {
                 $.post('{{route('admin.test.config.compose.questions.store')}}', q_form.serialize(), function (data) {
-                }).done(function(data){
+                }).done(function (data) {
                     console.log(data)
                 })
             }
