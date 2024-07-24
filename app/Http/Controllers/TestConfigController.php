@@ -28,6 +28,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class TestConfigController extends Controller
@@ -525,7 +526,7 @@ class TestConfigController extends Controller
 
             $collection = collect($questions);
             $currentPage = $request->input('page', 1);
-            $perPage = 40;
+            $perPage = $request->page_count;
             $offset = ($currentPage - 1) * $perPage;
             $currentPageItems = $collection->slice($offset, $perPage)->values();
 
@@ -558,18 +559,44 @@ class TestConfigController extends Controller
     public function storeQuestions(Request $request)
     {
         try {
-            $section_id = $request->test_section_id;
             $selected_ids = $request->bank_ids;
-            foreach ($selected_ids as $id) {
-                $question = TestQuestion::where(['question_bank_id' => $id, 'test_section_id' => $section_id])->first();
-                if ($question)
-                    continue;
-                $question = new TestQuestion();
-                $question->question_bank_id = $id;
-                $question->test_section_id = $section_id;
-                $question->save();
+            $section_id = $request->test_section_id;
+            $allLevels = ['simple', 'moderate', 'difficult'];
+            $section = TestSection::where('id', $section_id)->first();
+
+            $query = QuestionBank::join('test_questions', 'test_questions.question_bank_id', '=', 'question_banks.id')
+                ->select('difficulty_level', DB::raw('count(*) as total_questions'))
+                ->where('test_section_id', $section_id)
+                ->groupBy('difficulty_level');
+
+            $counts = collect($allLevels)->mapWithKeys(function ($level) use ($query) {
+                return [$level => $query->clone()->where('difficulty_level', $level)->value('total_questions') ?? 0];
+            })->toArray();
+
+            if ($section->num_to_answer > ($counts['simple'] + $counts['moderate'] + $counts['difficult'])) {
+                foreach ($selected_ids as $id) {
+                    $question = TestQuestion::where(['question_bank_id' => $id, 'test_section_id' => $section_id])->first();
+                    if ($question)
+                        continue;
+
+                    $question = new TestQuestion();
+                    $question->question_bank_id = $id;
+                    $question->test_section_id = $section_id;
+                    $question->save();
+                }
+
+                return ['title' => '', 'message' => ''];
+            } else {
+                return [
+                    'title' => 'Test Composition Completed',
+                    'message' => '(' . $counts['simple'] . ') simple , (' . $counts['moderate'] . ') moderate and (' . $counts['difficult'] . ') difficult question(s) were composed as specified in the section (' . $section->title . ') definition'
+                ];
             }
         } catch (Exception $e) {
+            return [
+                'title' => 'Oops!',
+                'message' => $e->getMessage()
+            ];
         }
     }
 
