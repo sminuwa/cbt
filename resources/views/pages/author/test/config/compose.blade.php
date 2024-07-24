@@ -132,7 +132,7 @@
                 <div class="row mt-1">
                     <div class="col-4 col-md-12 col-lg-4 col-xl-4">
                         <div class="form-group">
-                            <label for="easy">Easy Questions Count:</label>
+                            <label for="easy">Simple Questions Count:</label>
                             <input class="form-control" type="number" name="num_of_easy" id="easy" required>
                         </div>
                     </div>

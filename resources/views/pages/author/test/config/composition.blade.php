@@ -35,12 +35,14 @@
             <div class="row">
                 <div class="col-12">
                     @if(count($subjects))
-                        <table style="width: 70%" class="table table-bordered table-striped">
+                        <table class="table table-bordered table-striped">
                             <thead>
                             <tr>
                                 <th style="width: 10%">#</th>
                                 <th>Code</th>
                                 <th>Name</th>
+                                <th style="text-align: center">Sections</th>
+                                <th style="text-align: center">Questions</th>
                                 <th style="width: 20%">Action</th>
                             </tr>
                             </thead>
@@ -50,6 +52,8 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $registered->subject->subject_code }}</td>
                                     <td>{{ $registered->subject->name }}</td>
+                                    <td style="text-align: center">{{ count($registered->test_sections) }}</td>
+                                    <td style="text-align: center">{{ $registered->questions() }}</td>
                                     <td>
                                         <a class="btn btn-sm btn-outline-info"
                                            data-id="{{ $registered->id }}"

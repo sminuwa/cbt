@@ -60,7 +60,7 @@
                                     <option value="simple">Simple</option>
                                     <option value="moderate">Moderate</option>
                                     <option value="difficult">Difficult</option>
-                                    <option value="moredifficult">More Difficult</option>
+                                    {{--                                    <option value="moredifficult">More Difficult</option>--}}
                                 </select>
                             </div>
                         </div>

@@ -444,7 +444,7 @@ class TestConfigController extends Controller
 
     private function registeredSubjects($config_id): Builder
     {
-        return TestSubject::with('subject')
+        return TestSubject::with(['subject', 'test_sections'])
             ->select(['id', 'subject_id'])
             ->where(['test_config_id' => $config_id]);
     }
@@ -488,7 +488,7 @@ class TestConfigController extends Controller
     {
         try {
             $where = [];
-            $where[] = ['subject_id', '=', $request->subject_id];
+            $where[] = ['question_banks.subject_id', '=', $request->subject_id];
 
             if ($request->difficulty_level != '%')
                 $where[] = ['difficulty_level', '=', $request->difficulty_level];
@@ -504,7 +504,9 @@ class TestConfigController extends Controller
             if (isset($request->phrase))
                 $where[] = ['title', 'like', '%' . $request->phrase . '%'];
 
-            $questions = QuestionBank::with('answer_options')->where($where)->get();
+            $others_ids = TestSection::where('test_subject_id', $request->test_subject_id)->where('id', '<>', $request->test_section_id)->pluck('id')->toArray();
+            $nots_ids = TestQuestion::whereIn('test_section_id', $others_ids)->pluck('question_bank_id')->toArray();
+            $questions = QuestionBank::with('answer_options')->where($where)->whereNotIn('id', $nots_ids)->get();
 
             $easy = 0;
             $moderate = 0;
@@ -559,7 +561,7 @@ class TestConfigController extends Controller
             $section_id = $request->test_section_id;
             $selected_ids = $request->bank_ids;
             foreach ($selected_ids as $id) {
-                $question = TestQuestion::where(['question_bank_id' => $id,'test_section_id'=>$section_id])->first();
+                $question = TestQuestion::where(['question_bank_id' => $id, 'test_section_id' => $section_id])->first();
                 if ($question)
                     continue;
                 $question = new TestQuestion();
