@@ -293,7 +293,7 @@ class TestConfigController extends Controller
 
                 $i = 0;
                 foreach ($rows as $row)
-                    $candidate_papers[$row] = explode(',', $tmp[$i]);
+                    $candidate_papers[$row] = explode(',', $tmp[$i++]);
 
             } else {
                 $rows = explode(',', $request->candidate_number);
@@ -304,7 +304,13 @@ class TestConfigController extends Controller
 
             $missing = array_values(array_diff($rows, $numbers));
 
-            $papers = Subject::select(['id', 'subject_code as code'])->get();
+            $papers = [];
+            $pps = Subject::select(['id', 'subject_code as code'])->get();
+            foreach ($pps as $p) {
+                $papers[$p->code] = $p->id;
+            }
+
+
             $subjects = TestSubject::where(['test_config_id' => $test_config_id])->pluck('subject_id');
 
             $schedules = CandidateSubject::with('candidate')->where(['schedule_id' => $schedule_id])
@@ -328,9 +334,17 @@ class TestConfigController extends Controller
                 $candidates = $tmp;
             }
 
-            foreach ($candidates as $candidate) {
-                // foreach ($ as $schedule) {
-                // }
+            foreach ($candidates as $k => $candidate) {
+                foreach ($candidate_papers as $key => $value) {
+                    if ($key == $candidate['indexing']) {
+                        $paper_ids = [];
+                        foreach ($papers as $i => $v)
+                            if (in_array($i, $value))
+                                $paper_ids[] = $v;
+
+                        $candidates[$k]['papers'] = $paper_ids;
+                    }
+                }
             }
 
             $chunks = array_chunk($candidates, 1000);
@@ -342,12 +356,13 @@ class TestConfigController extends Controller
             foreach ($chunks as $chunk) {
                 foreach ($chunk as $candidate) {
                     foreach ($subjects as $subject_id) {
-                        $records[] = [
-                            'scheduled_candidate_id' => $candidate['id'],
-                            'schedule_id' => $schedule_id,
-                            'subject_id' => $subject_id,
-                            'enabled' => 1
-                        ];
+                        if (in_array($subject_id, $candidate['papers']))
+                            $records[] = [
+                                'scheduled_candidate_id' => $candidate['id'],
+                                'schedule_id' => $schedule_id,
+                                'subject_id' => $subject_id,
+                                'enabled' => 1
+                            ];
                     }
                     $scs[] = [
                         'exam_type_id' => $exam_type_id,

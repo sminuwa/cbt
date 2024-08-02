@@ -34,9 +34,9 @@
                 <li class="nav-item">
                     <a class="nav-link active" href="#bulk-upload" data-bs-toggle="tab">Bulk Upload</a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link" href="#single-candidate" data-bs-toggle="tab">Single Candidate</a>
-                </li>
+                </li> --}}
             </ul>
         </div>
         <div class="card-body p-3">
