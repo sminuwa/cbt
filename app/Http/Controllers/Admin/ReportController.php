@@ -129,7 +129,8 @@ class ReportController extends Controller
                     ->select('question_bank_id')
                     ->where([
                         'test_subjects.test_config_id' => $config_id,
-                        'subject_id' => $subject->id])
+                        'subject_id' => $subject->id
+                    ])
                     ->get();
 
                 $qtns = [];
@@ -300,9 +301,11 @@ class ReportController extends Controller
         try {
             $actives = DB::table('time_controls')
                 ->join('candidates', 'candidates.id', '=', 'time_controls.scheduled_candidate_id')
-                ->select('indexing',
+                ->select(
+                    'indexing',
                     DB::raw('concat(candidates.surname," ",candidates.firstname," ",candidates.other_names) as name'),
-                    'ip as address')
+                    'ip as address'
+                )
                 ->where(['test_config_id' => $request->test_config_id, 'completed' => 0])
                 ->get();
 
