@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('pages.admin.dashboard.index');
+    return redirect()->route('candidate.auth.page');
 });
 
 

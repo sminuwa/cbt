@@ -37,6 +37,8 @@ class AuthController extends Controller
             //check candidate's schedules and compare with the selected test schedules
             $candidate = auth()->user();
             $scheduled_candidate = $candidate->schedules($test_id);
+            if(!$scheduled_candidate)//check if logged in candidate is scheduled for the selected exams/text.
+                return back()->with('error','You are not scheduled for this test. Please select appropriate test.');
 //            return $candidate->schedules($test_id);
             $candidate_subjects = ScheduledCandidate::forCandidate($test->schedule_id)->get();
             if($candidate->test_is_completed($test->id, $scheduled_candidate?->id)) return back()->with('error', 'You have already taken the selected exams.')->withInput();
