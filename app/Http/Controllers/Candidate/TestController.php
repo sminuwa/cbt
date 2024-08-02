@@ -43,17 +43,35 @@ class TestController extends Controller
             Session::put('time_elapsed', $timeControl->elapsed);
         }
 
-
         //generating exam question
         $q_test = [];
         $i=0;
         $presentations = $candidate->presentation($test->id,$scheduled_candidate->id);
         if(!$presentations || count($presentations) < 1){
-            foreach($candidate_subjects as $key=> $subject) {
-                $sections = TestSection::forSubjects($subject->subject_id, $test->id)->get();
-                foreach($sections as $key2=> $section){
-                    $questions = TestQuestion::forSection($section->id, $test->question_administration);
-                    foreach($questions as $question){
+            foreach($candidate_subjects as $subject) {
+                $sections = TestSection::forSubjects($subject->subject_id, $test->id)
+                ->with(['test_questions'=> function($query) use ($test) { 
+                    if($test->question_administration == 'random'){  // randomization is true
+                        return $query->with('answer_options', function($options) use ($test){
+                            if($test->option_administration == 'random'){ // randomization is true for option
+                                return $options->inRandomOrder();
+                            }
+                            return $options; // randomization is not true for options
+                        })->inRandomOrder();
+                    }
+                    // randomization is not true
+                    return $query->with('answer_options', function($options) use ($test){
+                        if($test->option_administration == 'random'){ // randomization is true for options
+                            return $options->inRandomOrder();
+                        }
+                        return $options; // randomization is not true for options
+                    });
+                
+                }])->get();
+                
+                foreach($sections as $section){
+                    // $questions = TestQuestion::forSection($section->id, $test->question_administration);
+                    foreach($section->test_questions as $question){
                         foreach($question->answer_options as $answer){
                             $presentation_records[] = [
                                 'scheduled_candidate_id' => $scheduled_candidate->id,
@@ -68,7 +86,7 @@ class TestController extends Controller
                 }
             }
 //            return $i;
-//            return $presentation_records;
+        //    return $presentation_records;
 //                return $q_test
 //            $presentation_records = (array)$presentation_records;
             if(!Presentation::upsert($presentation_records, ['scheduled_candidate_id', 'test_config_id','test_section_id', 'question_bank_id','answer_option_id'])) {

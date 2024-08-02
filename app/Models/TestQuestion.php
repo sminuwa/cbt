@@ -47,6 +47,10 @@ class TestQuestion extends Model
 		return $this->belongsTo(TestSection::class);
 	}
 
+    public function scopeExclude($query, $value = []) 
+{
+    return $query->select(array_diff($this->columns, (array) $value));
+}
 
     public function answer_options(){
         return $this->hasMany(AnswerOption::class,'question_bank_id', 'question_bank_id');

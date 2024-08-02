@@ -60,4 +60,17 @@ class CandidateSubject extends Model
     {
         return $this->belongsTo(Subject::class);
     }
+
+    public function has_required_questions($test){
+        $sections = TestSection::forSubjects($this->subject_id, $test->id)->with('test_subject','test_questions')->get();
+    
+        if(count($sections) < 1)
+            return "Some papers does not have any section. Please contact administrators.";
+        foreach($sections as $key => $section){
+            $total_questions = count($section->test_questions);
+            if($total_questions != $section->num_to_answer)
+                return $section->title.": Questions not compose for this section. Please contact administrators.";
+        }
+        return true;
+    }
 }
