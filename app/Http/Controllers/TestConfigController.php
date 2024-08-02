@@ -157,7 +157,8 @@ class TestConfigController extends Controller
         if ($candidates > 0)
             return view('pages.author.test.config.displacement-options', compact('candidates', 'scheduling'));
         else
-            if ($scheduling->delete()) return back()->with(['success' => true, 'message' => 'Test Schedule successfully deleted']);
+            if ($scheduling->delete())
+                return back()->with(['success' => true, 'message' => 'Test Schedule successfully deleted']);
 
         return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
     }
@@ -223,7 +224,8 @@ class TestConfigController extends Controller
                 'message' => 'Oops! Look like something went wrong'
             ];
         } catch (Exception $e) {
-            return ['success' => false,
+            return [
+                'success' => false,
                 'url' => route('admin.test.config.schedules', [$config]),
                 'message' => $e->getMessage()
             ];
@@ -235,7 +237,7 @@ class TestConfigController extends Controller
         $schedules = Scheduling::with('venue')->where(['test_config_id' => $config_id])->get();
         return view('pages.author.test.config.upload-options', compact('config_id', 'schedules'));
     }
-//    public function uploadSingle(Request $request)
+    //    public function uploadSingle(Request $request)
 //    {
 //        try {
 //            $schedule_id = $request->schedule_id;
@@ -276,6 +278,7 @@ class TestConfigController extends Controller
     public function bulkUpload(Request $request)
     {
         try {
+            $candidate_papers = [];
             $schedule_id = $request->schedule_id;
             $test_config_id = $request->test_config_id;
             if (isset($request->file)) {
@@ -284,7 +287,14 @@ class TestConfigController extends Controller
                 $rows = $this->getRecordFromExcel(Upload::class, $file);
                 array_shift($rows);
 
+
+                $tmp = array_column($rows, 1);
                 $rows = array_column($rows, 0);
+
+                $i = 0;
+                foreach ($rows as $row)
+                    $candidate_papers[$row] = explode(',', $tmp[$i]);
+
             } else {
                 $rows = explode(',', $request->candidate_number);
             }
@@ -294,6 +304,7 @@ class TestConfigController extends Controller
 
             $missing = array_values(array_diff($rows, $numbers));
 
+            $papers = Subject::select(['id', 'subject_code as code'])->get();
             $subjects = TestSubject::where(['test_config_id' => $test_config_id])->pluck('subject_id');
 
             $schedules = CandidateSubject::with('candidate')->where(['schedule_id' => $schedule_id])
@@ -317,6 +328,11 @@ class TestConfigController extends Controller
                 $candidates = $tmp;
             }
 
+            foreach ($candidates as $candidate) {
+                // foreach ($ as $schedule) {
+                // }
+            }
+
             $chunks = array_chunk($candidates, 1000);
 
             $scs = [];
@@ -336,7 +352,7 @@ class TestConfigController extends Controller
                     $scs[] = [
                         'exam_type_id' => $exam_type_id,
                         'candidate_id' => $candidate['id'],
-//                        'reg_number' => $candidate['indexing'],
+                        //                        'reg_number' => $candidate['indexing'],
                     ];
                 }
 
@@ -514,9 +530,12 @@ class TestConfigController extends Controller
             $difficult = 0;
 
             foreach ($questions as $question) {
-                if ($question->difficulty_level == 'simple') $easy++;
-                else if ($question->difficulty_level == 'moderate') $moderate++;
-                else if ($question->difficulty_level == 'difficult') $difficult++;
+                if ($question->difficulty_level == 'simple')
+                    $easy++;
+                else if ($question->difficulty_level == 'moderate')
+                    $moderate++;
+                else if ($question->difficulty_level == 'difficult')
+                    $difficult++;
             }
 
             $statistics['easy'] = $easy;
@@ -549,8 +568,10 @@ class TestConfigController extends Controller
                 ['path' => $request->url()]
             );
 
-            return view('pages.author.test.config.ajax.questions',
-                ['questions' => $paginator, 'statistics' => $statistics, 'page' => $currentPage, 'pageSize' => $perPage]);
+            return view(
+                'pages.author.test.config.ajax.questions',
+                ['questions' => $paginator, 'statistics' => $statistics, 'page' => $currentPage, 'pageSize' => $perPage]
+            );
         } catch (Exception $e) {
             return $e->getMessage();
         }
