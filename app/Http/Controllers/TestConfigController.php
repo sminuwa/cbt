@@ -316,23 +316,24 @@ class TestConfigController extends Controller
             $schedules = CandidateSubject::with('candidate')->where(['schedule_id' => $schedule_id])
                 ->whereIn('scheduled_candidate_id', $candidates->pluck('id')->toArray())
                 ->whereIn('subject_id', $subjects)
-                ->get();
+                ->delete();
+            // ->get();
 
-            $size = count($candidates);
-            if ($size != 0 && $size == count($schedules) / count($subjects))
-                return back()->with(['success' => false, 'message' => 'Oops! All of the candidates were already scheduled for this test']);
-            else {
-                $scheduled_ids = [];
-                foreach ($schedules as $schedule) {
-                    if ($schedule->subject_id == $subjects[0]) {
-                        $scheduled_ids[] = $schedule->candidate->id;
-                    }
-                }
+            // $size = count($candidates);
+            // if ($size != 0 && $size == count($schedules) / count($subjects))
+            //     return back()->with(['success' => false, 'message' => 'Oops! All of the candidates were already scheduled for this test']);
+            // else {
+            $scheduled_ids = [];
+            // foreach ($schedules as $schedule) {
+            //     if ($schedule->subject_id == $subjects[0]) {
+            //         $scheduled_ids[] = $schedule->candidate->id;
+            //     }
+            // }
 
-                $scheduled = count($scheduled_ids);
-                $tmp = array_values(array_diff($candidates->toArray(), $scheduled_ids));
-                $candidates = $tmp;
-            }
+            $scheduled = count($scheduled_ids);
+            $tmp = array_values(array_diff($candidates->toArray(), $scheduled_ids));
+            $candidates = $tmp;
+            // }
 
             foreach ($candidates as $k => $candidate) {
                 foreach ($candidate_papers as $key => $value) {
