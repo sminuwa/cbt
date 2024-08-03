@@ -48,7 +48,7 @@ class TestSection extends Model
 
     public function test_subject()
     {
-        return $this->belongsTo(TestSubject::class);
+        return $this->belongsTo(TestSubject::class)->with('subject');
     }
 
     public function test_questions()
@@ -56,7 +56,11 @@ class TestSection extends Model
         return $this->hasMany(TestQuestion::class);
     }
 
-
+    public function scopeExclude($query, $value = []) 
+    {
+        return $query->select(array_diff($this->columns, (array) $value));
+    }
+    
     public function scopeForSubjects($query, $subject_id, $test_id){
         $query = $query
             ->join('test_subjects', function(JoinClause $joinTQ){

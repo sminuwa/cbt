@@ -257,8 +257,8 @@ $time_elapsed = $time_control->elapsed;
                                                     <div id="{{ $question_paper['question_bank_id'] }}{{ $answer_option['answer_option_id'] }}" class="form-check radio radio-primary" style="width:100%">
                                                         <input
                                                             @if($answer_option['answer_option_id'] == $answer_option['selected_answer_option']) checked @endif
-                                                            class="form-check-input answer_option"
-                                                            id="{{$answer_option['answer_option_id']}}"
+                                                            class="form-check-input answer_option {{ chr(64+ $loop->iteration) }}_KEY"
+                                                            id="{{ $answer_option['answer_option_id'] }}"
                                                             type="radio"
                                                             name="q{{ $question_paper['question_bank_id'] }}"
                                                             question_step="{{ $step }}"
@@ -647,6 +647,29 @@ $time_elapsed = $time_control->elapsed;
             else if(e.keyCode === 39) { // right
                 $("#nextBtn").trigger("click");
             }
+            // if(e.keyCode === 65) { // A
+            //     $(".A_KEY").trigger("click");
+            // }
+
+            // if(e.keyCode === 66) { // B
+            //     $(".B_KEY").trigger("click");
+            // }
+
+            // if(e.keyCode === 67) { // C
+            //     $(".C_KEY").trigger("click");
+            // }
+
+            // if(e.keyCode === 68) { // D
+            //     $(".D_KEY").trigger("click");
+            // }
+
+            // if(e.keyCode === 69) { // E
+            //     $(".E_KEY").trigger("click");
+            // }
+
+            // if(e.keyCode === 70) { // F
+            //     $(".F_KEY").trigger("click");
+            // }
         });
 
     });
