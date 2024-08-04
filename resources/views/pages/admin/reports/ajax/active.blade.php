@@ -59,8 +59,8 @@
                                 <a href="javascript:;" class="btn btn-sm btn-outline-info">Restore</a>
                                 <a href="javascript:;" class="btn btn-sm btn-outline-primary">Adjust Time</a>
                             </td>
-                        </tr>
-                    @endforeach
+                    </tr>
+                 @endforeach
                 </tbody>
             </table>
         </div>
