@@ -36,6 +36,7 @@
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/responsive.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/line-awesome/css/line-awesome.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/sweetalert2.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('commons/css/calculator.css') }}">
     @stack('style')
     <style>
@@ -381,6 +382,7 @@ $time_elapsed = $time_control->elapsed;
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.en.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.custom.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/dashboard/dashboard_3.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/sweet-alert/sweetalert2.all.min.js') }}"></script>
 <!-- Plugins JS Ends-->
 <!-- Theme js-->
 <script src="{{ asset('candidate/assets/js/script.js') }}"></script>
@@ -390,6 +392,7 @@ $time_elapsed = $time_control->elapsed;
 
 @stack('script')
 <script>
+       
     document.addEventListener('DOMContentLoaded', () => {
         const steps = document.querySelectorAll('.wizard-step');
         const nextBtn = document.getElementById('nextBtn');
@@ -674,11 +677,10 @@ $time_elapsed = $time_control->elapsed;
 
     });
 
-
-
-
-
 </script>
+
+
+
 <script>
 
 
