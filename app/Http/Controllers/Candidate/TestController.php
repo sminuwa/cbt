@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Session;
 class TestController extends Controller
 {
     //
-    public function question(){
+    public function question(Request $request){
         //logic to get questions from question
         $presentation_records = $err = $errors = [];
         $test = session('test');
@@ -104,7 +104,10 @@ class TestController extends Controller
         //return $candidate_subjects;
         if(count($candidate_subjects) < 1)
             return back()->with('Questions not available for you, contact system admin.');
-        $subject = CandidateSubject::find($candidate_subjects[0]->subject_id);
+        $subject_id = $request->subject_id;
+        $subject = CandidateSubject::find($subject_id);
+        if(!$subject)
+            $subject = CandidateSubject::find($candidate_subjects[0]->subject_id);
         $question_array = Presentation::question_papers($subject->id,$test->id, $scheduled_candidate->id);
 //        return $question_array;
 //        $question_array = (object)$question_array;

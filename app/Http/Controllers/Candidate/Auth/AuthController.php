@@ -46,7 +46,6 @@ class AuthController extends Controller
 
             /*
                 checking if questions are available for the number of subject assigned for the configured test selected by
-
             */
             foreach($candidate_subjects as $key => $subject){
                 

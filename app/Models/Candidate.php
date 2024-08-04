@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\File;
 
 class Candidate extends Authenticatable
 {
@@ -23,9 +24,20 @@ class Candidate extends Authenticatable
         return ($this->surname ?? null).' '.($this->firstname ?? null). ' '.($this->other_name ?? null);
     }
 
-    public function passport(){
 
+    public function indexing_to_image_name(){
+        return str_replace('/', '_', $this->indexing);
     }
+
+    public function passport(){
+        $path = candidate_passport_path().'/'.$this->indexing_to_image_name().'.jpg';
+        if(File::exists($path))
+            return asset($path);
+        return tempPassport();
+        
+    }
+
+    
     public function exam_type(){
 
     }

@@ -137,8 +137,8 @@ class APIV1Controller extends Controller
 
                 foreach ($candidates as $candidate) {
                     $img_path = preg_replace('/[^A-Za-z0-9]/', '_', $candidate->indexing).'.jpg';
-                    if ($candidate->indexing && public_path("candidate_pics/".$img_path)) {
-                        $imagePath = public_path("candidate_pics/".$img_path);
+                    if ($candidate->indexing && public_path(candidate_passport_path()."/".$img_path)) {
+                        $imagePath = public_path(candidate_passport_path()."/".$img_path);
                         $zip->addFile($imagePath, basename($imagePath));
                     }
                 }
