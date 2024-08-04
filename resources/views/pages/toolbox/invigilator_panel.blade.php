@@ -206,7 +206,7 @@
                                         <td>${response.candName}</td>
                                         <td rowspan="3" colspan="2">
                                             <div>
-                                                <img src="{{ asset('candidate_pics') }}/${response.indexing}.jpg" onerror="this.onerror=null;this.src='{{ asset('assets/img/photo.png') }}';" style="width:150px; height:150px;" alt="image">
+                                                <img src="{{ asset(candidate_passport_path()) }}/${response.indexing}.jpg" onerror="this.onerror=null;this.src='{{ asset('assets/img/photo.png') }}';" style="width:150px; height:150px;" alt="image">
                                             </div>
                                         </td>
                                     </tr>

@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'stripe/*',
             'candidate/auth/login',
+            'candidate/test/question',
             'api/*'
         ]);
     })

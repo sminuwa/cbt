@@ -13,3 +13,12 @@ function reset_auto_increment($table_name){
         return true;
     return false;
 }
+
+
+function tempPassport(){
+    return asset('commons/images/user.jpg');
+}
+
+function candidate_passport_path(){
+    return 'storage/images/candidates';
+}

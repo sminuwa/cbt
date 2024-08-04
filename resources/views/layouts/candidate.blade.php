@@ -36,6 +36,7 @@
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/responsive.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/line-awesome/css/line-awesome.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/sweetalert2.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('commons/css/calculator.css') }}">
     @stack('style')
     <style>
@@ -155,7 +156,7 @@ $time_elapsed = $time_control->elapsed;
                     <div class="clock" id="clock">00:00:00</div> Time left
                     <li class="profile-nav">
                         <div class="media profile-media">
-                            <img class="b-r-10" src="{{ asset('candidate/assets/images/avtar/16.jpg') }}" width="35"  alt="">
+                            <img class="b-r-10" src="{{ $candidate->passport() }}" width="35"  alt="">
                         </div>
                     </li>
                 </ul>
@@ -179,7 +180,7 @@ $time_elapsed = $time_control->elapsed;
                             <div class="card-body">
                                 <div class="border-l-primary border-r-primary border-3" style="border-radius: 8px;">
                                     <div class="social-img-wrap">
-                                        <div class="social-img"><img class="img-fluid" src="{{ asset('candidate/assets/images/avtar/16.jpg') }}" alt="profile"></div>
+                                        <div class="social-img"><img class="img-fluid" src="{{ $candidate->passport() }}" alt="profile"></div>
                                     </div>
                                     <div class="social-details">
                                         <h5 class="mb-1">
@@ -225,11 +226,17 @@ $time_elapsed = $time_control->elapsed;
                             <div class="card-header border-r-primary border-3 ribbon-wrapper-right">
                                 <div class="ribbon ribbon-primary ribbon-clip-right ribbon-right">
                                     @foreach($candidate_subjects as $s)
-                                        <a
-                                            href="{{ route('candidate.test.goto_paper', ['subject_id'=>$s->subject_id, 'scheduled_candidate_id'=>$scheduled_candidate->id,'test_config_id'=>$test->id]) }}"
-                                            class="b-r-0 text-white btn btn-{{ $subject->id == $s->subject_id ? 'warning':'light' }}">
-                                            {{ $s->name }}
-                                        </a>
+                                        <form action="" method="post" class="d-inline">
+                                            <input type="hidden" name='subject_id' value="{{ $s->subject_id }}">
+                                            <input type="hidden" name='scheduled_candidate_id' value="{{ $scheduled_candidate->id }}">
+                                            <input type="hidden" name='test_config_id' value="{{ $test->id }}">
+                                            <button
+                                                type="submit"
+                                                name="change-paper"
+                                                class="b-r-0 text-white btn btn-{{ $subject->id == $s->subject_id ? 'warning':'light' }}">
+                                                {{ $s->name }}
+                                            </button>
+                                        </form>
                                         @if(!$loop->last) | @endif
                                     @endforeach
                                 </div>
@@ -381,6 +388,7 @@ $time_elapsed = $time_control->elapsed;
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.en.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.custom.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/dashboard/dashboard_3.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/sweet-alert/sweetalert2.all.min.js') }}"></script>
 <!-- Plugins JS Ends-->
 <!-- Theme js-->
 <script src="{{ asset('candidate/assets/js/script.js') }}"></script>
@@ -390,6 +398,7 @@ $time_elapsed = $time_control->elapsed;
 
 @stack('script')
 <script>
+       
     document.addEventListener('DOMContentLoaded', () => {
         const steps = document.querySelectorAll('.wizard-step');
         const nextBtn = document.getElementById('nextBtn');
@@ -674,11 +683,10 @@ $time_elapsed = $time_control->elapsed;
 
     });
 
-
-
-
-
 </script>
+
+
+
 <script>
 
 
