@@ -611,22 +611,37 @@ class TestConfigController extends Controller
             })->toArray();
 
             if ($section->num_to_answer > ($counts['simple'] + $counts['moderate'] + $counts['difficult'])) {
-                foreach ($selected_ids as $id) {
-                    $question = TestQuestion::where(['question_bank_id' => $id, 'test_section_id' => $section_id])->first();
+                $simples = [];
+                $moderates = [];
+                $difficults = [];
+                $questions = QuestionBank::whereIn('id', $selected_ids)->get();
+                foreach ($questions as $question) {
+                    if ($question->difficulty_level == 'simple' && $section->num_of_easy > (count($simples) + $counts['simple']))
+                        $simples[] = $question;
+                    else if ($question->difficulty_level == 'moderate' && $section->num_of_moderate > (count($moderates) + $counts['moderate']))
+                        $moderates[] = $question;
+                    else if ($question->difficulty_level == 'difficult' && $section->num_of_difficult > (count($difficults) + $counts['difficult']))
+                        $difficults[] = $question;
+                }
+
+                $questions = array_merge($simples, $moderates, $difficults);
+
+                foreach ($questions as $q) {
+                    $question = TestQuestion::where(['question_bank_id' => $q->id, 'test_section_id' => $section_id])->first();
                     if ($question)
                         continue;
 
                     $question = new TestQuestion();
-                    $question->question_bank_id = $id;
+                    $question->question_bank_id = $q->id;
                     $question->test_section_id = $section_id;
                     $question->save();
                 }
 
-                return ['title' => '', 'message' => ''];
+                return ['title' => 'Compostion Update', 'message' => '(' . count($simples) . ') simple , (' . count($moderates) . ') moderate and (' . count($difficults) . ') difficult question(s) were composed. Please make SURE the questions counts do match the counts specified in the section (' . $section->title . ') definition.'];
             } else {
                 return [
                     'title' => 'Test Composition Completed',
-                    'message' => '(' . $counts['simple'] . ') simple , (' . $counts['moderate'] . ') moderate and (' . $counts['difficult'] . ') difficult question(s) were composed as specified in the section (' . $section->title . ') definition'
+                    'message' => '(' . $counts['simple'] . ') simple , (' . $counts['moderate'] . ') moderate and (' . $counts['difficult'] . ') difficult question(s) were already composed as specified in the section (' . $section->title . ') definition'
                 ];
             }
         } catch (Exception $e) {
