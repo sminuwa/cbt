@@ -99,16 +99,16 @@
             $('#preview-form').on('submit', function (e) {
                 e.preventDefault()
                 $.post('{{ route('admin.reports.summary.generate.report') }}', $(this).serialize(), function (response) {
-                    console.log(response);
-                    return
+                    //  console.log(response);
+                    //  return
                     $('#report-div').html(response)
-                    $('#report').DataTable({
-                        layout: {
-                            topStart: {
-                                buttons: ['copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5']
-                            }
-                        }
-                    })
+                    // $('#report').DataTable({
+                    //     layout: {
+                    //         topStart: {
+                    //             buttons: ['copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5']
+                    //         }
+                    //     }
+                    // })
                 })
             })
         })

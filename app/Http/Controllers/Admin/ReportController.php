@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Candidate;
 use App\Models\Score;
+use App\Models\Subject;
 use App\Models\TestConfig;
 use App\Models\TestQuestion;
 use App\Models\TestSubject;
@@ -32,68 +33,44 @@ class ReportController extends Controller
     public function generateReport(Request $request)
     {
         try {
-            $scores = Score::with([
-                'answerOption',
-                'questionBank.subject',
-                'scheduledCandidate.candidate'
-            ])
-                ->whereHas('answerOption', function ($query) {
-                    $query->where('correctness', 1);
-                })
+            $subjects = Subject::distinct()->pluck('subject_code')->toArray();
+
+            $candidates = Candidate::select('candidates.indexing', 'candidates.firstname', 'candidates.surname', 'candidates.other_names')
+                ->join('scheduled_candidates', 'candidates.id', '=', 'scheduled_candidates.candidate_id')
+                ->join('candidate_subjects', 'scheduled_candidates.id', '=', 'candidate_subjects.scheduled_candidate_id')
+                ->join('subjects', 'candidate_subjects.subject_id', '=', 'subjects.id')
+                ->join('scores', 'scores.scheduled_candidate_id', '=', 'scheduled_candidates.id')
+                ->join('question_banks', 'scores.question_bank_id', '=', 'question_banks.id')
+                ->join('test_configs', 'scores.test_config_id', '=', 'test_configs.id')
                 ->where('test_config_id', $request->test_config_id)
+                ->groupBy('candidates.indexing')
                 ->get();
 
-            $result = $scores->groupBy('scheduled_candidate_id')->map(function ($group) {
-                $firstScore = $group->first();
-                $candidate = $firstScore->scheduledCandidate->candidate;
-                $subjectCodes = $group->pluck('questionBank.subject.subject_code')->unique()->implode(', ');
-
-                return [
-                    'scheduled_candidate_id' => $firstScore->scheduled_candidate_id,
+            $reports = [];
+            foreach ($candidates as $candidate) {
+                $candidateData = [
                     'indexing' => $candidate->indexing,
-                    'name' => $candidate->surname . ' ' . $candidate->firstname . ' ' . $candidate->other_names,
-                    'test_config_id' => $firstScore->test_config_id,
-                    'subject_codes' => $subjectCodes,
-                    'aggregate' => $group->sum('mark_per_question'),
-                    'score' => $group->count('question_bank_id')
+                    'surname' => $candidate->surname,
+                    'firstname' => $candidate->firstname,
+                    'other_names' => $candidate->other_names,
                 ];
-            })->values();
 
-            return $result;
+                foreach ($subjects as $subject) {
+                    $score = DB::table('scores')
+                        ->join('candidate_subjects', 'scores.scheduled_candidate_id', '=', 'candidate_subjects.scheduled_candidate_id')
+                        ->join('subjects', 'candidate_subjects.subject_id', '=', 'subjects.id')
+                        ->join('test_configs', 'scores.test_config_id', '=', 'test_configs.id')
+                        ->where('subjects.name', $subject)
+                        ->where('scores.scheduled_candidate_id', $candidate->scheduled_candidate_id)
+                        ->select(DB::raw('(scores.point_scored / test_configs.total_mark) * 100 as percentage'))
+                        ->value('percentage');
+                    $candidateData[$subject] = $score ? number_format($score, 2) . '%' : '';
+                }
 
-            $codes = TestSubject::join('subjects', 'subjects.id', '=', 'test_subjects.subject_id')
-                ->where('test_config_id', $request->test_config_id)->get()->pluck('subject_code')->toArray();
+                $reports[] = $candidateData;
+            }
 
-            $reports = Score::join('answer_options', 'answer_options.id', '=', 'scores.answer_option_id')
-                ->join('question_banks', 'question_banks.id', '=', 'scores.question_bank_id')
-                ->join('subjects', 'subjects.id', '=', 'question_banks.subject_id')
-                ->join('scheduled_candidates', 'scheduled_candidates.candidate_id', '=', 'scores.scheduled_candidate_id')
-                ->join('candidates', 'candidates.id', '=', 'scheduled_candidates.candidate_id')
-                ->join('test_questions', 'test_questions.question_bank_id', '=', 'scores.question_bank_id')
-                ->join('test_sections', 'test_sections.id', '=', 'test_questions.test_section_id')
-                ->select(
-                    'scores.scheduled_candidate_id',
-                    'candidates.indexing',
-                    DB::raw('concat(candidates.surname," ",candidates.firstname," ",candidates.other_names) as name'),
-                    'test_config_id',
-                    'subjects.subject_code as codes',
-                )
-                ->where([
-                    'correctness' => 1,
-                    'test_config_id' => $request->test_config_id
-                ])
-                ->groupBy(
-                    'scores.scheduled_candidate_id',
-                    'candidates.indexing',
-                    'candidates.surname',
-                    'candidates.firstname',
-                    'candidates.other_names',
-                    'test_config_id',
-                    'subjects.subject_code'
-                )
-                ->get();
-
-            return view('pages.admin.reports.ajax.report-summary', compact('reports'));
+            return view('pages.admin.reports.ajax.report-summary', compact('reports', 'subjects'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
