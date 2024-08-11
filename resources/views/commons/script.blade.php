@@ -16,4 +16,4 @@
 
 <script src="{{asset("assets/js/jquery.ui.git.js")}}"></script>
 
-@yield('script')
+

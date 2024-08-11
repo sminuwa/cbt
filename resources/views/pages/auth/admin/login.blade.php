@@ -1,52 +1,106 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="CHPRBN">
+    <link rel="icon" href="{{ asset('candidate/assets/images/favicon.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('candidate/assets/images/favicon.png') }}" type="image/x-icon">
+    <title>CBT EXAMS</title>
+    <!-- Google font-->
+    {{--<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">--}}
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/font-awesome.css') }}">
+    <!-- ico-font-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/icofont.css') }}">
+    <!-- Themify icon-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/themify.css') }}">
+    <!-- Flag icon-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/flag-icon.css') }}">
+    <!-- Feather icon-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/feather-icon.css') }}">
+    <!-- Plugins css start-->
+    <!-- Plugins css Ends-->
+    <!-- Bootstrap css-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/bootstrap.css') }}">
+    <!-- App css-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/style.css') }}">
+    <link id="color" rel="stylesheet" href="{{ asset('candidate/assets/css/color-1.css" media="screen') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/sweetalert2.min.css') }}">
 
-@section('content')
-
-    <div class="login-content-info" style="margin-top: -128px;">
-        <div class="container">
-
-            <!-- Login Email -->
-            <div class="row justify-content-center">
-                <div class="col-lg-4 col-md-6">
-                    <div class="account-content">
-                        <div class="account-info">
-                            <div class="login-back">
-{{--                                <a href="index.html"><i class="fas fa-arrow-left-long"></i> Back</a>--}}
+    <!-- Responsive css-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/responsive.css') }}">
+</head>
+<body>
+<!-- login page start-->
+<div class="container-fluid p-0">
+    <div class="row m-0">
+        <div class="col-12 p-0">
+            <div class="login-card login-dark">
+                <div>
+                    <div><a class="logo" href="#"><img class="img-fluid for-dark" src="{!! logo() !!}" alt="looginpage" width="100"><img class="img-fluid for-light" src="{!! logo() !!}" alt="looginpage" width="100"></a></div>
+                    <div class="login-main">
+                        <form class="theme-form" action="{{route('auth.admin.login.proc')}}" method="POST">
+                            <h4>Admin Sign in </h4>
+                            <p>Enter your username & password to login</p>
+                            @csrf
+                            @include('components.alert')
+                            <div class="form-group">
+                                <label class="col-form-label">Exam No.</label>
+                                <input class="form-control" type="text" name="username" required="" placeholder="Username.">
                             </div>
-                            @if($errors->has('email'))
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <strong>Oops!</strong>
-                                    {{$errors->first('email')}}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <div class="form-group">
+                                <label class="col-form-label">Password </label>
+                                <div class="form-input position-relative">
+                                    <input class="form-control" type="password" name="password" required="" placeholder="Password">
+                                    <div class="show-hide"> <span class="show"></span></div>
                                 </div>
-                            @endif
-                            <form action="{{route('auth.admin.login.proc')}}" method="post">
-                                @csrf
-                                <div class="mb-3">
-                                    <label class="mb-2">Username</label>
-                                    <input type="text" class="form-control" name="username" placeholder="username">
+                            </div>
+                            <div class="form-group mb-0">
+                                <div class="text-end mt-4">
+                                    <button class="btn btn-primary btn-block w-100" type="submit">Sign in</button>
                                 </div>
-                                <div class="mb-3">
-                                    <div class="form-group-flex">
-                                        <label class="mb-2">Password</label>
-                                        <a href="forgot-password.html" class="forgot-link">Forgot password?</a>
-                                    </div>
-                                    <div class="pass-group">
-                                        <input type="password" class="form-control pass-input" name="password" placeholder="*************">
-                                        <span class="feather-eye-off toggle-password"></span>
-                                    </div>
-                                </div>
+                            </div>
 
-                                <div class="mb-3">
-                                    <button class="btn w-100" type="submit">Sign in</button>
-                                </div>
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            <!-- /Login Email -->
-
         </div>
     </div>
-@endsection
+    <!-- latest jquery-->
+    <script src="{{ asset('candidate/assets/js/jquery.min.js') }}"></script>
+    <!-- Bootstrap js-->
+    <script src="{{ asset('candidate/assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
+    <!-- feather icon js-->
+    <script src="{{ asset('candidate/assets/js/icons/feather-icon/feather.min.js') }}"></script>
+    <script src="{{ asset('candidate/assets/js/icons/feather-icon/feather-icon.js') }}"></script>
+    <!-- scrollbar js-->
+    <!-- Sidebar jquery-->
+    <script src="{{ asset('candidate/assets/js/config.js') }}"></script>
+    <script src="{{ asset('candidate/assets/js/sweet-alert/sweetalert2.all.min.js') }}"></script>
+    <!-- Plugins JS start-->
+    <!-- calendar js-->
+    <!-- Plugins JS Ends-->
+    <!-- Theme js-->
+    <script src="{{ asset('candidate/assets/js/script.js') }}"></script>
+
+    <script>
+         $(document).ready(function(){
+            @if(session()->has('error'))
+            Swal.fire({
+                title: 'Error!',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                confirmButtonText: 'Okay'
+            })
+            @endif
+         })
+    </script>
+</div>
+</body>
+</html>

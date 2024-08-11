@@ -261,75 +261,75 @@ var options = {
       }
     ],
   };
-  var revenuegrowth = new ApexCharts(document.querySelector("#revenuegrowth"), options);
-  revenuegrowth.render();
+  // var revenuegrowth = new ApexCharts(document.querySelector("#revenuegrowth"), options);
+  // revenuegrowth.render();
   
-  //  visitsCharts
+  // //  visitsCharts
   
-  var options = {
-    series: [{
-    name: 'Chrome',
-    data: [44, 55, 41, 37, 22, 43, 21]
-  }, {
-    name: 'Firefox',
-    data: [53, 32, 33, 52, 13, 43, 32]
-  }, { 
-    name: 'Firefox',
-    data: [12, 17, 11, 9, 15, 11, 20]
-  }],
-    colors:['var(--theme-deafult)' ,'#80B3B3' ,'#CCE0E0'],
-    chart: { 
-    type: 'bar',
-    height: 325,
-    stacked: true, 
-    toolbar: {
-      show: false,
-      tools: {
-        download: false,
-      }
-    }, 
-    zoom: {
-      enabled: true,
-    } 
-  },
-    responsive: [{
-      breakpoint: 480,
-      options: {
-        legend: {
-          position: 'bottom',
-          offsetY: 2,
-        }
-      } 
-    }], 
-    plotOptions: {
-      bar: {
-        horizontal: true,
-        barHeight: '28%',
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    xaxis: {
-      categories: ['Mon', 'Tue', 'Wed', 'Thu','Fri', 'Sat' ,'Sun'
-      ],
-      labels:{
-        show: false,
-      },
-      axisTicks:{
-        show: false,
-      },
-    },
-    legend: {
-      show: false,
-    },
-    fill: { 
-      opacity: 1 
-    },
-    grid: {
-      show: false,
-    }
-  };
+  // var options = {
+  //   series: [{
+  //   name: 'Chrome',
+  //   data: [44, 55, 41, 37, 22, 43, 21]
+  // }, {
+  //   name: 'Firefox',
+  //   data: [53, 32, 33, 52, 13, 43, 32]
+  // }, { 
+  //   name: 'Firefox',
+  //   data: [12, 17, 11, 9, 15, 11, 20]
+  // }],
+  //   colors:['var(--theme-deafult)' ,'#80B3B3' ,'#CCE0E0'],
+  //   chart: { 
+  //   type: 'bar',
+  //   height: 325,
+  //   stacked: true, 
+  //   toolbar: {
+  //     show: false,
+  //     tools: {
+  //       download: false,
+  //     }
+  //   }, 
+  //   zoom: {
+  //     enabled: true,
+  //   } 
+  // },
+  //   responsive: [{
+  //     breakpoint: 480,
+  //     options: {
+  //       legend: {
+  //         position: 'bottom',
+  //         offsetY: 2,
+  //       }
+  //     } 
+  //   }], 
+  //   plotOptions: {
+  //     bar: {
+  //       horizontal: true,
+  //       barHeight: '28%',
+  //     },
+  //   },
+  //   dataLabels: {
+  //     enabled: false,
+  //   },
+  //   xaxis: {
+  //     categories: ['Mon', 'Tue', 'Wed', 'Thu','Fri', 'Sat' ,'Sun'
+  //     ],
+  //     labels:{
+  //       show: false,
+  //     },
+  //     axisTicks:{
+  //       show: false,
+  //     },
+  //   },
+  //   legend: {
+  //     show: false,
+  //   },
+  //   fill: { 
+  //     opacity: 1 
+  //   },
+  //   grid: {
+  //     show: false,
+  //   }
+  // };
   var  visitsCharts = new ApexCharts(document.querySelector("#visitsCharts"), options);
    visitsCharts.render();
   

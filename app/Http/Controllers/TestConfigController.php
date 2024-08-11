@@ -41,7 +41,13 @@ class TestConfigController extends Controller
     public function index(Request $request): Factory|\Illuminate\Foundation\Application|View|Application
     {
         $user = Auth::user();
-        return view('pages.author.test.config.index');
+        $configs = TestConfig::with(['test_type', 'test_code','test_subjects'])
+                // ->select(['id', 'session', 'semester', 'test_type_id', 'test_code_id'])
+                ->orderBy('session', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->get();
+                
+        return view('pages.author.test.config.index', compact('configs'));
     }
 
     public function view(TestConfig $config): Factory|\Illuminate\Foundation\Application|View|Application

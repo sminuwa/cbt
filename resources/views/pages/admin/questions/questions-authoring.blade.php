@@ -33,29 +33,27 @@
                                 <form id="authoringForm" method="post" action="">
                                     @csrf
                                     <div class="row pb-3 pt-2">
-                                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
+                                        <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                                             <div class="form-group">
-                                                <label for="subject_id">Paper:</label>
-                                                <select class="form-control form-select" name="subject_id"
-                                                        id="subject_id" required>
-                                                    <option value="">Select Paper</option>
-                                                    @foreach(Subject::all() as $subject)
-                                                        <option value="{{$subject->id}}">{{ $subject->name }}</option>
-                                                    @endforeach
-                                                </select>
+                                                <label class="form-label" for="subject_id">Paper:</label>
+                                                <div class="input-group">
+                                                    <select class="form-control form-select" name="subject_id"id="subject_id" required>
+                                                        <option value="">Select Paper</option>
+                                                        @foreach(Subject::all() as $subject)
+                                                            <option value="{{$subject->id}}">{{ $subject->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <a class="btn btn-success" 
+                                                       data-bs-toggle="modal" id="add" href="#add_new_subject">
+                                                        <i class="fa fa-plus"></i> Add</a>
+                                                </div>
                                             </div>
+                                            
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-2 col-xl-2">
+                                        
+                                        <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                                             <div class="form-group">
-                                                <label></label><br>
-                                                <a class="btn btn-sm btn-outline-info mt-2" style="width: 100%"
-                                                   data-bs-toggle="modal" id="add" href="#add_new_subject">
-                                                    <i class="fa fa-plus"></i> Add Subject</a>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                            <div class="form-group">
-                                                <label for="topic_id">Course/Topic:</label>
+                                                <label class="form-label" for="topic_id">Course/Topic:</label>
                                                 <select class="form-control form-select" name="topic_id" id="topic_id"
                                                         required>
                                                     <option value="">Select Subject</option>
