@@ -31,6 +31,8 @@
     <!-- App css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/style.css') }}">
     <link id="color" rel="stylesheet" href="{{ asset('candidate/assets/css/color-1.css" media="screen') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/sweetalert2.min.css') }}">
+
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/responsive.css') }}">
 </head>
@@ -90,11 +92,25 @@
     <!-- scrollbar js-->
     <!-- Sidebar jquery-->
     <script src="{{ asset('candidate/assets/js/config.js') }}"></script>
+    <script src="{{ asset('candidate/assets/js/sweet-alert/sweetalert2.all.min.js') }}"></script>
     <!-- Plugins JS start-->
     <!-- calendar js-->
     <!-- Plugins JS Ends-->
     <!-- Theme js-->
     <script src="{{ asset('candidate/assets/js/script.js') }}"></script>
+
+    <script>
+         $(document).ready(function(){
+            @if(session()->has('error'))
+            Swal.fire({
+                title: 'Error!',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                confirmButtonText: 'Okay'
+            })
+            @endif
+         })
+    </script>
 </div>
 </body>
 </html>

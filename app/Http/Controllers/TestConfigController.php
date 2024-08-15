@@ -28,6 +28,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class TestConfigController extends Controller
@@ -40,7 +41,13 @@ class TestConfigController extends Controller
     public function index(Request $request): Factory|\Illuminate\Foundation\Application|View|Application
     {
         $user = Auth::user();
-        return view('pages.author.test.config.index');
+        $configs = TestConfig::with(['test_type', 'test_code','test_subjects'])
+                // ->select(['id', 'session', 'semester', 'test_type_id', 'test_code_id'])
+                ->orderBy('session', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->get();
+                
+        return view('pages.author.test.config.index', compact('configs'));
     }
 
     public function view(TestConfig $config): Factory|\Illuminate\Foundation\Application|View|Application
@@ -79,6 +86,7 @@ class TestConfigController extends Controller
             if ($config) {
                 $config->duration = $request->duration;
                 $config->pass_key = $request->pass_key;
+                $config->status = $request->availability;
                 $config->allow_calc = $request->allow_calc;
                 $config->endorsement = $request->endorsement;
                 $config->time_padding = $request->time_padding;
@@ -86,6 +94,7 @@ class TestConfigController extends Controller
                 $config->starting_mode = $request->starting_mode;
                 $config->option_administration = $request->option_administration;
                 $config->question_administration = $request->question_administration;
+                $config->status = $request->availability;
                 if ($config->save())
                     return back()->with(['success' => true, 'message' => 'Test Configurations successfully saved']);
             }
@@ -154,7 +163,8 @@ class TestConfigController extends Controller
         if ($candidates > 0)
             return view('pages.author.test.config.displacement-options', compact('candidates', 'scheduling'));
         else
-            if ($scheduling->delete()) return back()->with(['success' => true, 'message' => 'Test Schedule successfully deleted']);
+            if ($scheduling->delete())
+                return back()->with(['success' => true, 'message' => 'Test Schedule successfully deleted']);
 
         return back()->with(['success' => false, 'message' => 'Oops! Look like something went wrong']);
     }
@@ -220,7 +230,8 @@ class TestConfigController extends Controller
                 'message' => 'Oops! Look like something went wrong'
             ];
         } catch (Exception $e) {
-            return ['success' => false,
+            return [
+                'success' => false,
                 'url' => route('admin.test.config.schedules', [$config]),
                 'message' => $e->getMessage()
             ];
@@ -232,7 +243,7 @@ class TestConfigController extends Controller
         $schedules = Scheduling::with('venue')->where(['test_config_id' => $config_id])->get();
         return view('pages.author.test.config.upload-options', compact('config_id', 'schedules'));
     }
-//    public function uploadSingle(Request $request)
+    //    public function uploadSingle(Request $request)
 //    {
 //        try {
 //            $schedule_id = $request->schedule_id;
@@ -273,6 +284,7 @@ class TestConfigController extends Controller
     public function bulkUpload(Request $request)
     {
         try {
+            $candidate_papers = [];
             $schedule_id = $request->schedule_id;
             $test_config_id = $request->test_config_id;
             if (isset($request->file)) {
@@ -281,7 +293,14 @@ class TestConfigController extends Controller
                 $rows = $this->getRecordFromExcel(Upload::class, $file);
                 array_shift($rows);
 
+
+                $tmp = array_column($rows, 1);
                 $rows = array_column($rows, 0);
+
+                $i = 0;
+                foreach ($rows as $row)
+                    $candidate_papers[$row] = explode(',', $tmp[$i++]);
+
             } else {
                 $rows = explode(',', $request->candidate_number);
             }
@@ -291,27 +310,48 @@ class TestConfigController extends Controller
 
             $missing = array_values(array_diff($rows, $numbers));
 
+            $papers = [];
+            $pps = Subject::select(['id', 'subject_code as code'])->get();
+            foreach ($pps as $p) {
+                $papers[$p->code] = $p->id;
+            }
+
+
             $subjects = TestSubject::where(['test_config_id' => $test_config_id])->pluck('subject_id');
 
             $schedules = CandidateSubject::with('candidate')->where(['schedule_id' => $schedule_id])
                 ->whereIn('scheduled_candidate_id', $candidates->pluck('id')->toArray())
                 ->whereIn('subject_id', $subjects)
-                ->get();
+                ->delete();
+            // ->get();
 
-            $size = count($candidates);
-            if ($size != 0 && $size == count($schedules) / count($subjects))
-                return back()->with(['success' => false, 'message' => 'Oops! All of the candidates were already scheduled for this test']);
-            else {
-                $scheduled_ids = [];
-                foreach ($schedules as $schedule) {
-                    if ($schedule->subject_id == $subjects[0]) {
-                        $scheduled_ids[] = $schedule->candidate->id;
+            // $size = count($candidates);
+            // if ($size != 0 && $size == count($schedules) / count($subjects))
+            //     return back()->with(['success' => false, 'message' => 'Oops! All of the candidates were already scheduled for this test']);
+            // else {
+            $scheduled_ids = [];
+            // foreach ($schedules as $schedule) {
+            //     if ($schedule->subject_id == $subjects[0]) {
+            //         $scheduled_ids[] = $schedule->candidate->id;
+            //     }
+            // }
+
+            $scheduled = count($scheduled_ids);
+            $tmp = array_values(array_diff($candidates->toArray(), $scheduled_ids));
+            $candidates = $tmp;
+            // }
+
+            foreach ($candidates as $k => $candidate) {
+                foreach ($candidate_papers as $key => $value) {
+                    if ($key == $candidate['indexing']) {
+                        $paper_ids = [];
+                        foreach ($papers as $i => $v)
+                            if (in_array($i, $value))
+                                $paper_ids[] = $v;
+
+                        $candidates[$k]['papers'] = $paper_ids;
                     }
                 }
-
-                $scheduled = count($scheduled_ids);
-                $tmp = array_values(array_diff($candidates->toArray(), $scheduled_ids));
-                $candidates = $tmp;
             }
 
             $chunks = array_chunk($candidates, 1000);
@@ -323,17 +363,18 @@ class TestConfigController extends Controller
             foreach ($chunks as $chunk) {
                 foreach ($chunk as $candidate) {
                     foreach ($subjects as $subject_id) {
-                        $records[] = [
-                            'scheduled_candidate_id' => $candidate['id'],
-                            'schedule_id' => $schedule_id,
-                            'subject_id' => $subject_id,
-                            'enabled' => 1
-                        ];
+                        if (in_array($subject_id, $candidate['papers']))
+                            $records[] = [
+                                'scheduled_candidate_id' => $candidate['id'],
+                                'schedule_id' => $schedule_id,
+                                'subject_id' => $subject_id,
+                                'enabled' => 1
+                            ];
                     }
                     $scs[] = [
                         'exam_type_id' => $exam_type_id,
                         'candidate_id' => $candidate['id'],
-//                        'reg_number' => $candidate['indexing'],
+                        //                        'reg_number' => $candidate['indexing'],
                     ];
                 }
 
@@ -442,7 +483,7 @@ class TestConfigController extends Controller
 
     private function registeredSubjects($config_id): Builder
     {
-        return TestSubject::with('subject')
+        return TestSubject::with(['subject', 'test_sections'])
             ->select(['id', 'subject_id'])
             ->where(['test_config_id' => $config_id]);
     }
@@ -486,7 +527,7 @@ class TestConfigController extends Controller
     {
         try {
             $where = [];
-            $where[] = ['subject_id', '=', $request->subject_id];
+            $where[] = ['question_banks.subject_id', '=', $request->subject_id];
 
             if ($request->difficulty_level != '%')
                 $where[] = ['difficulty_level', '=', $request->difficulty_level];
@@ -502,16 +543,21 @@ class TestConfigController extends Controller
             if (isset($request->phrase))
                 $where[] = ['title', 'like', '%' . $request->phrase . '%'];
 
-            $questions = QuestionBank::with('answer_options')->where($where)->get();
+            $others_ids = TestSection::where('test_subject_id', $request->test_subject_id)->where('id', '<>', $request->test_section_id)->pluck('id')->toArray();
+            $nots_ids = TestQuestion::whereIn('test_section_id', $others_ids)->pluck('question_bank_id')->toArray();
+            $questions = QuestionBank::with('answer_options')->where($where)->whereNotIn('id', $nots_ids)->get();
 
             $easy = 0;
             $moderate = 0;
             $difficult = 0;
 
             foreach ($questions as $question) {
-                if ($question->difficulty_level == 'simple') $easy++;
-                else if ($question->difficulty_level == 'moderate') $moderate++;
-                else if ($question->difficulty_level == 'difficult') $difficult++;
+                if ($question->difficulty_level == 'simple')
+                    $easy++;
+                else if ($question->difficulty_level == 'moderate')
+                    $moderate++;
+                else if ($question->difficulty_level == 'difficult')
+                    $difficult++;
             }
 
             $statistics['easy'] = $easy;
@@ -521,7 +567,7 @@ class TestConfigController extends Controller
 
             $collection = collect($questions);
             $currentPage = $request->input('page', 1);
-            $perPage = 40;
+            $perPage = $request->page_count;
             $offset = ($currentPage - 1) * $perPage;
             $currentPageItems = $collection->slice($offset, $perPage)->values();
 
@@ -544,8 +590,10 @@ class TestConfigController extends Controller
                 ['path' => $request->url()]
             );
 
-            return view('pages.author.test.config.ajax.questions',
-                ['questions' => $paginator, 'statistics' => $statistics, 'page' => $currentPage, 'pageSize' => $perPage]);
+            return view(
+                'pages.author.test.config.ajax.questions',
+                ['questions' => $paginator, 'statistics' => $statistics, 'page' => $currentPage, 'pageSize' => $perPage]
+            );
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -554,18 +602,59 @@ class TestConfigController extends Controller
     public function storeQuestions(Request $request)
     {
         try {
-            $section_id = $request->test_section_id;
             $selected_ids = $request->bank_ids;
-            foreach ($selected_ids as $id) {
-                $question = TestQuestion::where(['question_bank_id' => $id])->first();
-                if ($question)
-                    continue;
-                $question = new TestQuestion();
-                $question->question_bank_id = $id;
-                $question->test_section_id = $section_id;
-                $question->save();
+            $section_id = $request->test_section_id;
+            $allLevels = ['simple', 'moderate', 'difficult'];
+            $section = TestSection::where('id', $section_id)->first();
+
+            $query = QuestionBank::join('test_questions', 'test_questions.question_bank_id', '=', 'question_banks.id')
+                ->select('difficulty_level', DB::raw('count(*) as total_questions'))
+                ->where('test_section_id', $section_id)
+                ->groupBy('difficulty_level');
+
+            $counts = collect($allLevels)->mapWithKeys(function ($level) use ($query) {
+                return [$level => $query->clone()->where('difficulty_level', $level)->value('total_questions') ?? 0];
+            })->toArray();
+
+            if ($section->num_to_answer > ($counts['simple'] + $counts['moderate'] + $counts['difficult'])) {
+                $simples = [];
+                $moderates = [];
+                $difficults = [];
+                $questions = QuestionBank::whereIn('id', $selected_ids)->get();
+                foreach ($questions as $question) {
+                    if ($question->difficulty_level == 'simple' && $section->num_of_easy > (count($simples) + $counts['simple']))
+                        $simples[] = $question;
+                    else if ($question->difficulty_level == 'moderate' && $section->num_of_moderate > (count($moderates) + $counts['moderate']))
+                        $moderates[] = $question;
+                    else if ($question->difficulty_level == 'difficult' && $section->num_of_difficult > (count($difficults) + $counts['difficult']))
+                        $difficults[] = $question;
+                }
+
+                $questions = array_merge($simples, $moderates, $difficults);
+
+                foreach ($questions as $q) {
+                    $question = TestQuestion::where(['question_bank_id' => $q->id, 'test_section_id' => $section_id])->first();
+                    if ($question)
+                        continue;
+
+                    $question = new TestQuestion();
+                    $question->question_bank_id = $q->id;
+                    $question->test_section_id = $section_id;
+                    $question->save();
+                }
+
+                return ['title' => 'Compostion Update', 'message' => '(' . count($simples) . ') simple , (' . count($moderates) . ') moderate and (' . count($difficults) . ') difficult question(s) were composed. Please make SURE the questions counts do match the counts specified in the section (' . $section->title . ') definition.'];
+            } else {
+                return [
+                    'title' => 'Test Composition Completed',
+                    'message' => '(' . $counts['simple'] . ') simple , (' . $counts['moderate'] . ') moderate and (' . $counts['difficult'] . ') difficult question(s) were already composed as specified in the section (' . $section->title . ') definition'
+                ];
             }
         } catch (Exception $e) {
+            return [
+                'title' => 'Oops!',
+                'message' => $e->getMessage()
+            ];
         }
     }
 

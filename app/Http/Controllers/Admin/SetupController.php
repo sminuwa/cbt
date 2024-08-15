@@ -333,7 +333,7 @@ class SetupController extends Controller
 
             $zip = new ZipArchive;
             if ($zip->open($zipFilePath) === TRUE) {
-                $zip->extractTo(public_path('candidate_pics'));
+                $zip->extractTo(public_path(candidate_passport_path()));
                 $zip->close();
                 unlink($zipFilePath); // Delete the zip file after extraction
                 PullStatus::create([

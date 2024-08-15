@@ -26,7 +26,6 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/slick-theme.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/scrollbar.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/animate.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/echart.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/date-picker.css') }}">
     <!-- Plugins css Ends-->
     <!-- Bootstrap css-->
@@ -37,12 +36,16 @@
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/responsive.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/line-awesome/css/line-awesome.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/sweetalert2.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('commons/css/calculator.css') }}">
     @stack('style')
     <style>
         /*.radio-toolbar input[type="radio"] {
             display: none;
         }*/
+        .border-white{
+            border-color: #fff !important;
+        }
         .radio-toolbar input[type="radio"]:checked+label {
             background-color: #006666;
             color:#ffffff;
@@ -63,8 +66,9 @@
         }
 
         .btn-question{
-            padding: 3px 10px;
+            padding: 2px 5px;
             width:45px;
+            max-width:50px;
         }
 
         .btn-group {
@@ -72,6 +76,34 @@
         }
         .btn-group > :not(.btn-check:first-child) + .btn, .btn-group > .btn-group:not(:first-child) {
             margin-left: 0;
+        }
+
+
+        .custom-check-icon::after{
+            content:'\2713';
+            width:20px;
+            height:20px;
+        }
+
+        .ribbon {
+            padding: 0 20px;
+            height: auto;
+            line-height: 30px;
+            clear: left;
+            position: absolute;
+            top: 12px;
+            color: #fff;
+            z-index: 2;
+            border-radius: 10px;
+
+
+        .wizard-step h2 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -81,7 +113,10 @@ $candidate = session('candidate');
 $scheduled_candidate = session('scheduled_candidate');
 $candidate_subjects = session('candidate_subjects');
 $test = session('test');
+$time_difference = session('time_difference');
 $remaining_seconds = session('remaining_seconds');
+$time_control = session('time_control');
+$time_elapsed = $time_control->elapsed;
 ?>
 <!-- loader starts-->
 <div class="loader-wrapper">
@@ -90,29 +125,19 @@ $remaining_seconds = session('remaining_seconds');
     </div>
 </div>
 <!-- loader ends-->
-<!-- tap on top starts-->
-<div class="tap-top"><i data-feather="chevrons-up"></i></div>
-<!-- tap on tap ends-->
 <!-- page-wrapper Start-->
 <div class="page-wrapper horizontal-wrapper" id="pageWrapper">
     <!-- Page Header Start-->
 {{--    @include('commons.candidate.header')--}}
     <div class="page-header">
         <div class="header-wrapper row m-0">
-            <form class="form-inline search-full col" action="index.html#" method="get">
-                <div class="form-group w-100">
-                    <div class="Typeahead Typeahead--twitterUsers">
-                        <div class="u-posRelative">
-                            <input class="demo-input Typeahead-input form-control-plaintext w-100" type="text" placeholder="Search Riho .." name="q" title="" autofocus>
-                            <div class="spinner-border Typeahead-spinner" role="status"><span class="sr-only">Loading... </span></div><i class="close-search" data-feather="x"></i>
-                        </div>
-                        <div class="Typeahead-menu"> </div>
-                    </div>
-                </div>
-            </form>
             <div class="header-logo-wrapper col-auto p-0">
-                <div class="logo-wrapper"> <a href="#"><img class="img-fluid for-light" src="{!! logo() !!}" alt="logo-light"><img class="img-fluid for-dark" src="{!! logo() !!}" alt="logo-dark"></a></div>
-                <div class="toggle-sidebar"> <i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i></div>
+                <div class="logo-wrapper">
+                    <a href="#">
+                        <img class="img-fluid for-light" src="{!! logo() !!}" alt="logo-light">
+                        <img class="img-fluid for-dark" src="{!! logo() !!}" alt="logo-dark">
+                    </a>
+                </div>
             </div>
             <div class="left-header col-xxl-5 col-xl-6 col-lg-5 col-md-4 col-sm-3 p-0">
                 <div> <a class="toggle-sidebar" href="#"> <i class="iconly-Category icli"> </i></a>
@@ -128,38 +153,14 @@ $remaining_seconds = session('remaining_seconds');
             </div>
             <div class="nav-right col-xxl-7 col-xl-6 col-md-7 col-8 pull-right right-header p-0 ms-auto">
                 <ul class="nav-menus">
-
                     <div class="clock" id="clock">00:00:00</div> Time left
-                    {{--                <li>--}}
-                    {{--                    <div class="mode"><i class="moon" data-feather="moon"> </i></div>--}}
-                    {{--                </li>--}}
-
-                    <li class="profile-nav onhover-dropdown">
+                    <li class="profile-nav">
                         <div class="media profile-media">
-                            <img class="b-r-10" src="{{ asset('candidate/assets/images/avtar/16.jpg') }}" width="35"  alt="">
-                            <div class="media-body d-xxl-block d-none box-col-none">
-                                <div class="d-flex align-items-center gap-2"> <span>Alex Mora </span><i class="middle fa fa-angle-down"> </i></div>
-                                <p class="mb-0 font-roboto">Admin</p>
-                            </div>
+                            <img class="b-r-10" src="{{ $candidate->passport() }}" width="35"  alt="">
                         </div>
-                        <ul class="profile-dropdown onhover-show-div">
-                            <li><a href="user-profile.html"><i data-feather="user"></i><span>My Profile</span></a></li>
-                            <li><a href="letter-box.html"><i data-feather="mail"></i><span>Inbox</span></a></li>
-                            <li> <a href="edit-profile.html"> <i data-feather="settings"></i><span>Settings</span></a></li>
-                            <li><a class="btn btn-pill btn-outline-primary btn-sm" href="login.html">Log Out</a></li>
-                        </ul>
                     </li>
                 </ul>
             </div>
-            <script class="result-template" type="text/x-handlebars-template">
-                <div class="ProfileCard u-cf">
-                    <div class="ProfileCard-avatar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay m-0"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg></div>
-                    <div class="ProfileCard-details">
-                        <div class="ProfileCard-realName"></div>
-                    </div>
-                </div>
-            </script>
-            <script class="empty-template" type="text/x-handlebars-template"><div class="EmptyMessage">Your search turned up 0 results. This most likely means the backend is down, yikes!</div></script>
         </div>
     </div>
 
@@ -171,16 +172,15 @@ $remaining_seconds = session('remaining_seconds');
         <!-- Page Sidebar Ends-->
         <div class="page-body">
 {{--            @yield('content')--}}
-            @json($test_questions)
 {{--            @json($scheduled_candidate)--}}
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-4 col-xl-4 ">
+                    <div class="col-md-4 col-xl-4">
                         <div class="card social-profile">
                             <div class="card-body">
                                 <div class="border-l-primary border-r-primary border-3" style="border-radius: 8px;">
                                     <div class="social-img-wrap">
-                                        <div class="social-img"><img class="img-fluid" src="{{ asset('candidate/assets/images/avtar/16.jpg') }}" alt="profile"></div>
+                                        <div class="social-img"><img class="img-fluid" src="{{ $candidate->passport() }}" alt="profile"></div>
                                     </div>
                                     <div class="social-details">
                                         <h5 class="mb-1">
@@ -192,13 +192,29 @@ $remaining_seconds = session('remaining_seconds');
                                 <div class="mt-2" style="text-align:left;">
                                     <h5>Exam: {{ $test->test_code->name }} {{ $test->session }}</h5>
                                     <h5>Duration: {{$test->duration ?? 0}} mins</h5>
-                                    <span>Questions navigation</span>
-                                    <div class="btn-group btn-group-square">
-                                        @for($i = 1; $i<=50; $i++)
-                                            <a class="btn border-none btn-{{ $i > 10 ? 'outline-':'' }}primary btn-sm btn-question {{ $i <30 ? 'disabled':'' }}"  href="javascript:;">
-                                                {!!  $i < 10 ? $i:$i  !!}
-                                            </a>
-                                        @endfor
+
+                                    <div class="border-t-primary border-3 my-2" style="border-radius:5px">
+                                        <span>Questions navigation</span>
+                                        <br>
+                                        <div class="btn-group btn-group-square">
+                                            @foreach($question_array as $q)
+                                                <a href="javascript:;"
+                                                   class="q{{ $q['question_bank_id'] }} btn btn-{{ $q['question_bank_id'] != $q['has_score'] ? 'outline-':'' }}primary
+                                                   {{ $q['question_bank_id'] == $q['has_score'] ? 'custom-check-icon':'' }}
+                                                    btn-sm btn-question"
+                                                   question_id="{{ $q['question_bank_id'] }}"
+                                                   step="{{ $loop->index }}"
+                                                >
+                                                    {!!  $q['question_bank_id'] == $q['has_score'] ? $loop->iteration:$loop->iteration  !!}
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                        <hr>
+                                        <div class="text-center">
+                                            <button id="submitBtn" onclick="return confirm('Are you sure you want to submit this exam?')" class="submitBtn btn btn-primary btn-sm hidden">
+                                                Submit Exam
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -207,57 +223,87 @@ $remaining_seconds = session('remaining_seconds');
 
                     <div class="col-md-8 col-xl-8">
                         <div class="card">
-                            <div class="card-header border-l-warning border-3">
-                                <h4 class="card-title">
-                                    Programme Code :: {{ $test->test_code->name }}
-                                    @foreach($candidate_subjects as $subject)
-                                        (
-                                        <a href="" class="text-primary">{{ $subject->name }}</a>
-                                        ) @if(!$loop->last) | @endif
+                            <div class="card-header border-r-primary border-3 ribbon-wrapper-right">
+                                <div class="ribbon ribbon-primary ribbon-clip-right ribbon-right">
+                                    @foreach($candidate_subjects as $s)
+                                        <form action="" method="post" class="d-inline">
+                                            <input type="hidden" name='subject_id' value="{{ $s->subject_id }}">
+                                            <input type="hidden" name='scheduled_candidate_id' value="{{ $scheduled_candidate->id }}">
+                                            <input type="hidden" name='test_config_id' value="{{ $test->id }}">
+                                            <button
+                                                type="submit"
+                                                name="change-paper"
+                                                class="b-r-0 text-white btn btn-{{ $subject->id == $s->subject_id ? 'warning':'light' }}">
+                                                {{ $s->name }}
+                                            </button>
+                                        </form>
+                                        @if(!$loop->last) | @endif
                                     @endforeach
+                                </div>
+                                <h4 class="card-title ">
+                                    {{--{{ $test->test_code->name }}--}}
+                                    {{ $test->test_code->name }} {{ $test->session }}
+                                    {{--<div class="float-end">
+
+                                    </div>--}}
                                 </h4>
                             </div>
                             <div class="card-body">
-                                <div class="text-center m-4">
-                                    <h5>SECTION: A</h5>
-                                    <h5>Instruction: Answer all</h5>
-                                </div>
-                                <div class="card-wrapper border rounded-3 fill-radios h-100 radio-toolbar checkbox-checked">
-                                    <h6 class="sub-title">The following is a form of periodontal surgical proccedures:</h6>
-                                    <div class="form-check radio radio-primary" style="width:100%">
-                                        <input class="form-check-input" id="radio111" type="radio" name="radio3" value="option1">
-                                        <label class="form-check-label" for="radio111">A. Product</label>
-                                    </div>
-                                    <div class="form-check radio radio-primary">
-                                        <input class="form-check-input" id="radio333" type="radio" name="radio3" value="option3">
-                                        <label class="form-check-label" for="radio333">B. Order history </label>
-                                    </div>
-                                    <div class="form-check radio radio-primary">
-                                        <input class="form-check-input" id="radio444" type="radio" name="radio3" value="option3">
-                                        <label class="form-check-label" for="radio444">C. Invoice </label>
-                                    </div>
-                                    <div class="form-check radio radio-primary">
-                                        <input class="form-check-input" id="radio666" type="radio" name="radio3" value="option3">
-                                        <label class="form-check-label" for="radio666">D. Wishlist</label>
-                                    </div>
-                                </div>
+{{--                                @json($question_papers)--}}
+                                <form id="wizardForm">
+                                    @foreach($question_array as $question_paper)
+                                        @php $step = $loop->index; @endphp
+                                        <div step="{{ $step }}" id="{{ $question_paper['question_bank_id'] }}" class="wizard-step @if(!$loop->first) hidden @endif">
+                                            <div class="text-center m-4">
+                                                <h5>{{ $question_paper['section_title'] }}</h5>
+                                                <h5>Instruction: {{ strip_tags($question_paper['section_instruction'],'<img>') }}</h5>
+                                            </div>
+                                            <div class="card-wrapper border rounded-3 fill-radios h-100 radio-toolbar checkbox-checked fadeIn  animated z-0">
+                                                <h6 class="sub-title">Q {{ $loop->iteration }}. {{ strip_tags($question_paper['question_name'],'<img>') }}</h6>
+                                                @foreach($question_paper['answer_options'] as $answer_option)
+                                                    <div id="{{ $question_paper['question_bank_id'] }}{{ $answer_option['answer_option_id'] }}" class="form-check radio radio-primary" style="width:100%">
+                                                        <input
+                                                            @if($answer_option['answer_option_id'] == $answer_option['selected_answer_option']) checked @endif
+                                                            class="form-check-input answer_option {{ chr(64+ $loop->iteration) }}_KEY"
+                                                            id="{{ $answer_option['answer_option_id'] }}"
+                                                            type="radio"
+                                                            name="q{{ $question_paper['question_bank_id'] }}"
+                                                            question_step="{{ $step }}"
+                                                            scheduled_candidate_id="{{ $scheduled_candidate->id }}"
+                                                            test_config_id="{{ $question_paper['test_config_id'] }}"
+                                                            test_section_id="{{ $answer_option['test_section_id'] }}"
+                                                            mark_per_question="{{ $question_paper['mark_per_question'] }}"
+                                                            question_bank_id="{{ $question_paper['question_bank_id'] }}"
+                                                            answer_option_id="{{ $answer_option['answer_option_id'] }}"
+                                                            scoring_mode="normal"
+                                                            value="">
+                                                        <label class="form-check-label" for="{{$answer_option['answer_option_id']}}">{{ chr(64+ $loop->iteration) }}. {{ strip_tags($answer_option['answer_name'],'<img>') }}</label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </form>
 
                             </div>
                             <div class="card-footer">
                                 <div class="row">
-                                    <div class="col-6">
-                                        <button class="btn btn-square btn-outline-primary" type="button" title="btn btn-square btn-outline-primary">
-                                            <i class="las la-arrow-left"></i> Previous
-                                        </button>
+                                    <div class="col-md-4 text-left">
+                                        <button type="button" id="prevBtn" class="btn btn-square btn-outline-primary">Previous</button>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-md-4 text-center">
+                                        <h3 class="d-inline"><span class="badge badge-primary" id="attempt-tracker">{{ count($question_answered) }} / {{ count($question_array) }}</span></h3>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="float-end">
-                                            <button class="btn btn-square btn-outline-primary" type="button" title="btn btn-square btn-outline-primary">
-                                                Next <i class="las la-arrow-right"></i>
-                                            </button>
+                                            <button type="button" id="nextBtn" class="btn btn-square btn-outline-primary">Next</button>
+                                            {{--                                    <button type="submit" id="submitBtn" class="submitBtn btn btn-square btn-primary hidden">Submit</button>--}}
                                         </div>
                                     </div>
                                 </div>
+
+
+
                             </div>
                         </div>
                     </div>
@@ -337,60 +383,319 @@ $remaining_seconds = session('remaining_seconds');
 <script src="{{ asset('candidate/assets/js/slick/slick.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/slick/slick.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/header-slick.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/apex-chart/apex-chart.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/apex-chart/stock-prices.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/apex-chart/moment.min.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/echart/esl.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/echart/config.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/echart/pie-chart/facePrint.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/echart/pie-chart/testHelper.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/echart/pie-chart/custom-transition-texture.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/echart/data/symbols.js') }}"></script>
 <!-- calendar js-->
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.en.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.custom.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/dashboard/dashboard_3.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/sweet-alert/sweetalert2.all.min.js') }}"></script>
 <!-- Plugins JS Ends-->
 <!-- Theme js-->
 <script src="{{ asset('candidate/assets/js/script.js') }}"></script>
 <script src="{{ asset('commons/js/calculator.js') }}"></script>
+{{--<script src="{{ asset('candidate/assets/js/theme-customizer/customizer.js') }}"></script>--}}
 {{--<script src="{{ asset('commons/js/timer.js') }}"></script>--}}
-{{--<script src="assets/js/theme-customizer/customizer.js"></script>--}}
 
 @stack('script')
 <script>
-    function startTimer(duration, display) {
-        let timer = duration, hours, minutes, seconds;
-        const interval = setInterval(() => {
-            hours = parseInt(timer / 3600, 10);
-            minutes = parseInt((timer % 3600) / 60, 10);
-            seconds = parseInt(timer % 60, 10);
+       
+    document.addEventListener('DOMContentLoaded', () => {
+        const steps = document.querySelectorAll('.wizard-step');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        let currentStep = 0;
+        var time_elapsed = {{ $time_elapsed }};
+        var remaining_seconds = {{ $remaining_seconds }};
+        var every_one_minutes = 0;
+        var time_difference = {{ $time_difference }};
+        let attempt_tracker = $('#attempt-tracker');
+        function showStep(step, answered = false) {
+            steps.forEach((el, index) => {
+                el.classList.toggle('hidden', index !== step);
+                // console.log(step)
+            });
+            prevBtn.classList.toggle('hidden', step === 0);
+            nextBtn.classList.toggle('hidden', step === steps.length - 1);
+            // submitBtn.classList.toggle('hidden', step !== steps.length - 1);
+            let qid = steps[step].id;
+            let qstep = steps[step].step;
+            let qlist = $('.q'+qid);
+            // console.log(qstep)
 
-            hours = hours < 10 ? "0" + hours : hours;
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-
-            display.textContent = hours + ":" + minutes + ":" + seconds;
-
-            // Change color to red when 15 minutes (900 seconds) are left
-            if (timer <= 900) {
-                display.style.color = 'red';
+            // qlist.nextAll().addClass('btn-outline-primary')
+            $(".btn-question").each(function() {
+                let el = $(this);
+                if(el.hasClass( "custom-check-icon" )) {
+                    el.removeClass('btn-outline-primary');
+                    el.addClass('btn-primary text-white border-white');
+                }else{
+                    el.removeClass('btn-warning btn-primary text-white border-white');
+                    el.addClass('btn-outline-primary');
+                }
+            });
+            if(answered === true) {
+                qlist.addClass('btn-primary custom-check-icon');
             }
+            qlist.removeClass('btn-primary btn-outline-primary');
+            qlist.addClass('btn-warning text-white border-white');
+            // check_all = querySelectorAll('.custom-check-icon');
+            /*check_all.each((el, index) => {
+                $(this).removeClass('btn-outline-primary');
+                $(this).addClass('btn-primary');
+                // console.log(step)
+            });*/
+            // qlist.prev()
+            // console.log(qlist)
+            // alert(qid);
+        }
+        function updateReview() {
 
-            if (--timer < -{{($test->time_padding ?? 0) * 60}}) {
-                clearInterval(interval);
-                alert("Time's up!");
+        }
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                if (currentStep === steps.length - 1) updateReview();
+                showStep(currentStep);
+                // console.log(currentStep)
             }
-        }, 1000);
-    }
+        });
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                showStep(currentStep);
+                // console.log(currentStep)
+            }
+        });
+        document.getElementById('wizardForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Form submitted successfully!');
+        });
+        //time control function
+        function time_control(){
+            let remaining_seconds = parseInt({{$remaining_seconds}});
+            $.get('{{ route('candidate.test.time_control') }}',
+                {
+                    test_config_id: '{{ $test->id }}',
+                    scheduled_candidate_id: '{{ $scheduled_candidate->id }}',
+                    remaining_seconds,
+                },
+                function(){
+                    console.log(remaining_seconds)
+                }).done(function(data){
+                console.log(data)
+            }).fail(function(data){
+                console.log(data)
+            })
+        }
 
-    window.onload = function () {
-        // const twoHours = 60 * 60 * 2; // 2 hours in seconds
-        const twoHours = {{ $remaining_seconds }}; // 2 hours in seconds
-        const display = document.querySelector('#clock');
-        startTimer(twoHours, display);
-    };
+        //submitting question
+
+        $('body').on('click', '.submitBtn', function(e){
+            e.preventDefault();
+            submit_test();
+        })
+        //clicking questions
+        $('body').on('click', '.btn-question', function(){
+            currentStep = parseInt($(this).attr('step'));
+            showStep(currentStep);
+        })
+
+        $('body').on('click', '.answer_option', function(){
+            let question_step = $(this).attr('question_step');
+            let scheduled_candidate_id = $(this).attr('scheduled_candidate_id');
+            let test_config_id = $(this).attr('test_config_id');
+            let test_section_id = $(this).attr('test_section_id');
+            let mark_per_question = $(this).attr('mark_per_question');
+            let question_bank_id = $(this).attr('question_bank_id');
+            let answer_option_id = $(this).attr('answer_option_id');
+            let scoring_mode = $(this).attr('scoring_mode');
+            let time_control_id = {{ $time_control->id }};
+            let test_subject_id = {{ $subject->id }};
+            currentStep = parseInt(question_step)
+            showStep(currentStep, true)
+            $.get('{{ route('candidate.test.answering') }}',
+                {
+                    scheduled_candidate_id,
+                    test_config_id,
+                    test_section_id,
+                    mark_per_question,
+                    question_bank_id,
+                    answer_option_id,
+                    scoring_mode,
+                    time_control_id,
+                    remaining_seconds,
+                    time_elapsed,
+                    test_subject_id
+                },
+                function(){
+                    // console.log('Saving answer')
+            }).done(function(data){
+                console.log(data)
+                attempt_tracker.html(data.answered + ' / '+ data.total)
+            }).fail(function(data){
+                // console.log(data)
+            })
+        })
+
+        showStep(currentStep);
+
+        function submit_test(){
+            $.get('{{ route('candidate.test.submit_test') }}',
+                {
+                    time_control_id: {{ $time_control->id }},
+                    remaining_seconds,
+                    time_elapsed
+                },
+                function(){
+                    // console.log('Saving answer')
+                }).done(function(data){
+                    if(data.status){
+                        window.location.href = data.url;
+                        // location = data.url;
+                    }
+                    console.log(data)
+                }).fail(function(data){
+                    // console.log(data)
+                })
+        }
+
+        let remaining_interval = setInterval(function(){
+            //update time control after every one minutes even if no activity
+            if(every_one_minutes >= 10){
+                ++time_difference; // time difference in minutes
+                let test_subject_id = {{ $subject->id }};
+                $.get('{{ route('candidate.test.time_control') }}',
+                    {
+                        time_control_id: {{ $time_control->id }},
+                        scheduled_candidate_id: {{ $scheduled_candidate->id }},
+                        test_config_id: {{ session('test')->id }},
+                        remaining_seconds,
+                        time_elapsed,
+                        test_subject_id
+                    },
+                    function(){
+                        // console.log('Saving answer')
+                    }).done(function(data){
+                    console.log(data)
+                }).fail(function(data){
+                    // console.log(data)
+                })
+                console.log('time difference: '+time_difference+' actual: '+{{ $time_difference }})
+                every_one_minutes = 0;
+            }
+            {{--if(parseInt(time_difference) >= (parseInt({{$test->duration}}) + parseInt({{$test->time_padding}})))--}}
+            ++every_one_minutes;
+            ++time_elapsed;
+            --remaining_seconds;
+            if((time_elapsed / 60) > 30){
+                $('#submitBtn').removeClass('hidden')
+            }
+            if(remaining_seconds < 5 * 60){
+                blink("#clock")
+            }
+            if(remaining_seconds < -{{( $test->time_padding ?? 0) * 60 }}){
+                clearInterval(remaining_interval);
+            }
+        }, 1000)
+
+
+        function startTimer(duration, display) {
+            let timer = duration, hours, minutes, seconds;
+            const interval = setInterval(() => {
+                hours = parseInt(timer / 3600, 10);
+                minutes = parseInt((timer % 3600) / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                hours = hours < 10 ? "0" + hours : hours;
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = hours + ":" + minutes + ":" + seconds;
+
+                // Change color to red when 15 minutes (900 seconds) are left
+                if (timer <= 600) {
+                    display.style.color = 'red';
+                }
+                console.log(-{{( $test->time_padding ?? 0) * 60 }} + ' - '+timer)
+                if (--timer < -{{( $test->time_padding ?? 0) * 60 }}) {
+                    clearInterval(interval);
+                    alert('Time is up!')
+                    submit_test()
+                }
+
+
+            }, 1000);
+        }
+        let stopBlinking = false;
+
+        window.onload = function () {
+            // const twoHours = 60 * 60 * 2; // 2 hours in seconds
+            const twoHours = {{ $remaining_seconds }}; // 2 hours in seconds
+            const display = document.querySelector('#clock');
+            startTimer(twoHours, display);
+
+
+        };
+
+        function blink(selector) {
+            if(stopBlinking)
+                return false;
+            $(selector).fadeOut('slow', function() {
+                $(this).fadeIn('slow', function() {
+                    blink(this);
+                });
+            });
+        }
+
+
+        $("body").keydown(function(e) {
+            if(e.keyCode === 37) { // left
+                $("#prevBtn").trigger("click");
+            }
+            else if(e.keyCode === 39) { // right
+                $("#nextBtn").trigger("click");
+            }
+            // if(e.keyCode === 65) { // A
+            //     $(".A_KEY").trigger("click");
+            // }
+
+            // if(e.keyCode === 66) { // B
+            //     $(".B_KEY").trigger("click");
+            // }
+
+            // if(e.keyCode === 67) { // C
+            //     $(".C_KEY").trigger("click");
+            // }
+
+            // if(e.keyCode === 68) { // D
+            //     $(".D_KEY").trigger("click");
+            // }
+
+            // if(e.keyCode === 69) { // E
+            //     $(".E_KEY").trigger("click");
+            // }
+
+            // if(e.keyCode === 70) { // F
+            //     $(".F_KEY").trigger("click");
+            // }
+        });
+
+    });
+
+</script>
+
+
+
+<script>
+
+
+    /*blink("#clock");
+
+    setInterval(function(){
+        stopBlinking = !stopBlinking;
+        blink("#clock");
+    }, 50000);*/
 </script>
 </body>
 </html>

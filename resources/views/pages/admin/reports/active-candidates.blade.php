@@ -18,6 +18,7 @@
             top: 0.5em;
         }
     </style>
+    <link rel="stylesheet" href="{{asset('assets/plugins/datatables/datatables.min.css-')}}">
 @endsection
 @section('content')
 
@@ -64,6 +65,8 @@
 @endsection
 
 @section('script')
+	<script src="{{asset('assets/plugins/datatables/jquery.dataTables.min.js-')}}"></script>
+    <script src="{{asset('assets/plugins/datatables/datatables.min.js-')}}"></script>
     <script>
         $(function () {
             $('#test_id').on('change', function () {

@@ -41,7 +41,7 @@ class QuestionController extends Controller
             $bank->topic_id = $request->topic_id;
             $bank->subject_id = $request->subject_id;
             if ($question->difficulty != 'S')
-                $bank->difficulty_level = $question->difficulty == 'M' ? 'moredifficult' : 'difficult';
+                $bank->difficulty_level = $question->difficulty == 'M' ? 'moderate' : 'difficult';
             $bank->save();
 
             $bank_id = $bank->id;
@@ -55,7 +55,7 @@ class QuestionController extends Controller
             }
         }
 
-        return redirect(route('admin.questions.authoring.review', [request('subject_id'), request('topic_id')]));
+        return ['url' => route('admin.questions.authoring.review', [request('subject_id'), request('topic_id')])];
     }
 
     public function review($subjectId, $topicId)
@@ -72,7 +72,19 @@ class QuestionController extends Controller
             ['subject_id' => $request->subject_id, 'topic_id' => $request->topic_id, 'author' => Auth::user()->id]
         )->get();
 
+        $duplicates = 0;
         foreach ($tempQuestions as $tempQuestion) {
+            $isDuplicate = false;
+            $questions = QuestionBank::where(['subject_id' => $request->subject_id])->pluck('title');
+            foreach ($questions as $title) {
+                if (($isDuplicate = $tempQuestion->title == $title)) {
+                    $duplicates++;
+                    break;
+                }
+            }
+
+            if ($isDuplicate) continue;
+
             $question = new QuestionBank();
             $question->title = $tempQuestion->title;
             $question->active = $tempQuestion->active;
@@ -96,12 +108,15 @@ class QuestionController extends Controller
 
             $tempQuestion->delete();
         }
-        return redirect(route('admin.questions.authoring.completed'));
+
+        $this->clearTemps(request('subject_id'), request('topic_id'));
+
+        return redirect(route('admin.questions.authoring.completed', [$duplicates]));
     }
 
-    public function completed()
+    public function completed($duplicates)
     {
-        return view('pages.admin.questions.completed');
+        return view('pages.admin.questions.completed', compact('duplicates'));
     }
 
     public function preview()
@@ -158,6 +173,29 @@ class QuestionController extends Controller
         }
 
         return redirect(route('admin.questions.authoring.edit.questions'));
+    }
+
+    public function moveQuestions()
+    {
+        return view('pages.admin.questions.move-questions');
+    }
+
+    public function loadQuestions(Request $request)
+    {
+        $questions = QuestionBank::where(['subject_id' => $request->subject_id, 'topic_id' => $request->topic_id])->get();
+
+        return view('pages.admin.questions.ajax.questions', compact('questions'));
+    }
+
+    public function relocateQuestions(Request $request)
+    {
+        try {
+            QuestionBank::whereIn('id', $request->question_ids)->update(['subject_id' => $request->subject_id, 'topic_id' => $request->topic_id]);
+
+            return back()->with(['success' => true, 'message' => 'Question(s) successfully moved.']);
+        } catch (\Exception $e) {
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
 
     private function clearTemps($subjectId, $topicId)

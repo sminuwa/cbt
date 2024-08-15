@@ -61,9 +61,9 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td><b>Username</b></td>
+                                                    <td><b>Indexing Number</b></td>
                                                     <td>
-                                                        <input type="text" name="username" value="" class="form-control">
+                                                        <input type="text" name="username" id="username" class="form-control">
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -74,16 +74,91 @@
                                                 </tr>
                                             </table>
 
-                                <div id="second-step" style='display:none;'></div>
+                                <div id="second-step" style='display:none;'>
+
+                                </div>
                             </form>
                         </div>
+                </div>
 
                         <div class="tab-pane" id="time_control">
-
+                            <form id="frm2" method="post" action="{{ route('toolbox.invigilator.increase-time.view') }}">
+                                @csrf
+                                <fieldset><legend>Enter Candidate's Details</legend>
+                                    <div id="cand_data">
+                                        <table>
+                                            <tr>
+                                                <td><b> Candidate Type</b></td>
+                                                <td>
+                                                    <select name="candidatetype_inc" id="candidatetype_inc" class="form-control">
+                                                        <option value="">--Select Candidate Type --</option>
+                                                        @foreach($candidateTypes as $type)
+                                                            <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Exam</td>
+                                                <td>
+                                                    <select name="testid_inc" id="testid_inc" class="form-control">
+                                                        <option value="">--Select Exam--</option>
+                                                        @foreach($examTypes as $exam)
+                                                            <option value="{{ $exam->testid }}">{{ strtoupper($exam->testname) }}-{{ $exam->testtypename }}-{{ $exam->session }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><b> Username</b></td>
+                                                <td> <input type="text" name="username_inc" value="" class="form-control"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td>
+                                                    <button type="submit" name="inc_time" id="inc_time" class="btn btn-primary">View Candidate's Time Usage</button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </form>
+                            <div id="cand_data2" style="display:none"></div>
                         </div>
 
                         <div class="tab-pane" id="reset_password">
-
+                            <form action="{{route('toolbox.invigilator.reset.password')}}" method="post">
+                                @csrf
+                                <div class="modal-body">
+                                    <div class="hours-info">
+                                        <div class="row hours-cont">
+                                            <div class="col-12 col-md-12">
+                                                <div class="row">
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="mb-6">
+                                                            <label for="index_number" class="mb-6">Indexing Number</label>
+                                                            <input type="text" id="index_number" name="index_number" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="mb-6">
+                                                            <label for="npassword" class="mb-6">Enter New Password</label>
+                                                            <input type="text" id="npassword" name="npassword" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="mb-6">
+                                                            <label for="rnpassword" class="mb-6">Confirm New Password</label>
+                                                            <input type="text" id="rnpassword" name="rnpassword" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-primary submit-btn text-light">Save</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -91,13 +166,118 @@
 
             @endsection
 
-            @section('script')
-                <script>
-                    $(function () {
-                        let header = $('#header')
-                        let restore = $('#restore-div')
-                        let time_control = $('#time_control-div')
-                        let reset_password = $('#reset_password-div')
-                    })
-                </script>
+@section('script')
+    <script>
+        $(function () {
+            let header = $('#header')
+            let restore = $('#restore-div')
+            let time_control = $('#time_control-div')
+            let reset_password = $('#reset_password-div')
+        })
+
+        //restore candidate details
+        $(document).ready(function () {
+            $('#btn-nxt-step1').click(function (e) {
+                e.preventDefault();
+
+                var examtype = $('#examtype').val();
+                var username = $('#username').val();
+                var _token = $('input[name="_token"]').val();
+                //console.log(username, examtype)
+
+                $.ajax({
+                    url: "{{ route('toolbox.invigilator.candidate.loadProfile') }}",
+                    method: "POST",
+                    data: {
+                        _token: _token,
+                        examtype: examtype,
+                        username: username
+                    },
+                    success: function (response) {
+                        $('#second-step').html(`
+                    <form class="style-frm">
+                    @csrf
+                        <fieldset>
+                            <legend>Candidate's Profile</legend>
+                            <div>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td><b>Full Name:</b></td>
+                                        <td>${response.candName}</td>
+                                        <td rowspan="3" colspan="2">
+                                            <div>
+                                                <img src="{{ asset(candidate_passport_path()) }}/${response.indexing}.jpg" onerror="this.onerror=null;this.src='{{ asset('assets/img/photo.png') }}';" style="width:150px; height:150px;" alt="image">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Indexing No:</b></td>
+                                        <td>${response.indexing}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Center:</b></td>
+                                        <td>${response.centreName}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Venue:</b></td>
+                                        <td>${response.venueName}</td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" style="text-align:center">
+                                            <button id="btn-nxt-step2" class="btn btn-primary">Restore Candidate</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </form>
+                `);
+                        $('#second-step').show();
+                    },
+                    error: function (xhr) {
+                        let errorMessage = "An error occurred";
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            errorMessage = xhr.responseJSON.errors.join(", ");
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        alert(errorMessage);
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function () {
+            $("#testid_inc").select2();
+        });
+
+        $(document).on("submit", "#frm2", function (event) {
+            event.preventDefault();
+            $.ajax({
+                type: 'post',
+                url: '{{ route('toolbox.invigilator.increase-time.view') }}',
+                data: $("#frm2").serialize()
+            }).done(function (msg) {
+                $("#cand_data2").empty().html(msg).slideDown();
+                $("#cand_data").slideUp();
+            });
+        });
+
+        $(document).on("click", "#btn-bk-step3", function (event) {
+            $("#cand_data").slideDown();
+            $("#cand_data2").slideUp();
+        });
+
+        $(document).on("click", "#btn-nxt-step3", function (event) {
+            event.preventDefault();
+            $.ajax({
+                type: 'post',
+                url: '{{ route('toolbox.invigilator.save-time.adjust') }}',
+                data: $("#frm3").serialize()
+            }).done(function (msg) {
+                alert(msg == 1 ? "Time was adjusted successfully!" : "Operation was not successful!");
+            });
+        });
+    </script>
 @endsection

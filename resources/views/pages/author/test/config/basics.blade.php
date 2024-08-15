@@ -19,20 +19,20 @@
         <input type="hidden" name="id" value="{{ $config->id }}">
         <div class="row">
             <div class="col-md-8">
-                <div class="card border-info">
-                    <div class="card-header border-info">
+                <div class="card">
+                    <div class="card-header">
                         <h4>Duration & Mode</h4>
                     </div>
-                    <div class="card-body pt-0">
-                        <div class="row mt-3">
-                            <div class="col-12 col-md-6 col-lg-6 col-xl-6">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
                                 <div class="form-group">
                                     <label for="duration">Test Duration:</label>
                                     <input class="form-control" type="number" name="duration" id="duration"
                                            value="{{ $config->duration }}" placeholder="Duration (min)" required>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="col-md-6 mt-3">
                                 <div class="form-group">
                                     <label for="time_padding">Padding Time:</label>
                                     <input class="form-control" type="number" name="time_padding" id="time_padding"
@@ -41,7 +41,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="col-md-6 mt-3">
                                 <div class="form-group">
                                     <label for="endorsement">Invigilator's Endorsement:</label>
                                     <select class="form-control form-select" name="endorsement" id="endorsement"
@@ -53,21 +53,21 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="col-md-6 mt-3">
                                 <div class="form-group">
                                     <label for="availability">Test Availability:</label>
                                     <select class="form-control form-select" name="availability" id="availability"
                                             required>
-                                        <option {{$config->active_version==0?'selected':''}} value="0">Unavailable
+                                        <option {{$config->status==0?'selected':''}} value="0">Unavailable
                                         </option>
-                                        <option {{$config->active_version==1?'selected':''}} value="1">Available
+                                        <option {{$config->status==1?'selected':''}} value="1">Available
                                         </option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="col-md-6 mt-3">
                                 <div class="form-group">
                                     <label for="starting_mode">Starting Mode:</label>
                                     <select class="form-control form-select" name="starting_mode" id="starting_mode"
@@ -82,7 +82,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="col-md-6 mt-3">
                                 <div class="form-group">
                                     <label for="pass_key">Registration Key:</label>
                                     <input class="form-control" type="text" name="pass_key" id="pass_key"
@@ -94,75 +94,53 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card border-info">
-                    <div class="card-header border-info">
+                <div class="card">
+                    <div class="card-header">
                         <h4>Test Pattern</h4>
                     </div>
-                    <div class="card-body pt-0">
-                        <div class="row mt-3">
-                            <div class="col-12 col-md-12 col-lg-12 col-xl-12">
-                                <div class="form-group">
-                                    <label for="display_mode">Question Display:</label>
-                                    <select class="form-control form-select" name="display_mode" id="display_mode"
-                                            required>
-                                        <option value="All" {{$config->display_mode=='All'?'selected':''}}>All at once
-                                        </option>
-                                        <option
-                                                value="single question" {{ $config->display_mode=='single question'?'selected':'' }}>
-                                            Step by step
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="card-body">
                         <div class="row">
-                            <div class="col-12 col-md-12 col-lg-12 col-xl-12">
+                            <div class="col-md-12 mt-3">
                                 <div class="form-group">
-                                    <label for="question_administration">Question Administration:</label>
-                                    <select class="form-control form-select" name="question_administration"
-                                            id="question_administration" required>
-                                        <option
-                                                value="linear"{{$config->question_administration=='linear'?'selected':''}}>
-                                            Linear
-                                        </option>
-                                        <option
-                                                value="random" {{$config->question_administration=='random'?'Selected':''}}>
-                                            Random
-                                        </option>
+                                    <label class="form-label" for="display_mode">Question Display:</label>
+                                    <select class="form-control form-select" name="display_mode" id="display_mode" required>
+                                        <option value="single question" {{ $config->display_mode=='single question'?'selected':'' }}>Step by step</option>
+                                        <option value="All" {{$config->display_mode=='All'?'selected':''}}>All at once</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <div class="form-group">
+                                    <label class="form-label" for="question_administration">Question Administration:</label>
+                                    <select class="form-control form-select" name="question_administration" id="question_administration" required>
+                                        <option value="linear"{{$config->question_administration=='linear'?'selected':''}}>Linear</option>
+                                        <option value="random" {{$config->question_administration=='random'?'Selected':''}}>Random</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <div class="form-group">
+                                    <label class="form-label" for="option_administration">Option Administration:</label>
+                                    <select class="form-control form-select" name="option_administration" id="option_administration" required>
+                                        <option value="linear" {{$config->option_administration=='linear'?'selected':''}}>Linear</option>
+                                        <option value="random" {{$config->option_administration=='random'?'selected':''}}>Random</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-12 col-md-12 col-lg-12 col-xl-12">
-                                <div class="form-group">
-                                    <label for="option_administration">Option Administration:</label>
-                                    <select class="form-control form-select" name="option_administration"
-                                            id="option_administration" required>
-                                        <option
-                                                value="linear" {{$config->option_administration=='linear'?'selected':''}}>
-                                            Linear
-                                        </option>
-                                        <option
-                                                value="random" {{$config->option_administration=='random'?'selected':''}}>
-                                            Random
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="card border-info">
-                    <div class="card-header border-info">
-                        <h4>Calculator Option</h4>
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Other Options</h4>
                     </div>
-                    <div class="card-body pt-0">
-                        <div class="row mt-3">
+                    <div class="card-body">
+                        <div class="row">
                             <div class="col-4 col-md-12 col-lg-4 col-xl-4">
                                 <div class="form-group">
                                     <label for="allow_calc">Allow Use of In-Built Calculator:</label>
@@ -179,10 +157,8 @@
                 </div>
             </div>
         </div>
-        <div class="mt-3 d-flex justify-content-between">
-            {{--            <a class="btn btn-warning text-light" href="{{ route('admin.test.config.view',[$config->id]) }}"><i--}}
-            {{--                    class="fa fa-arrow-left me-1"></i>Back</a>--}}
-            <input class="btn btn-info text-light" type="submit" value="Save Config">
+        <div class="mt-3 text-right">
+            <input class="btn btn-primary text-light" type="submit" value="Save Config">
         </div>
     </form>
 @endsection

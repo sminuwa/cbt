@@ -30,28 +30,34 @@ use Illuminate\Database\Eloquent\Model;
  */
 class TestSubject extends Model
 {
-	protected $table = 'test_subjects';
+    protected $table = 'test_subjects';
 
-	protected $casts = [
-		'test_config_id' => 'int',
-		'subject_id' => 'int',
-		'total_mark' => 'float'
-	];
+    protected $casts = [
+        'test_config_id' => 'int',
+        'subject_id' => 'int',
+        'total_mark' => 'float'
+    ];
 
-	protected $guarded = [];
+    protected $guarded = [];
 
-	public function subject()
-	{
-		return $this->belongsTo(Subject::class);
-	}
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
 
-	public function test_config()
-	{
-		return $this->belongsTo(TestConfig::class, 'test_config_id');
-	}
+    public function test_config()
+    {
+        return $this->belongsTo(TestConfig::class, 'test_config_id');
+    }
 
-	public function test_sections()
-	{
-		return $this->hasMany(TestSection::class);
-	}
+    public function test_sections()
+    {
+        return $this->hasMany(TestSection::class);
+    }
+
+    public function questions()
+    {
+        $ids = $this->test_sections->pluck('id');
+        return TestQuestion::whereIn('test_section_id', $ids)->count();
+    }
 }

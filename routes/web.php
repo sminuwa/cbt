@@ -5,7 +5,6 @@ use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SetupController;
 use App\Http\Controllers\Api\V1\APIV1Controller;
-use App\Http\Controllers\Auth\CandidateLoginController;
 use App\Http\Controllers\Auth\UserLoginController;
 use App\Http\Controllers\CandidateUploadController;
 use App\Http\Controllers\CentreController;
@@ -15,10 +14,11 @@ use App\Http\Controllers\SubjectsController;
 use App\Http\Controllers\TestConfigController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\VenueController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('pages.admin.dashboard.index');
+    return redirect()->route('candidate.auth.page');
 });
 
 
@@ -28,11 +28,12 @@ Route::name('auth.')->prefix('auth/')->group(function () {
         Route::post('login', [UserLoginController::class, 'login'])->name('login.proc');
         Route::get('logout', [UserLoginController::class, 'logout'])->name('logout');
     });
-    Route::name('candidate.')->prefix('/')->group(function () {
-        Route::get('login', [CandidateLoginController::class, 'showLoginForm'])->name('login');
-        Route::post('login', [CandidateLoginController::class, 'login'])->name('login.proc');
-        Route::get('logout', [CandidateLoginController::class, 'logout'])->name('logout');
-    });
+
+//    Route::name('candidate.')->prefix('/')->group(function () {
+//        Route::get('login', [CandidateLoginController::class, 'showLoginForm'])->name('login');
+//        Route::post('login', [CandidateLoginController::class, 'login'])->name('login.proc');
+//        Route::get('logout', [CandidateLoginController::class, 'logout'])->name('logout');
+//    });
 });
 
 
@@ -103,14 +104,19 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
             Route::post('/author', [QuestionController::class, 'authorPost'])->name('post');
             Route::get('/review/{subject}/{topic}', [QuestionController::class, 'review'])->name('review');
             Route::post('/store', [QuestionController::class, 'store'])->name('store');
-            Route::get('/completed', [QuestionController::class, 'completed'])->name('completed');
+            Route::get('/completed/{duplicates}', [QuestionController::class, 'completed'])->name('completed');
             Route::get('/preview', [QuestionController::class, 'preview'])->name('preview');
             Route::post('/preview/load', [QuestionController::class, 'loadPreview'])->name('load.preview');
             Route::get('/edit/questions', [QuestionController::class, 'editQuestions'])->name('edit.questions');
             Route::get('/edit/{question}', [QuestionController::class, 'editQuestion'])->name('edit.question');
             Route::post('/store/question', [QuestionController::class, 'storeQuestion'])->name('store.question');
 
+            Route::get('/move/questions', [QuestionController::class, 'moveQuestions'])->name('move.questions');
+            Route::post('/load/questions', [QuestionController::class, 'loadQuestions'])->name('load.questions');
+            Route::post('/relocate/questions', [QuestionController::class, 'relocateQuestions'])->name('relocate.questions');
+
             Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('topics');
+            Route::post('topics/add', [TopicController::class, 'storeTopic'])->name('topics.add');
         });
     });
 
@@ -125,8 +131,12 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
             Route::name('summary.')->prefix('summary')->group(function () {
                 Route::get('/report', 'reportSummary')->name('reports');
                 Route::post('/report/generate', 'generateReport')->name('generate.report');
+
                 Route::get('/question', 'questionSummary')->name('question');
+                Route::post('/question/generate', 'generateQuestionSummary')->name('generate.question');
+
                 Route::get('/presentation', 'presentationSummary')->name('presentation');
+                Route::post('/presentation', 'generatePresentationSummary')->name('generate.presentation');
             });
 
             Route::name('active.')->prefix('active')->group(function () {
@@ -142,6 +152,9 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
 
         Route::get('/{venue}/batches/capacity', [MiscController::class, 'batchCapacity'])->name('batches.capacity');
         Route::get('test/config/{year}/{type}/{code}', [MiscController::class, 'testConfig'])->name('test.config');
+
+        Route::get('test/{config}/subjects', [MiscController::class, 'testSubjects'])->name('test.subjects');
+        Route::get('test/{config}/candidates', [MiscController::class, 'testCandidates'])->name('test.candidates');
     });
 
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
@@ -179,12 +192,19 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
 
     });
 
-
     Route::name('candidate_image_upload.')->prefix('candidate_image_upload')->group(function () {
         Route::get('upload-candidate', [CandidateUploadController::class, 'imageIndex'])->name('upload.images');
         Route::post('upload-candidate-image', [CandidateUploadController::class, 'imageUpload'])->name('upload.image.data');
-        Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('invigilator');
+        //Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('invigilator');
 
+    });
+
+    Route::name('invigilator.')->prefix('invigilator')->group(function () {
+        Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('index');
+        Route::post('/increase-time', [CandidateUploadController::class, 'viewCandidateTime'])->name('increase-time.view');
+        Route::post('/save-time', [CandidateUploadController::class, 'saveTimeAdjustment'])->name('save-time.adjust');
+        Route::post('/reset_password', [CandidateUploadController::class, 'resetCandidatePassword'])->name('reset.password');
+        Route::post('/load-profile', [CandidateUploadController::class, 'loadProfile'])->name('candidate.loadProfile');
     });
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
         Route::get('/', [SetupController::class, 'index'])->name('index');
@@ -202,3 +222,7 @@ Route::name('api.v1.')->prefix('api/v1/')->group(function () {
     });
 
 })->middleware('api-auth');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

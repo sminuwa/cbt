@@ -254,6 +254,7 @@ body.dark-only.box-layout {
 /**=====================
     1.1 Reset CSS start
 ==========================**/
+
 .f-light {
   color: #86909C;
 }
@@ -49240,7 +49241,7 @@ html[dir=rtl] body.dark-only .page-wrapper .page-body-wrapper .page-body .card:n
   }
   .box-layout .page-wrapper.horizontal-wrapper .page-body-wrapper .page-body, .box-layout.page-wrapper.horizontal-wrapper .page-body-wrapper .page-body {
     margin-top: 80px;
-    min-height: /*calc(100vh - 310px);*/calc(100vh - 214px);
+    min-height: calc(100vh - 214px);
     max-height: calc(100vh - 230px);
     overflow: scroll;
   }
