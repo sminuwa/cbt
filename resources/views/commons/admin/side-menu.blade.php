@@ -118,12 +118,6 @@
                         </li>
                     @endif
 
-<<<<<<< HEAD
-                    @if(Request::is('*questions/authoring*'))
-                        {{--                                //&& !Request::is('*questions/authoring')--}}
-
-
-=======
                     @if(Request::is('*questions/authoring*') //&& !Request::is('*questions/authoring')
 )
                         <li class="{{Request::is('*author')?'active':''}}">
@@ -145,7 +139,6 @@
                             </a>
                         </li>
                     @endif
->>>>>>> 2c269cf28839fa7c73d661cebcda53f084f34abd
 
                     @if(Request::is('*report*'))
                         <li class="{{Request::is('*test/report*')?'active':''}}">
