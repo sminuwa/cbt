@@ -23,6 +23,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/feather-icon.css') }}">
     <!-- Plugins css start-->
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/slick.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/select2.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/slick-theme.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/scrollbar.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/animate.css') }}">
@@ -66,7 +67,7 @@
         <!-- Page Body Start-->
         <div class="page-body-wrapper">
             @include('commons.admin.side-menu')
-                
+
             <div class="page-body">
                 <div class="container-fluid">
                     <div class="page-title">
@@ -77,7 +78,7 @@
                             <div class="col-6">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="#">                                       
+                                    <a href="#">
                                         <i class="las la-home la-md-2x"></i>
                                     </a>
                                 </li>
@@ -92,14 +93,14 @@
                     @yield('content')
                 </div>
             </div>
-            
+
             <!-- Footer -->
              @include('commons.footer')
             <!-- /Footer -->
         </div>
         <!-- /Page Content -->
 
-        
+
     </div>
 </div>
 <!-- /Main Wrapper -->
@@ -126,7 +127,7 @@
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.en.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.custom.js') }}"></script>
-{{-- <script src="{{ asset('candidate/assets/js/dashboard/dashboard_3.js') }}"></script> --}}
+<script src="{{ asset('candidate/assets/js/select2/select2.full.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/sweet-alert/sweetalert2.all.min.js') }}"></script>
 <!-- Plugins JS Ends-->
 <!-- Theme js-->

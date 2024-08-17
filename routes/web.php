@@ -207,6 +207,19 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('/reset_password', [CandidateUploadController::class, 'resetCandidatePassword'])->name('reset.password');
         Route::post('/load-profile', [CandidateUploadController::class, 'loadProfile'])->name('candidate.loadProfile');
     });
+    Route::name('authorization.')->prefix('authorization/')->group(function () {
+        Route::get('/users', [SetupController::class, 'users'])->name('users.index');
+        Route::post('/user/save', [SetupController::class, 'userSave'])->name('user.save');
+        Route::post('/user/edit', [SetupController::class, 'userEdit'])->name('user.edit');
+        Route::get('/role', [SetupController::class, 'roleIndex'])->name('role.index');
+        Route::post('/role/save', [SetupController::class, 'roleSave'])->name('role.save');
+        Route::post('/permission/save', [SetupController::class, 'permissionSave'])->name('permission.save');
+        Route::get('/role/permissions', [SetupController::class, 'rolePermissions'])->name('role.permission');
+        Route::get('/role/users', [SetupController::class, 'roleUsers'])->name('role.users');
+        Route::post('/role/permission/save', [SetupController::class, 'rolePermissionSave'])->name('role.permission.save');
+        Route::post('/role/user/save', [SetupController::class, 'roleUserSave'])->name('role.user.save');
+        Route::any('/role/user/detach', [SetupController::class, 'roleUserDetach'])->name('role.user.detach');
+    });
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
         Route::get('/', [SetupController::class, 'index'])->name('index');
         Route::post('pull/basic', [SetupController::class, 'pullBasicResource'])->name('pull.basic');

@@ -18,9 +18,13 @@ use App\Models\TestInvigilator;
 use App\Models\TestQuestion;
 use App\Models\TestSection;
 use App\Models\TestSubject;
+use App\Models\Permission;
+use App\Models\RolePermission;
 use App\Models\TestType;
 use App\Models\User;
 use App\Models\Venue;
+use App\Models\Role;
+use App\Models\UserRole;
 use App\Models\TimeControl;
 use App\Models\Presentation;
 use App\Models\Score;
@@ -29,7 +33,7 @@ use App\Services\BackupAndTruncateService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use ZipArchive;
 
 class SetupController extends Controller
@@ -40,6 +44,7 @@ class SetupController extends Controller
     public function __construct(BackupAndTruncateService $backupService)
     {
         $this->backupService = $backupService;
+        $this->middleware("auth:admin");
     }
 
     public function index(Request $request)
@@ -434,5 +439,134 @@ class SetupController extends Controller
             // Handle the error - set to a default time or null
             return '00:00:00';  // or handle it as necessary
         }
+    }
+
+    public function roleIndex(Request $request){
+        $roles = Role::get();
+        $users = User::get();
+
+        return view("pages.admin.authorization.role",compact('roles','users'));
+    }
+
+    public function roleSave(Request $request){
+        $role = new Role();
+        $role->name = $request->role;
+        $role->description = $request->description;
+        $role->save();
+        return back()->with('success', "New role {$request->role} created.");
+
+    }
+
+    public function userSave(Request $request){
+        $user = new User();
+        $user->username = $request->username;
+        $user->display_name = $request->display_name;
+        $user->email = $request->email;
+        $user->enabled = $request->enabled;
+        $user->password = bcrypt("Chprbn@2024");
+        $user->save();
+        return back()->with('success', "New user {$request->username} created.");
+
+    }
+
+    public function userEdit(Request $request){
+        $user = User::find($request->user_id);
+        if($user){
+            $user->username = $request->username;
+            $user->display_name = $request->display_name;
+            $user->email = $request->email;
+            $user->enabled = $request->enabled;
+            $user->save();
+            return back()->with('success', "New user {$request->username} created.");
+        }
+        return back()->with('failure', "Invalid User.");
+    }
+
+    public function permissionSave(Request $request){
+
+        // return $request;
+        $permission = new Permission();
+        $permission->name = $request->permission;
+        $permission->description = $request->description;
+        $permission->save();
+        return back()->with('success', "New permission {$request->permission} created.");
+
+    }
+
+    public function rolePermissions(Request $request){
+        $permissions = Permission::get();
+        $rolePermissions = RolePermission::where('role_id',$request->role_id)->pluck('permission_id')->toArray();
+        return view("pages.admin.authorization.roleperm",compact('permissions','rolePermissions'));
+
+    }
+
+
+    public function roleUsers(Request $request){
+        $role_id = $request->role_id;
+        $userRoles = UserRole::where('role_id',$request->role_id)->pluck('user_id')->toArray();
+        $roleUsers = User::whereIn('id',$userRoles)->get();
+        return view("pages.admin.authorization.userRole",compact('roleUsers','userRoles','role_id'));
+
+    }
+
+    public function rolePermissionSave(Request $request){
+        // return $request;
+        // ?role_id,permission_id
+        $role = Role::find($request->role_id);
+        if($role){
+            foreach($request->permissions as $permission){
+                $rolePerm = RolePermission::where(['role_id'=>$request->role_id,"permission_id"=>$permission])->first();
+                if(!$rolePerm){
+                    $rolePerm = new RolePermission;
+                    $rolePerm->role_id = $request->role_id;
+                    $rolePerm->permission_id = $permission;
+                    $rolePerm->save();
+                }
+
+
+            }
+            return back()->with('success', "Permissions add to role {$role->name} created.");
+        }
+        return back()->with('failure', "Invalid Role");
+
+
+    }
+
+    public function roleUserSave(Request $request){
+        // return $request;
+        $role = Role::find($request->role_id);
+        if($role){
+            foreach($request->user_ids as $user_id){
+                $rolePerm = UserRole::where(['role_id'=>$request->role_id,"user_id"=>$user_id])->first();
+                if(!$rolePerm){
+                    $rolePerm = new UserRole;
+                    $rolePerm->role_id = $request->role_id;
+                    $rolePerm->user_id = $user_id;
+                    $rolePerm->save();
+                }
+
+            }
+
+            return back()->with('success', "User added to role {$role->name} created.");
+        }
+        return back()->with('failure', "Invalid Role");
+    }
+
+    public function roleUserDetach(Request $request){
+        // return $request;
+        $role = Role::find($request->role_id);
+        if($role){
+            $rolePerm = UserRole::where(['role_id'=>$request->role_id,"user_id"=>$request->user_id])->delete();
+            return response()->json(['success'=>1]);
+        }
+        return response()->json(['success'=>0]);
+    }
+
+    public function users(Request $request){
+        $users = User::get();
+        $roles = Role::get();
+
+        return view("pages.admin.authorization.users",compact("users","roles"));
+
     }
 }

@@ -93,4 +93,14 @@ class User extends Authenticatable
             ->withPivot('id')
             ->withTimestamps();
     }
+
+
+    public function canDo($permission){
+        $permissionObj = Permission::where('name',$permission)->first();
+        if($permissionObj){
+            $userRoles = UserRole::where(['user_id'=>$this->id])->pluck('role_id');
+            return $rolePermissions = RolePermission::where(['permission_id'=>$permissionObj->id])->whereIn('role_id',$userRoles)->count();
+        }
+        return true;
+    }
 }
