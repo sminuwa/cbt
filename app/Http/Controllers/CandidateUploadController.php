@@ -90,7 +90,7 @@ class CandidateUploadController extends Controller
      */
     public function invigilator()
     {
-
+        
         $candidateTypes = ExamType::all();
         $testConfigs = TestConfig::exam()->get();
 
@@ -102,7 +102,10 @@ class CandidateUploadController extends Controller
             ->where('exams_dates.date', '=', now()->format('Y-m-d'))
             ->select('test_configs.id', 'test_codes.name', 'test_types.name', 'session', 'semester')
             ->get();
-        return view('pages.toolbox.invigilator_panel',compact('testConfigs','examTypes','candidateTypes'));
+
+        // get all candidates of the selected centre 
+        $candidates = Candidate::all();
+        return view('pages.toolbox.invigilator_panel',compact('testConfigs','examTypes','candidateTypes','candidates'));
     }
 
     /**

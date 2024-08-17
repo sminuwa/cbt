@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    @if(session()->has('success'))
-        @if(!session('success'))
+    @if (session()->has('success'))
+        @if (!session('success'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <strong>Error!</strong> {{ session('message') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -14,20 +14,14 @@
             </div>
         @endif
     @endif
-    <div class="card border-info">
+
+    <div class="card">
         <div class="card-header">
-            <div class="row">
-                <div>
-                    <h4 class="card-title d-flex justify-content-between">
-                        <span>Manage Exam Candidate</span>
-                    </h4>
-                </div>
-            </div>
+            <h4 class="card-title">
+                <span>Manage Candidate</span>
+            </h4>
         </div>
-        <div class="card-body pt-0" style="padding: 1px !important;"></div>
-    </div>
-    <div class="card border-info">
-        <div class="card-header border-info">
+        <div class="card-body p-0">
             <ul class="nav nav-tabs nav-tabs-solid nav-tabs-rounded">
                 <li class="nav-item">
                     <a class="nav-link active restore" href="#restore" data-bs-toggle="tab">Restore Candidate</a>
@@ -40,135 +34,205 @@
                         Password</a>
                 </li>
             </ul>
-        </div>
-        <div class="card-body p-0">
             <div class="tab-content">
                 <div class="tab-pane show active" id="restore">
                     <div class="row p-3">
-                            <h3>Restore Logged Out Candidate</h3><br>
-                            <form id="frm1" class="style-frm" method="POST" action="">
-                                @csrf
-                                            <table>
-                                                <tr>
-                                                    <td><b>Candidate Exam</b></td>
-                                                    <td>
-                                                        <select name="examtype" id="examtype" class="form-control">
-                                                            <option value="">--Select Exam Type--</option>
-                                                            @foreach($testConfigs as $testConfig)
-                                                                <option value="{{ $testConfig->id }}">{{ $testConfig->code ?? "" }}-{{$testConfig->type ??""}}-{{$testConfig->session ??""}}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td><b>Indexing Number</b></td>
-                                                    <td>
-                                                        <input type="text" name="username" id="username" class="form-control">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td>
-                                                        <button id="btn-nxt-step1" class="btn btn-primary">Load Candidate's Profile</button>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                        <h3>Restore Logged Out Candidate</h3><br>
+                        <form id="frm1" class="style-frm" method="POST" action="">
+                            @csrf
+                            <table>
+                                <tr>
+                                    <td><b>Candidate Exam</b></td>
+                                    <td>
+                                        <select name="examtype" id="examtype" class="form-control">
+                                            <option value="">--Select Exam Type--</option>
+                                            @foreach ($testConfigs as $testConfig)
+                                                <option value="{{ $testConfig->id }}">
+                                                    {{ $testConfig->code ?? '' }}-{{ $testConfig->type ?? '' }}-{{ $testConfig->session ?? '' }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Indexing Number</b></td>
+                                    <td>
+                                        <input type="text" name="username" id="username" class="form-control">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button id="btn-nxt-step1" class="btn btn-primary">Load Candidate's Profile</button>
+                                    </td>
+                                </tr>
+                            </table>
 
-                                <div id="second-step" style='display:none;'>
+                            <div id="second-step" style='display:none;'>
 
-                                </div>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
-                        <div class="tab-pane" id="time_control">
-                            <form id="frm2" method="post" action="{{ route('toolbox.invigilator.increase-time.view') }}">
-                                @csrf
-                                <fieldset><legend>Enter Candidate's Details</legend>
-                                    <div id="cand_data">
-                                        <table>
-                                            <tr>
-                                                <td><b> Candidate Type</b></td>
-                                                <td>
-                                                    <select name="candidatetype_inc" id="candidatetype_inc" class="form-control">
-                                                        <option value="">--Select Candidate Type --</option>
-                                                        @foreach($candidateTypes as $type)
-                                                            <option value="{{ $type->id }}">{{ $type->name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Exam</td>
-                                                <td>
-                                                    <select name="testid_inc" id="testid_inc" class="form-control">
-                                                        <option value="">--Select Exam--</option>
-                                                        @foreach($examTypes as $exam)
-                                                            <option value="{{ $exam->testid }}">{{ strtoupper($exam->testname) }}-{{ $exam->testtypename }}-{{ $exam->session }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td><b> Username</b></td>
-                                                <td> <input type="text" name="username_inc" value="" class="form-control"/></td>
-                                            </tr>
-                                            <tr>
-                                                <td></td>
-                                                <td>
-                                                    <button type="submit" name="inc_time" id="inc_time" class="btn btn-primary">View Candidate's Time Usage</button>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </fieldset>
-                            </form>
-                            <div id="cand_data2" style="display:none"></div>
-                        </div>
+                <div class="tab-pane" id="time_control">
+                    <form id="frm2" method="post" action="{{ route('toolbox.invigilator.increase-time.view') }}">
+                        @csrf
+                        <fieldset>
+                            <legend>Enter Candidate's Details</legend>
+                            <div id="cand_data">
+                                <table>
+                                    <tr>
+                                        <td><b> Candidate Type</b></td>
+                                        <td>
+                                            <select name="candidatetype_inc" id="candidatetype_inc" class="form-control">
+                                                <option value="">--Select Candidate Type --</option>
+                                                @foreach ($candidateTypes as $type)
+                                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Exam</td>
+                                        <td>
+                                            <select name="testid_inc" id="testid_inc" class="form-control">
+                                                <option value="">--Select Exam--</option>
+                                                @foreach ($examTypes as $exam)
+                                                    <option value="{{ $exam->testid }}">
+                                                        {{ strtoupper($exam->testname) }}-{{ $exam->testtypename }}-{{ $exam->session }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b> Username</b></td>
+                                        <td> <input type="text" name="username_inc" value=""
+                                                class="form-control" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <button type="submit" name="inc_time" id="inc_time"
+                                                class="btn btn-primary">View Candidate's Time Usage</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </form>
+                    <div id="cand_data2" style="display:none"></div>
+                </div>
 
-                        <div class="tab-pane" id="reset_password">
-                            <form action="{{route('toolbox.invigilator.reset.password')}}" method="post">
-                                @csrf
-                                <div class="modal-body">
-                                    <div class="hours-info">
-                                        <div class="row hours-cont">
-                                            <div class="col-12 col-md-12">
-                                                <div class="row">
-                                                    <div class="col-12 col-md-6">
-                                                        <div class="mb-6">
-                                                            <label for="index_number" class="mb-6">Indexing Number</label>
-                                                            <input type="text" id="index_number" name="index_number" class="form-control">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-md-6">
-                                                        <div class="mb-6">
-                                                            <label for="npassword" class="mb-6">Enter New Password</label>
-                                                            <input type="text" id="npassword" name="npassword" class="form-control">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-md-6">
-                                                        <div class="mb-6">
-                                                            <label for="rnpassword" class="mb-6">Confirm New Password</label>
-                                                            <input type="text" id="rnpassword" name="rnpassword" class="form-control">
-                                                        </div>
-                                                    </div>
+                <div class="tab-pane" id="reset_password">
+                    <form action="{{ route('toolbox.invigilator.reset.password') }}" method="post">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="hours-info">
+                                <div class="row hours-cont">
+                                    <div class="col-12 col-md-12">
+                                        <div class="row">
+                                            <div class="col-12 col-md-6">
+                                                <div class="mb-6">
+                                                    <label for="index_number" class="mb-6">Indexing Number</label>
+                                                    <input type="text" id="index_number" name="index_number"
+                                                        class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6">
+                                                <div class="mb-6">
+                                                    <label for="npassword" class="mb-6">Enter New Password</label>
+                                                    <input type="text" id="npassword" name="npassword"
+                                                        class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6">
+                                                <div class="mb-6">
+                                                    <label for="rnpassword" class="mb-6">Confirm New Password</label>
+                                                    <input type="text" id="rnpassword" name="rnpassword"
+                                                        class="form-control">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-sm btn-primary submit-btn text-light">Save</button>
-                            </form>
+                            </div>
                         </div>
-                    </div>
+                        <button type="submit" class="btn btn-sm btn-primary submit-btn text-light">Save</button>
+                    </form>
                 </div>
             </div>
+        </div>
+    </div>
+   
 
-            @endsection
+    <div class="card">
+        <div class="card-header pb-0 card-no-border">
+          <h4>Candidates</h4>
+        </div>
+        <div class="card-body">
+          <div class="dt-ext table-responsive custom-scrollbar">
+            <table class="display" id="export-button">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Gender</th>
+                  <th>Indexing</th>
+                  <th>Cadre</th>
+                  <th>Papers</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach($candidates as $candidate)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>
+                            <img class="img-fluid table-avtar" src="{{ $candidate->passport() }}" alt="">
+                            {{ $candidate->fullname() }}
+                        </td>
+                        <td>{{ $candidate->gender }}</td>
+                        <td>{{ $candidate->indexing }}</td>
+                        <td>{{ $candidate->cadre->name ?? ''}}</td>
+                        <td>{{ $candidate->papers() }}</td>
+                        <td>
+                             
+                            <div class="btn-group">
+                                <button class="btn btn-success rounded-pill dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</button>
+                                <ul class="dropdown-menu" style="">
+                                  <li><a class="dropdown-item" href="#">Reset IP </a></li>
+                                  <li><a class="dropdown-item" href="#">Reset Time</a></li>
+                                  <li><a class="dropdown-item" href="#">Reset Password </a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+              </tbody>
+              <tfoot>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Gender</th>
+                    <th>Indexing</th>
+                    <th>Cadre</th>
+                    <th>Papers</th>
+                    <th>Action</th>
+                  </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+
+@endsection
 
 @section('script')
-    <script>
-        $(function () {
+<script>
+        $(function() {
             let header = $('#header')
             let restore = $('#restore-div')
             let time_control = $('#time_control-div')
@@ -176,8 +240,8 @@
         })
 
         //restore candidate details
-        $(document).ready(function () {
-            $('#btn-nxt-step1').click(function (e) {
+        $(document).ready(function() {
+            $('#btn-nxt-step1').click(function(e) {
                 e.preventDefault();
 
                 var examtype = $('#examtype').val();
@@ -193,7 +257,7 @@
                         examtype: examtype,
                         username: username
                     },
-                    success: function (response) {
+                    success: function(response) {
                         $('#second-step').html(`
                     <form class="style-frm">
                     @csrf
@@ -235,7 +299,7 @@
                 `);
                         $('#second-step').show();
                     },
-                    error: function (xhr) {
+                    error: function(xhr) {
                         let errorMessage = "An error occurred";
                         if (xhr.responseJSON && xhr.responseJSON.errors) {
                             errorMessage = xhr.responseJSON.errors.join(", ");
@@ -248,34 +312,34 @@
             });
         });
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             $("#testid_inc").select2();
         });
 
-        $(document).on("submit", "#frm2", function (event) {
+        $(document).on("submit", "#frm2", function(event) {
             event.preventDefault();
             $.ajax({
                 type: 'post',
                 url: '{{ route('toolbox.invigilator.increase-time.view') }}',
                 data: $("#frm2").serialize()
-            }).done(function (msg) {
+            }).done(function(msg) {
                 $("#cand_data2").empty().html(msg).slideDown();
                 $("#cand_data").slideUp();
             });
         });
 
-        $(document).on("click", "#btn-bk-step3", function (event) {
+        $(document).on("click", "#btn-bk-step3", function(event) {
             $("#cand_data").slideDown();
             $("#cand_data2").slideUp();
         });
 
-        $(document).on("click", "#btn-nxt-step3", function (event) {
+        $(document).on("click", "#btn-nxt-step3", function(event) {
             event.preventDefault();
             $.ajax({
                 type: 'post',
                 url: '{{ route('toolbox.invigilator.save-time.adjust') }}',
                 data: $("#frm3").serialize()
-            }).done(function (msg) {
+            }).done(function(msg) {
                 alert(msg == 1 ? "Time was adjusted successfully!" : "Operation was not successful!");
             });
         });

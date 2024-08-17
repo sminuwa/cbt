@@ -108,10 +108,8 @@
                         <span>Manage Exams </span></a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('admin.exams.setup.index') }}">Pull Record</a></li>
-                        <li><a href="{{ route('toolbox.invigilator.index') }}">Invigilators</a></li>
+                        <li><a href="{{ route('toolbox.invigilator.index') }}">Candidates</a></li>
                         <li><a href="#">Push Record</a></li>
-                        <li><a href="#">Release IP</a></li>
-                        <li><a href="#">Reset Time</a></li>
                     </ul>
                 </li>
 

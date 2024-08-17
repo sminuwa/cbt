@@ -42,7 +42,12 @@
         <div class="col-12 p-0">
             <div class="login-card login-dark">
                 <div>
-                    <div><a class="logo" href="#"><img class="img-fluid for-dark" src="{!! logo() !!}" alt="looginpage" width="100"><img class="img-fluid for-light" src="{!! logo() !!}" alt="looginpage" width="100"></a></div>
+                    <div>
+                        <a class="logo" href="#">
+                            <img class="img-fluid for-dark" src="{!! logo(100,100) !!}" alt="looginpage" width="100">
+                            <img class="img-fluid for-light" src="{!! logo(100,100) !!}" alt="looginpage" width="100">
+                        </a>
+                    </div>
                     <div class="login-main">
                         <form class="theme-form" action="{{route('auth.admin.login.proc')}}" method="POST">
                             <h4>Admin Sign in </h4>

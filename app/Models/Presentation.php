@@ -27,6 +27,7 @@ class Presentation extends Model
                 (SELECT question_bank_id
                     FROM scores
                     WHERE scores.question_bank_id = presentations.question_bank_id
+                    AND scores.scheduled_candidate_id = $scheduled_candidate_id
                     GROUP BY scores.question_bank_id) as has_score
             ")->join('test_sections', 'test_sections.id', 'presentations.test_section_id')
             ->join('question_banks', 'question_banks.id', 'presentations.question_bank_id')
@@ -112,7 +113,7 @@ class Presentation extends Model
             ])
             ->distinct()
             ->havingRaw("
-                has_score > 0
+                has_score <> null
             ")
             ->get();
 
