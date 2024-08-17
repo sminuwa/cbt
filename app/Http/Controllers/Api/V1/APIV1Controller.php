@@ -22,6 +22,9 @@ use App\Models\TestSection;
 use App\Models\TestSubject;
 use App\Models\TestType;
 use App\Models\User;
+use App\Models\TimeControl;
+use App\Models\Presentation;
+use App\Models\Score;
 use App\Models\Venue;
 use Illuminate\Http\Request;
 use ZipArchive;
@@ -147,6 +150,23 @@ class APIV1Controller extends Controller
             }
 
             return response()->download($zipFilePath)->deleteFileAfterSend(true);
+        }
+
+        return response()->json(['status'=>0,'error'=>'Invalid Credentials'],403);
+    }
+
+    public function pushExams(Request $request){
+
+        // return $request;
+        $api_key = $request->header('api_key');
+        $secretKey = $request->header('secret_key');
+        $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
+        if($center){
+            TimeControl::upsert($request->times,['test_config_id','scheduled_candidate_id']);
+            Presentation::upsert($request->presentations,['scheduled_candidate_id','test_config_id','test_section_id','question_bank_id']);
+            Score::upsert($request->scores,['scheduled_candidate_id','test_config_id','question_bank_id','answer_option_id']);
+
+            return response()->json(['status'=>1,'data'=>1]);
         }
 
         return response()->json(['status'=>0,'error'=>'Invalid Credentials'],403);

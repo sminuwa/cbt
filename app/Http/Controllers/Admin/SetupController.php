@@ -3,24 +3,27 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdminAnswerOption;
-use App\Models\AdminCandidate;
-use App\Models\AdminCandidateSubject;
-use App\Models\AdminCentre;
-use App\Models\AdminExamType;
-use App\Models\AdminQuestionBank;
-use App\Models\AdminScheduledCandidate;
-use App\Models\AdminSubject;
-use App\Models\AdminTestCode;
-use App\Models\AdminTestCompositor;
-use App\Models\AdminTestConfig;
-use App\Models\AdminTestInvigilator;
-use App\Models\AdminTestQuestion;
-use App\Models\AdminTestSection;
-use App\Models\AdminTestSubject;
-use App\Models\AdminTestType;
-use App\Models\AdminUser;
-use App\Models\AdminVenue;
+use App\Models\AnswerOption;
+use App\Models\Candidate;
+use App\Models\CandidateSubject;
+use App\Models\Centre;
+use App\Models\ExamType;
+use App\Models\QuestionBank;
+use App\Models\ScheduledCandidate;
+use App\Models\Subject;
+use App\Models\TestCode;
+use App\Models\TestCompositor;
+use App\Models\TestConfig;
+use App\Models\TestInvigilator;
+use App\Models\TestQuestion;
+use App\Models\TestSection;
+use App\Models\TestSubject;
+use App\Models\TestType;
+use App\Models\User;
+use App\Models\Venue;
+use App\Models\TimeControl;
+use App\Models\Presentation;
+use App\Models\Score;
 use App\Models\PullStatus;
 use App\Services\BackupAndTruncateService;
 use Carbon\Carbon;
@@ -100,17 +103,17 @@ class SetupController extends Controller
 
                 DB::transaction(function () use ($data) {
 
-                    AdminCentre::query()->delete();
-                    AdminExamType::query()->delete();
-                    AdminTestType::query()->delete();
-                    AdminVenue::query()->delete();
-                    AdminTestCode::query()->delete();
+                    Centre::query()->delete();
+                    ExamType::query()->delete();
+                    TestType::query()->delete();
+                    Venue::query()->delete();
+                    TestCode::query()->delete();
                     // Insert new data
-                    AdminCentre::insert($data['centres']);
-                    AdminExamType::insert($data['exam_types']);
-                    AdminTestType::insert($data['test_types']);
-                    AdminVenue::insert($data['venues']);
-                    AdminTestCode::insert($data['test_codes']);
+                    Centre::insert($data['centres']);
+                    ExamType::insert($data['exam_types']);
+                    TestType::insert($data['test_types']);
+                    Venue::insert($data['venues']);
+                    TestCode::insert($data['test_codes']);
                     // Log the pull
                     PullStatus::create([
                         'resource' => 'basic-data',
@@ -205,16 +208,16 @@ class SetupController extends Controller
 //                    AdminCandidate::insert($data['']);
 //                    AdminCandidateSubject::insert($data['']);
 //                    AdminScheduledCandidate::insert($data['']);
-                    AdminAnswerOption::insert($data['answer_options']);
-                    AdminSubject::insert($data['subjects']);
-                    AdminTestCompositor::insert($data['test_compositors']);
-                    AdminTestConfig::insert($data['test_configs']);
-                    AdminTestInvigilator::insert($data['test_invigilators']);
-                    AdminTestQuestion::insert($data['test_questions']);
-                    AdminTestSection::insert($data['test_sections']);
-                    AdminTestSubject::insert($data['test_subjects']);
-                    AdminUser::insert($data['users']);
-                    AdminQuestionBank::insert($data['question_banks']);
+                    AnswerOption::insert($data['answer_options']);
+                    Subject::insert($data['subjects']);
+                    TestCompositor::insert($data['test_compositors']);
+                    TestConfig::insert($data['test_configs']);
+                    TestInvigilator::insert($data['test_invigilators']);
+                    TestQuestion::insert($data['test_questions']);
+                    TestSection::insert($data['test_sections']);
+                    TestSubject::insert($data['test_subjects']);
+                    User::insert($data['users']);
+                    QuestionBank::insert($data['question_banks']);
                     // Log the pull
                     PullStatus::create([
                         'resource' => 'test-data',
@@ -281,14 +284,14 @@ class SetupController extends Controller
 
                 DB::transaction(function () use ($data) {
 
-                    AdminCandidate::query()->delete();
-                    AdminCandidateSubject::query()->delete();
-                    AdminScheduledCandidate::query()->delete();
+                    Candidate::query()->delete();
+                    CandidateSubject::query()->delete();
+                    ScheduledCandidate::query()->delete();
                     // Insert new data
 
-                    AdminCandidate::insert($data['candidates']);
-                    AdminCandidateSubject::insert($data['candidate_subjects']);
-                    AdminScheduledCandidate::insert($data['scheduled_candidates']);
+                    Candidate::insert($data['candidates']);
+                    CandidateSubject::insert($data['candidate_subjects']);
+                    ScheduledCandidate::insert($data['scheduled_candidates']);
                     // Log the pull
                     PullStatus::create([
                         'resource' => 'candidate-data',
@@ -372,5 +375,64 @@ class SetupController extends Controller
 
     private function apiUrl($url){
         return env("CHPRBN_SERV_ADDR").$url;
+    }
+
+
+    public function pushExams(Request $request){
+        $counts = TimeControl::where('pushed',0)->count();
+        return view("pages.admin.setup.push",compact('counts'));
+    }
+
+    public function pullExamToServer(Request $request){
+        $times = TimeControl::where('pushed',0)->select(['test_config_id','scheduled_candidate_id','completed','start_time','current_time','elapsed','ip','pushed'])->get();
+        $presentations = Presentation::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','test_section_id','question_bank_id','answer_option_id','pushed'])->get();
+        $scores = Score::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','question_bank_id','answer_option_id','time_elapse','scoring_mode','point_scored','pushed'])->get();
+
+
+
+        $apiUrl = $this->apiUrl('resource/push');
+
+        // Define headers if necessary
+        $headers = [
+            'Accept' => 'application/json',
+            'api_key'=>env("CHPRBN_CBT_API_KEY"),
+            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+        ];
+
+        // Fetch data from the API
+        $response = Http::withHeaders($headers)->post($apiUrl, compact('times','presentations','scores'));
+
+//        return $response['status'];
+        if ($response->successful()) {
+            TimeControl::where('pushed',0)->update(['pushed'=>1]);
+            Presentation::where('pushed',0)->update(['pushed'=>1]);
+            Score::where('pushed',0)->update(['pushed'=>1]);
+            return response()->json(['success' => true, 'message' => 'Download Successful'], 200);
+        }
+
+
+
+        // return ;
+    }
+
+
+    protected function validateAndCorrectTime($timeString)
+    {
+        try {
+            // Use Carbon to attempt parsing the time
+            $time = \Carbon\Carbon::createFromFormat('H:i:s', $timeString);
+
+            // If the hour is greater than 23, reset it to 23:59:59
+            if ($time->hour > 23) {
+                $time->hour = 23;
+                $time->minute = 59;
+                $time->second = 59;
+            }
+
+            return $time->format('H:i:s');
+        } catch (\Exception $e) {
+            // Handle the error - set to a default time or null
+            return '00:00:00';  // or handle it as necessary
+        }
     }
 }

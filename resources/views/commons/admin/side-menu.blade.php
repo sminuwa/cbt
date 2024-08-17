@@ -33,7 +33,7 @@
 
                 <li class="sidebar-list">
                     <i class="fa fa-thumb-tack"> </i>
-                    <a class="sidebar-link text-white sidebar-title link-nav" 
+                    <a class="sidebar-link text-white sidebar-title link-nav"
                         href="{{ route('admin.dashboard.index') }}" style="vertical-align:middle !important">
                         <i class="las la-home la-md-2x"></i>
                         <span>Dashboard</span>
@@ -63,7 +63,7 @@
                     <a class="sidebar-link sidebar-title"
                         href="#">
                         <i class="las la-question-circle la-md-2x"></i>
-                        <span>Question Bank </span></a> 
+                        <span>Question Bank </span></a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('admin.questions.authoring.author') }}">Author Questions</a></li>
                         <li><a href="{{ route('admin.questions.authoring.edit.questions') }}">Modify Questions</a></li>
@@ -83,7 +83,7 @@
                         <li><a href="{{ route('toolbox.candidate-types.index') }}">Exam Type</a></li>
                         <li><a href="{{ route('toolbox.candidate_upload.upload.candidate') }}">Candidates</a></li>
                         <li><a href="{{ route('toolbox.candidate_image_upload.upload.images') }}">Candidate Pictures</a></li>
-                        
+
                     </ul>
                 </li>
                 <li class="sidebar-list">
@@ -127,13 +127,13 @@
 
                 <li class="sidebar-list">
                     <i class="fa fa-thumb-tack"> </i>
-                    <a class="sidebar-link text-white sidebar-title link-nav" 
+                    <a class="sidebar-link text-white sidebar-title link-nav"
                         href="{{ route('auth.admin.logout') }}">
                         <i class="las la-sign-out-alt la-md-2x"></i>
                         <span>Logout</span>
                     </a>
                 </li>
-                
+
             </ul>
             <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>
         </div>

@@ -159,6 +159,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function (
 
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
         Route::get('/', [SetupController::class, 'index'])->name('index');
+        Route::get('/push', [SetupController::class, 'pushExams'])->name('push');
         Route::post('pull/basic', [SetupController::class, 'pullBasicResource'])->name('pull.basic');
         Route::post('pull/test', [SetupController::class, 'pullTestResource'])->name('pull.test');
         Route::post('pull/candidate', [SetupController::class, 'pullCandidateResource'])->name('pull.candidate');
@@ -205,11 +206,15 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('/save-time', [CandidateUploadController::class, 'saveTimeAdjustment'])->name('save-time.adjust');
         Route::post('/reset_password', [CandidateUploadController::class, 'resetCandidatePassword'])->name('reset.password');
         Route::post('/load-profile', [CandidateUploadController::class, 'loadProfile'])->name('candidate.loadProfile');
+        Route::post('/restore', [CandidateUploadController::class, 'restoreCandidate'])->name('candidate.restore');
+        Route::post('/end/exams', [CandidateUploadController::class, 'endCandidateExam'])->name('candidate.endexams');
+        Route::post('/adjust/time', [CandidateUploadController::class, 'adjustCandidateTime'])->name('candidate.adjusttime');
     });
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
         Route::get('/', [SetupController::class, 'index'])->name('index');
         Route::post('pull/basic', [SetupController::class, 'pullBasicResource'])->name('pull.basic');
         Route::post('pull/test', [SetupController::class, 'pullTestResource'])->name('pull.test');
+        Route::get('push/finished', [SetupController::class, 'pullExamToServer'])->name('push.finished');
     });
 });
 
@@ -219,6 +224,7 @@ Route::name('api.v1.')->prefix('api/v1/')->group(function () {
         Route::post('test/', [APIV1Controller::class, 'testData'])->name('test');
         Route::post('candidate/', [APIV1Controller::class, 'candidateData'])->name('candidate');
         Route::post('candidate/picture', [APIV1Controller::class, 'candidatePictures'])->name('candidate.picture');
+        Route::post('push', [APIV1Controller::class, 'pushExams'])->name('exams.push');
     });
 
 })->middleware('api-auth');

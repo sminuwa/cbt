@@ -46,7 +46,7 @@
                     @foreach($actives as $active)
                         <tr>
                             <td>{{$loop->iteration}}</td>
-                            <td>                        
+                            <td>
                                 <a href="patient-profile.html" class="avatar avatar-sm me-2">
                                     <img class="avatar-img rounded-circle" src="{{asset('assets/img/patients/patient2.jpg')}}" alt="{{$active->indexing}} - {{$active->name}}">
                                 </a>
@@ -55,9 +55,21 @@
                             <td>{{$active->name}}</td>
                             <td>{{$active->address}}</td>
                             <td>
-                                <a href="javascript:;" class="btn btn-sm btn-outline-danger">End Exam</a>
-                                <a href="javascript:;" class="btn btn-sm btn-outline-info">Restore</a>
-                                <a href="javascript:;" class="btn btn-sm btn-outline-primary">Adjust Time</a>
+                                <a class="btn btn-sm btn-outline-danger"
+                                   data-bs-toggle="modal"
+                                   href="#end_candidate_exams"
+                                   data-id="{{$active->eid}}"
+                                >End Exam</a>
+                                <a class="btn btn-sm btn-outline-info"
+                                   data-bs-toggle="modal"
+                                   href="#restore_candidate"
+                                   data-id="{{$active->eid}}"
+                                >Restore</a>
+                                <a class="btn btn-sm btn-outline-primary"
+                                   data-bs-toggle="modal"
+                                   href="#adjust_candidate_time"
+                                   data-id="{{$active->eid}}"
+                                >Adjust Time</a>
                             </td>
                     </tr>
                  @endforeach
@@ -89,3 +101,129 @@
     </div>
     </div>
 @endif
+@section('script')
+{{--    Restore Candidates Modal--}}
+    <div class="modal fade custom-modal" id="restore_candidate">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Restore Candidate</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to <strong>Restore</strong> this Candidate ({{$active->indexing}})?</p>
+                    <input type="hidden" name="id" id="id">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnRestore" class="btn btn-sm btn-danger submit-btn text-light"><i class="fa fa-trash-o"></i>
+                        Restore
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{{--    End Candidate Exams Modal--}}
+    <div class="modal fade custom-modal" id="end_candidate_exams">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">End Candidate Exams</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to <strong>End</strong> this Candidate Exam ({{$active->indexing}})?</p>
+                    <input type="hidden" name="id" id="id">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnRestore" class="btn btn-sm btn-danger submit-btn text-light"><i class="fa fa-trash-o"></i>
+                        End
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{{--Adjust Candidate Time Modal--}}
+    <div class="modal fade custom-modal" id="adjust_candidate_time">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add/Edit Exam Type</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <form action="{{route('toolbox.candidate-types.store')}}" method="post">
+                    @csrf
+                    <input type="hidden" id="etype_id" name="id"/>
+                    <div class="modal-body">
+                        <div class="hours-info">
+                            <div class="row hours-cont">
+                                <div class="col-12 col-md-12">
+                                    <div class="row">
+
+                                        <div class="col-12 col-md-6">
+                                            <div class="mb-6">
+                                                <label for="etype" class="mb-6">Exam Type</label>
+                                                <input type="text" id="etype" name="etype" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer submit-section text-end">
+                        <button type="submit" class="btn btn-sm btn-primary submit-btn text-light">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<script>
+    $(document).ready(function () {
+        $('#delete').modal('hide');
+
+
+        $(document).on('click', '.delete', function () {
+            $(".modal-body #id").val($(this).data('id'));
+        })
+
+        $('#btnRestore').on('click', function () {
+            let id = $(".modal-body #id").val()
+            console.log(id)
+            $.get('{{route('candidate.restore',[':id'])}}'.replace(':id', id),
+                function (response) {
+                    console.log(response)
+                    $('#restore').modal('hide')
+                    location.reload()
+                }
+            )
+        })
+        $('#btnEndExam').on('click', function () {
+            let id = $(".modal-body #id").val()
+            console.log(id)
+            $.get('{{route('candidate.endexam',[':id'])}}'.replace(':id', id),
+                function (response) {
+                    console.log(response)
+                    $('#endexam').modal('hide')
+                    location.reload()
+                }
+            )
+        })
+        $('#btnAdjustTime').on('click', function () {
+            let id = $(".modal-body #id").val()
+            console.log(id)
+            $.get('{{route('candidate.adjusttime',[':id'])}}'.replace(':id', id),
+                function (response) {
+                    console.log(response)
+                    $('#adjust_time').modal('hide')
+                    location.reload()
+                }
+            )
+        })
+    });
+</script>
+@endsection

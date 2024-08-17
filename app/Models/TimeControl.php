@@ -36,8 +36,6 @@ class TimeControl extends Model
 		'test_config_id' => 'int',
 		'scheduled_candidate_id' => 'int',
 		'completed' => 'bool',
-		'start_time' => 'datetime',
-		'current_time' => 'datetime',
 		'elapsed' => 'int'
 	];
 
