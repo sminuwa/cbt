@@ -206,6 +206,9 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('/save-time', [CandidateUploadController::class, 'saveTimeAdjustment'])->name('save-time.adjust');
         Route::post('/reset_password', [CandidateUploadController::class, 'resetCandidatePassword'])->name('reset.password');
         Route::post('/load-profile', [CandidateUploadController::class, 'loadProfile'])->name('candidate.loadProfile');
+        Route::post('/restore', [CandidateUploadController::class, 'restoreCandidate'])->name('candidate.restore');
+        Route::post('/end/exams', [CandidateUploadController::class, 'endCandidateExam'])->name('candidate.endexams');
+        Route::post('/adjust/time', [CandidateUploadController::class, 'adjustCandidateTime'])->name('candidate.adjusttime');
     });
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
         Route::get('/', [SetupController::class, 'index'])->name('index');

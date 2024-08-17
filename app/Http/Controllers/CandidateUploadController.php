@@ -6,6 +6,7 @@ use App\Imports\CandidatesImport;
 use App\Models\Candidate;
 use App\Models\ExamType;
 use App\Models\TestConfig;
+use App\Models\TimeControl;
 use DateInterval;
 use DateTime;
 use Illuminate\Http\Request;
@@ -58,21 +59,21 @@ class CandidateUploadController extends Controller
 
     public function imageUpload(Request $request)
     {
-        
+
         // Adjust memory limit and execution time if needed
         // ini_set("memory_limit", "256M");
         // ini_set('max_execution_time', 300);
         // $request->validate([
         //     'files.*' => 'required|file|mimes:jpg|max:2048', // Validate file types and size
         // ]);
-        
+
         $path = public_path(candidate_passport_path()); // Define your upload directory
         $successMessage = '';
         // return $path;
         foreach ($request->file('files') as $file) {
             $fileName = $file->getClientOriginalName();
             $fileExtension = $file->getClientOriginalExtension();
-            
+
             if ($file->isValid() && in_array($fileExtension, ['jpg', 'png'])) {
                 $file->move($path, $fileName); // Move uploaded file to specified directory
 
@@ -194,5 +195,27 @@ class CandidateUploadController extends Controller
 
         return redirect()->back()->withErrors(['Candidate not found']);
     }
+
+    public function restoreCandidate(Request $request)
+    {
+        $restore=TimeControl::find($request->id);
+        $restore->ip = null;
+        $restore->save();
+        return response()->json(['message' => 'IP address has been cleared successfully']);
+}
+public function endCandidateExam(Request $request)
+    {
+        $restore=TimeControl::find($request->id);
+        $restore->completed = 1;
+        $restore->save();
+        return response()->json(['message' => 'Exam ended successfully']);
+}
+public function adjustCandidateTime(Request $request)
+    {
+        $restore=TimeControl::find($request->id);
+        $restore->elapsed = $request->added_time;
+        $restore->save();
+        return response()->json(['message' => 'Time Adjusted successfully']);
+}
 
 }
