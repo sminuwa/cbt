@@ -267,6 +267,7 @@ $time_elapsed = $time_control->elapsed;
                                                             class="form-check-input answer_option {{ chr(64+ $loop->iteration) }}_KEY"
                                                             id="{{ $answer_option['answer_option_id'] }}"
                                                             type="radio"
+                                                            {{-- name="q{{ $question_paper['question_bank_id'] }}" --}}
                                                             name="q{{ $question_paper['question_bank_id'] }}"
                                                             question_step="{{ $step }}"
                                                             scheduled_candidate_id="{{ $scheduled_candidate->id }}"

@@ -37,51 +37,59 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/responsive.css') }}">
 </head>
 <body>
-<!-- login page start-->
-<div class="container-fluid p-0">
-    <div class="row m-0">
-        <div class="col-12 p-0">
-            <div class="login-card login-dark">
-                <div>
-                    <div><a class="logo" href="#"><img class="img-fluid for-dark" src="{{ asset('candidate/assets/images/logo/logo.png') }}" alt="looginpage" width="100"><img class="img-fluid for-light" src="{{ asset('candidate/assets/images/logo/logo_dark.png') }}" alt="looginpage" width="100"></a></div>
-                    <div class="login-main">
-                        <form class="theme-form" action="{{ route('candidate.auth.login') }}" method="POST">
-                            <h4>Sign in </h4>
-                            <p>Enter your Exam No & password to login</p>
-{{--                            @csrf--}}
-                            @include('components.alert')
-                            <div class="form-group">
-                                <label class="col-form-label">Exam Type</label>
-                                <select name="test_id" class="form-control" type="text" required>
-                                    <option value="">-- Select Exam -- </option>
-                                    @foreach($exams as $exam)
-                                        <option value="{{ $exam->id }}">{{ $exam->code }} - {{ $exam->type }} - {{ $exam->session }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-form-label">Exam No.</label>
-                                <input class="form-control" type="text" name="username" required="" placeholder="Exam No.">
-                            </div>
-                            <div class="form-group">
-                                <label class="col-form-label">Password </label>
-                                <div class="form-input position-relative">
-                                    <input class="form-control" type="password" name="password" required="" placeholder="*********">
-                                    <div class="show-hide"> <span class="show"></span></div>
-                                </div>
-                            </div>
-                            <div class="form-group mb-0">
-                                <div class="text-end mt-4">
-                                    <button class="btn btn-primary btn-block w-100" type="submit">Sign in</button>
-                                </div>
-                            </div>
 
-                        </form>
-                    </div>
-                </div>
-            </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xl-7">
+            <img class="bg-img-cover bg-center" src="{{ asset('candidate/assets/images/login/2.jpg') }}" alt="looginpage">
         </div>
+      <div class="col-xl-5 p-0">
+        <div class="login-card login-dark">
+          <div>
+            <div>
+                <a class="logo text-center" href="#">
+                    <img class="img-fluid for-dark" src="{!! logo(100,100) !!}" alt="logo-image">
+                    <img class="img-fluid for-light" src="{!! logo(100,100) !!}" alt="logo-image">
+                </a>
+            </div>
+            <div class="login-main">
+                <form class="theme-form" action="{{ route('candidate.auth.login') }}" method="POST">
+                    <h4>Sign in </h4>
+                    <p>Enter your Exam No & password to login</p>
+                    @include('components.alert')
+                    <div class="form-group">
+                        <label class="col-form-label">Exam Type</label>
+                        <select name="test_id" class="form-control" type="text" required>
+                            <option value="">-- Select Exam -- </option>
+                            @foreach($exams as $exam)
+                                <option value="{{ $exam->id }}">{{ $exam->code }} - {{ $exam->type }} - {{ $exam->session }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Exam No.</label>
+                        <input class="form-control" type="text" name="username" required="" placeholder="Exam No.">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Password </label>
+                        <div class="form-input position-relative">
+                            <input class="form-control" type="password" name="password" required="" placeholder="*********">
+                            <div class="show-hide"> <span class="show"></span></div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-0">
+                        <div class="text-end mt-4">
+                            <button class="btn btn-primary btn-block w-100" type="submit">Sign in</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
     <!-- latest jquery-->
     <script src="{{ asset('candidate/assets/js/jquery.min.js') }}"></script>
     <!-- Bootstrap js-->
@@ -111,6 +119,6 @@
             @endif
          })
     </script>
-</div>
+  </div>
 </body>
 </html>

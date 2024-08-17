@@ -27,11 +27,18 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/slick-theme.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/scrollbar.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/animate.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/prism.css') }}">
+
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/intltelinput.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/tagify.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/date-picker.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/line-awesome/css/line-awesome.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/sweetalert2.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/datatables.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/datatable-extension.css') }}">
     <!-- Plugins css Ends-->
     <!-- Bootstrap css-->
+    
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/bootstrap.css') }}">
     <!-- App css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/style.css') }}">
@@ -110,6 +117,7 @@
 <!-- Bootstrap js-->
 <script src="{{ asset('candidate/assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
 <!-- feather icon js-->
+    
 <script src="{{ asset('candidate/assets/js/icons/feather-icon/feather.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/icons/feather-icon/feather-icon.js') }}"></script>
 <!-- scrollbar js-->
@@ -123,13 +131,48 @@
 <script src="{{ asset('candidate/assets/js/slick/slick.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/slick/slick.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/header-slick.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/prism/prism.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/clipboard/clipboard.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/custom-card/custom-card.js') }}"></script>
+
+<script src="{{ asset('candidate/assets/js/select2/tagify.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/select2/tagify.polyfills.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/select2/intltelinput.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/select2/telephone-input.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/select2/custom-inputsearch.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/select2/select3-custom.js') }}"></script>
 <!-- calendar js-->
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.en.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.custom.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/select2/select2.full.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/sweet-alert/sweetalert2.all.min.js') }}"></script>
+
+<script src="{{ asset('candidate/assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/jszip.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/buttons.colVis.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/pdfmake.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/vfs_fonts.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.autoFill.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.select.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/buttons.bootstrap5.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/buttons.print.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.bootstrap5.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.responsive.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/responsive.bootstrap5.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.keyTable.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.colReorder.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.fixedHeader.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.rowReorder.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.scroller.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/datatable/datatable-extension/custom.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/tooltip-init.js') }}"></script>
 <!-- Plugins JS Ends-->
+
+<!-- calendar js-->
+<script src="{{ asset('candidate/assets/js/height-equal.js') }}"></script>
 <!-- Theme js-->
 <script src="{{ asset('candidate/assets/js/script.js') }}"></script>
 {{-- <script src="{{ asset('candidate/assets/js/theme-customizer/customizer.js') }}"></script> --}}

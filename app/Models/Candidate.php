@@ -81,6 +81,9 @@ class Candidate extends Authenticatable
     }
 
 
+    public function papers(){
+        return 'P1,P2';
+    }
 
 
 }

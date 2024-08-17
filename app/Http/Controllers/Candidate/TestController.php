@@ -112,6 +112,7 @@ class TestController extends Controller
 //        return $question_array;
 //        $question_array = (object)$question_array;
         $question_answered = Presentation::question_answered($subject->id,$test->id, $scheduled_candidate->id);
+        // return $question_array;
         return view('pages.candidate.test.question', compact('question_array','question_answered','subject'));
     }
 

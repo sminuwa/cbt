@@ -280,6 +280,8 @@ class ReportController extends Controller
                 ->join('candidates', 'candidates.id', '=', 'time_controls.scheduled_candidate_id')
                 ->select(
                     'indexing',
+                    'time_controls.id AS eid',
+                    'scheduled_candidate_id',
                     DB::raw('concat(candidates.surname," ",candidates.firstname," ",candidates.other_names) as name'),
                     'ip as address'
                 )
