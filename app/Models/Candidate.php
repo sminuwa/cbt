@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\File;
+use Illuminate\Database\Query\JoinClause;
 
 class Candidate extends Authenticatable
 {
@@ -85,5 +86,50 @@ class Candidate extends Authenticatable
         return 'P1,P2';
     }
 
+
+    public function scopeManage($query, $test_config_id){
+        return $query->join('scheduled_candidates', function(joinClause $schedule){
+            return $schedule->on('scheduled_candidates.candidate_id', '=', 'candidates.id');
+        })->join('candidate_subjects', function(joinClause $subject) use ($test_config_id) {
+            return $subject->on('candidate_subjects.scheduled_candidate_id', '=', 'scheduled_candidates.id');
+        })->join('schedulings', function(joinClause $scheduling){
+            return $scheduling->on('schedulings.id', '=', 'candidate_subjects.schedule_id');
+        })->join('test_configs', function(joinClause $config){
+            return $config->on('test_configs.id', '=', 'schedulings.test_config_id');
+        })->where('schedulings.test_config_id', '=', $test_config_id)
+        ->selectRaw("
+            candidates.*,
+            test_configs.duration,
+            scheduled_candidates.id as scheduled_candidate_id,
+            (SELECT id 
+            FROM time_controls
+            WHERE time_controls.scheduled_candidate_id = scheduled_candidates.id 
+            AND time_controls.test_config_id = schedulings.test_config_id
+            ) as time_control_id,
+            (SELECT completed 
+            FROM time_controls
+            WHERE time_controls.scheduled_candidate_id = scheduled_candidates.id 
+            AND time_controls.test_config_id = schedulings.test_config_id
+            ) as completed,
+            (SELECT elapsed 
+            FROM time_controls
+            WHERE time_controls.scheduled_candidate_id = scheduled_candidates.id 
+            AND time_controls.test_config_id = schedulings.test_config_id
+            ) as elapsed,
+            (SELECT ip
+            FROM time_controls
+            WHERE time_controls.scheduled_candidate_id = scheduled_candidates.id 
+            AND time_controls.test_config_id = schedulings.test_config_id
+            ) as address,
+            (SELECT GROUP_CONCAT(s.subject_code)
+                FROM candidate_subjects cs
+                JOIN subjects s ON s.id = cs.subject_id 
+                WHERE cs.scheduled_candidate_id = scheduled_candidates.id
+            ) as papers
+        ")
+        ->groupBy('candidate_subjects.scheduled_candidate_id');
+    }
+
+   
 
 }

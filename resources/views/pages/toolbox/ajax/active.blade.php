@@ -8,41 +8,53 @@
             <table class="display" id="export-button-sample">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th></th>
                         <th>Indexing</th>
                         <th>Full name</th>
+                        <th>Papers</th>
                         <th>IP Address</th>
-                        <th>Actions</th>
+                        <th>Status</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($candidates as $candidate)
                         <tr>
-                            <td>{{$loop->iteration}}</td>
+                            <td><img class="img-fluid table-avtar" src="{{ $candidate->passport() }}" alt=""></td>
                             <td>{{$candidate->indexing}}</td>
                             <td>
-                                <img class="img-fluid table-avtar" src="{{ $candidate->passport() }}" alt="">
                                 {{ $candidate->fullname() }}
                             </td>
+                            <td>{{  $candidate->papers }}</td>
                             <td class="ip-address">{{$candidate->address}}</td>
-                            <td>
+                            <td>{{ $candidate->completed }}</td>
+                            <td class="text-end">
                                 @if($candidate->time_control_id)
-                                <button class="btn btn-sm btn-danger"
+                                <button class="btn btn-sm btn-xs btn-danger"
                                    data-bs-toggle="modal"
                                    href="#end_candidate_exams"
                                    data-id="{{$candidate->time_control_id}}"
-                                >End Exam</button>
+                                   data-toggle="tooltip"
+                                   data-bs-placement="top"
+                                   data-bs-title="End Exam"
+                                ><i class="las la-times"></i></button>
                                 <button class="btn btn-sm btn-info restore"
                                     type="button" 
                                     data-id="{{$candidate->time_control_id}}"
-                                    data-indexing="{{  $candidate->indexing }}">
-                                    Restore
+                                    data-indexing="{{  $candidate->indexing }}"
+                                    data-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-title="Restore"
+                                ><i class="las la-undo-alt"></i>
                                 </button>
                                 <button class="btn btn-sm btn-primary adjust-time"
                                    data-id="{{ $candidate->time_control_id }}"
                                    data-elapsed="{{ $candidate->elapsed }}"
                                    data-duration="{{ $candidate->duration }}"
-                                >Adjust Time</button>
+                                   data-toggle="tooltip"
+                                   data-bs-placement="top"
+                                   data-bs-title="Adjust Time"
+                                ><i class="las la-clock"></i></button>
                                 @endif
                             </td>
                     </tr>
@@ -56,7 +68,7 @@
 @endif
 
 <div class="modal fade" id="restore_candidate" tabindex="-1" role="dialog" aria-labelledby="exampleModal" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <form class="restore_form" action="{{ route('exam.candidate.restore') }}" method="post">
             <div class="modal-body">
@@ -106,11 +118,11 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add/Edit Exam Type</h5>
+                    <h5 class="modal-title">Adjust time</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
-                <form action="{{route('toolbox.candidate-types.store')}}" method="post">
+                <form action="{{ route('exam.candidate.endexam')}} " method="post">
                     @csrf
                     <input type="hidden" id="etype_id" name="id"/>
                     <div class="modal-body">
@@ -118,7 +130,6 @@
                             <div class="row hours-cont">
                                 <div class="col-12 col-md-12">
                                     <div class="row">
-
                                         <div class="col-12 col-md-12">
                                             <div class="mb-6">
                                                 <input id="custom-time-range" type="text">
@@ -130,7 +141,10 @@
                         </div>
                     </div>
                     <div class="modal-footer submit-section text-end">
-                        <button type="submit" class="btn btn-sm btn-primary submit-btn text-light">Save</button>
+                        <button type="button" data-bs-dismiss="modal" class="btn btn-sm btn-danger submit-btn text-light">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-sm btn-primary submit-btn text-light">Adjust</button>
                     </div>
                 </form>
             </div>
@@ -138,14 +152,13 @@
     </div>
 
     <script src="{{ asset('candidate/assets/js/range-slider/ion.rangeSlider.min.js') }}"></script>
-
+    {{-- <script src="{{ asset('candidate/assets/js/tooltip-init.js') }}"></script> --}}
     <script>
-       
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
         $(document).ready(function () {
-
-        
             $('#restore').modal('hide');
-            
             $('.restore_form').on('submit', function(e){
                 e.preventDefault();
                 $.ajax({
@@ -186,6 +199,7 @@
                     }
                 )
             })
+
             $('#btnEndExam').on('click', function () {
                 let id = $(".modal-body #id").val()
                 console.log(id)
@@ -198,6 +212,29 @@
                 )
             })
 
+            $('body').on('click','.adjust-time', function () {
+                let candidate = $(this)
+                
+                let minute = candidate.data('elapsed')/60
+            
+                $("#custom-time-range").ionRangeSlider({
+                    min: 0,
+                    max: candidate.data('duration'),
+                    // from: ''+minute+'',
+                })
+
+                let my_range = $("#custom-time-range").data("ionRangeSlider");
+                my_range.update({ from: minute, });
+
+                $('#adjust_candidate_time').modal('toggle')
+                // $.post('{{route('exam.candidate.adjusttime',[':id'])}}'.replace(':id', id),
+                //     function (response) {
+                //         console.log(response)
+                //         $('#adjust_time').modal('hide')
+                //         location.reload()
+                //     }
+                // )
+            })
             
         });
     </script>

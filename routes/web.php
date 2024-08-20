@@ -206,10 +206,8 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('/save-time', [CandidateUploadController::class, 'saveTimeAdjustment'])->name('save-time.adjust');
         Route::post('/reset_password', [CandidateUploadController::class, 'resetCandidatePassword'])->name('reset.password');
         Route::post('/load-profile', [CandidateUploadController::class, 'loadProfile'])->name('candidate.loadProfile');
-        Route::post('/restore', [CandidateUploadController::class, 'restoreCandidate'])->name('candidate.restore');
-        Route::post('/end/exams', [CandidateUploadController::class, 'endCandidateExam'])->name('candidate.endexams');
-        Route::post('/adjust/time', [CandidateUploadController::class, 'adjustCandidateTime'])->name('candidate.adjusttime');
     });
+
     Route::name('authorization.')->prefix('authorization/')->group(function () {
         Route::get('/users', [SetupController::class, 'users'])->name('users.index');
         Route::post('/user/save', [SetupController::class, 'userSave'])->name('user.save');
@@ -223,12 +221,19 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::post('/role/user/save', [SetupController::class, 'roleUserSave'])->name('role.user.save');
         Route::any('/role/user/detach', [SetupController::class, 'roleUserDetach'])->name('role.user.detach');
     });
+
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
         Route::get('/', [SetupController::class, 'index'])->name('index');
         Route::post('pull/basic', [SetupController::class, 'pullBasicResource'])->name('pull.basic');
         Route::post('pull/test', [SetupController::class, 'pullTestResource'])->name('pull.test');
         Route::get('push/finished', [SetupController::class, 'pullExamToServer'])->name('push.finished');
     });
+});
+
+Route::name('exam.')->prefix('exams')->group(function(){
+    Route::post('/restore', [CandidateUploadController::class, 'restoreCandidate'])->name('candidate.restore');
+    Route::post('/end/exams', [CandidateUploadController::class, 'endCandidateExam'])->name('candidate.endexam');
+    Route::post('/adjust/time', [CandidateUploadController::class, 'adjustCandidateTime'])->name('candidate.adjusttime');
 });
 
 Route::name('api.v1.')->prefix('api/v1/')->group(function () {

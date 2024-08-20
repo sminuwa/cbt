@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="author" content="CHPRBN">
-    <link rel="icon" href="{{ asset('candidate/assets/images/favicon.png') }}" type="image/x-icon">
+    <link rel="icon" href="{!! logo() !!}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('candidate/assets/images/favicon.png') }}" type="image/x-icon">
     <title>CBT Exam</title>
     <!-- Google font-->
@@ -36,6 +36,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/sweetalert2.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/datatables.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/datatable-extension.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/range-slider.css') }}">
     <!-- Plugins css Ends-->
     <!-- Bootstrap css-->
     
@@ -134,6 +135,7 @@
 <script src="{{ asset('candidate/assets/js/prism/prism.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/clipboard/clipboard.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/custom-card/custom-card.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/tooltip-init.js') }}"></script>
 
 <script src="{{ asset('candidate/assets/js/select2/tagify.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/select2/tagify.polyfills.min.js') }}"></script>
@@ -168,7 +170,12 @@
 <script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.rowReorder.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.scroller.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datatable/datatable-extension/custom.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/tooltip-init.js') }}"></script>
+
+<script src="{{ asset('candidate/assets/js/range-slider/ion.rangeSlider.min.js') }}"></script>
+{{-- <script src="{{ asset('candidate/assets/js/range-slider/rangeslider-script.js') }}"></script> --}}
+{{-- <script src="{{ asset('candidate/assets/js/tooltip-init.js') }}"></script> --}}
+
+{{-- <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script> --}}
 <!-- Plugins JS Ends-->
 
 <!-- calendar js-->

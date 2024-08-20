@@ -618,7 +618,7 @@ $time_elapsed = $time_control->elapsed;
                 if (timer <= 600) {
                     display.style.color = 'red';
                 }
-                console.log(-{{( $test->time_padding ?? 0) * 60 }} + ' - '+timer)
+                // console.log(-{{( $test->time_padding ?? 0) * 60 }} + ' - '+timer)
                 if (--timer < -{{( $test->time_padding ?? 0) * 60 }}) {
                     clearInterval(interval);
                     alert('Time is up!')

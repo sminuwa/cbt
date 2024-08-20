@@ -276,19 +276,22 @@ class ReportController extends Controller
     public function generateActiveCandidates(Request $request)
     {
         try {
-            $actives = DB::table('time_controls')
-                ->join('candidates', 'candidates.id', '=', 'time_controls.scheduled_candidate_id')
-                ->select(
-                    'indexing',
-                    'time_controls.id AS eid',
-                    'scheduled_candidate_id',
-                    DB::raw('concat(candidates.surname," ",candidates.firstname," ",candidates.other_names) as name'),
-                    'ip as address'
-                )
-                ->where(['test_config_id' => $request->test_config_id, 'completed' => 0])
-                ->get();
+            $test_config_id  = $request->test_config_id;
+            // $actives = DB::table('time_controls')
+            //     ->join('candidates', 'candidates.id', '=', 'time_controls.scheduled_candidate_id')
+            //     ->select(
+            //         'indexing',
+            //         'time_controls.id AS eid',
+            //         'scheduled_candidate_id',
+            //         DB::raw('concat(candidates.surname," ",candidates.firstname," ",candidates.other_names) as name'),
+            //         'ip as address'
+            //     )
+            //     ->where(['test_config_id' => $request->test_config_id, 'completed' => 0])
+            //     ->get();
 
-            return view('pages.admin.reports.ajax.active', compact('actives'));
+            $candidates =  Candidate::manage($test_config_id)->get();
+        
+            return view('pages.toolbox.ajax.active', compact('candidates'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

@@ -203,7 +203,7 @@
                             <li><a href="{{ route('admin.exams.setup.index') }}">Pull Record</a></li>
                         @endif
                         @if($user->canDo('toolbox.invigilator.index'))
-                            <li><a href="{{ route('toolbox.invigilator.index') }}">Invigilators</a></li>
+                            <li><a href="{{ route('toolbox.invigilator.index') }}">Candidates</a></li>
                         @endif
                         @if($user->canDo('admin.exams.setup.push'))
                             <li><a href="{{ route('admin.exams.setup.push') }}">Push Record</a></li>

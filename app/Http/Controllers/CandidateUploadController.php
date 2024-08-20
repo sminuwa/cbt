@@ -204,7 +204,7 @@ class CandidateUploadController extends Controller
         $restore=TimeControl::find($request->id);
         $restore->ip = null;
         $restore->save();
-        return response()->json(['message' => 'IP address has been cleared successfully']);
+        return response()->json(['status'=>true,'message' => 'IP address has been cleared successfully']);
 }
 public function endCandidateExam(Request $request)
     {

@@ -113,7 +113,7 @@ class Presentation extends Model
             ])
             ->distinct()
             ->havingRaw("
-                has_score <> null
+                has_score > 0
             ")
             ->get();
 

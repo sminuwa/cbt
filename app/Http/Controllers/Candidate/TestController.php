@@ -164,6 +164,7 @@ class TestController extends Controller
             //attempt_tracker
             $question_array = Presentation::question_papers($test_subject_id,$test_config_id, $scheduled_candidate_id);
             $question_answered = Presentation::question_answered($test_subject_id,$test_config_id, $scheduled_candidate_id);
+            // return $question_array;
             return ['status'=>true, 'total'=>count($question_array), 'answered'=>count($question_answered)];
         }
 
