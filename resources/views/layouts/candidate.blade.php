@@ -264,7 +264,7 @@ $time_elapsed = $time_control->elapsed;
                                                     <div id="{{ $question_paper['question_bank_id'] }}{{ $answer_option['answer_option_id'] }}" class="form-check radio radio-primary" style="width:100%">
                                                         <input
                                                             @if($answer_option['answer_option_id'] == $answer_option['selected_answer_option']) checked @endif
-                                                            class="form-check-input answer_option {{ chr(64+ $loop->iteration) }}_KEY"
+                                                            class="form-check-input answer_option {{ chr(64+ $loop->iteration) }}_KEY{{ $question_paper['question_bank_id'] }}"
                                                             id="{{ $answer_option['answer_option_id'] }}"
                                                             type="radio"
                                                             name="q{{ $question_paper['question_bank_id'] }}"
@@ -657,29 +657,65 @@ $time_elapsed = $time_control->elapsed;
             else if(e.keyCode === 39) { // right
                 $("#nextBtn").trigger("click");
             }
-            // if(e.keyCode === 65) { // A
-            //     $(".A_KEY").trigger("click");
-            // }
+            if(e.keyCode === 65) { // A
+                $(".wizard-step").each(function() {
+                    let question = $(this);
+                    if(!question.hasClass( "hidden")) {
+                        let id = question.attr('id');
+                        question.children().children().children($(".A_KEY"+id).trigger("click"))
+                    }
+                });
+            }
 
-            // if(e.keyCode === 66) { // B
-            //     $(".B_KEY").trigger("click");
-            // }
+            if(e.keyCode === 66) { // B
+                $(".wizard-step").each(function() {
+                    let question = $(this);
+                    if(!question.hasClass( "hidden")) {
+                        let id = question.attr('id');
+                        question.children().children().children($(".B_KEY"+id).trigger("click"))
+                    }
+                });
+            }
 
-            // if(e.keyCode === 67) { // C
-            //     $(".C_KEY").trigger("click");
-            // }
+            if(e.keyCode === 67) { // C
+                $(".wizard-step").each(function() {
+                    let question = $(this);
+                    if(!question.hasClass( "hidden")) {
+                        let id = question.attr('id');
+                        question.children().children().children($(".C_KEY"+id).trigger("click"))
+                    }
+                });
+            }
 
-            // if(e.keyCode === 68) { // D
-            //     $(".D_KEY").trigger("click");
-            // }
+            if(e.keyCode === 68) { // D
+                $(".wizard-step").each(function() {
+                    let question = $(this);
+                    if(!question.hasClass( "hidden")) {
+                        let id = question.attr('id');
+                        question.children().children().children($(".D_KEY"+id).trigger("click"))
+                    }
+                });
+            }
 
-            // if(e.keyCode === 69) { // E
-            //     $(".E_KEY").trigger("click");
-            // }
+            if(e.keyCode === 69) { // E
+                $(".wizard-step").each(function() {
+                    let question = $(this);
+                    if(!question.hasClass( "hidden")) {
+                        let id = question.attr('id');
+                        question.children().children().children($(".E_KEY"+id).trigger("click"))
+                    }
+                });
+            }
 
-            // if(e.keyCode === 70) { // F
-            //     $(".F_KEY").trigger("click");
-            // }
+            if(e.keyCode === 70) { // F
+                $(".wizard-step").each(function() {
+                    let question = $(this);
+                    if(!question.hasClass( "hidden")) {
+                        let id = question.attr('id');
+                        question.children().children().children($(".F_KEY"+id).trigger("click"))
+                    }
+                });
+            }
         });
 
     });
