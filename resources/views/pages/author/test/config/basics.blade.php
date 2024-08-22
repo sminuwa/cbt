@@ -21,7 +21,11 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Duration & Mode</h4>
+                        <h4 class="card-title d-flex justify-content-between">
+                            Duration & Mode
+                            <a href="{{ route('admin.test.config.index') }}" class="btn btn-info btn-xs text-light"><i class="las la-arrow-left"></i>Back</a>
+                        </h4>
+                    
                     </div>
                     <div class="card-body">
                         <div class="row">

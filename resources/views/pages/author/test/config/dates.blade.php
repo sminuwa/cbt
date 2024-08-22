@@ -7,7 +7,7 @@
                 <div>
                     <h4 class="card-title d-flex justify-content-between">
                         <span>Test Dates</span>
-                        {{-- <a id="add-date" class="btn btn-info text-light"><i class="fa fa-add me-1"></i>Add New</a> --}}
+                        <a href="{{ route('admin.test.config.index') }}" class="btn btn-info btn-xs text-light"><i class="las la-arrow-left"></i>Back</a>
                     </h4>
                 </div>
             </div>

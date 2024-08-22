@@ -21,6 +21,7 @@
                 <div>
                     <h4 class="card-title d-flex justify-content-between">
                         <span>Manage Users</span>
+                        <a href="{{ route('admin.test.config.index') }}" class="btn btn-info btn-xs text-light"><i class="las la-arrow-left"></i>Back</a>
                     </h4>
                 </div>
             </div>
