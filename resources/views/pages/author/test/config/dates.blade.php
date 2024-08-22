@@ -14,7 +14,7 @@
         </div>
         <div class="card-body pt-0" style="">
             <div class="input-group flatpicker-calender py-4">
-                <input name="date" class="form-control" id="datetime-local" type="date" value="2024-05-03">
+                <input name="date" class="form-control" id="test-date" type="date" placeholder="Pick date (eg. {{ date('Y-m-d') }})">
             </div>
 
             {{-- <input type="text" class="form-control" id="datepicker" style="display: none"> --}}
@@ -52,7 +52,14 @@
             //     $('.datepicker').focus()
             // })
 
-            $('#datetime-local').datepicker().on("change", function (e) {
+            flatpickr("#test-date", {
+                altInput: true,
+                altFormat: "F j, Y",
+                dateFormat: "Y-m-d",
+                minDate: new Date()
+            });
+
+            $('#test-date').datepicker().on("change", function (e) {
                 $.post('{{ route('admin.test.config.dates.store') }}', {
                     '_token': '{{ csrf_token() }}',
                     'test_config_id': '{{$config_id}}',
