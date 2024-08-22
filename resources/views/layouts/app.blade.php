@@ -28,6 +28,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/scrollbar.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/animate.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/prism.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/flatpickr/flatpickr.min.css') }}">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/intltelinput.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/tagify.css') }}">
@@ -149,6 +150,11 @@
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.custom.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/select2/select2.full.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/sweet-alert/sweetalert2.all.min.js') }}"></script>
+<!-- calendar js-->
+<script src="{{ asset('candidate/assets/js/flat-pickr/flatpickr.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/flat-pickr/custom-flatpickr.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/height-equal.js') }}"></script>
+<!-- Plugins JS Ends-->
 
 <script src="{{ asset('candidate/assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datatable/datatable-extension/dataTables.buttons.min.js') }}"></script>

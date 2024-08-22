@@ -7,24 +7,31 @@
                 <div>
                     <h4 class="card-title d-flex justify-content-between">
                         <span>Test Dates</span>
-                        <a id="add-date" class="btn btn-info text-light"><i class="fa fa-add me-1"></i>Add New</a>
+                        {{-- <a id="add-date" class="btn btn-info text-light"><i class="fa fa-add me-1"></i>Add New</a> --}}
                     </h4>
                 </div>
             </div>
         </div>
-        <div class="card-body pt-0" style="min-height: 100px;">
-            <input type="text" class="form-control" id="datepicker" style="display: none">
+        <div class="card-body pt-0" style="">
+            <div class="input-group flatpicker-calender py-4">
+                <input name="date" class="form-control" id="datetime-local" type="date" value="2024-05-03">
+            </div>
+
+            {{-- <input type="text" class="form-control" id="datepicker" style="display: none"> --}}
             <div id="dates">
                 @if(count($dates))
-                    <div class="doc-times pt-3">
-                        @foreach($dates as $date)
-                            <div class="doc-slot-list" style="background-color: #1d75b3;border: 1px solid #1d75b3;">
-                                {{ \Carbon\Carbon::parse($date->date)->format('D jS M, Y') }}
-                                <a href="javascript:void(0)" data-id="{{ $date->id }}" class="delete_schedule">
-                                    <i class="fa fa-times text-light"></i>
-                                </a>
-                            </div>
-                        @endforeach
+                    <div class="doc-times ">
+                        
+                            @foreach($dates as $date)
+                            
+                                <div class="d-inline">
+                                    <a href="javascript:void(0)" data-id="{{ $date->id }}" class="btn btn-primary  my-1 delete_schedule">
+                                        {{ \Carbon\Carbon::parse($date->date)->format('D jS M, Y') }} <i class="fa fa-times text-light"></i>
+                                    </a>
+                                </div>
+                            
+                            @endforeach
+                        
                     </div>
                 @else
                     <div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center"
@@ -40,12 +47,12 @@
 @section('script')
     <script>
         $(function () {
-            $('#add-date').on('click', function () {
-                $("#datepicker").datepicker()
-                $('#datepicker').focus()
-            })
+            // $('#add-date').on('click', function () {
+            //     $(".datepicker").datepicker()
+            //     $('.datepicker').focus()
+            // })
 
-            $('#datepicker').datepicker().on("input change", function (e) {
+            $('#datetime-local').datepicker().on("change", function (e) {
                 $.post('{{ route('admin.test.config.dates.store') }}', {
                     '_token': '{{ csrf_token() }}',
                     'test_config_id': '{{$config_id}}',

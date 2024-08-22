@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="author" content="CHPRBN">
-    <link rel="icon" href="{{ asset('candidate/assets/images/favicon.png') }}" type="image/x-icon">
+    <link rel="icon" href="{!! logo() !!}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('candidate/assets/images/favicon.png') }}" type="image/x-icon">
     <title>CBT EXAMS</title>
     <!-- Google font-->

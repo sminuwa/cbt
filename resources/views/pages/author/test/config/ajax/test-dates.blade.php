@@ -1,12 +1,11 @@
 @if(count($dates))
     <div class="doc-times pt-3">
         @foreach($dates as $date)
-            <div class="doc-slot-list" style="background-color: #1d75b3;border: 1px solid #1d75b3;">
-                {{ \Carbon\Carbon::parse($date->date)->format('D jS M, Y') }}
-                <a href="javascript:void(0)" data-id="{{ $date->id }}" class="delete_schedule">
-                    <i class="fa fa-times text-light"></i>
-                </a>
-            </div>
+        <div class="d-inline">
+            <a href="javascript:void(0)" data-id="{{ $date->id }}" class="btn btn-primary  my-1 delete_schedule">
+                {{ \Carbon\Carbon::parse($date->date)->format('D jS M, Y') }} <i class="fa fa-times text-light"></i>
+            </a>
+        </div>
         @endforeach
     </div>
 @else

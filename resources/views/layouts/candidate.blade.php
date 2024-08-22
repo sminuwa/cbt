@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="author" content="CHPRBN">
-    <link rel="icon" href="{{ asset('candidate/assets/images/favicon.png') }}" type="image/x-icon">
+    <link rel="icon" href="{!! logo() !!}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('candidate/assets/images/favicon.png') }}" type="image/x-icon">
     <title>CBT Exam</title>
     <!-- Google font-->
@@ -261,13 +261,12 @@ $time_elapsed = $time_control->elapsed;
                                             <div class="card-wrapper border rounded-3 fill-radios h-100 radio-toolbar checkbox-checked fadeIn  animated z-0">
                                                 <h6 class="sub-title">Q {{ $loop->iteration }}. {{ strip_tags($question_paper['question_name'],'<img>') }}</h6>
                                                 @foreach($question_paper['answer_options'] as $answer_option)
-                                                    <div id="{{ $question_paper['question_bank_id'] }}{{ $answer_option['answer_option_id'] }}" class="form-check radio radio-primary" style="width:100%">
+                                                    <div id="{{ $question_paper['question_bank_id'] }}{{ $answer_option['answer_option_id'] }}" class="form-check radio radio-primary checbox-option" style="width:100%">
                                                         <input
                                                             @if($answer_option['answer_option_id'] == $answer_option['selected_answer_option']) checked @endif
                                                             class="form-check-input answer_option {{ chr(64+ $loop->iteration) }}_KEY{{ $question_paper['question_bank_id'] }}"
-                                                            id="{{ $answer_option['answer_option_id'] }}"
+                                                            id="answeru{{ $answer_option['answer_option_id'] }}"
                                                             type="radio"
-                                                            name="q{{ $question_paper['question_bank_id'] }}"
                                                             name="q{{ $question_paper['question_bank_id'] }}"
                                                             question_step="{{ $step }}"
                                                             scheduled_candidate_id="{{ $scheduled_candidate->id }}"
@@ -277,8 +276,9 @@ $time_elapsed = $time_control->elapsed;
                                                             question_bank_id="{{ $question_paper['question_bank_id'] }}"
                                                             answer_option_id="{{ $answer_option['answer_option_id'] }}"
                                                             scoring_mode="normal"
-                                                            value="">
-                                                        <label class="form-check-label" for="{{$answer_option['answer_option_id']}}">{{ chr(64+ $loop->iteration) }}. {{ strip_tags($answer_option['answer_name'],'<img>') }}</label>
+                                                            value="{{ $answer_option['answer_option_id'] }}"
+                                                            >
+                                                        <label class="form-check-label" for="answeru{{$answer_option['answer_option_id']}}">{{ chr(64+ $loop->iteration) }}. {{ strip_tags($answer_option['answer_name'],'<img>') }}</label>
                                                     </div>
                                                 @endforeach
                                             </div>
@@ -388,7 +388,7 @@ $time_elapsed = $time_control->elapsed;
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.en.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/datepicker/date-picker/datepicker.custom.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/dashboard/dashboard_3.js') }}"></script>
+{{-- <script src="{{ asset('candidate/assets/js/dashboard/dashboard_3.js') }}"></script> --}}
 <script src="{{ asset('candidate/assets/js/sweet-alert/sweetalert2.all.min.js') }}"></script>
 <!-- Plugins JS Ends-->
 <!-- Theme js-->
@@ -648,7 +648,6 @@ $time_elapsed = $time_control->elapsed;
                 });
             });
         }
-
 
         $("body").keydown(function(e) {
             if(e.keyCode === 37) { // left
