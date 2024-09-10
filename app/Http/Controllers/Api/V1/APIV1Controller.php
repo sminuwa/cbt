@@ -50,7 +50,7 @@ class APIV1Controller extends Controller
 
     public function testData(Request $request)
     {
-        return $request->content();
+        return $request;
         //Use header data to get all venue ids
         $api_key = $request->header('api_key');
         $secretKey = $request->header('secret_key');
