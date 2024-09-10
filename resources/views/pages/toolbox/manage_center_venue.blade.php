@@ -105,14 +105,28 @@
                                         <div class="col-12 col-md-6">
                                             <div class="mb-6">
                                                 <label for="name" class="mb-6">Name</label>
-                                                <input type="text" id="centername" name="name" class="form-control">
+                                                <input type="text" id="centername" name="name" class="form-control" required>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6">
                                             <div class="mb-6">
                                                 <label for="centreLocation" class="mb-6">Center Location</label>
                                                 <input type="text" id="centreLocation" name="centreLocation"
-                                                       class="form-control">
+                                                       class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-12 col-md-6">
+                                            <div class="mb-6">
+                                                <label for="api_key" class="mb-6">API Key</label>
+                                                <input type="text" id="api_key" name="api_key" class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <div class="mb-6">
+                                                <label for="secret_key" class="mb-6">Secret Key</label>
+                                                <input type="text" id="secret_key" name="secret_key" class="form-control" required>
                                             </div>
                                         </div>
                                     </div>
@@ -221,6 +235,8 @@
             $(document).on('click', '.add', function () {
                 $('#center').val('')
                 $('#name').val('')
+                $('#api_key').val('')
+                $('#secret_key').val('')
                 $('#venueLocation').val('')
                 $('#capacity').val('')
                 $('#form').attr('method', 'post')

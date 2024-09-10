@@ -24,7 +24,7 @@ class CentreController extends Controller
     {
         Centre::updateOrCreate(
             ['id' => $request->centreId],
-            ['name' => $request->name, 'location' => $request->centreLocation, 'status' => 'Active']
+            ['name' => $request->name, 'location' => $request->centreLocation, 'api_key' => $request->api_key, 'secret_key' => $request->secret_key, 'status' => 'Active']
         );
 
         return back()->with('success', 'Centre saved successfully.');
