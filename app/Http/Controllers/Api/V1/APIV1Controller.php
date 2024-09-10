@@ -136,7 +136,7 @@ class APIV1Controller extends Controller
             $candidateIds = $data['scheduled_candidates']->pluck('candidate_id');
             $candidates = Candidate::whereIn('id',$candidateIds)->get();
 
-            return $data['schedules'];
+            
             $zip = new ZipArchive();
             $filename = preg_replace('/[^A-Za-z0-9]/', '_', $center->name);
 
@@ -157,6 +157,8 @@ class APIV1Controller extends Controller
 
                 $zip->close();
             }
+
+            return $zipFilePath;
 
             return response()->download($zipFilePath)->deleteFileAfterSend(true);
         }
