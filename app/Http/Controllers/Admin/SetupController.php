@@ -263,8 +263,13 @@ class SetupController extends Controller
             'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
         ];
 
+        $body = [
+            'api_key'=>env("CHPRBN_CBT_API_KEY"),
+            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+        ];
+
         // Fetch data from the API
-        $response = $this->post($apiUrl, [], $headers);
+        $response = $this->post($apiUrl, $body, $headers);
 
 //        return $response['status'];
         if ($response['status']==1) {
@@ -336,9 +341,15 @@ class SetupController extends Controller
             'api_key'=>env("CHPRBN_CBT_API_KEY"),
             'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
         ];
+        $body = [
+            'api_key'=>env("CHPRBN_CBT_API_KEY"),
+            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+        ];
 
         // Fetch data from the API
-        $response = Http::withHeaders($headers)->post($apiUrl, []);
+        // $response = $this->post($apiUrl, $body, $headers);
+        // Fetch data from the API
+        $response = Http::withHeaders($headers)->post($apiUrl, $body);
 
 //        return $response['status'];
         if ($response->successful()) {
@@ -410,8 +421,13 @@ class SetupController extends Controller
             'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
         ];
 
+        $body = [
+            'api_key'=>env("CHPRBN_CBT_API_KEY"),
+            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+        ];
+
         // Fetch data from the API
-        $response = Http::withHeaders($headers)->post($apiUrl, compact('times','presentations','scores'));
+        $response = Http::withHeaders($headers)->post($apiUrl, compact('times','presentations','scores','body'));
 
 //        return $response['status'];
         if ($response->successful()) {
