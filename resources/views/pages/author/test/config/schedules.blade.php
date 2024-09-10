@@ -130,7 +130,7 @@
                 <tr>
                     <th>#</th>
                     <th>Date</th>
-                    <th>Venue</th>
+                    <th>Centre</th>
                     <th>Batches</th>
                     <th>No. Per Batch</th>
                     <th>Start Time</th>
@@ -147,7 +147,7 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{  Carbon::parse($schedule->date)->format('D jS M, Y') }}</td>
-                        <td>{{ $schedule->venue->name }}</td>
+                        <td>{{ $schedule->venue->centre->name ?? null }}</td>
                         <td>{{ $schedule->maximum_batch }}</td>
                         <td>{{ $schedule->no_per_schedule }}</td>
                         <td>{{  Carbon::parse($schedule->daily_start_time)->format('h:m a') }}</td>
