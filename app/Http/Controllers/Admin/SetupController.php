@@ -349,10 +349,11 @@ class SetupController extends Controller
         // Fetch data from the API
         // $response = $this->post($apiUrl, $body, $headers);
         // Fetch data from the API
-        $response = Http::withHeaders($headers)->post($apiUrl, $body);
+        $response = $this->post($apiUrl, $body, $headers);
+        // $response = Http::withHeaders($headers)->post($apiUrl, $body);
 
-//        return $response['status'];
-        if ($response->successful()) {
+    //    return $response;
+        if ($response['status']==1){
             $zipFilePath = public_path('user_images.zip');
             file_put_contents($zipFilePath, $response->body());
 

@@ -119,6 +119,7 @@ class APIV1Controller extends Controller
 
     public function candidatePictures(Request $request)
     {
+        return $request;
         $api_key =  $request->api_key ?? $request->header('api_key');
         $secretKey = $request->secret_key ?? $request->header('secret_key');
         $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
