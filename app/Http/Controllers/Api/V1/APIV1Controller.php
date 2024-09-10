@@ -138,7 +138,7 @@ class APIV1Controller extends Controller
 
             
             $zip = new ZipArchive();
-            $filename = preg_replace('/[^A-Za-z0-9]/', '_', $center->name);
+            $filename = preg_replace('/[^A-Za-z0-9]/', '_', $center->name ?? 'CENTER_NAME');
 
             // Append the current date
             $date = date('Y_m_d'); // Format the date as needed, e.g., 'Y-m-d' for '2024-07-15'
