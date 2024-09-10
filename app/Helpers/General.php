@@ -22,3 +22,12 @@ function tempPassport(){
 function candidate_passport_path(){
     return 'storage/images/candidates';
 }
+
+function searchIndex($array, $column_name){
+    foreach ($array as $key => $value) {
+        if (stripos($value, $column_name) !== false) {
+            return $key;
+        }
+    }
+    return null;
+}

@@ -5,9 +5,16 @@ namespace App\Imports;
 use App\Models\Candidate;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\ToCollection;
 
-class CandidatesImport implements ToModel, WithHeadingRow
+
+class CandidatesImport implements ToModel, WithHeadingRow, ToCollection
 {
+    public function collection(Collection $collection)
+    {
+        //
+    }
 
     public function model(array $row)
     {

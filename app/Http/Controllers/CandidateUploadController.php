@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
+
 //use Maatwebsite\Excel;
 
 //use Vtiful\Kernel\Excel;
@@ -33,23 +34,95 @@ class CandidateUploadController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function upload(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:xls,xlsx',
-        ]);
+    // public function upload(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'file' => 'required|mimes:xls,xlsx',
+    //     ]);
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+    //     if ($validator->fails()) {
+    //         return back()->withErrors($validator)->withInput();
+    //     }
+
+    //     try {
+    //         Excel::import(new CandidatesImport, $request->file('file'));
+
+    //         return back()->with('success', 'File uploaded and processed successfully.');
+    //     } catch (\Exception $e) {
+    //         return back()->withErrors(['error' => $e->getMessage()]);
+    //     }
+
+    // }
+
+
+    public function upload(Request $request){
+        $file = $request->file;
+        /*if(!$this->fileUploaded($file, time().'.xlsx'))
+            return jResponse(false, 'File can not be uploaded to the disk.');*/
+        // $rows = $this->getRecordFromExcel(CandidatesImport::class, $file);
+       
+        $sheets =  Excel::toArray(\App\Models\CandidatesImport::class, $file);
+        
+//        $rows = Excel::toArray(new Upload::class, $file)[0];
+        $codes = $candidates = $indexings = $indexes = $graduands = $graduand_papers = $uploaded_papers = $errors = [];
+        foreach($sheets as $rows) {
+            if(empty($rows[0])) // if the sheet doesn't start at row 10 it means the sheet is empty
+                continue;
+            $title = $rows[0];
+            $indexing = searchIndex($title, 'index');
+            $surname = searchIndex($title, 'sur') ?? searchIndex($title, 'last');
+            $firstname = searchIndex($title, 'first') ?? searchIndex($title, 'fore');
+            $othernames = searchIndex($title, 'other') ?? searchIndex($title, 'middle');
+            $gender = searchIndex($title, 'gender') ?? searchIndex($title, 'sex');
+            $dob = searchIndex($title, 'dob');
+            $programme_id = searchIndex($title, 'programme_id');
+            $lga_id = searchIndex($title, 'lga_id');
+            $exam_year = searchIndex($title, 'year');
+            $password = searchIndex($title, 'password');
+
+            foreach ($rows as $key => $value) {
+                if ($key < 1) // skip first row which is considered a title row for the uploaded Excel file.
+                    continue;
+                if(empty($value[$indexing]))
+                    continue;
+                $candidates[] = [
+                    'indexing' => trim($value[$indexing]),
+                    'programme_id' => trim($value[$programme_id]),
+                    'surname' => trim($value[$surname]),
+                    'firstname' => trim($value[$firstname]),
+                    'other_names' => trim($value[$othernames]),
+                    'gender' => (trim($value[$gender]) ?? null),
+                    'dob' => trim($value[$dob]),
+                    'exam_year' => trim($value[$exam_year]),
+                    'password' => trim($value[$password]),
+                    'enabled' => 1,
+                ];
+
+            }
+
+
         }
 
-        try {
-            Excel::import(new CandidatesImport, $request->file('file'));
+    
 
+        DB::beginTransaction();
+        $err = [];
+        foreach(array_chunk($candidates, 1000) as $key => $smallerArray) {
+            if(!Candidate::upsert($smallerArray, ['indexing'])) {
+                reset_auto_increment('candidates');
+                $err[] = 'Something went wrong. [Candidate chunk upload] '.$key;
+            }
+        }
+
+        if(empty($errors)){
+            DB::commit();
             return back()->with('success', 'File uploaded and processed successfully.');
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+        }else{
+            DB::rollback();
+            return back()->with('error', 'Something went wrong.');
         }
+
+
     }
 
     public function imageIndex()
