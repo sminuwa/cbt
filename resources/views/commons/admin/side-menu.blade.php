@@ -80,6 +80,8 @@
                     $showAuthorisation = $user->canDo('toolbox.authorization.users.index') ||
                                         $user->canDo('toolbox.authorization.role.index');
                 @endphp
+                {{-- to be remove once permission is back to live --}}
+                @if(auth()->user()->username == 'admin') 
                 @if($showTestConfigs)
                 <li class="sidebar-list">
                     <i class="fa fa-thumb-tack"> </i>
@@ -143,6 +145,8 @@
                 </li>
                 @endif
 
+                
+
                 @if($showToolbox)
                 <li class="sidebar-list">
                     <i class="fa fa-thumb-tack"> </i>
@@ -192,6 +196,26 @@
                 </li>
                 @endif
 
+                @if($showAuthorisation)
+                <li class="sidebar-list">
+                    <i class="fa fa-thumb-tack"> </i>
+                    <a class="sidebar-link sidebar-title" href="#">
+                        <i class="las la-user-shield la-md-2x"></i>
+                        <span>Authorisation </span></a>
+                    <ul class="sidebar-submenu">
+                        @if($user->canDo('toolbox.authorization.users.index'))
+                            <li><a href="{{ route('toolbox.authorization.users.index') }}">Users</a></li>
+                        @endif
+                        @if($user->canDo('toolbox.authorization.role.index'))
+                            <li><a href="{{ route('toolbox.authorization.role.index') }}">Roles</a></li>
+                        @endif
+                    </ul>
+                </li>
+                @endif
+
+                @endif 
+
+
                 @if($showManageExams)
                 <li class="sidebar-list">
                     <i class="fa fa-thumb-tack"> </i>
@@ -212,23 +236,8 @@
                     </ul>
                 </li>
                 @endif
-
-                @if($showAuthorisation)
-                <li class="sidebar-list">
-                    <i class="fa fa-thumb-tack"> </i>
-                    <a class="sidebar-link sidebar-title" href="#">
-                        <i class="las la-user-shield la-md-2x"></i>
-                        <span>Authorisation </span></a>
-                    <ul class="sidebar-submenu">
-                        @if($user->canDo('toolbox.authorization.users.index'))
-                            <li><a href="{{ route('toolbox.authorization.users.index') }}">Users</a></li>
-                        @endif
-                        @if($user->canDo('toolbox.authorization.role.index'))
-                            <li><a href="{{ route('toolbox.authorization.role.index') }}">Roles</a></li>
-                        @endif
-                    </ul>
-                </li>
-                @endif
+                
+                
 
 
                 <li class="sidebar-list">

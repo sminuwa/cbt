@@ -17,7 +17,7 @@ class CandidatesImport implements ToModel, WithHeadingRow
             'firstname' => $row['firstname'],
             'other_names' => $row['other_names'],
             'gender' => $row['gender'],
-            'dob' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['dob']),
+            'dob' => null,
             'programme_id' => $row['programme_id'],
             'lga_id' => $row['lga_id'],
             'country_id' => $row['country_id'],
