@@ -54,8 +54,10 @@ class APIV1Controller extends Controller
         //Use header data to get all venue ids
         // $api_key = $request->header('api_key');
         // $secretKey = $request->header('secret_key');
-        $api_key = $request->api_key;
-        $secretKey = $request->secret_key;
+        // $api_key = $request->api_key;
+        // $secretKey = $request->secret_key;
+        $api_key =  $request->api_key ?? $request->header('api_key');
+        $secretKey = $request->secret_key ?? $request->header('secret_key');
         $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
         
         if($center){
@@ -63,10 +65,8 @@ class APIV1Controller extends Controller
             // return $venueIds;
 
             $data = [];
-
             //Use venue Ids to get Schedules for today
             $data['schedules'] = Scheduling::whereIn('venue_id',$venueIds)->whereDate("date",today())->get();
-            return $data['schedules'];
             $testConfigIds = $data['schedules']->pluck('test_config_id');
             $data['test_configs'] = TestConfig::whereIn('id',$testConfigIds)->get();
             $data['test_compositors'] = TestCompositor::whereIn('test_config_id',$testConfigIds)->get();
@@ -94,8 +94,9 @@ class APIV1Controller extends Controller
     public function candidateData(Request $request)
     {
 
-        $api_key = $request->header('api_key');
-        $secretKey = $request->header('secret_key');
+        $api_key =  $request->api_key ?? $request->header('api_key');
+        $secretKey = $request->secret_key ?? $request->header('secret_key');
+        
         $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
         if($center){
             $venueIds = Venue::where('centre_id',$center->id)->pluck('id');
@@ -118,8 +119,8 @@ class APIV1Controller extends Controller
 
     public function candidatePictures(Request $request)
     {
-        $api_key = $request->header('api_key');
-        $secretKey = $request->header('secret_key');
+        $api_key =  $request->api_key ?? $request->header('api_key');
+        $secretKey = $request->secret_key ?? $request->header('secret_key');
         $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
         if($center){
             $venueIds = Venue::where('centre_id',$center->id)->pluck('id');
@@ -164,8 +165,8 @@ class APIV1Controller extends Controller
     public function pushExams(Request $request){
 
         // return $request;
-        $api_key = $request->header('api_key');
-        $secretKey = $request->header('secret_key');
+        $api_key =  $request->api_key ?? $request->header('api_key');
+        $secretKey = $request->secret_key ?? $request->header('secret_key');
         $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
         if($center){
             TimeControl::upsert($request->times,['test_config_id','scheduled_candidate_id']);
