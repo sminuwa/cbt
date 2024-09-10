@@ -136,7 +136,7 @@ class APIV1Controller extends Controller
             $candidateIds = $data['scheduled_candidates']->pluck('candidate_id');
             $candidates = Candidate::whereIn('id',$candidateIds)->get();
 
-            return $center->name;
+            
             $zip = new ZipArchive();
             $filename = preg_replace('/[^A-Za-z0-9]/', '_', $center->name ?? 'CENTER_NAME');
 

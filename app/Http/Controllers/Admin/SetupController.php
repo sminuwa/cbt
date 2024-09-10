@@ -349,8 +349,8 @@ class SetupController extends Controller
         // Fetch data from the API
         // $response = $this->post($apiUrl, $body, $headers);
         // Fetch data from the API
-        $response = $this->post($apiUrl, $body, $headers);
-        // $response = Http::withHeaders($headers)->post($apiUrl, $body);
+        // $response = $this->post($apiUrl, $body, $headers);
+        $response = Http::withHeaders($headers)->post($apiUrl, $body);
 
        return $response;
         if ($response['status']==1){
