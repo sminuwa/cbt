@@ -145,6 +145,7 @@ class APIV1Controller extends Controller
             $filename .= '_' . $date;
             $zipFileName = "{$filename}.zip";
             $zipFilePath = storage_path("app/{$zipFileName}");
+            return $zipFilePath;
             if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
 
                 foreach ($candidates as $candidate) {
@@ -158,7 +159,7 @@ class APIV1Controller extends Controller
                 $zip->close();
             }
 
-            return $zipFilePath;
+            
 
             return response()->download($zipFilePath)->deleteFileAfterSend(true);
         }
