@@ -50,10 +50,12 @@ class APIV1Controller extends Controller
 
     public function testData(Request $request)
     {
-        return $request;
+        // return $request->api_key;
         //Use header data to get all venue ids
-        $api_key = $request->header('api_key');
-        $secretKey = $request->header('secret_key');
+        // $api_key = $request->header('api_key');
+        // $secretKey = $request->header('secret_key');
+        $api_key = $request->api_key;
+        $secretKey = $request->secret_key;
         $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
         if($center){
             $venueIds = Venue::where('centre_id',$center->id)->pluck('id');
