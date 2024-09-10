@@ -125,7 +125,7 @@ class APIV1Controller extends Controller
         $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
         if($center){
             $venueIds = Venue::where('centre_id',$center->id)->pluck('id');
-
+            // return venueIds;
             $data = [];
 
             //Use venue Ids to get Schedules for today
@@ -136,6 +136,7 @@ class APIV1Controller extends Controller
             $candidateIds = $data['scheduled_candidates']->pluck('candidate_id');
             $candidates = Candidate::whereIn('id',$candidateIds)->get();
 
+            return $data['schedules'];
             $zip = new ZipArchive();
             $filename = preg_replace('/[^A-Za-z0-9]/', '_', $center->name);
 
