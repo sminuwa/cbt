@@ -58,7 +58,7 @@ class SetupController extends Controller
 
     public function pullBasicResource(Request $request)
     {
-        $tables = ['admin_exam_types', 'admin_test_types', 'admin_centres','admin_venues']; // Replace with your table names
+        $tables = ['exam_types', 'test_types', 'centres','venues']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
         $apiUrl = $this->apiUrl('resource/basic');
 
@@ -149,7 +149,8 @@ class SetupController extends Controller
 
     public function pullTestResource(Request $request)
     {
-        $tables = ['admin_exam_types', 'admin_test_types', 'admin_centres','admin_venues']; // Replace with your table names
+        // return env("CHPRBN_CBT_API_KEY");
+        $tables = ['exam_types', 'test_types', 'centres','venues']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
         $apiUrl = $this->apiUrl('resource/test');
 
@@ -163,7 +164,7 @@ class SetupController extends Controller
         // Fetch data from the API
         $response = $this->post($apiUrl, [], $headers);
 
-//        return $response['status'];
+    //    return $apiUrl;
         if ($response['status']==1) {
             // Get the data from the response
             $data = $response['data']['data'];
@@ -194,20 +195,20 @@ class SetupController extends Controller
 
                 DB::transaction(function () use ($data) {
 
-                    AdminCandidate::query()->delete();
-                    AdminCandidateSubject::query()->delete();
-                    AdminScheduledCandidate::query()->delete();
-                    AdminSubject::query()->delete();
-                    AdminTestCompositor::query()->delete();
-                    AdminTestConfig::query()->delete();
-                    AdminTestInvigilator::query()->delete();
-                    AdminTestQuestion::query()->delete();
-                    AdminTestSection::query()->delete();
-                    AdminTestSubject::query()->delete();
-                    AdminAnswerOption::query()->delete();
-                    AdminUser::where('id','>',4)->delete();
-                    AdminCandidateSubject::query()->delete();
-                    AdminQuestionBank::query()->delete();
+                    Candidate::query()->delete();
+                    CandidateSubject::query()->delete();
+                    ScheduledCandidate::query()->delete();
+                    Subject::query()->delete();
+                    TestCompositor::query()->delete();
+                    TestConfig::query()->delete();
+                    TestInvigilator::query()->delete();
+                    TestQuestion::query()->delete();
+                    TestSection::query()->delete();
+                    TestSubject::query()->delete();
+                    AnswerOption::query()->delete();
+                    User::where('id','>',4)->delete();
+                    CandidateSubject::query()->delete();
+                    QuestionBank::query()->delete();
                     // Insert new data
 
 //                    AdminCandidate::insert($data['']);
@@ -246,7 +247,7 @@ class SetupController extends Controller
     }
 
     public function pullCandidateResource(Request $request) {
-        $tables = ['admin_candidates', 'admin_candidate_subjects']; // Replace with your table names
+        $tables = ['candidates', 'candidate_subjects']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
         $apiUrl = $this->apiUrl('resource/candidate');
 
