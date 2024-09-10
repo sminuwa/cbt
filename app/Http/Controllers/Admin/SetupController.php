@@ -352,10 +352,10 @@ class SetupController extends Controller
         $response = $this->post($apiUrl, $body, $headers);
         // $response = Http::withHeaders($headers)->post($apiUrl, $body);
 
-    //    return $response;
+       return $response;
         if ($response['status']==1){
             $zipFilePath = public_path('user_images.zip');
-            file_put_contents($zipFilePath, $response->body());
+            file_put_contents($zipFilePath, $response);
 
             $zip = new ZipArchive;
             if ($zip->open($zipFilePath) === TRUE) {
