@@ -160,7 +160,6 @@ class APIV1Controller extends Controller
             }
 
             
-
             return response()->download($zipFilePath)->deleteFileAfterSend(true);
         }
 
