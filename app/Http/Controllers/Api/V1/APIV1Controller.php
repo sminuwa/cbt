@@ -145,7 +145,7 @@ class APIV1Controller extends Controller
             $filename .= '_' . $date;
             $zipFileName = "{$filename}.zip";
             $zipFilePath = storage_path("app/{$zipFileName}");
-            return $filename;
+            return $zipFilePath;
             if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
 
                 foreach ($candidates as $candidate) {
