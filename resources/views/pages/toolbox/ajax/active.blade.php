@@ -30,10 +30,11 @@
                             <td>{{ $candidate->completed }}</td>
                             <td class="text-end">
                                 @if($candidate->time_control_id)
-                                <button class="btn btn-sm btn-xs btn-danger"
+                                <button class="btn btn-sm btn-xs btn-danger end-test"
                                    data-bs-toggle="modal"
                                    href="#end_candidate_exams"
                                    data-id="{{$candidate->time_control_id}}"
+                                   data-indexing="{{  $candidate->indexing }}"
                                    data-toggle="tooltip"
                                    data-bs-placement="top"
                                    data-bs-title="End Exam"
@@ -51,6 +52,7 @@
                                    data-id="{{ $candidate->time_control_id }}"
                                    data-elapsed="{{ $candidate->elapsed }}"
                                    data-duration="{{ $candidate->duration }}"
+                                   data-indexing="{{  $candidate->indexing }}"
                                    data-toggle="tooltip"
                                    data-bs-placement="top"
                                    data-bs-title="Adjust Time"
@@ -74,8 +76,8 @@
             <div class="modal-body">
             <div class="modal-toggle-wrapper"> 
                 <h4>Restore Candidate</h4>
-                <p>Are you sure you want to <strong>Restore</strong> this Candidate <span id=candidate-indexing></span> ?</p>
-                <input type="hidden" name="id" id="id">
+                <p>Are you sure you want to <strong>Restore</strong> this Candidate <span class="candidate-indexing"></span> ?</p>
+                <input class="time-control-id" type="hidden" name="id" id="id">
                 @csrf        
             </div>
             </div>
@@ -96,20 +98,25 @@
     <div class="modal fade custom-modal" id="end_candidate_exams">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">End Candidate Exams</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to <strong>End</strong> this Candidate Exam ({{$candidate->indexing}})?</p>
-                    <input type="hidden" name="id" id="id">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="btnRestore" class="btn btn-sm btn-danger submit-btn text-light"><i class="fa fa-trash-o"></i>
-                        End
-                    </button>
-                </div>
-
+                <form class="end_exam" action="{{ route('exam.candidate.endexam') }}" method="post">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title">End Candidate Exams</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to <strong>End</strong> this Candidate Exam  <span class="candidate-indexing"></span> ?</p>
+                        <input class="time-control-id" type="hidden" name="id" id="id">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" data-bs-dismiss="modal" class="btn btn-sm btn-danger submit-btn text-light">
+                            Cancel
+                        </button>
+                        <button type="submit" data-bs-dismiss="modal" class="btn btn-sm btn-primary submit-btn text-light">
+                            End
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -122,7 +129,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
-                <form action="{{ route('exam.candidate.endexam')}} " method="post">
+                <form action="{{ route('exam.candidate.adjusttime')}} " method="post">
                     @csrf
                     <input type="hidden" id="etype_id" name="id"/>
                     <div class="modal-body">
@@ -179,15 +186,47 @@
                     }
                 })
             })
+
+            $('.end_exam').on('submit', function(e){
+                e.preventDefault();
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type:'post',
+                    data: $(this).serialize(),
+                    success : function(response){
+                        $('#endexam').modal('hide')
+                        if(response.status){
+
+                            Swal.fire({
+                                title: 'Success!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'Okay'
+                            })
+                        }
+                        console.log(response)
+                        
+                    }
+                })
+            })
     
             $('body').on('click', '.restore', function () {
                 let candidate = $(this);
                 console.log(candidate)
-                $(".modal-body #id").val(candidate.data('id'));
-                $(".modal-body #candidate-indexing").html(candidate.data('indexing'));
+                $(".modal-body .time-control-id").val(candidate.data('id'));
+                $(".modal-body .candidate-indexing").html(candidate.data('indexing'));
                 $('#restore_candidate').modal('toggle')
             })
-    
+
+            $('body').on('click', ' .end-test', function () {
+                let candidate = $(this);
+                console.log(candidate)
+                $(".modal-body .time-control-id").val(candidate.data('id'));
+                $(".modal-body .candidate-indexing").html(candidate.data('indexing'));
+                $('#endexam').modal('toggle')
+            })
+
+            
             $('#btnRestore').on('click', function () {
                 let id = $(".modal-body #id").val()
                 console.log(id)
@@ -200,17 +239,17 @@
                 )
             })
 
-            $('#btnEndExam').on('click', function () {
-                let id = $(".modal-body #id").val()
-                console.log(id)
-                $.get('{{route('exam.candidate.endexam',[':id'])}}'.replace(':id', id),
-                    function (response) {
-                        console.log(response)
-                        $('#endexam').modal('hide')
-                        location.reload()
-                    }
-                )
-            })
+            // $('#btnEndExam').on('click', function () {
+            //     let id = $(".modal-body #id").val()
+            //     console.log(id)
+            //     $.get('{{route('exam.candidate.endexam',[':id'])}}'.replace(':id', id),
+            //         function (response) {
+            //             console.log(response)
+            //             $('#endexam').modal('hide')
+            //             location.reload()
+            //         }
+            //     )
+            // })
 
             $('body').on('click','.adjust-time', function () {
                 let candidate = $(this)

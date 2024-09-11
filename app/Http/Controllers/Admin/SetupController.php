@@ -424,7 +424,6 @@ class SetupController extends Controller
         $scores = Score::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','question_bank_id','answer_option_id','time_elapse','scoring_mode','point_scored','pushed'])->get();
 
 
-
         $apiUrl = $this->apiUrl('resource/push');
 
         // Define headers if necessary
@@ -441,7 +440,7 @@ class SetupController extends Controller
 
         // Fetch data from the API
         $response = Http::withHeaders($headers)->post($apiUrl, compact('times','presentations','scores','body'));
-
+        return $response;
 //        return $response['status'];
         if ($response->successful()) {
             TimeControl::where('pushed',0)->update(['pushed'=>1]);
