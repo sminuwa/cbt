@@ -62,14 +62,16 @@ class APIV1Controller extends Controller
         // return $center;
         if($center){
             $venueIds = Venue::where('centre_id',$center->id)->pluck('id');
-            // return $venueIds;
 
             $data = [];
             //Use venue Ids to get Schedules for today
             $data['schedules'] = Scheduling::whereIn('venue_id',$venueIds)->whereDate("date",today())->get();
-            return $data['schedules'];
+            
             $testConfigIds = $data['schedules']->pluck('test_config_id');
-            // $data['schedulings'] = $data['schedules'];
+
+            
+            $data['schedulings'] = Scheduling::whereIn('id',$data['schedules']->pluck('id'))->get();
+
             $data['test_configs'] = TestConfig::whereIn('id',$testConfigIds)->get();
             $data['test_compositors'] = TestCompositor::whereIn('test_config_id',$testConfigIds)->get();
             $data['users'] = User::whereIn('id',$data['test_compositors']->pluck('user_id'))->get();
