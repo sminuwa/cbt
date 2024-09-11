@@ -170,7 +170,7 @@ class SetupController extends Controller
         // Fetch data from the API
         $response = $this->post($apiUrl, $body, $headers);
 
-    //    return $response;
+       
         if ($response['status']==1) {
             // Get the data from the response
             $data = $response['data']['data'];
