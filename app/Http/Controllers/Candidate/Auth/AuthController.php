@@ -8,6 +8,7 @@ use App\Models\CandidateSubject;
 use App\Models\Scheduling;
 use App\Models\TestConfig;
 use App\Models\TimeControl;
+use App\Models\Candidate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -32,6 +33,9 @@ class AuthController extends Controller
         $test  = clone $testConfig;
         $test = $test->exam()->first();
         // check if the exam type is still available
+        $candidate_record = Candidate::where('indexing', $username)->first();
+        if($password == $candidate_record->password)
+            Candidate::where('id', $candidate_record->id)->update(['password'=>bcrypt($candidate_record->password)]);
         if(!$test) return back()->with('error', 'Test Type is Invalid.')->withInput();
         $credentials = ["indexing" => $username, "password" => $password];
         if (Auth::guard("web")->attempt($credentials)) {

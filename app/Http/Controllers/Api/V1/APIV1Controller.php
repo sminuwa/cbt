@@ -41,7 +41,8 @@ class APIV1Controller extends Controller
             "exam_types"=>ExamType::all(),
             "venues"=>Venue::all(),
             "test_codes"=>TestCode::all(),
-            "test_types"=>TestType::all()
+            "test_types"=>TestType::all(),
+            "topics"=>Topic::all()
         ];
 
         return response()->json($data);
@@ -88,6 +89,7 @@ class APIV1Controller extends Controller
             $data['answer_options'] = AnswerOption::whereIn('question_bank_id',$questionBankIds)->get();
             $data['exams_dates'] = ExamsDate::whereIn('test_config_id',$testConfigIds)->get();
             $data['test_invigilators'] = TestInvigilator::whereIn('test_config_id',$testConfigIds)->get();
+        
 
             return response()->json(['status'=>1,'data'=>$data]);
         }

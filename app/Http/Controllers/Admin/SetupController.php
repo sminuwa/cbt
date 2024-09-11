@@ -102,6 +102,11 @@ class SetupController extends Controller
                 $testType['created_at'] = Carbon::parse($testType['created_at'])->format('Y-m-d H:i:s');
                 $testType['updated_at'] = Carbon::parse($testType['updated_at'])->format('Y-m-d H:i:s');
             }
+
+            foreach ($data['topics'] as &$testType) {
+                $testType['created_at'] = Carbon::parse($testType['created_at'])->format('Y-m-d H:i:s');
+                $testType['updated_at'] = Carbon::parse($testType['updated_at'])->format('Y-m-d H:i:s');
+            }
             // Start a transaction
 
             try {
@@ -114,12 +119,14 @@ class SetupController extends Controller
                     TestType::query()->delete();
                     Venue::query()->delete();
                     TestCode::query()->delete();
+                    Topic::query()->delete();
                     // Insert new data
                     Centre::insert($data['centres']);
                     ExamType::insert($data['exam_types']);
                     TestType::insert($data['test_types']);
                     Venue::insert($data['venues']);
                     TestCode::insert($data['test_codes']);
+                    Topic::insert($data['topics']);
                     // Log the pull
                     PullStatus::create([
                         'resource' => 'basic-data',
@@ -274,7 +281,7 @@ class SetupController extends Controller
         // Fetch data from the API
         $response = $this->post($apiUrl, $body, $headers);
 
-        return $response;
+        // return $response;
 //        return $response['status'];
         if ($response['status']==1) {
             // Get the data from the response
