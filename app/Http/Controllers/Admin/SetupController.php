@@ -10,6 +10,7 @@ use App\Models\Centre;
 use App\Models\ExamType;
 use App\Models\QuestionBank;
 use App\Models\ScheduledCandidate;
+use App\Models\Scheduling;
 use App\Models\Subject;
 use App\Models\TestCode;
 use App\Models\TestCompositor;
@@ -202,6 +203,7 @@ class SetupController extends Controller
 
                     Candidate::query()->delete();
                     CandidateSubject::query()->delete();
+                    Scheduling::query()->delete();
                     ScheduledCandidate::query()->delete();
                     Subject::query()->delete();
                     TestCompositor::query()->delete();
@@ -220,6 +222,7 @@ class SetupController extends Controller
 //                    AdminCandidateSubject::insert($data['']);
 //                    AdminScheduledCandidate::insert($data['']);
                     AnswerOption::insert($data['answer_options']);
+                    Scheduling::insert($data['schedulings']);
                     Subject::insert($data['subjects']);
                     TestCompositor::insert($data['test_compositors']);
                     TestConfig::insert($data['test_configs']);
