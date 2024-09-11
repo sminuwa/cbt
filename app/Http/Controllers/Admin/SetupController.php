@@ -440,7 +440,7 @@ class SetupController extends Controller
 
         // Fetch data from the API
         $response = Http::withHeaders($headers)->post($apiUrl, compact('times','presentations','scores','body'));
-        return $response;
+        // return $response;
 //        return $response['status'];
         if ($response->successful()) {
             TimeControl::where('pushed',0)->update(['pushed'=>1]);
