@@ -25,6 +25,7 @@ use App\Models\TestType;
 use App\Models\User;
 use App\Models\Venue;
 use App\Models\Role;
+use App\Models\Topic;
 use App\Models\UserRole;
 use App\Models\TimeControl;
 use App\Models\Presentation;
