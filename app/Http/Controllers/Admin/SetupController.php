@@ -222,7 +222,7 @@ class SetupController extends Controller
 //                    AdminCandidateSubject::insert($data['']);
 //                    AdminScheduledCandidate::insert($data['']);
                     AnswerOption::insert($data['answer_options']);
-                    Scheduling::insert($data['schedulings']);
+                    Scheduling::insert($data['schedules']);
                     Subject::insert($data['subjects']);
                     TestCompositor::insert($data['test_compositors']);
                     TestConfig::insert($data['test_configs']);
