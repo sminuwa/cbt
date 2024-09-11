@@ -42,11 +42,11 @@ class Scheduling extends Model
     protected $casts = [
         'test_config_id' => 'int',
         'venue_id' => 'int',
-        'date' => 'varchar',
+        'date' => 'datetime',
         'maximum_batch' => 'int',
         'no_per_schedule' => 'int',
-        'daily_start_time' => 'varchar',
-        'daily_end_time' => 'varchar'
+        'daily_start_time' => 'datetime',
+        'daily_end_time' => 'datetime'
     ];
 
 	protected $guarded = [];
