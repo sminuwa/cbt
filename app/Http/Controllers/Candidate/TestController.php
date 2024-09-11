@@ -26,12 +26,13 @@ class TestController extends Controller
         $scheduled_candidate = session('scheduled_candidate');
         $candidate_subjects = session('candidate_subjects');
         //checking time control table and logics
+        $ip = request()->ip();
         $timeControl = $candidate->has_time_control($test->id, $scheduled_candidate?->id);
         $duration = $test->duration; //duration in minute
         if(!$timeControl){
             $start_time = date('H:i:s');
             $current_time = date('H:i:s');
-            $ip = request()->ip();
+            
             $timeControl = TimeControl::createRecord($test->id,$scheduled_candidate?->id,$start_time,$current_time,0,$ip);
             if(!$timeControl) return back()->with('error', 'Error creating time control.')->withInput();
             $time_difference = (strtotime($timeControl->current_time) - strtotime($timeControl->start_time)) / 60;
@@ -41,6 +42,9 @@ class TestController extends Controller
             Session::put('remaining_seconds', $remaining_seconds);
             Session::put('time_control', $timeControl);
             Session::put('time_elapsed', $timeControl->elapsed);
+        }else{
+            if($timeControl->ip != $ip)
+                return redirect()->route('candidate.auth.page')->with('error','Your IP has changed. Contact administrator.');
         }
 
         //generating exam question

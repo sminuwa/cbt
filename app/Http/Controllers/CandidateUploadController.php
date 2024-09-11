@@ -284,10 +284,11 @@ public function endCandidateExam(Request $request)
         $restore=TimeControl::find($request->id);
         $restore->completed = 1;
         $restore->save();
-        return response()->json(['message' => 'Exam ended successfully']);
+        return response()->json(['status'=>true,'message' => 'Exam ended']);
 }
 public function adjustCandidateTime(Request $request)
     {
+        return $request;
         $restore=TimeControl::find($request->id);
         $restore->elapsed = $request->added_time;
         $restore->save();
