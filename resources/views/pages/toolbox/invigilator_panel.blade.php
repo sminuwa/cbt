@@ -71,6 +71,7 @@
                 $.post('{{ route('admin.reports.active.generate') }}', $('#report-form').serialize(), function (response) {
                     $('#report-preview-div').html(response)
                 }).done(function(response){
+                    console.log(response)
                     $('.display').DataTable({
                         responsive:true,
                         dom: "Bfrtip",

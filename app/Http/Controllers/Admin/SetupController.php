@@ -170,7 +170,7 @@ class SetupController extends Controller
         // Fetch data from the API
         $response = $this->post($apiUrl, $body, $headers);
 
-        return $response;
+        // return $response;
         if ($response['status']==1) {
             // Get the data from the response
             $data = $response['data']['data'];
@@ -255,7 +255,7 @@ class SetupController extends Controller
     }
 
     public function pullCandidateResource(Request $request) {
-        $tables = ['candidates', 'candidate_subjects']; // Replace with your table names
+        $tables = ['candidates', 'candidate_subjects', 'scheduled_candidates']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
         $apiUrl = $this->apiUrl('resource/candidate');
 
@@ -274,6 +274,7 @@ class SetupController extends Controller
         // Fetch data from the API
         $response = $this->post($apiUrl, $body, $headers);
 
+        return $response;
 //        return $response['status'];
         if ($response['status']==1) {
             // Get the data from the response

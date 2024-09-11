@@ -288,9 +288,9 @@ class ReportController extends Controller
             //     )
             //     ->where(['test_config_id' => $request->test_config_id, 'completed' => 0])
             //     ->get();
-
+            // return $test_config_id;
             $candidates =  Candidate::manage($test_config_id)->get();
-        
+            
             return view('pages.toolbox.ajax.active', compact('candidates'));
         } catch (\Exception $e) {
             return $e->getMessage();

@@ -1,5 +1,5 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/vendors/range-slider.css') }}">
-@if(count($candidates)==0)
+@if(!isset($candidates) || count($candidates)==0)
     <h4 style="text-align: center">No active candidate taking this test</h4>
 @else
     <div class="card">
