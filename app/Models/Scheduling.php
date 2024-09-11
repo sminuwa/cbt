@@ -39,15 +39,15 @@ class Scheduling extends Model
 {
     protected $table = 'schedulings';
 
-    protected $casts = [
-        'test_config_id' => 'int',
-        'venue_id' => 'int',
-        'date' => 'datetime',
-        'maximum_batch' => 'int',
-        'no_per_schedule' => 'int',
-        'daily_start_time' => 'datetime',
-        'daily_end_time' => 'datetime'
-    ];
+    // protected $casts = [
+    //     'test_config_id' => 'int',
+    //     'venue_id' => 'int',
+    //     'date' => 'datetime',
+    //     'maximum_batch' => 'int',
+    //     'no_per_schedule' => 'int',
+    //     'daily_start_time' => 'datetime',
+    //     'daily_end_time' => 'datetime'
+    // ];
 
 	protected $guarded = [];
     public function test_config()
