@@ -100,7 +100,7 @@
                                         @foreach($schedules as $schedule)
                                             <option value="{{$schedule->id}}">
                                                 {{  Carbon::parse($schedule->date)->format('D jS M, Y') }} -
-                                                {{ $schedule->venue->name }} -
+                                                {{ $schedule->venue->centre->name ?? $schedule->venue->name }} -
                                                 {{ $schedule->no_per_schedule }} -
                                                 {{  Carbon::parse($schedule->daily_start_time)->format('h:m a') }} -
                                                 {{  Carbon::parse($schedule->daily_end_time)->format('h:m a') }}
