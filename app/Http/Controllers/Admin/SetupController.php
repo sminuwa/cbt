@@ -103,10 +103,10 @@ class SetupController extends Controller
                 $testType['updated_at'] = Carbon::parse($testType['updated_at'])->format('Y-m-d H:i:s');
             }
 
-            foreach ($data['topics'] as &$testType) {
-                $testType['created_at'] = Carbon::parse($testType['created_at'])->format('Y-m-d H:i:s');
-                $testType['updated_at'] = Carbon::parse($testType['updated_at'])->format('Y-m-d H:i:s');
-            }
+            // foreach ($data['topics'] as &$testType) {
+            //     $testType['created_at'] = Carbon::parse($testType['created_at'])->format('Y-m-d H:i:s');
+            //     $testType['updated_at'] = Carbon::parse($testType['updated_at'])->format('Y-m-d H:i:s');
+            // }
             // Start a transaction
 
             try {
