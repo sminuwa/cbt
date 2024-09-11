@@ -175,9 +175,8 @@ class APIV1Controller extends Controller
 
     public function pushExams(Request $request){
 
-        return $request;
-        $api_key =  $request->api_key ?? $request->header('api_key');
-        $secretKey = $request->secret_key ?? $request->header('secret_key');
+        $api_key =  $request->$body->api_key ?? $request->header('api_key');
+        $secretKey = $request->$body->secret_key ?? $request->header('secret_key');
         $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
         if($center){
             TimeControl::upsert($request->times,['test_config_id','scheduled_candidate_id']);
