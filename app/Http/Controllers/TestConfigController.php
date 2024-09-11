@@ -590,6 +590,7 @@ class TestConfigController extends Controller
     public function composition($config_id)
     {
         $subjects = $this->registeredSubjects($config_id)->get();
+        
         return view('pages.author.test.config.composition', compact('config_id', 'subjects'));
     }
 
