@@ -175,7 +175,7 @@ class APIV1Controller extends Controller
 
     public function pushExams(Request $request){
 
-        return $request->body;
+        return $request->body->api_key;
         $api_key =  $request->api_key ?? $request->header('api_key');
         $secretKey = $request->secret_key ?? $request->header('secret_key');
         $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
