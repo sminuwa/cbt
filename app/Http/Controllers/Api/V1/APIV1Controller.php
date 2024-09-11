@@ -26,6 +26,7 @@ use App\Models\TimeControl;
 use App\Models\Presentation;
 use App\Models\Score;
 use App\Models\Venue;
+use App\Models\Topic;
 use Illuminate\Http\Request;
 use ZipArchive;
 
