@@ -320,8 +320,7 @@ class SetupController extends Controller
                     Candidate::insert($data['candidates']);
                     CandidateSubject::insert($data['candidate_subjects']);
                     foreach(array_chunk($$data['scheduled_candidates'], 1000) as $key => $smallerArray) {
-                        ScheduledCandidate::insert(smallerArray);
-                    
+                        ScheduledCandidate::insert($smallerArray);
                     }
                     
                     // Log the pull
