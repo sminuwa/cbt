@@ -112,7 +112,7 @@ class APIV1Controller extends Controller
 
             //Use venue Ids to get Schedules for today
             $data['schedules'] = Scheduling::whereIn('venue_id',$venueIds)->whereDate("date",today())->get();
-            $data['candidate_subjects'] = CandidateSubject::whereIn('schedule_id',$data['schedules']->pluck('id'))->get();
+            $data['candidate_subjects'] = CandidateSubject::all();//whereIn('schedule_id',$data['schedules']->pluck('id'))->get();
             $scheduledCandidateIds = $data['candidate_subjects']->pluck('scheduled_candidate_id');
             $data['scheduled_candidates'] = ScheduledCandidate::all();//whereIn('id',$scheduledCandidateIds)->get();
             $candidateIds = $data['scheduled_candidates']->pluck('candidate_id');
