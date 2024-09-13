@@ -81,8 +81,8 @@ class APIV1Controller extends Controller
             $data['test_subjects'] = TestSubject::whereIn('test_config_id',$testConfigIds)->get();
             $subjectIds2 = $data['test_subjects']->pluck('id');
             $subjectIds = array_merge($subjectIds1->toArray(),$subjectIds2->toArray());
-            $data['subjects'] = Subject::all();//whereIn('id',$subjectIds)->get();
-            $data['test_sections'] = TestSection::all();//whereIn("test_subject_id",$subjectIds2)->get();
+            $data['subjects'] = Subject::whereIn('id',$subjectIds)->get();
+            $data['test_sections'] = TestSection::whereIn("test_subject_id",$subjectIds2)->get();
             $testSectionIds = $data['test_sections'] ->pluck('id');
             $data['test_questions'] = TestQuestion::whereIn('test_section_id',$testSectionIds)->get();//test_section_id
             $questionBankIds = $data['test_questions'] ->pluck('question_bank_id');//question_bank_id
@@ -112,9 +112,9 @@ class APIV1Controller extends Controller
 
             //Use venue Ids to get Schedules for today
             $data['schedules'] = Scheduling::whereIn('venue_id',$venueIds)->whereDate("date",today())->get();
-            $data['candidate_subjects'] = CandidateSubject::all();//whereIn('schedule_id',$data['schedules']->pluck('id'))->get();
+            $data['candidate_subjects'] = CandidateSubject::whereIn('schedule_id',$data['schedules']->pluck('id'))->get();
             $scheduledCandidateIds = $data['candidate_subjects']->pluck('scheduled_candidate_id');
-            $data['scheduled_candidates'] = ScheduledCandidate::all();//whereIn('id',$scheduledCandidateIds)->get();
+            $data['scheduled_candidates'] = ScheduledCandidate::whereIn('id',$scheduledCandidateIds)->get();
             $candidateIds = $data['scheduled_candidates']->pluck('candidate_id');
             $data['candidates'] = Candidate::whereIn('id',$candidateIds)->get();
             return response()->json(['status'=>1,'data'=>$data]);
