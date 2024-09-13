@@ -95,6 +95,7 @@ class ScheduledCandidate extends Model
                 'scheduled_candidates.candidate_id',
                 'candidate_subjects.schedule_id',
                 'candidate_subjects.subject_id',
+                'candidate_subjects.id as condidate_subject_id',
                 'subjects.name',
                 'exam_types.name as exam_type',
             );
