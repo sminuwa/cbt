@@ -318,7 +318,11 @@ class SetupController extends Controller
                     // Insert new data
 
                     Candidate::insert($data['candidates']);
-                    CandidateSubject::insert($data['candidate_subjects']);
+                    // CandidateSubject::insert($data['candidate_subjects']);
+                    foreach(array_chunk($data['candidate_subjects'], 500) as  $smallerArray) {
+                        // return $smallerArray;
+                         CandidateSubject::insert($smallerArray);
+                    }
                     ScheduledCandidate::insert($data['scheduled_candidates']);
                     // Log the pull
                     PullStatus::create([
