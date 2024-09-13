@@ -74,22 +74,22 @@ class APIV1Controller extends Controller
             
             $data['schedulings'] = Scheduling::whereIn('id',$data['schedules']->pluck('id'))->get();
 
-            $data['test_configs'] = TestConfig::whereIn('id',$testConfigIds)->get();
-            $data['test_compositors'] = TestCompositor::whereIn('test_config_id',$testConfigIds)->get();
+            $data['test_configs'] = TestConfig::all();//whereIn('id',$testConfigIds)->get();
+            $data['test_compositors'] = TestCompositor::all();//whereIn('test_config_id',$testConfigIds)->get();
             $data['users'] = User::whereIn('id',$data['test_compositors']->pluck('user_id'))->get();
             $subjectIds1 = $data['test_compositors']->pluck('subject_id');
-            $data['test_subjects'] = TestSubject::whereIn('test_config_id',$testConfigIds)->get();
+            $data['test_subjects'] = TestSubject::all();//whereIn('test_config_id',$testConfigIds)->get();
             $subjectIds2 = $data['test_subjects']->pluck('id');
             $subjectIds = array_merge($subjectIds1->toArray(),$subjectIds2->toArray());
-            $data['subjects'] = Subject::whereIn('id',$subjectIds)->get();
-            $data['test_sections'] = TestSection::whereIn("test_subject_id",$subjectIds2)->get();
+            $data['subjects'] = Subject::all();//whereIn('id',$subjectIds)->get();
+            $data['test_sections'] = TestSection::all();//whereIn("test_subject_id",$subjectIds2)->get();
             $testSectionIds = $data['test_sections'] ->pluck('id');
-            $data['test_questions'] = TestQuestion::whereIn('test_section_id',$testSectionIds)->get();//test_section_id
+            $data['test_questions'] = TestQuestion::all();//whereIn('test_section_id',$testSectionIds)->get();//test_section_id
             $questionBankIds = $data['test_questions'] ->pluck('question_bank_id');//question_bank_id
-            $data['question_banks'] = QuestionBank::whereIn('id',$questionBankIds)->get();
-            $data['answer_options'] = AnswerOption::whereIn('question_bank_id',$questionBankIds)->get();
-            $data['exams_dates'] = ExamsDate::whereIn('test_config_id',$testConfigIds)->get();
-            $data['test_invigilators'] = TestInvigilator::whereIn('test_config_id',$testConfigIds)->get();
+            $data['question_banks'] = QuestionBank::all();//whereIn('id',$questionBankIds)->get();
+            $data['answer_options'] = AnswerOption::all();//whereIn('question_bank_id',$questionBankIds)->get();
+            $data['exams_dates'] = ExamsDate::all();//whereIn('test_config_id',$testConfigIds)->get();
+            $data['test_invigilators'] = TestInvigilator::all();//whereIn('test_config_id',$testConfigIds)->get();
         
 
             return response()->json(['status'=>1,'data'=>$data]);
@@ -112,11 +112,11 @@ class APIV1Controller extends Controller
 
             //Use venue Ids to get Schedules for today
             $data['schedules'] = Scheduling::whereIn('venue_id',$venueIds)->whereDate("date",today())->get();
-            $data['candidate_subjects'] = CandidateSubject::whereIn('schedule_id',$data['schedules']->pluck('id'))->get();
+            $data['candidate_subjects'] = CandidateSubject::all();//whereIn('schedule_id',$data['schedules']->pluck('id'))->get();
             $scheduledCandidateIds = $data['candidate_subjects']->pluck('scheduled_candidate_id');
-            $data['scheduled_candidates'] = ScheduledCandidate::whereIn('id',$scheduledCandidateIds)->get();
+            $data['scheduled_candidates'] = ScheduledCandidate::all();//whereIn('id',$scheduledCandidateIds)->get();
             $candidateIds = $data['scheduled_candidates']->pluck('candidate_id');
-            $data['candidates'] = Candidate::whereIn('id',$candidateIds)->get();
+            $data['candidates'] = Candidate::all();//whereIn('id',$candidateIds)->get();
             return response()->json(['status'=>1,'data'=>$data]);
         }
 
