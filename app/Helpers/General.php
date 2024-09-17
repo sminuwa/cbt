@@ -56,3 +56,7 @@ function searchForId($search_value, $array) {
     }
     return null;
 }
+
+function jResponse($status = true, $message = '', $data = []) {
+    return response()->json(['status'=>$status, 'message'=>$message, 'data'=>$data]);
+}
