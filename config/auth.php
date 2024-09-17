@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
+        'guard' => env('AUTH_GUARD', 'centre'),
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
@@ -40,9 +40,14 @@ return [
             'driver' => 'session',
             'provider' => 'candidates',
         ],
+        
         'admin' => [
             'driver' => 'session',
             'provider' => 'users',
+        ],
+        'centre' => [
+            'driver' => 'session',
+            'provider' => 'centres',
         ],
     ],
 
@@ -71,6 +76,10 @@ return [
         'candidates' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\Candidate::class),
+        ],
+        'centres' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL', App\Models\Centre::class),
         ],
 
         // 'users' => [
