@@ -1,29 +1,104 @@
 <?php
 
-namespace App\Http\Controllers\Api\Mobile;
+namespace App\Http\Controllers\Api\V1\Mobile;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin\ExamAttendance;
-use App\Models\Admin\User;
-use App\Models\Admin\UserExam;
-use App\Models\Cadre;
-use App\Models\ExamPaper;
-use App\Models\Institution\Candidate;
-use App\Models\Institution\Graduand;
-use App\Models\Institution\Institution;
-use App\Models\Practitioner\Practitioner;
 use Illuminate\Http\Request;
+use App\Models\Centre;
+use App\Models\Candidate;
+use App\Models\CandidateSubject;
+use App\Models\ScheduledCandidate;
+use App\Models\Venue;
+use App\Models\Scheduling;
+use App\Models\Subject;
+use App\Models\TestConfig;
+
+
 
 class AttendanceController extends Controller
 {
-    //
-
     public function fetchRecord(Request $request){
+        
         try{
-            $user = Practitioner::with(['user_exam' => function($query){
-                $query->where('status', 1);
-            }])->where('id',$request->user()->id)->first();
-            $user_exams = $user->user_exam;
+
+            $centre = $request->user();
+            $api_key =  $centre->api_key;
+        
+            $secretKey = $centre->secret_key;
+        
+            // $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
+            if($centre){
+                $venueIds = Venue::where('centre_id',$centre->id)->pluck('id');
+                $data = [];
+
+                $schedules = Scheduling::whereIn('venue_id',$venueIds)->whereDate("date",today())->limit(3)->get();
+                $schedule_ids = $schedules->pluck('id');
+                $candidate_subjects = CandidateSubject::whereIn('schedule_id',$schedule_ids)->get();
+                //Use venue Ids to get Schedules for today
+                $subjects = Subject::select('id', 'subject_code as code', 'name')->whereIn('id',$candidate_subjects->pluck('subject_id'))->get();
+                $centre->makeHidden(['created_at', 'updated_at','password','remember_token','secret_key','api_token']);
+                $schedulings = [];
+                foreach($schedules as $schedule){
+                    $candidate_papers = $candidates2 = $candidates1 = [];
+                    foreach($subjects as $subject){
+                        $candidates1 = Candidate::
+                        select('candidates.*','scheduled_candidates.id as scheduled_candidate_id')
+                        ->join('scheduled_candidates', 'scheduled_candidates.candidate_id', 'candidates.id')
+                        ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', 'scheduled_candidates.id')
+                        ->where('candidate_subjects.subject_id', $subject->id)
+                        ->where('schedule_id', $schedule->id)
+                        ->limit(3)->get();
+                        $candidates2 = Candidate::
+                        select('candidates.*','scheduled_candidates.id as scheduled_candidate_id')
+                        ->join('scheduled_candidates', 'scheduled_candidates.candidate_id', 'candidates.id')
+                        ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', 'scheduled_candidates.id')
+                        ->where('schedule_id', $schedule->id)
+                        ->limit(3)->get();
+                        $candidates1->makeHidden(['created_at', 'updated_at','password','nin','api_token','remember_token','country_id','lga_id','api_key']);
+                        $candidates2->makeHidden(['created_at', 'updated_at','password','nin','api_token','remember_token','country_id','lga_id','api_key']);
+                        foreach($candidates1 as $candidate){
+                            $candidate_papers[] = [
+                                'candidate_id' => $candidate->id,
+                                'paper_id' => $subject->id,
+                                'scheduled_candidate_id'=>$candidate->scheduled_candidate_id
+                            ];
+                        }
+
+                        // $subject['candidates'] = $candidates;
+                    }
+
+                    $test = TestConfig::
+                    select('test_codes.name as test_code', 'test_types.name as test_type')
+                    ->join('test_codes', 'test_codes.id', 'test_configs.test_code_id')
+                    ->join('test_types', 'test_types.id', 'test_configs.test_type_id')
+                    ->where('test_configs.id', $schedule->test_config_id)->first();
+                    $schedulings[]=[
+                        'test_code'=>$test->test_code,
+                        'test_type'=>$test->test_type,
+                        'paper_candidate'=>$candidate_papers,
+                        'candidates'=>$candidates2
+                    ];
+                }
+                // return $candidate_papers;
+                
+                $centre['schedules'] = $schedulings;
+                $centre['papers'] = $subjects;
+                // $centre['candidates'] = $candidates2;
+                
+                // foreach ($centre as $c) {
+                //     $c->makeHidden(['created_at', 'updated_at']);
+                // }
+                return $centre;
+                
+                $data['candidate_subjects'] = CandidateSubject::whereIn('schedule_id',$data['schedules']->pluck('id'))->get();
+                $scheduledCandidateIds = $data['candidate_subjects']->pluck('scheduled_candidate_id');
+                $data['scheduled_candidates'] = ScheduledCandidate::whereIn('id',$scheduledCandidateIds)->limit(3)->get();
+                $candidateIds = $data['scheduled_candidates']->pluck('candidate_id');
+                $data['candidates'] = Candidate::whereIn('id',$candidateIds)->limit(3)->get();
+                return response()->json(['status'=>1,'data'=>$data]);
+            }
+
+
             $institutions = $candidates = $candidate_papers = [];
             $papers = ExamPaper::orderBy('id', 'asc')->get(['id', 'name', 'code', 'description'])->toArray();
             foreach($user_exams as $exam){
