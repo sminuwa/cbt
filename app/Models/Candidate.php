@@ -30,14 +30,26 @@ class Candidate extends Authenticatable
         return str_replace('/', '_', $this->indexing);
     }
 
-    public function passport(){
-        $path = candidate_passport_path().'/'.$this->indexing_to_image_name().'.jpg';
-        if(File::exists($path))
-            return asset($path);
-        return tempPassport();
+    // public function passport(){
+    //     $path = candidate_passport_path().'/'.$this->indexing_to_image_name().'.jpg';
+    //     if(File::exists($path))
+    //         return asset($path);
+    //     return tempPassport();
         
-    }
+    // }
 
+    public function passport($return_path = false){
+        $path = candidate_passport_path().'/'.$this->indexing_to_image_name().'.jpg';
+        if (!$return_path){
+            if(File::exists($path))
+                return asset($path);
+            return tempPassport();
+        }else{
+            if(File::exists($path))
+                return $path;
+            return 'commons/images/user.jpg';
+        }
+    }
     
     public function exam_type(){
 
