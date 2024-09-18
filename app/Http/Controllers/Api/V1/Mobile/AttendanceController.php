@@ -88,60 +88,15 @@ class AttendanceController extends Controller
                 // foreach ($centre as $c) {
                 //     $c->makeHidden(['created_at', 'updated_at']);
                 // }
-                return $centre;
+                // return $centre;
                 
-                $data['candidate_subjects'] = CandidateSubject::whereIn('schedule_id',$data['schedules']->pluck('id'))->get();
-                $scheduledCandidateIds = $data['candidate_subjects']->pluck('scheduled_candidate_id');
-                $data['scheduled_candidates'] = ScheduledCandidate::whereIn('id',$scheduledCandidateIds)->limit(3)->get();
-                $candidateIds = $data['scheduled_candidates']->pluck('candidate_id');
-                $data['candidates'] = Candidate::whereIn('id',$candidateIds)->limit(3)->get();
-                return response()->json(['status'=>1,'data'=>$data]);
+                return jResponse(true, 'Successful', [
+                    'schedules' => $schedulings,
+                    'papers' => $subjects,
+                ]);
             }
 
-
-            $institutions = $candidates = $candidate_papers = [];
-            $papers = ExamPaper::orderBy('id', 'asc')->get(['id', 'name', 'code', 'description'])->toArray();
-            foreach($user_exams as $exam){
-                $year = $exam->year;
-                $institution_id = $exam->institution_id;
-                $inst = Institution::find($institution_id);
-                $c = Candidate::forInstitution($institution_id)->get('id')->toArray();
-                $graduands = Graduand::whereIn('candidate_id', $c)->year($year)->with(['candidate', 'papers'])->status(STATUS_SUBMITTED)->get();
-                foreach($graduands as $graduand){
-                    $ps = $graduand->papers;
-                    foreach($ps as $paper){
-                        $candidate_papers[] = [
-                            'candidate_id' => $graduand->candidate->id,
-                            'paper_id' => $paper->paper_id
-                        ];
-                    }
-                    $data = file_get_contents($graduand->candidate->passport(true));
-                    $photo = base64_encode($data);
-                    $candidates[] = [
-                        'candidate_id' => $graduand->candidate->id,
-                        'photo' => $photo,
-                        'fullname' => $graduand->candidate->fullname(),
-                        'exam_number' => $graduand->exam_number,
-                        'cadre' => $graduand->candidate->cadre->name,
-                    ];
-                }
-                $institutions[] = [
-                    'id' => $inst->id,
-                    'name' => $inst->name,
-                    'code' => $inst->code,
-                    'phone' => $inst->phone,
-                    'exam_date'=> '2024-08-30',
-                    'candidates' => $candidates,
-                    'papers' => $candidate_papers,
-                ];
-                $candidates = $candidate_papers = [];
-            }
-
-            return jResponse(true, 'Successful', [
-                'institutions' => $institutions,
-                'year' => $year,
-                'papers' => $papers,
-            ]);
+            
         }catch(\Exception $e){
             return jResponse(false, 'Failed', 'Something went wrong. '.$e->getMessage());
         }
