@@ -37,9 +37,9 @@ class AttendanceController extends Controller
                 //Use venue Ids to get Schedules for today
                 $subjects = Subject::select('id', 'subject_code as code', 'name')->whereIn('id',$candidate_subjects->pluck('subject_id'))->get();
                 $centre->makeHidden(['created_at', 'updated_at','password','remember_token','secret_key','api_token']);
-                $schedulings = [];
+                $schedulings = $candidate_papers = $candidates2 = $candidates1 = [];
                 foreach($schedules as $schedule){
-                    $candidate_papers = $candidates2 = $candidates1 = [];
+                    
                     foreach($subjects as $subject){
                         $candidates1 = Candidate::
                         select('candidates.*','scheduled_candidates.id as scheduled_candidate_id')
@@ -63,7 +63,7 @@ class AttendanceController extends Controller
                                 'scheduled_candidate_id'=>$candidate->scheduled_candidate_id
                             ];
                         }
-
+                        
                         // $subject['candidates'] = $candidates;
                     }
 
@@ -72,11 +72,22 @@ class AttendanceController extends Controller
                     ->join('test_codes', 'test_codes.id', 'test_configs.test_code_id')
                     ->join('test_types', 'test_types.id', 'test_configs.test_type_id')
                     ->where('test_configs.id', $schedule->test_config_id)->first();
+
+                    $CAND = [];
+                    foreach($candidates2 as $cand){
+                        $CAND[]=[
+                            'id'=>$cand->id,
+                            'indexing'=>$cand->indexing,
+                            'fullname'=>$cand->fullname(),
+                        ];
+                    }
                     $schedulings[]=[
+                        'id'=>$schedule->id,
+                        'test_date'=>$schedule->date,
                         'test_code'=>$test->test_code,
                         'test_type'=>$test->test_type,
-                        'paper_candidate'=>$candidate_papers,
-                        'candidates'=>$candidates2
+                        'paper_candidates'=>$candidate_papers,
+                        'candidates'=>$CAND
                     ];
                 }
                 // return $candidate_papers;
@@ -105,36 +116,27 @@ class AttendanceController extends Controller
     public function pushRecord(Request $request){
         // exam number, cadre, paper, status [present, absent, cancelled, etc]
         try{
-            /*$this->validate($request, [
-                'records' => 'records',
-            ]);*/
             $user = $request->user();
-            //TODO::change the examination year here
             $year = 2024;
-            $institutions = UserExam::where(['user_id'=>$user->id, 'year'=>$year])->get('id')->toArray();
-            $candidates = Candidate::whereIn('institution_id', $institutions)->get('id')->toArray();
-            $graduands = Graduand::whereIn('candidate_id', $candidates)->get();
-
+            
             $records = json_decode($request->getContent());
             $candidate_ids = $attendance = [];
-            foreach($graduands as $graduand){
-                foreach($records as $record){
-                    if($graduand->candidate_id == $record->candidate_id){
-                        $candidate_ids[] = $record->candidate_id;
-                        $attendance[] = [
-                            'graduand_id' => $graduand->id,
-                            'paper_id' => $record->paper_id,
-                            'sign_in' => $record->sign_in,
-                            'sign_out' => $record->sign_out,
-                            'remark' => $record->remark,
-                            'year' => $graduand->year,
-                        ];
-                    }
+            foreach($records as $record){
+                if($graduand->candidate_id == $record->candidate_id){
+                    $candidate_ids[] = $record->scheduled_candidate_id;
+                    $attendance[] = [
+                        'scheduled_candidate_id' => $record->scheduled_candidate_id,
+                        'paper_id' => $record->paper_id,
+                        'sign_in' => $record->sign_in,
+                        'sign_out' => $record->sign_out,
+                        'remark' => $record->remark,
+                        'year' => $graduand->year,
+                    ];
                 }
             }
 
             if(!empty($attendance)){
-                if(ExamAttendance::upsert($attendance, ['graduand_id', 'paper_id', 'year']))
+                if(ExamAttendance::upsert($attendance, ['scheduled_candidate_id', 'paper_id', 'year']))
                     return jResponse(true, 'Successful', $candidate_ids);
 
             }
