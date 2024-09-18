@@ -75,10 +75,13 @@ class AttendanceController extends Controller
 
                     $CAND = [];
                     foreach($candidates2 as $cand){
+                        $data = file_get_contents($cand->passport(true));
+                        $photo = base64_encode($data);
                         $CAND[]=[
                             'id'=>$cand->id,
                             'indexing'=>$cand->indexing,
                             'fullname'=>$cand->fullname(),
+                            'photo'=>$photo
                         ];
                     }
                     $schedulings[]=[
