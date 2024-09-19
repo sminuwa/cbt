@@ -39,8 +39,9 @@ class AttendanceController extends Controller
                 $subjects = Subject::select('id', 'subject_code as code', 'name')->whereIn('id',$candidate_subjects->pluck('subject_id'))->get();
                 $centre->makeHidden(['created_at', 'updated_at','password','remember_token','secret_key','api_token']);
                 $schedulings = $candidate_papers = $candidates2 = $candidates1 = [];
+                $year = date('Y');
                 foreach($schedules as $schedule){
-                    
+                    $year = date('Y', strtotime($schedule->date));
                     foreach($subjects as $subject){
                         $candidates1 = Candidate::
                         select('candidates.*','scheduled_candidates.id as scheduled_candidate_id')
@@ -109,10 +110,11 @@ class AttendanceController extends Controller
                     'centre'=>$centre,
                     'schedules' => $schedulings,
                     'papers' => $subjects,
+                    'year'=>$year,
                 ]);
             }
 
-            
+            return jResponse(false, 'Failed', 'Something went wrong. ');
         }catch(\Exception $e){
             return jResponse(false, 'Failed', 'Something went wrong. '.$e->getMessage());
         }
@@ -131,6 +133,8 @@ class AttendanceController extends Controller
                     $candidate_ids[] = $record->scheduled_candidate_id;
                     $attendance[] = [
                         'scheduled_candidate_id' => $record->scheduled_candidate_id,
+                        'schedule_id' => $record->schedule_id,
+                        'candidate_id' => $record->candidate_id,
                         'paper_id' => $record->paper_id,
                         'sign_in' => $record->sign_in,
                         'sign_out' => $record->sign_out,
@@ -139,7 +143,7 @@ class AttendanceController extends Controller
                     ];
                 }
             }
-            
+
             if(!empty($attendance)){
                 if(Attendance::upsert($attendance, ['scheduled_candidate_id', 'paper_id', 'year']))
                     return jResponse(true, 'Successful', $candidate_ids);
