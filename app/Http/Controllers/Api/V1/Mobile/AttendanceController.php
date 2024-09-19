@@ -12,6 +12,7 @@ use App\Models\Venue;
 use App\Models\Scheduling;
 use App\Models\Subject;
 use App\Models\TestConfig;
+use App\Models\Attendance;
 
 
 
@@ -139,7 +140,7 @@ class AttendanceController extends Controller
             }
 
             if(!empty($attendance)){
-                if(ExamAttendance::upsert($attendance, ['scheduled_candidate_id', 'paper_id', 'year']))
+                if(Attendance::upsert($attendance, ['scheduled_candidate_id', 'paper_id', 'year']))
                     return jResponse(true, 'Successful', $candidate_ids);
 
             }
