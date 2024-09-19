@@ -48,13 +48,13 @@ class AttendanceController extends Controller
                         ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', 'scheduled_candidates.id')
                         ->where('candidate_subjects.subject_id', $subject->id)
                         ->where('schedule_id', $schedule->id)
-                        ->limit(3)->get();
+                        ->get();
                         $candidates2 = Candidate::
                         select('candidates.*','scheduled_candidates.id as scheduled_candidate_id')
                         ->join('scheduled_candidates', 'scheduled_candidates.candidate_id', 'candidates.id')
                         ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', 'scheduled_candidates.id')
                         ->where('schedule_id', $schedule->id)
-                        ->limit(3)->get();
+                        ->groupBy('candidates.id')->get();
                         $candidates1->makeHidden(['created_at', 'updated_at','password','nin','api_token','remember_token','country_id','lga_id','api_key']);
                         $candidates2->makeHidden(['created_at', 'updated_at','password','nin','api_token','remember_token','country_id','lga_id','api_key']);
                         foreach($candidates1 as $candidate){
