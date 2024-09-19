@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'defaults' => [
-        'guard' => env('AUTH_GUARD', 'centre'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
-    ],
+    // 'defaults' => [
+    //     'guard' => env('AUTH_GUARD', 'centre'),
+    //     'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+    // ],
 
     /*
     |--------------------------------------------------------------------------
@@ -75,7 +75,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => App\Models\User::class,
         ],
         'candidates' => [
             'driver' => 'eloquent',
@@ -83,7 +83,7 @@ return [
         ],
         'centres' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\Centre::class),
+            'model' => App\Models\Centre::class,
         ],
 
         // 'users' => [

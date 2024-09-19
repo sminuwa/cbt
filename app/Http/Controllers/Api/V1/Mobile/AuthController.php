@@ -23,7 +23,7 @@ class AuthController extends Controller
 //        if(!$check->canAccess('attendance.mobile.login') || !$check->canAccess('attendance.desktop.login'))
 //            return ['status'=>false,'message'=>'You are not allowed to access this portal.'];
             $credentials = ["api_key" => $request->username, "password" => $request->password];
-            if (Auth::attempt($credentials, 0)) {
+            if (Auth::guard('centre')->attempt($credentials, 0)) {
                 $request->user()->tokens()->delete();
                 $token = $request->user()->createToken('mobile-app-access', ['server:mobile-app'])->plainTextToken;
                 return jResponse(true, 'login successful', ['token' => $token]);
