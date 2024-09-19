@@ -87,7 +87,7 @@ class AttendanceController extends Controller
                     }
                     $schedulings[]=[
                         'id'=>$schedule->id,
-                        'test_date'=>$schedule->date,
+                        'test_date'=>date('l, jS M Y', strtotime($schedule->date)),
                         'test_code'=>$test->test_code,
                         'test_type'=>$test->test_type,
                         'paper_candidates'=>$candidate_papers,
@@ -96,8 +96,8 @@ class AttendanceController extends Controller
                 }
                 // return $candidate_papers;
                 
-                $centre['schedules'] = $schedulings;
-                $centre['papers'] = $subjects;
+                // $centre['schedules'] = $schedulings;
+                // $centre['papers'] = $subjects;
                 // $centre['candidates'] = $candidates2;
                 
                 // foreach ($centre as $c) {
@@ -106,6 +106,7 @@ class AttendanceController extends Controller
                 // return $centre;
                 
                 return jResponse(true, 'Successful', [
+                    'centre'=>$centre,
                     'schedules' => $schedulings,
                     'papers' => $subjects,
                 ]);
