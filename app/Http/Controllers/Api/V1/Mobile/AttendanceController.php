@@ -124,8 +124,6 @@ class AttendanceController extends Controller
         // exam number, cadre, paper, status [present, absent, cancelled, etc]
         try{
             $user = $request->user();
-            $year = 2024;
-            
             $records = json_decode($request->getContent());
             $candidate_ids = $attendance = [];
             foreach($records as $record){
