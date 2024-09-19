@@ -127,8 +127,7 @@ class AttendanceController extends Controller
             $records = json_decode($request->getContent());
             $candidate_ids = $attendance = [];
             foreach($records as $record){
-                if($graduand->candidate_id == $record->candidate_id){
-                    $candidate_ids[] = $record->scheduled_candidate_id;
+                $candidate_ids[] = $record->candidate_id;
                     $attendance[] = [
                         'scheduled_candidate_id' => $record->scheduled_candidate_id,
                         'schedule_id' => $record->schedule_id,
@@ -137,9 +136,8 @@ class AttendanceController extends Controller
                         'sign_in' => $record->sign_in,
                         'sign_out' => $record->sign_out,
                         'remark' => $record->remark,
-                        'year' => $graduand->year,
+                        'year' => $record->year,
                     ];
-                }
             }
 
             if(!empty($attendance)){
