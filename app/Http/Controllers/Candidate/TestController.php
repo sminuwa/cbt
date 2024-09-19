@@ -43,8 +43,13 @@ class TestController extends Controller
             Session::put('time_control', $timeControl);
             Session::put('time_elapsed', $timeControl->elapsed);
         }else{
-            if($timeControl->ip != $ip)
+            if($timeControl->ip == ''){
+                TimeControl::find($timeControl->id)->update(['ip'=>$ip]);
+            }else{
+                if($timeControl->ip != $ip)
                 return redirect()->route('candidate.auth.page')->with('error','Your IP has changed. Contact administrator.');
+            }
+            
         }
 
         //generating exam question

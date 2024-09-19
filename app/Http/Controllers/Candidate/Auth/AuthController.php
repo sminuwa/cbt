@@ -38,7 +38,7 @@ class AuthController extends Controller
             Candidate::where('id', $candidate_record->id)->update(['password'=>bcrypt($candidate_record->password)]);
         if(!$test) return back()->with('error', 'Test Type is Invalid.')->withInput();
         $credentials = ["indexing" => $username, "password" => $password];
-        if (Auth::guard("candidate")->attempt($credentials)) {
+        if (Auth::guard("candidate")->attempt($credentials,0)) {
             //check candidate's schedules and compare with the selected test schedules
             $candidate = auth()->user();
             $scheduled_candidate = $candidate->schedules($test_id);
