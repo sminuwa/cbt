@@ -45,6 +45,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'candidate' => [
+            'driver' => 'session',
+            'provider' => 'candidates',
+        ],
         'centre' => [
             'driver' => 'session',
             'provider' => 'centres',
@@ -75,7 +79,7 @@ return [
         ],
         'candidates' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\Candidate::class),
+            'model' => App\Models\Candidate::class,
         ],
         'centres' => [
             'driver' => 'eloquent',
