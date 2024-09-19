@@ -139,12 +139,13 @@ class AttendanceController extends Controller
                     ];
                 }
             }
-
+            
             if(!empty($attendance)){
                 if(Attendance::upsert($attendance, ['scheduled_candidate_id', 'paper_id', 'year']))
                     return jResponse(true, 'Successful', $candidate_ids);
 
             }
+
             return jResponse(false, 'Something went wrong');
         }catch(\Exception $e){
             return jResponse(false, 'Failed', 'Something went wrong. '. $e->getMessage() );
