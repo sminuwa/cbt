@@ -94,6 +94,7 @@ class AttendanceController extends Controller
                         'paper_candidates'=>$candidate_papers,
                         'candidates'=>$CAND
                     ];
+                    $candidate_papers = [];
                 }
                 // return $candidate_papers;
                 
