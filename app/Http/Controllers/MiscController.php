@@ -105,10 +105,9 @@ class MiscController extends Controller
         
         $method = $request->method();
         if($method == 'POST'){
-            $adapter = $request->adapter;
+            $network_interface = $request->network_interface;
             $ip_address = $request->ip_address;
-            $default_gateway = $request->default_gateway;
-            $net_port = $request->net_port;
+            $gateway = $request->gateway;
             $net_port = $request->net_port;
             $config_type = $request->config_type;
             $file_name = $request->file_name;
@@ -117,10 +116,10 @@ class MiscController extends Controller
                     'version' => 2,
                     'renderer' => 'networkd',
                     'ethernets' => [
-                        $adapter => [
+                        $network_interface => [
                             'dhcp4' => false,
-                            'addresses' => [$ip_address.'/'.$net_port],
-                            'gateway4' => $default_gateway,
+                            'addresses' => [$ip_address],
+                            'gateway4' => $gateway,
                             'nameservers' => [
                                 'addresses' => ['8.8.8.8', '8.8.4.4']
                             ]

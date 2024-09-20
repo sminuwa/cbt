@@ -48,16 +48,16 @@
                                         <div class="row">
                                             <div class="col-md-6 mt-3">
                                                 <div class="form-group">
-                                                    <label for="duration">Test Duration:</label>
-                                                    <input class="form-control" type="number" name="duration" id="duration"
-                                                           value="" placeholder="Duration (min)" required>
+                                                    <label for="duration">IP Address/Prefix:</label>
+                                                    <input class="form-control" type="text" name="ip_address" id="ip_address"
+                                                           value="" placeholder="IP Address/Prefix" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 mt-3">
                                                 <div class="form-group">
-                                                    <label for="time_padding">Padding Time:</label>
-                                                    <input class="form-control" type="number" name="time_padding" id="time_padding"
-                                                           value="" placeholder="Time (min)" required>
+                                                    <label for="time_padding">Gateway:</label>
+                                                    <input class="form-control" type="text" name="gateway" id="gateway"
+                                                           value="" placeholder="Gateway (e.g. 192.168.0.1)" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -76,7 +76,7 @@
                                             <div class="col-md-6 mt-3">
                                                 <div class="form-group">
                                                     <label for="endorsement">Select file to configure:</label>
-                                                    <select class="form-control form-select" name="endorsement" id="endorsement"
+                                                    <select class="form-control form-select" name="file_name" id="file_name"
                                                             required>
                                                         @foreach($configuration_files as $file_name) 
                                                             <option>{{  $file_name }}</option>
