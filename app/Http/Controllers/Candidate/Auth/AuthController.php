@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Session;
 class AuthController extends Controller
 {
     //
+
     public function index(){
         $exams = TestConfig::exam()->get();
         return view('pages.candidate.auth.login',compact('exams'));
@@ -38,7 +39,8 @@ class AuthController extends Controller
             Candidate::where('id', $candidate_record->id)->update(['password'=>bcrypt($candidate_record->password)]);
         if(!$test) return back()->with('error', 'Test Type is Invalid.')->withInput();
         $credentials = ["indexing" => $username, "password" => $password];
-        if (Auth::guard("candidate")->attempt($credentials,0)) {
+        if (Auth::guard("candidate")->attempt($credentials,false)) {
+            return auth()->user();
             //check candidate's schedules and compare with the selected test schedules
             $candidate = auth()->user();
             $scheduled_candidate = $candidate->schedules($test_id);
