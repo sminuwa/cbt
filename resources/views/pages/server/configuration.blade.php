@@ -32,7 +32,68 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @json($configuration_files)
+                    <form action="{{ route('admin.configuration') }}" method="post">
+                        @csrf
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title d-flex justify-content-between">
+                                            Duration & Mode
+                                        </h4>
+                                    
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mt-3">
+                                                <div class="form-group">
+                                                    <label for="duration">Test Duration:</label>
+                                                    <input class="form-control" type="number" name="duration" id="duration"
+                                                           value="" placeholder="Duration (min)" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mt-3">
+                                                <div class="form-group">
+                                                    <label for="time_padding">Padding Time:</label>
+                                                    <input class="form-control" type="number" name="time_padding" id="time_padding"
+                                                           value="" placeholder="Time (min)" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mt-3">
+                                                <div class="form-group">
+                                                    <label for="endorsement">Select network card:</label>
+                                                    <select class="form-control form-select" name="endorsement" id="endorsement"
+                                                            required>
+                                                        @foreach($network_interfaces as $network_interface) 
+                                                            <option>{{  $network_interface }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mt-3">
+                                                <div class="form-group">
+                                                    <label for="endorsement">Select file to configure:</label>
+                                                    <select class="form-control form-select" name="endorsement" id="endorsement"
+                                                            required>
+                                                        @foreach($configuration_files as $file) 
+                                                            <option>{{  $file_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-right">
+                            <input class="btn btn-primary text-light" type="submit" value="Save Config">
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
