@@ -21,7 +21,6 @@ Route::get('/', function () {
     return redirect()->route('candidate.auth.page');
 });
 
-
 Route::name('auth.')->prefix('auth/')->group(function () {
     Route::name('admin.')->prefix('adm/')->group(function () {
         Route::get('login', [UserLoginController::class, 'showLoginForm'])->name('login')->middleware('guest');
@@ -37,8 +36,8 @@ Route::name('auth.')->prefix('auth/')->group(function () {
 });
 
 
-Route::middleware('auth:admin')->name('admin.')->prefix('adm')->group(function () {
-
+Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function () {
+    Route::get('/configuration', [App\Http\Controllers\MiscController::class, 'configuration'])->name('configuration');
     Route::name('dashboard.')->prefix('dashboard')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
     });
@@ -250,3 +249,4 @@ Route::name('api.v1.')->prefix('api/v1/')->group(function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+

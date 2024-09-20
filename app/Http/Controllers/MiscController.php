@@ -79,4 +79,101 @@ class MiscController extends Controller
         return view('pages.admin.reports.ajax.candidates', compact('candidates'));
     }
 
+
+    public function configuration(Request $request){
+        // $output = array();
+
+        exec('ifconfig | grep en ', $output);
+        $ethernet_adapters = array_filter($output);
+        foreach ($ethernet_adapters as $key=> $adapter) {
+            if (strpos($adapter, 'en') !== false) {
+            echo trim($adapter) . "<br>";
+            }
+        }
+        return;
+        // return json_encode($ethernet_adapters, true);
+        // // return array_filter(explode(':',json_encode($ethernet_adapters, true)));
+
+        // exec('ip link | grep "eth" | cut -d ":" -f2', $output);
+        // $ethernet_adapters = array_filter($output);
+
+        // echo "Ethernet Adapters:<br>";
+        // foreach ($ethernet_adapters as $adapter) {
+        //     echo trim($adapter) . "<br>";
+        // }
+
+        
+        $method = $request->method();
+        if($method == 'POST'){
+            $adapter = $request->adapter;
+            $ip_address = $request->ip_address;
+            $default_gateway = $request->default_gateway;
+            $net_port = $request->net_port;
+            $net_port = $request->net_port;
+            $config_type = $request->config_type;
+            $file_name = $request->file_name;
+            $netplan_config = [
+                'network' => [
+                    'version' => 2,
+                    'renderer' => 'networkd',
+                    'ethernets' => [
+                        $adapter => [
+                            'dhcp4' => false,
+                            'addresses' => [$ip_address.'/'.$net_port],
+                            'gateway4' => $default_gateway,
+                            'nameservers' => [
+                                'addresses' => ['8.8.8.8', '8.8.4.4']
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+            
+            yaml_emit_file('/etc/netplan/'.$file_name, $netplan_config, YAML_ANY_ENCODING, 4);
+            return back()->with('success', 'Server configured successfully');
+        }
+        //second
+        $output = array();
+        $output1 = array();
+        exec('ls /sys/class/net', $output);
+        exec('ls /etc/netplan/', $output1);
+        $network_interfaces = $output;
+        $configuration_files = $output1;
+        return view('page.server.configuration',compact('network_interfaces', 'configuration_files'));
+
+
+
+
+
+
+        // echo "Network Interfaces:<br>";
+        // foreach ($network_interfaces as $interface) {
+        //     if (strpos($interface, 'eth') !== false) {
+        //         echo $interface . "<br>";
+        //     }
+        // }
+        
+        // //third
+        // $output = shell_exec('nmcli device status | grep "ethernet"');
+        // $ethernet_adapters = explode("\n", $output);
+
+        // echo "Ethernet Adapters:<br>";
+        // foreach ($ethernet_adapters as $adapter) {
+        //     echo trim(explode(":", $adapter)[0]) . "<br>";
+        // }
+        
+        // //forth
+        // $network_interfaces = file('/proc/net/dev');
+        // array_shift($network_interfaces); // Remove header
+        // array_shift($network_interfaces); // Remove header
+
+        // echo "Network Interfaces:<br>";
+        // foreach ($network_interfaces as $interface) {
+        //     $interface_info = explode(":", trim($interface));
+        //     if (strpos($interface_info[0], 'eth') !== false) {
+        //         echo $interface_info[0] . "<br>";
+        //     }
+        // }
+    }
+
 }
