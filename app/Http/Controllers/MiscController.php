@@ -12,7 +12,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 class MiscController extends Controller
 {
@@ -139,7 +139,7 @@ class MiscController extends Controller
         exec('ls /etc/netplan/', $output1);
         $network_interfaces = $output;
         $configuration_files = $output1;
-        return view('page.server.configuration',compact('network_interfaces', 'configuration_files'));
+        return view('pages.server.configuration',compact('network_interfaces', 'configuration_files'));
 
 
 

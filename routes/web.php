@@ -37,7 +37,7 @@ Route::name('auth.')->prefix('auth/')->group(function () {
 
 
 Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function () {
-    Route::get('/configuration', [App\Http\Controllers\MiscController::class, 'configuration'])->name('configuration');
+    Route::match(['GET','POST'],'/configuration', [App\Http\Controllers\MiscController::class, 'configuration'])->name('configuration');
     Route::name('dashboard.')->prefix('dashboard')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
     });
