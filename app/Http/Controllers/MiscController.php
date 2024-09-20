@@ -101,7 +101,7 @@ class MiscController extends Controller
         // foreach ($ethernet_adapters as $adapter) {
         //     echo trim($adapter) . "<br>";
         // }
-        die(phpinfo());
+        // die(phpinfo());
         
         $method = $request->method();
         if($method == 'POST'){
