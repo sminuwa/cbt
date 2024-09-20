@@ -50,7 +50,7 @@
                                                 <div class="form-group">
                                                     <label for="duration">IP Address/Prefix:</label>
                                                     <input class="form-control" type="text" name="ip_address" id="ip_address"
-                                                           value="" placeholder="IP Address/Prefix" required>
+                                                           value="" placeholder="IP Address/Prefix (e.g. 192.168.0.10/24)" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 mt-3">
