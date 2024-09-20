@@ -207,7 +207,7 @@ class AttendanceController extends Controller
         }
     }
 
-    public function pushPractical(){
+    public function pushPractical(Request $request){
         try{
             $user = $request->user();
             $records = json_decode($request->getContent());
