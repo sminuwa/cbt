@@ -28,6 +28,10 @@ return Application::configure(basePath: dirname(__DIR__))
 //        if(!Auth::guard('admin')->check())
 //            $middleware->redirectGuestsTo('auth/adm/login');
 //        else
+        // $middleware->add('centre', \App\Http\Middleware\CentreGuard::class);
+        $middleware->alias([
+            'centre' => \App\Http\Middleware\CentreGuard::class,
+        ]);
         $middleware->redirectGuestsTo('candidate/auth');
         $middleware->validateCsrfTokens(except: [
             'stripe/*',

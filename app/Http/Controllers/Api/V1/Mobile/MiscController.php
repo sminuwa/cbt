@@ -8,6 +8,11 @@ use App\Models\AttendanceRemark;
 
 class MiscController extends Controller
 {
+    public function __construct()
+    {
+        // Apply the CentreGuard middleware globally to all methods in this controller
+        $this->middleware('centre');
+    }
     
     public function attendanceRemark(Request $request){
         try{

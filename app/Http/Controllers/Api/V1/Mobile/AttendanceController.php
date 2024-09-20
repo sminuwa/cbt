@@ -22,6 +22,13 @@ use App\Models\PracticalExamination;
 
 class AttendanceController extends Controller
 {
+
+    // public function __construct()
+    // {
+    //     // Apply the CentreGuard middleware globally to all methods in this controller
+    //     $this->middleware('centre');
+    // }
+
     public function fetchRecord(Request $request){
         
         try{
@@ -201,6 +208,6 @@ class AttendanceController extends Controller
     }
 
     public function pushPractical(){
-
+        
     }
 }
