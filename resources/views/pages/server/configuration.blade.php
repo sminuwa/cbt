@@ -26,9 +26,7 @@
                 <div class="card-header">
                     <h4>Test Configurations</h4>
                     <div class="card-header-right">
-                        <a data-bs-toggle="modal" href="#add_new_config" class="btn btn-primary btn-xs px-3">
-                            <i class="las la-plus text-white"></i>Add
-                        </a>
+                        
                     </div>
                 </div>
                 <div class="card-body">
@@ -36,67 +34,52 @@
                         @csrf
                         
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h4 class="card-title d-flex justify-content-between">
-                                            Duration & Mode
-                                        </h4>
-                                    
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-4 mt-3">
-                                                <div class="form-group">
-                                                    <label for="duration">IP Address/Prefix:</label>
-                                                    <input class="form-control" type="text" name="ip_address" id="ip_address"
-                                                           value="" placeholder="IP Address/Prefix (e.g. 192.168.0.10/24)" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 mt-3">
-                                                <div class="form-group">
-                                                    <label for="time_padding">Gateway:</label>
-                                                    <input class="form-control" type="text" name="gateway" id="gateway"
-                                                           value="" placeholder="Gateway (e.g. 192.168.0.1)" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 mt-3">
-                                                <div class="form-group">
-                                                    <label for="time_padding">DHCP:</label>
-                                                    <select class="form-control" type="text" name="dhcp" id="dhcp"
-                                                            required>
-                                                        <option value=0>False</option>
-                                                        <option value=1>True</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6 mt-3">
-                                                <div class="form-group">
-                                                    <label for="endorsement">Select network card:</label>
-                                                    <select class="form-control form-select" name="network_interface" id="network_interface"
-                                                            required>
-                                                        @foreach($network_interfaces as $network_interface) 
-                                                            <option>{{  $network_interface }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mt-3">
-                                                <div class="form-group">
-                                                    <label for="endorsement">Select file to configure:</label>
-                                                    <select class="form-control form-select" name="file_name" id="file_name"
-                                                            required>
-                                                        @foreach($configuration_files as $file_name) 
-                                                            <option>{{  $file_name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                    </div>
+                            <div class="col-md-4 mt-3">
+                                <div class="form-group">
+                                    <label for="duration">IP Address/Prefix:</label>
+                                    <input class="form-control" type="text" name="ip_address" id="ip_address"
+                                           value="" placeholder="IP Address/Prefix (e.g. 192.168.0.10/24)" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-3">
+                                <div class="form-group">
+                                    <label for="time_padding">Gateway:</label>
+                                    <input class="form-control" type="text" name="gateway" id="gateway"
+                                           value="" placeholder="Gateway (e.g. 192.168.0.1)" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-3">
+                                <div class="form-group">
+                                    <label for="time_padding">DHCP:</label>
+                                    <select class="form-control" type="text" name="dhcp" id="dhcp"
+                                            required>
+                                        <option value=0>False</option>
+                                        <option value=1>True</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <div class="form-group">
+                                    <label for="endorsement">Select network card:</label>
+                                    <select class="form-control form-select" name="network_interface" id="network_interface"
+                                            required>
+                                        @foreach($network_interfaces as $network_interface) 
+                                            <option>{{  $network_interface }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <div class="form-group">
+                                    <label for="endorsement">Select file to configure:</label>
+                                    <select class="form-control form-select" name="file_name" id="file_name"
+                                            required>
+                                        @foreach($configuration_files as $file_name) 
+                                            <option>{{  $file_name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>
