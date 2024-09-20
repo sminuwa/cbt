@@ -46,18 +46,28 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-6 mt-3">
+                                            <div class="col-md-4 mt-3">
                                                 <div class="form-group">
                                                     <label for="duration">IP Address/Prefix:</label>
                                                     <input class="form-control" type="text" name="ip_address" id="ip_address"
                                                            value="" placeholder="IP Address/Prefix (e.g. 192.168.0.10/24)" required>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6 mt-3">
+                                            <div class="col-md-4 mt-3">
                                                 <div class="form-group">
                                                     <label for="time_padding">Gateway:</label>
                                                     <input class="form-control" type="text" name="gateway" id="gateway"
                                                            value="" placeholder="Gateway (e.g. 192.168.0.1)" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mt-3">
+                                                <div class="form-group">
+                                                    <label for="time_padding">Allow DHCP:</label>
+                                                    <select class="form-control" type="text" name="gateway" id="gateway"
+                                                            required>
+                                                        <option value=0>False</option>
+                                                        <option value=1>True</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
