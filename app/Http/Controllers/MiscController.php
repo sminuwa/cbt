@@ -131,13 +131,15 @@ class MiscController extends Controller
                         'ethernets' => [
                             $network_interface => [
                                 'dhcp4' => false,
-                                'addresses' => [$ip_address],
+                                'addresses' => [$ip_address], // Static IP address
                                 'nameservers' => [
                                     'addresses' => ['8.8.8.8', '8.8.4.4']
                                 ],
                                 'routes' => [
-                                    'to'=>'default',
-                                    'via'=>$gateway,
+                                    [
+                                        'to' => '0.0.0.0/0',  // Default route (equivalent to 'default')
+                                        'via' => $gateway,
+                                    ]
                                 ],
                             ]
                         ]
