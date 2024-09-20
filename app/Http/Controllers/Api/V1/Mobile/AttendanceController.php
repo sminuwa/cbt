@@ -14,6 +14,9 @@ use App\Models\Subject;
 use App\Models\TestConfig;
 use App\Models\Attendance;
 use App\Models\ProjectAssessment;
+use App\Models\PracticalSection;
+use App\Models\PracticalQuestion;
+use App\Models\PracticalExamination;
 
 
 
@@ -39,11 +42,14 @@ class AttendanceController extends Controller
                 //Use venue Ids to get Schedules for today
                 $subjects = Subject::select('id', 'subject_code as code', 'name')->whereIn('id',$candidate_subjects->pluck('subject_id'))->get();
                 $centre->makeHidden(['created_at', 'updated_at','password','remember_token','secret_key','api_token']);
-                $schedulings = $candidate_papers = $candidates2 = $candidates1 = [];
+                $schedulings = $candidate_papers = $candidates2 = $candidates1 = $sections = [];
+                $has_practical = false;
                 $year = date('Y');
                 foreach($schedules as $schedule){
                     $year = date('Y', strtotime($schedule->date));
                     foreach($subjects as $subject){
+                        if($subject->code == 'PE')
+                            $has_practical = true;
                         $candidates1 = Candidate::
                         select('candidates.*','scheduled_candidates.id as scheduled_candidate_id')
                         ->join('scheduled_candidates', 'scheduled_candidates.candidate_id', 'candidates.id')
@@ -97,6 +103,17 @@ class AttendanceController extends Controller
                     ];
                     $candidate_papers = [];
                 }
+
+                if($has_practical == true){
+                    $sections = PracticalSection::where(['status'=>1])->with('questions',function($query){
+                        $query->where('status', 1);
+                    })->get();
+
+                    foreach($sections as $section){
+                        $sections->makeHidden(['created_at', 'updated_at']);
+                        $section->questions->makeHidden(['created_at', 'updated_at']);
+                    }
+                }
                 // return $candidate_papers;
                 
                 // $centre['schedules'] = $schedulings;
@@ -113,6 +130,7 @@ class AttendanceController extends Controller
                     'schedules' => $schedulings,
                     'papers' => $subjects,
                     'year'=>$year,
+                    'sections'=>$sections,
                 ]);
             }
 
