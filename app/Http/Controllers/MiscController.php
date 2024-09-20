@@ -148,8 +148,10 @@ class MiscController extends Controller
 
             // return $netplan_config;
             
-            yaml_emit_file('/etc/netplan/'.$file_name, $netplan_config, YAML_ANY_ENCODING, 4);
-            // yaml_emit( $netplan_config, YAML_ANY_ENCODING, 4);
+            // yaml_emit_file('/etc/netplan/'.$file_name, $netplan_config, YAML_ANY_ENCODING, 4);
+            $yamlData = yaml_emit( $netplan_config, YAML_UTF8_ENCODING, YAML_LN_BREAK);
+            $filePath = '/etc/netplan/'.$file_name;
+            file_put_contents($filePath, $yamlData);
             return back()->with('success', 'Server configured successfully');
         }
         //second
