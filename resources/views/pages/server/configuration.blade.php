@@ -65,7 +65,7 @@
                                             <div class="col-md-6 mt-3">
                                                 <div class="form-group">
                                                     <label for="endorsement">Select network card:</label>
-                                                    <select class="form-control form-select" name="endorsement" id="endorsement"
+                                                    <select class="form-control form-select" name="network_interface" id="network_interface"
                                                             required>
                                                         @foreach($network_interfaces as $network_interface) 
                                                             <option>{{  $network_interface }}</option>
