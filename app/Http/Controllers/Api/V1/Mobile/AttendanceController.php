@@ -13,6 +13,7 @@ use App\Models\Scheduling;
 use App\Models\Subject;
 use App\Models\TestConfig;
 use App\Models\Attendance;
+use App\Models\ProjectAssessment;
 
 
 
@@ -151,5 +152,37 @@ class AttendanceController extends Controller
         }catch(\Exception $e){
             return jResponse(false, 'Failed', 'Something went wrong. '. $e->getMessage() );
         }
+    }
+
+    public function pushProject(Request $request){
+        try{
+            $user = $request->user();
+            $records = json_decode($request->getContent());
+            $candidate_ids = $attendance = [];
+            foreach($records as $record){
+                $candidate_ids[] = $record->scheduled_candidate_id;
+                    $attendance[] = [
+                        'scheduled_candidate_id' => $record->scheduled_candidate_id,
+                        'scheduled_id' => $record->paper_id,
+                        'candidate_id' => $record->paper_id,
+                        'paper_id' => $record->paper_id,
+                        'score' => $record->score,
+                    ];
+            }
+
+            if(!empty($attendance)){
+                if(ProjectAssessment::upsert($attendance, ['scheduled_candidate_id', 'candidate_id','paper_id', 'schedule_id']))
+                    return jResponse(true, 'Successful', $candidate_ids);
+
+            }
+
+            return jResponse(false, 'Something went wrong');
+        }catch(\Exception $e){
+            return jResponse(false, 'Failed', 'Something went wrong. '. $e->getMessage() );
+        }
+    }
+
+    public function pushPractical(){
+
     }
 }
