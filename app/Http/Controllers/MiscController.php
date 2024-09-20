@@ -132,7 +132,10 @@ class MiscController extends Controller
                             $network_interface => [
                                 'dhcp4' => false,
                                 'addresses' => [$ip_address],
-                                'gateway4' => $gateway,
+                                'route' => [
+                                    '- to'=>'default',
+                                    'via'=>$gateway,
+                                ],
                                 'nameservers' => [
                                     'addresses' => ['8.8.8.8', '8.8.4.4']
                                 ]
