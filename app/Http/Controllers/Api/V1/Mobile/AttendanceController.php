@@ -163,7 +163,7 @@ class AttendanceController extends Controller
                 $candidate_ids[] = $record->scheduled_candidate_id;
                     $attendance[] = [
                         'scheduled_candidate_id' => $record->scheduled_candidate_id,
-                        'scheduled_id' => $record->scheduled_id,
+                        'schedule_id' => $record->schedule_id,
                         'candidate_id' => $record->candidate_id,
                         'paper_id' => $record->paper_id,
                         'score' => $record->score,
