@@ -207,7 +207,32 @@ class AttendanceController extends Controller
         }
     }
 
-    public function pushPractical(){
-        
+    public function pushPractical(Request $request){
+        try{
+            $user = $request->user();
+            $records = json_decode($request->getContent());
+            $candidate_ids = $attendance = [];
+            foreach($records as $record){
+                $candidate_ids[] = $record->scheduled_candidate_id;
+                    $attendance[] = [
+                        'candidate_id' => $record->candidate_id,
+                        'paper_id' => $record->paper_id,
+                        'practical_question_id' => $record->question_id,
+                        'schedule_id' => $record->schedule_id,
+                        'scheduled_candidate_id' => $record->scheduled_candidate_id,
+                        'score' => $record->score,
+                    ];
+            }
+
+            if(!empty($attendance)){
+                if(PracticalExamination::upsert($attendance, ['scheduled_candidate_id', 'practical_question_id','paper_id', 'schedule_id']))
+                    return jResponse(true, 'Successful', $candidate_ids);
+
+            }
+
+            return jResponse(false, 'Something went wrong');
+        }catch(\Exception $e){
+            return jResponse(false, 'Failed', 'Something went wrong. '. $e->getMessage() );
+        }
     }
 }

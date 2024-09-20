@@ -101,35 +101,69 @@ class MiscController extends Controller
         // foreach ($ethernet_adapters as $adapter) {
         //     echo trim($adapter) . "<br>";
         // }
-
+        // die(phpinfo());
         
         $method = $request->method();
         if($method == 'POST'){
-            $adapter = $request->adapter;
+            $network_interface = $request->network_interface;
             $ip_address = $request->ip_address;
-            $default_gateway = $request->default_gateway;
+            $gateway = $request->gateway;
             $net_port = $request->net_port;
-            $net_port = $request->net_port;
-            $config_type = $request->config_type;
+            $dhcp = $request->dhcp;
             $file_name = $request->file_name;
-            $netplan_config = [
-                'network' => [
-                    'version' => 2,
-                    'renderer' => 'networkd',
-                    'ethernets' => [
-                        $adapter => [
-                            'dhcp4' => false,
-                            'addresses' => [$ip_address.'/'.$net_port],
-                            'gateway4' => $default_gateway,
-                            'nameservers' => [
-                                'addresses' => ['8.8.8.8', '8.8.4.4']
+            if($dhcp == 1){
+                $netplan_config = [
+                    'network' => [
+                        'version' => 2,
+                        'renderer' => 'networkd',
+                        'ethernets' => [
+                            $network_interface => [
+                                'dhcp4' => true,
                             ]
                         ]
                     ]
-                ]
-            ];
+                ];
+            }else{
+                $netplan_config = [
+                    'network' => [
+                        'version' => 2,
+                        'renderer' => 'networkd',
+                        'ethernets' => [
+                            $network_interface => [
+                                'dhcp4' => false,
+                                'addresses' => [$ip_address], // Static IP address
+                                'nameservers' => [
+                                    'addresses' => ['8.8.8.8', '8.8.4.4']
+                                ],
+                                'routes' => [
+                                    [
+                                        'to' => '0.0.0.0/0',  // Default route (equivalent to 'default')
+                                        'via' => $gateway,
+                                    ]
+                                ],
+                            ]
+                        ]
+                    ]
+                ];
+            }
             
-            yaml_emit_file('/etc/netplan/'.$file_name, $netplan_config, YAML_ANY_ENCODING, 4);
+
+            // return $netplan_config;
+            
+            // yaml_emit_file('/etc/netplan/'.$file_name, $netplan_config, YAML_ANY_ENCODING, 4);
+            $yamlData = yaml_emit( $netplan_config, YAML_UTF8_ENCODING, YAML_LN_BREAK);
+            $filePath = '/etc/netplan/'.$file_name;
+            file_put_contents($filePath, $yamlData);
+
+             // Apply the netplan configuration using sudo
+            $output = [];
+            $returnVar = 0;
+            exec('sudo /usr/sbin/netplan apply 2>&1', $output, $returnVar);
+
+            if ($returnVar !== 0) {
+                return back()->with(['error' => 'Failed to apply netplan configuration', 'output' => $output], 500);
+            }
+            
             return back()->with('success', 'Server configured successfully');
         }
         //second
