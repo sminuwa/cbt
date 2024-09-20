@@ -78,7 +78,7 @@
                                                     <label for="endorsement">Select file to configure:</label>
                                                     <select class="form-control form-select" name="endorsement" id="endorsement"
                                                             required>
-                                                        @foreach($configuration_files as $file) 
+                                                        @foreach($configuration_files as $file_name) 
                                                             <option>{{  $file_name }}</option>
                                                         @endforeach
                                                     </select>
