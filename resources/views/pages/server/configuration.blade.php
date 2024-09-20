@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    
+                    @json($configuration_files)
                 </div>
             </div>
         </div>
