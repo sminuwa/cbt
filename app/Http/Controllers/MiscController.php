@@ -154,6 +154,16 @@ class MiscController extends Controller
             $yamlData = yaml_emit( $netplan_config, YAML_UTF8_ENCODING, YAML_LN_BREAK);
             $filePath = '/etc/netplan/'.$file_name;
             file_put_contents($filePath, $yamlData);
+
+             // Apply the netplan configuration using sudo
+            $output = [];
+            $returnVar = 0;
+            exec('sudo /usr/sbin/netplan apply 2>&1', $output, $returnVar);
+
+            if ($returnVar !== 0) {
+                return back()->with(['error' => 'Failed to apply netplan configuration', 'output' => $output], 500);
+            }
+            
             return back()->with('success', 'Server configured successfully');
         }
         //second
