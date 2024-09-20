@@ -21,6 +21,14 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::match(['GET', 'POST'],'fetch-record', [\App\Http\Controllers\Api\V1\Mobile\AttendanceController::class, 'fetchRecord']);
         Route::match(['GET', 'POST'],'push-record', [\App\Http\Controllers\Api\V1\Mobile\AttendanceController::class, 'pushRecord']);
     });
+
+    Route::prefix('project')->group(function(){
+        Route::match(['GET', 'POST'],'push-record', [\App\Http\Controllers\Api\V1\Mobile\AttendanceController::class, 'pushProject']);
+    });
+
+    Route::prefix('practical')->group(function(){
+        Route::match(['GET', 'POST'],'push-record', [\App\Http\Controllers\Api\V1\Mobile\AttendanceController::class, 'pushPractical']);
+    });
     
 });
 
