@@ -62,8 +62,8 @@
                                             </div>
                                             <div class="col-md-4 mt-3">
                                                 <div class="form-group">
-                                                    <label for="time_padding">Allow DHCP:</label>
-                                                    <select class="form-control" type="text" name="gateway" id="gateway"
+                                                    <label for="time_padding">DHCP:</label>
+                                                    <select class="form-control" type="text" name="dhcp" id="dhcp"
                                                             required>
                                                         <option value=0>False</option>
                                                         <option value=1>True</option>

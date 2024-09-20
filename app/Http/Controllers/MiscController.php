@@ -109,24 +109,39 @@ class MiscController extends Controller
             $ip_address = $request->ip_address;
             $gateway = $request->gateway;
             $net_port = $request->net_port;
-            $config_type = $request->config_type;
+            $dhcp = $request->dhcp;
             $file_name = $request->file_name;
-            $netplan_config = [
-                'network' => [
-                    'version' => 2,
-                    'renderer' => 'networkd',
-                    'ethernets' => [
-                        $network_interface => [
-                            'dhcp4' => false,
-                            'addresses' => [$ip_address],
-                            'gateway4' => $gateway,
-                            'nameservers' => [
-                                'addresses' => ['8.8.8.8', '8.8.4.4']
+            if($dhcp == 1){
+                $netplan_config = [
+                    'network' => [
+                        'version' => 2,
+                        'renderer' => 'networkd',
+                        'ethernets' => [
+                            $network_interface => [
+                                'dhcp4' => true,
                             ]
                         ]
                     ]
-                ]
-            ];
+                ];
+            }else{
+                $netplan_config = [
+                    'network' => [
+                        'version' => 2,
+                        'renderer' => 'networkd',
+                        'ethernets' => [
+                            $network_interface => [
+                                'dhcp4' => false,
+                                'addresses' => [$ip_address],
+                                'gateway4' => $gateway,
+                                'nameservers' => [
+                                    'addresses' => ['8.8.8.8', '8.8.4.4']
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+            }
+            
 
             return $netplan_config;
             
