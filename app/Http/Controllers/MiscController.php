@@ -83,14 +83,14 @@ class MiscController extends Controller
     public function configuration(Request $request){
         // $output = array();
 
-        exec('ifconfig | grep en ', $output);
-        $ethernet_adapters = array_filter($output);
-        foreach ($ethernet_adapters as $key=> $adapter) {
-            if (strpos($adapter, 'en') !== false) {
-            echo trim($adapter) . "<br>";
-            }
-        }
-        return;
+        // exec('ifconfig | grep en ', $output);
+        // $ethernet_adapters = array_filter($output);
+        // foreach ($ethernet_adapters as $key=> $adapter) {
+        //     if (strpos($adapter, 'en') !== false) {
+        //     echo trim($adapter) . "<br>";
+        //     }
+        // }
+        // return;
         // return json_encode($ethernet_adapters, true);
         // // return array_filter(explode(':',json_encode($ethernet_adapters, true)));
 
