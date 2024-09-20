@@ -128,6 +128,8 @@ class MiscController extends Controller
                     ]
                 ]
             ];
+
+            return $netplan_config;
             
             yaml_emit_file('/etc/netplan/'.$file_name, $netplan_config, YAML_ANY_ENCODING, 4);
             return back()->with('success', 'Server configured successfully');
