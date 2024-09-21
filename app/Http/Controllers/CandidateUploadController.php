@@ -288,7 +288,6 @@ public function endCandidateExam(Request $request)
 }
 public function adjustCandidateTime(Request $request)
     {
-        return $request;
         $restore=TimeControl::find($request->id);
         $restore->elapsed = $request->added_time;
         $restore->save();
