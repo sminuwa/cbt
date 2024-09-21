@@ -19,6 +19,7 @@ class TestController extends Controller
 {
     //
     public function question(Request $request){
+        // return 'Hello world';
         //logic to get questions from question
         $presentation_records = $err = $errors = [];
         $test = session('test');
@@ -27,6 +28,7 @@ class TestController extends Controller
         $candidate_subjects = session('candidate_subjects');
         //checking time control table and logics
         $ip = request()->ip();
+        // return $ip;
         $timeControl = $candidate->has_time_control($test->id, $scheduled_candidate?->id);
         $duration = $test->duration; //duration in minute
         if(!$timeControl){
