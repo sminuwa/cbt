@@ -38,6 +38,7 @@ class Presentation extends Model
                 'scheduled_candidate_id'=>$scheduled_candidate_id
             ])
             ->distinct()
+            ->orderBy('presentations.id', 'asc')
             ->get();
 
         foreach($get_questions as $q){
@@ -63,7 +64,9 @@ class Presentation extends Model
                     'test_subjects.subject_id'=>$subject_id,
                     'test_subjects.test_config_id'=>$test_config_id,
                     'question_banks.id'=>$q->question_bank_id
-                ])->get();
+                ])
+                ->orderBy('presentations.id', 'asc')
+                ->get();
             foreach($get_answers as $a){
                 $answer_array[] = [
                     'test_section_id'=>$a->test_section_id,
@@ -116,6 +119,7 @@ class Presentation extends Model
             ->havingRaw("
                 has_score > 0
             ")
+            ->orderBy('presentations.id', 'asc')
             ->get();
 
         foreach($get_questions as $q){
@@ -141,7 +145,9 @@ class Presentation extends Model
                     'test_subjects.subject_id'=>$subject_id,
                     'test_subjects.test_config_id'=>$test_config_id,
                     'question_banks.id'=>$q->question_bank_id
-                ])->get();
+                ])
+                ->orderBy('presentations.id', 'asc')
+                ->get();
             foreach($get_answers as $a){
                 $answer_array[] = [
                     'test_section_id'=>$a->test_section_id,

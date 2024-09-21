@@ -70,6 +70,7 @@ class TestController extends Controller
                             return $options; // randomization is not true for options
                         })->inRandomOrder();
                     }
+
                     // randomization is not true
                     return $query->with('answer_options', function($options) use ($test){
                         if($test->option_administration == 'random'){ // randomization is true for options
@@ -79,6 +80,8 @@ class TestController extends Controller
                     });
                 
                 }])->get();
+
+                // return $sections;
                 
                 foreach($sections as $section){
                     // $questions = TestQuestion::forSection($section->id, $test->question_administration);
@@ -98,6 +101,7 @@ class TestController extends Controller
             }
 //            return $i;
         //    return $presentation_records;
+        //    $first_before =  $presentation_records[50];
 //                return $q_test
 //            $presentation_records = (array)$presentation_records;
             if(!Presentation::upsert($presentation_records, ['scheduled_candidate_id', 'test_config_id','test_section_id', 'question_bank_id','answer_option_id'])) {
@@ -105,7 +109,9 @@ class TestController extends Controller
                 reset_auto_increment('presentations');
                 $errors[] = 'Something went wrong.';
             }
+            // $first_after = Presentation::where('id', 51)->first();
             //getting the question goes here
+            // return [$first_before, $first_after];
         }
 
         if(!empty($errors)) {
@@ -120,7 +126,7 @@ class TestController extends Controller
         if(!$subject)
             $subject = CandidateSubject::find($candidate_subjects[0]->subject_id);
         $question_array = Presentation::question_papers($subject->id,$test->id, $scheduled_candidate->id);
-//        return $question_array;
+    //    return $question_array;
 //        $question_array = (object)$question_array;
         $question_answered = Presentation::question_answered($subject->id,$test->id, $scheduled_candidate->id);
         // return $question_array;
