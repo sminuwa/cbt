@@ -18,7 +18,7 @@ Route::controller(AuthController::class)->name('auth.')->prefix('auth')->group(f
 });
 
 
-Route::middleware('auth:web')->name('test.')->prefix('test')->group(function(){
+Route::middleware('auth:candidate')->name('test.')->prefix('test')->group(function(){
 //    Route::get('/',[TestController::class,'start'])->name('start');
     Route::get('/instruction',[MiscController::class,'instruction'])->name('instruction');
     Route::match(['GET','POST'],'/question{start?}',[TestController::class,'question'])->name('question');
@@ -27,5 +27,7 @@ Route::middleware('auth:web')->name('test.')->prefix('test')->group(function(){
     Route::get('/time_control',[TestController::class,'time_control'])->name('time_control');
     Route::get('/submit_test',[TestController::class,'submit_test'])->name('submit_test');
     Route::get('/goto-paper',[TestController::class,'goto_paper'])->name('goto_paper');
+
+    Route::view('test','pages.candidate.test.instruction');
 });
-Route::view('test','pages.candidate.test.instruction');
+

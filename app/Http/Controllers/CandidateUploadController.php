@@ -288,11 +288,14 @@ public function endCandidateExam(Request $request)
 }
 public function adjustCandidateTime(Request $request)
     {
-        return $request;
         $restore=TimeControl::find($request->id);
-        $restore->elapsed = $request->added_time;
-        $restore->save();
-        return response()->json(['message' => 'Time Adjusted successfully']);
+        if($restore){
+            $restore->elapsed = $request->added_time ?? 0;
+            $restore->save();
+        }
+        return back();
+        return response()->json(['status'=>true,'message' => 'Time Adjusted successfully']);
+        // return response()->json(['message' => 'Time Adjusted successfully']);
 }
 
 }

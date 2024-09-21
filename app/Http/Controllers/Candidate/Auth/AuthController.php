@@ -35,18 +35,23 @@ class AuthController extends Controller
         $test = $test->exam()->first();
         // check if the exam type is still available
         $candidate_record = Candidate::where('indexing', $username)->first();
+        if(!$candidate_record)
+            return back()->with('error', 'Invalid credentials')->withInput();
         if($password == $candidate_record->password)
             Candidate::where('id', $candidate_record->id)->update(['password'=>bcrypt($candidate_record->password)]);
         if(!$test) return back()->with('error', 'Test Type is Invalid.')->withInput();
         $credentials = ["indexing" => $username, "password" => $password];
-        if (Auth::guard("candidate")->attempt($credentials,false)) {
-            return auth()->user();
+        if (Auth::attempt($credentials,false)) {
+            // return auth()->user();
             //check candidate's schedules and compare with the selected test schedules
             $candidate = auth()->user();
+            // return $candidate;
             $scheduled_candidate = $candidate->schedules($test_id);
+            // return $scheduled_candidate;
             if(!$scheduled_candidate)//check if logged in candidate is scheduled for the selected exams/text.
                 return back()->with('error','You are not scheduled for this test. Please select appropriate test.');
             $candidate_subjects = ScheduledCandidate::forCandidate($test->schedule_id)->get();
+            // return $candidate_subjects;
             if(count($candidate_subjects) < 1)
                 return back()->with('error','This test does not have any paper. Contact system administrator.');
 
@@ -59,14 +64,17 @@ class AuthController extends Controller
                 if($error != 1)
                     return back()->with('error',$subject->name.': '.$error);
             }
+            // return 'Hello';
             if($candidate->test_is_completed($test->id, $scheduled_candidate?->id)) return back()->with('error', 'You have already taken the selected test.')->withInput();
             $timeControl = $candidate->has_time_control($test->id, $scheduled_candidate?->id);
             $duration = $test->duration; //duration in minute
+            // return $duration;
             Session::put('candidate', $candidate); //assign session candidate
             Session::put('scheduled_candidate', $scheduled_candidate);
             Session::put('candidate_subjects', $candidate_subjects);
             Session::put('test', $test);
             if($timeControl){
+                // return $timeControl;
                 $time_difference = (strtotime($timeControl->current_time) - strtotime($timeControl->start_time)) / 60;
                 if($time_difference >= $duration) return back()->with('error', 'Your test time has elapsed.')->withInput();
                 $remaining_seconds = $test->duration * 60 - $timeControl->elapsed;
@@ -76,7 +84,7 @@ class AuthController extends Controller
                 Session::put('time_difference', $time_difference);
                 return redirect(route("candidate.test.question"));
             }
-
+            // return 'hello';
             //Redirecting to instruction page.
             return redirect(route("candidate.test.instruction"));
         }

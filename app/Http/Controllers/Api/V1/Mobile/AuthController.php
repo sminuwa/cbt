@@ -33,7 +33,7 @@ class AuthController extends Controller
             $credentials = ["api_key" => $request->username, "password" => $request->password];
             if (Auth::guard('centre')->attempt($credentials)) {
                 // auth()->guard('centre')->user();
-                $request->user()->tokens()->delete();
+                // $request->user()->tokens()->delete();
                 $token = $request->user()->createToken('mobile-app-access', ['server:mobile-app'])->plainTextToken;
                 return jResponse(true, 'login successful', ['token' => $token]);
             }
