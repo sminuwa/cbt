@@ -35,6 +35,8 @@ class AuthController extends Controller
         $test = $test->exam()->first();
         // check if the exam type is still available
         $candidate_record = Candidate::where('indexing', $username)->first();
+        if(!$candidate_record)
+            return back()->with('error', 'Invalid credentials')->withInput();
         if($password == $candidate_record->password)
             Candidate::where('id', $candidate_record->id)->update(['password'=>bcrypt($candidate_record->password)]);
         if(!$test) return back()->with('error', 'Test Type is Invalid.')->withInput();
