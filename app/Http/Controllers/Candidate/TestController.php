@@ -24,6 +24,7 @@ class TestController extends Controller
         $presentation_records = $err = $errors = [];
         $test = session('test');
         $candidate = auth()->user();
+        // return $candidate;
         $scheduled_candidate = session('scheduled_candidate');
         $candidate_subjects = session('candidate_subjects');
         //checking time control table and logics
@@ -58,9 +59,12 @@ class TestController extends Controller
         $q_test = [];
         $i=0;
         $presentations = $candidate->presentation($test->id,$scheduled_candidate->id);
+        
         if(!$presentations || count($presentations) < 1){
+            // return $candidate_subjects;
             foreach($candidate_subjects as $subject) {
                 $sections = TestSection::forSubjects($subject->subject_id, $test->id)
+            
                 ->with(['test_questions'=> function($query) use ($test) { 
                     if($test->question_administration == 'random'){  // randomization is true
                         return $query->with('answer_options', function($options) use ($test){
@@ -81,7 +85,7 @@ class TestController extends Controller
                 
                 }])->get();
 
-                // return $sections;
+                return $sections;
                 
                 foreach($sections as $section){
                     // $questions = TestQuestion::forSection($section->id, $test->question_administration);

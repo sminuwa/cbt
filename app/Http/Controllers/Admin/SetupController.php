@@ -51,6 +51,7 @@ class SetupController extends Controller
 
     public function index(Request $request)
     {
+        
         $statuses = PullStatus::whereDate('pull_date','=',today())->get();//basic-data
         $results = $statuses->pluck('id', 'resource')->map(function ($id, $resource) {
             return true;
@@ -60,10 +61,12 @@ class SetupController extends Controller
 
     public function pullBasicResource(Request $request)
     {
+        
         $tables = ['exam_types', 'test_types', 'centres','venues']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
         $apiUrl = $this->apiUrl('resource/basic');
 
+        // return $apiUrl;
         // Define headers if necessary
         $headers = [
             'Authorization' => 'Bearer your-token-here',
@@ -413,7 +416,7 @@ class SetupController extends Controller
     }
 
     private function apiUrl($url){
-        return env("CHPRBN_SERV_ADDR").$url;
+        return env("CHPRBN_SERV_ADDR",'https://cbt.chprbn.gov.ng/api/v1/').$url;
     }
 
 
