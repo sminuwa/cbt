@@ -114,7 +114,7 @@ class APIV1Controller extends Controller
             $data['schedules'] = Scheduling::whereIn('venue_id',$venueIds)->whereDate("date",today())->get();
             $data['candidate_subjects'] = CandidateSubject::all();//whereIn('schedule_id',$data['schedules']->pluck('id'))->get();
             $scheduledCandidateIds = $data['candidate_subjects']->pluck('scheduled_candidate_id');
-            $data['scheduled_candidates'] = ScheduledCandidate::all();//whereIn('id',$scheduledCandidateIds)->get();
+            $data['scheduled_candidates'] = ScheduledCandidate::whereIn('id',$scheduledCandidateIds)->get();
             $candidateIds = $data['scheduled_candidates']->pluck('candidate_id');
             $data['candidates'] = Candidate::whereIn('id',$candidateIds)->get();
             return response()->json(['status'=>1,'data'=>$data]);
