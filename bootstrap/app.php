@@ -37,6 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'stripe/*',
             'candidate/auth/login',
             'candidate/test/question',
+            'toolbox/candidate_image_upload/generate',
             'api/*'
         ]);
     })

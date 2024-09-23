@@ -59,7 +59,6 @@ class AuthController extends Controller
                 checking if questions are available for the number of subject assigned for the configured test selected by
             */
             foreach($candidate_subjects as $key => $subject){
-                
                 $error = CandidateSubject::find($subject->subject_id)->has_required_questions($test);
                 if($error != 1)
                     return back()->with('error',$subject->name.': '.$error);
@@ -68,7 +67,7 @@ class AuthController extends Controller
             if($candidate->test_is_completed($test->id, $scheduled_candidate?->id)) return back()->with('error', 'You have already taken the selected test.')->withInput();
             $timeControl = $candidate->has_time_control($test->id, $scheduled_candidate?->id);
             $duration = $test->duration; //duration in minute
-            // return $duration;
+            // return $candidate_subjects;
             Session::put('candidate', $candidate); //assign session candidate
             Session::put('scheduled_candidate', $scheduled_candidate);
             Session::put('candidate_subjects', $candidate_subjects);

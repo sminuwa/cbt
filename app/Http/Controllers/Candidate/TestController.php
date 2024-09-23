@@ -27,6 +27,7 @@ class TestController extends Controller
         // return $candidate;
         $scheduled_candidate = session('scheduled_candidate');
         $candidate_subjects = session('candidate_subjects');
+        // return $candidate_subjects;
         //checking time control table and logics
         $ip = request()->ip();
         // return $ip;
@@ -87,7 +88,7 @@ class TestController extends Controller
                 
                 }])->get();
 
-                return $sections;
+                // return $sections;
                 
                 foreach($sections as $section){
                     // $questions = TestQuestion::forSection($section->id, $test->question_administration);
