@@ -249,4 +249,5 @@ Route::name('api.v1.')->prefix('api/v1/')->group(function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::match(['GET','POST'],'generate-candidate-picture', [CandidateUploadController::class, 'generateCandidatePicture'])->name('generate-candidate-picture');
 

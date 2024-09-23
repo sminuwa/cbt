@@ -50,6 +50,26 @@ class Candidate extends Authenticatable
             return 'commons/images/user.jpg';
         }
     }
+
+    public static function candidateWithoutPassport($year){
+        if(is_null($year))
+            $year = date('Y');
+        $candidates = self::where(['exam_year'=>$year])->get();
+        $count = [];
+        $total = 0;
+        foreach($candidates as $candidate){
+            $path = candidate_passport_path().'/'.str_replace('/', '_', $candidate->indexing).'.jpg';
+            if(file_exists($path)) {
+                continue;
+            }else{
+                $count[] = $candidate->indexing;
+                $total++;
+            }
+        }
+        return ['total'=>$total, 'candidate_ids'=>$count];
+    }
+
+
     
     public function exam_type(){
 

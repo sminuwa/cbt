@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
-
+use Illuminate\Support\Facades\Http;
 
 //use Maatwebsite\Excel;
 
@@ -127,7 +127,33 @@ class CandidateUploadController extends Controller
 
     public function imageIndex()
     {
-        return view('pages.toolbox.candidate_image_upload');
+        $year = date('Y');
+        $candidate_pictures = Candidate::candidateWithoutPassport($year);
+        return view('pages.toolbox.candidate_image_upload',compact('candidate_pictures'));
+    }
+
+    public function generateCandidatePicture(Request $request){
+        $year = date('Y');
+        $candidate_pictures = Candidate::candidateWithoutPassport($year);
+        $candidate_ids = $candidate_pictures['candidate_ids'];
+        
+        // $candidate_ids = array_slice($candidate_ids, 0, 10, true);
+        $headers = [
+            'Authorization' => 'Bearer your-token-here',
+            'Accept' => 'application/json',
+            'Custom-Header' => 'custom-value'
+        ];
+        $response = Http::withHeaders($headers)->post('https://app.chprbn.gov.ng/generate-candidate-passport',['indexings'=>$candidate_ids]);
+        $response = json_decode($response);
+        foreach($response as $candidate){
+            // $imageName = str_replace('/', '_', $candidate->indexing).'.jpg';
+            $location = candidate_passport_path().'/'.str_replace('/', '_', $candidate->indexing).'.jpg';
+            $imageData = base64_decode($candidate->photo);
+            $source = imagecreatefromstring($imageData);
+            $imageSave = imagejpeg($source, $location, 20);
+            imagedestroy($source);
+        }
+        return 'passports downloaded';
     }
 
     public function imageUpload(Request $request)

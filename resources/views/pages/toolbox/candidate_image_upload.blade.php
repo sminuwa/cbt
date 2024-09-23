@@ -18,8 +18,8 @@
         </div>
     </div>
     <div class="row">
-        <div class="card border-info">
-            <div class="card-header border-info">
+        <div class="card">
+            <div class="card-header">
                 <div class="row">
                     <div>
                         <h4 class="card-title d-flex justify-content-between">
@@ -28,27 +28,65 @@
                     </div>
                 </div>
             </div>
+            <div class="card-body">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table mb-4">
+                                <tbody>
+                                    <tr>
+                                        <th>Candidate without pictures: </th>
+                                        <td><h2>{{ number_format($candidate_pictures['total']) }}</h2></td>
+                                    </tr>
+                                 
+                                </tbody>
+                            </table>
+                            <form class="generate-candidate-picture" action="{{ route('generate-candidate-picture') }}" method="post">
+                                @csrf
+                                <input type="hidden" name="candidate_ids" value="">
+                                <button type="submit" class="btn btn-primary generate-pictures">Generate pictures</button>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <form action="{{route('toolbox.candidate_image_upload.upload.image.data')}}" method="post" enctype="multipart/form-data">
+                                @csrf
+                                <div class="alert alert-warning">
+                                    <b style="color:#00d9ff;">NOTE:</b> Supported image format: .jpg
+                                </div>
+                                <div class="form-group mb-4">
+                                    <label for="file">Select Photo (one or multiple):</label>
+                                    <input type="file" name="files[]" id="file" multiple accept=".jpg" required class="form-control"/>
+                                </div>
+                                <div class="form-group mb-4">
+                                    <input type="submit" value="Upload Image(s)" class="btn btn-primary" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
 
-        <div class="alert alert-warning">
-            <b style="color:#00d9ff;">NOTE:</b> Supported image format: .jpg
-        </div>
-        <br>
-        <div>
-            <form action="{{route('toolbox.candidate_image_upload.upload.image.data')}}" method="post" enctype="multipart/form-data">
-                @csrf
-                <table>
-                    <tr>
-                        <td><label for="file">Select Photo (one or multiple):</label></td>
-                        <td><input type="file" name="files[]" id="file" multiple accept=".jpg" required class="form-control"/></td>
-                    </tr>
-                    <tr>
-                        <td align="center"><input type="submit" value="Upload Image(s)" class="btn btn-info" /></td>
-                    </tr>
-                </table>
-            </form>
-        </div>
+       
     </div>
 
+@endsection
+
+@section('script')
+    <script>
+        $('body').on('submit','.generate-candidate-picture', function(e){
+            e.preventDefault();
+            let url = $(this).attr('action');
+            let data = $(this).serialize();
+            $.ajax({
+                url: url,
+                data: data,
+                type: 'POST',
+                success: function(response){
+                    console.log(response);
+                }
+            })
+        })
+    </script>
 @endsection
