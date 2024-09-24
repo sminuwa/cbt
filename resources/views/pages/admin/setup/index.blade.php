@@ -302,7 +302,7 @@
 
                 $.ajax({
                     //url: '{{route('admin.exams.setup.pull.candidate.pictures')}}',
-                    url: '{{route('pull.picture')}}',
+                    url: '{{route('client.pull.picture')}}',
                     type: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}'
