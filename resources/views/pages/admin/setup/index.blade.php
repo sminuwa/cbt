@@ -301,7 +301,8 @@
                 loadingIcon.show();
 
                 $.ajax({
-                    url: '{{route('admin.exams.setup.pull.candidate.pictures')}}',
+                    //url: '{{route('admin.exams.setup.pull.candidate.pictures')}}',
+                    url: '{{route('pull.picture')}}',
                     type: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}'

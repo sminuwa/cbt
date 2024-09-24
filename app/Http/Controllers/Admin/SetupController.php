@@ -351,6 +351,7 @@ class SetupController extends Controller
     public function pullCandidatePictures(Request $request)
     {
 
+        // return 'hello';
         $year = date('Y');
         $candidate_pictures = Candidate::candidateWithoutPassport($year);
         $candidate_ids = $candidate_pictures['candidate_ids'];
