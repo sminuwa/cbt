@@ -129,7 +129,7 @@ class APIV1Controller extends Controller
     
         // return $request;
         $indexings = $request->indexings ?? [];
-        $candidates = Candidate::whereIn('indexing',$indexings)->limit(10)->get();
+        $candidates = Candidate::whereIn('indexing',$indexings)->limit(20)->get();
         $CAND = [];
         foreach($candidates as $cand){
             $data = file_get_contents($cand->passport(true));
