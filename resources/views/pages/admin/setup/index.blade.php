@@ -321,7 +321,7 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Failed',
-                                text: 'Failed to pull resource'
+                                text: response.message//'Failed to pull resource'
                             });
                             loadingIcon.hide();
                             btn.show();
