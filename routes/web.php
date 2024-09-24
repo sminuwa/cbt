@@ -16,6 +16,7 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Web\CBTApiController;
 
 Route::get('/', function () {
     return redirect()->route('candidate.auth.page');
@@ -249,5 +250,5 @@ Route::name('api.v1.')->prefix('api/v1/')->group(function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::match(['GET','POST'],'generate-candidate-picture', [CandidateUploadController::class, 'generateCandidatePicture'])->name('generate-candidate-picture');
+Route::match(['GET','POST'],'generate-candidate-picture', [CBTApiController::class, 'generateCandidatePicture'])->name('generate-candidate-picture');
 
