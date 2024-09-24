@@ -310,7 +310,7 @@
                     success: function (response) {
                         console.log(response);
                         if (response.success) {
-                            btn.closest('tr').find('td:eq(1)').text('Updated'); // Update status
+                            btn.closest('tr').find('td:eq(1)').text('Updated. ('+response.data+')'); // Update status
                             loadingIcon.hide();
                             btn.show();
                             Swal.fire({

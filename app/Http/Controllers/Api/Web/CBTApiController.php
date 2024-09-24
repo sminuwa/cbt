@@ -42,7 +42,7 @@ class CBTApiController extends Controller
         $year = date('Y');
         $candidate_pictures = Candidate::candidateWithoutPassport($year);
         $candidate_ids = $candidate_pictures['candidate_ids'];
-        return $candidate_ids;
+        // return $candidate_ids;
         // $candidate_ids = array_slice($candidate_ids, 0, 10, true);
         $headers = [
             'Authorization' => 'Bearer your-token-here',
@@ -51,7 +51,7 @@ class CBTApiController extends Controller
         ];
         $response = Http::withHeaders($headers)->post('https://cbt.chprbn.gov.ng/pull-picture',['indexings'=>$candidate_ids]);
         $response = json_decode($response);
-        return $response;
+        // return $response;
         foreach($response as $candidate){
             // $imageName = str_replace('/', '_', $candidate->indexing).'.jpg';
             $location = candidate_passport_path().'/'.str_replace('/', '_', $candidate->indexing).'.jpg';
@@ -60,7 +60,10 @@ class CBTApiController extends Controller
             $imageSave = imagejpeg($source, $location, 80);
             imagedestroy($source);
         }
-        return response()->json(['success' => true, 'message' => 'Download Successful'], 200);
+        $pictures = Candidate::candidateWithoutPassport($year);
+        $total_candidates = Candidate::where('exam_year', $year)->count();
+        $downloaded = $total_candidates - $pictures['total'];
+        return response()->json(['success' => true, 'message' => 'Download Successful','data'=>$downloaded.'/'.$total_candidates], 200);
 
     }
 }
