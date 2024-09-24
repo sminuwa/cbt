@@ -252,5 +252,5 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::match(['GET','POST'],'generate-candidate-picture', [CBTApiController::class, 'generateCandidatePicture'])->name('generate-candidate-picture');
 Route::match(['GET','POST'],'client-pull-picture', [CBTApiController::class, 'pullCandidatePictures'])->name('client.pull.picture');
-Route::match(['GET','POST'],'pull-picture', [APIV1Controller::class, 'andidatePictures'])->name('pull.picture');
+Route::match(['GET','POST'],'pull-picture', [APIV1Controller::class, 'candidatePictures'])->name('pull.picture');
 

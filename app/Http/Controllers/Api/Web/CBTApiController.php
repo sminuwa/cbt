@@ -38,11 +38,11 @@ class CBTApiController extends Controller
     public function pullCandidatePictures(Request $request)
     {
 
-        return 'hello';
+        // return 'hello';
         $year = date('Y');
         $candidate_pictures = Candidate::candidateWithoutPassport($year);
         $candidate_ids = $candidate_pictures['candidate_ids'];
-        
+        return $candidate_ids;
         // $candidate_ids = array_slice($candidate_ids, 0, 10, true);
         $headers = [
             'Authorization' => 'Bearer your-token-here',
