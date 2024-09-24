@@ -78,7 +78,7 @@ class APIV1Controller extends Controller
             $data['test_compositors'] = TestCompositor::whereIn('test_config_id',$testConfigIds)->get();
             $data['users'] = User::whereIn('id',$data['test_compositors']->pluck('user_id'))->get();
             $subjectIds1 = $data['test_compositors']->pluck('subject_id');
-            $data['test_subjects'] = TestSubject::whereIn('subject_id',[1,2,3])->whereIn('test_config_id',$testConfigIds)->get();
+            $data['test_subjects'] = TestSubject::whereIn('test_config_id',$testConfigIds)->get();
             $subjectIds2 = $data['test_subjects']->pluck('id');
             $subjectIds = array_merge($subjectIds1->toArray(),$subjectIds2->toArray());
             $data['subjects'] = Subject::whereIn('id',$subjectIds)->get();
