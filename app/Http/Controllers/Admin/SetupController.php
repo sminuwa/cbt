@@ -364,6 +364,7 @@ class SetupController extends Controller
         ];
         $response = Http::withHeaders($headers)->post('https://cbt.chprbn.gov.ng/pull-picture',['indexings'=>$candidate_ids]);
         $response = json_decode($response);
+        return $response;
         foreach($response as $candidate){
             // $imageName = str_replace('/', '_', $candidate->indexing).'.jpg';
             $location = candidate_passport_path().'/'.str_replace('/', '_', $candidate->indexing).'.jpg';
