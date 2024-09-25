@@ -58,10 +58,11 @@ class APIV1Controller extends Controller
         // $secretKey = $request->header('secret_key');
         // $api_key = $request->api_key;
         // $secretKey = $request->secret_key;
+        return $request;
         $api_key =  $request->api_key ?? $request->header('api_key');
         $secretKey = $request->secret_key ?? $request->header('secret_key');
         $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
-        return $center;
+        // return $center;
         if($center){
             $venueIds = Venue::where('centre_id',$center->id)->pluck('id');
 
