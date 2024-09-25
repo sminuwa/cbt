@@ -62,7 +62,7 @@ class SetupController extends Controller
     public function pullBasicResource(Request $request)
     {
         
-        $tables = ['exam_types', 'test_types', 'centres','venues']; // Replace with your table names
+        $tables = ['exam_types', 'test_types','test_codes', 'topics','centres','venues']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
         $apiUrl = $this->apiUrl('resource/basic');
 
@@ -180,6 +180,7 @@ class SetupController extends Controller
 
         // Fetch data from the API
         $response = $this->post($apiUrl, $body, $headers);
+        // return $response;
 
         // return $response;
         if ($response['status']==1) {
