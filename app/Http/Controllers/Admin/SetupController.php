@@ -161,6 +161,7 @@ class SetupController extends Controller
 
     public function pullTestResource(Request $request)
     {
+        // return $request;
         // return env("CHPRBN_CBT_API_KEY");
         $tables = ['exam_types', 'test_types', 'centres','venues']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
@@ -178,9 +179,10 @@ class SetupController extends Controller
             'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
         ];
 
+        // return $body;
         // Fetch data from the API
         $response = $this->post($apiUrl, $body, $headers);
-        // return $response;
+        return $response;
 
         // return $response;
         if ($response['status']==1) {
