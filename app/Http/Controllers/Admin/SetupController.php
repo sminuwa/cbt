@@ -175,14 +175,14 @@ class SetupController extends Controller
         ];
 
         $body = [
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>env("CHPRBN_CBT_API_KEY",'ichtk149'),
+            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY",'149ichtk')
         ];
 
         // return $body;
         // Fetch data from the API
         $response = $this->post($apiUrl, $body, $headers);
-        return $response;
+        // return $response;
 
         // return $response;
         if ($response['status']==1) {
