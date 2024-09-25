@@ -162,7 +162,7 @@ class SetupController extends Controller
     public function pullTestResource(Request $request)
     {
         // return $request;
-        // return env("CHPRBN_CBT_API_KEY");
+        // return CHPRBN_CBT_API_KEY;
         $tables = ['exam_types', 'test_types', 'centres','venues']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
         $apiUrl = $this->apiUrl('resource/test');
@@ -170,13 +170,13 @@ class SetupController extends Controller
         // Define headers if necessary
         $headers = [
             'Accept' => 'application/json',
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         $body = [
-            'api_key'=>env("CHPRBN_CBT_API_KEY",'ichtk149'),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY",'149ichtk')
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         // return $body;
@@ -276,13 +276,13 @@ class SetupController extends Controller
         // Define headers if necessary
         $headers = [
             'Accept' => 'application/json',
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         $body = [
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         // Fetch data from the API
@@ -384,12 +384,12 @@ class SetupController extends Controller
         // Define headers if necessary
         $headers = [
             'Accept' => 'application/json',
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
         $body = [
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         // Fetch data from the API
@@ -443,7 +443,7 @@ class SetupController extends Controller
     }
 
     private function apiUrl($url){
-        return env("CHPRBN_SERV_ADDR",'https://cbt.chprbn.gov.ng/api/v1/').$url;
+        return CHPRBN_SERV_ADDR.$url;
     }
 
 
@@ -463,13 +463,13 @@ class SetupController extends Controller
         // Define headers if necessary
         $headers = [
             'Accept' => 'application/json',
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         $body = [
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         // Fetch data from the API
