@@ -162,7 +162,7 @@ class SetupController extends Controller
     public function pullTestResource(Request $request)
     {
         // return $request;
-        // return env("CHPRBN_CBT_API_KEY");
+        // return CHPRBN_CBT_API_KEY;
         $tables = ['exam_types', 'test_types', 'centres','venues']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
         $apiUrl = $this->apiUrl('resource/test');
@@ -170,13 +170,13 @@ class SetupController extends Controller
         // Define headers if necessary
         $headers = [
             'Accept' => 'application/json',
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         $body = [
-            'api_key'=>env("CHPRBN_CBT_API_KEY",'ichtk149'),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY",'149ichtk')
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         // return $body;
@@ -276,13 +276,13 @@ class SetupController extends Controller
         // Define headers if necessary
         $headers = [
             'Accept' => 'application/json',
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         $body = [
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         // Fetch data from the API
@@ -384,12 +384,12 @@ class SetupController extends Controller
         // Define headers if necessary
         $headers = [
             'Accept' => 'application/json',
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
         $body = [
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         // Fetch data from the API
@@ -443,7 +443,7 @@ class SetupController extends Controller
     }
 
     private function apiUrl($url){
-        return env("CHPRBN_SERV_ADDR",'https://cbt.chprbn.gov.ng/api/v1/').$url;
+        return CHPRBN_SERV_ADDR.$url;
     }
 
 
@@ -453,37 +453,39 @@ class SetupController extends Controller
     }
 
     public function pullExamToServer(Request $request){
+        $tables = ['time_controls', 'presentations', 'scores']; // Replace with your table names
+        $this->backupService->backupAndTruncate($tables);
         $times = TimeControl::where('pushed',0)->select(['test_config_id','scheduled_candidate_id','completed','start_time','current_time','elapsed','ip','pushed'])->get();
         $presentations = Presentation::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','test_section_id','question_bank_id','answer_option_id','pushed'])->get();
         $scores = Score::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','question_bank_id','answer_option_id','time_elapse','scoring_mode','point_scored','pushed'])->get();
 
 
+        // return $scores;
         $apiUrl = $this->apiUrl('resource/push');
 
         // Define headers if necessary
         $headers = [
             'Accept' => 'application/json',
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         $body = [
-            'api_key'=>env("CHPRBN_CBT_API_KEY"),
-            'secret_key'=>env("CHPRBN_CBT_SECRET_KEY")
+            'api_key'=>CHPRBN_CBT_API_KEY,
+            'secret_key'=>CHPRBN_CBT_SECRET_KEY
         ];
 
         // Fetch data from the API
         $response = Http::withHeaders($headers)->post($apiUrl, compact('times','presentations','scores','body'));
         // return $response;
-//        return $response['status'];
+        // return $response['status'];
         if ($response->successful()) {
-            TimeControl::where('pushed',0)->update(['pushed'=>1]);
-            Presentation::where('pushed',0)->update(['pushed'=>1]);
-            Score::where('pushed',0)->update(['pushed'=>1]);
+        // if ($response['status']) {
+            // TimeControl::where('pushed',0)->update(['pushed'=>1]);
+            // Presentation::where('pushed',0)->update(['pushed'=>1]);
+            // Score::where('pushed',0)->update(['pushed'=>1]);
             return response()->json(['success' => true, 'message' => 'Download Successful'], 200);
         }
-
-
 
         // return ;
     }

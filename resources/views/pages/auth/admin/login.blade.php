@@ -96,6 +96,15 @@
 
     <script>
          $(document).ready(function(){
+
+            $(".show-hide span").click(function () {
+                if ($(this).hasClass("show")) {
+                    $('input[name="password"]').attr("type", "password");
+                } else {
+                    $('input[name="password"]').attr("type", "text");
+                }
+            });
+
             @if(session()->has('error'))
             Swal.fire({
                 title: 'Error!',
