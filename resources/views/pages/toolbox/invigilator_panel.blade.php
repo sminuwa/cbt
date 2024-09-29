@@ -17,6 +17,9 @@
             left: 0em;
             top: 0.5em;
         }
+        /* .dataTables_wrapper button{
+            padding:none !important;
+        } */
     </style>
     <link rel="stylesheet" href="{{asset('assets/plugins/datatables/datatables.min.css-')}}">
 @endsection
@@ -73,7 +76,7 @@
                 }).done(function(response){
                     console.log(response)
                     $('.display').DataTable({
-                        responsive:true,
+                        responsive: true,
                         dom: "Bfrtip",
                         buttons: ["copyHtml5", "excelHtml5", "csvHtml5", "pdfHtml5"],
                     });
