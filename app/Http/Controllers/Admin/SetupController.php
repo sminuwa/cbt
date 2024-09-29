@@ -453,11 +453,14 @@ class SetupController extends Controller
     }
 
     public function pullExamToServer(Request $request){
+        $tables = ['time_controls', 'presentations', 'scores']; // Replace with your table names
+        $this->backupService->backupAndTruncate($tables);
         $times = TimeControl::where('pushed',0)->select(['test_config_id','scheduled_candidate_id','completed','start_time','current_time','elapsed','ip','pushed'])->get();
         $presentations = Presentation::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','test_section_id','question_bank_id','answer_option_id','pushed'])->get();
         $scores = Score::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','question_bank_id','answer_option_id','time_elapse','scoring_mode','point_scored','pushed'])->get();
 
 
+        // return $scores;
         $apiUrl = $this->apiUrl('resource/push');
 
         // Define headers if necessary
@@ -475,15 +478,14 @@ class SetupController extends Controller
         // Fetch data from the API
         $response = Http::withHeaders($headers)->post($apiUrl, compact('times','presentations','scores','body'));
         // return $response;
-//        return $response['status'];
+        // return $response['status'];
         if ($response->successful()) {
-            TimeControl::where('pushed',0)->update(['pushed'=>1]);
-            Presentation::where('pushed',0)->update(['pushed'=>1]);
-            Score::where('pushed',0)->update(['pushed'=>1]);
+        // if ($response['status']) {
+            // TimeControl::where('pushed',0)->update(['pushed'=>1]);
+            // Presentation::where('pushed',0)->update(['pushed'=>1]);
+            // Score::where('pushed',0)->update(['pushed'=>1]);
             return response()->json(['success' => true, 'message' => 'Download Successful'], 200);
         }
-
-
 
         // return ;
     }

@@ -22,7 +22,7 @@ class Candidate extends Authenticatable
     }
 
     public function fullname(){
-        return ($this->surname ?? null).' '.($this->firstname ?? null). ' '.($this->other_name ?? null);
+        return ($this->surname ?? '').' '.($this->firstname ?? ''). ' '.($this->other_names ?? '');
     }
 
 
