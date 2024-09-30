@@ -8,8 +8,8 @@
         <x-head.tinymce-config/>
         <div class="row patient-graph-col">
             <div class="col-12">
-                <div class="card border-info">
-                    <div class="card-header border-info">
+                <div class="card">
+                    <div class="card-header">
                         <div class="row">
                             <div>
                                 <h4 class="card-title d-flex justify-content-between">
@@ -98,18 +98,33 @@
             })
             $('#preview-form').on('submit', function (e) {
                 e.preventDefault()
-                $.post('{{ route('admin.reports.summary.generate.report') }}', $(this).serialize(), function (response) {
-                    //  console.log(response);
-                    //  return
-                    $('#report-div').html(response)
-                    // $('#report').DataTable({
-                    //     layout: {
-                    //         topStart: {
-                    //             buttons: ['copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5']
-                    //         }
-                    //     }
-                    // })
+                $.ajax({
+                    url: '{{ route('admin.reports.summary.generate.report') }}',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    beforeSend:function(){
+                        $('#report-div').html("Loading report...")
+                    },
+                    success:function(response){
+                        console.log(response)
+                        $('#report-div').html(response)
+                    },
+                    error:function(err, hrx){
+                        console.log(err)
+                    }
                 })
+                // $.post('{{ route('admin.reports.summary.generate.report') }}', $(this).serialize(), function (response) {
+                //     //  console.log(response);
+                //     //  return
+                //     $('#report-div').html(response)
+                //     // $('#report').DataTable({
+                //     //     layout: {
+                //     //         topStart: {
+                //     //             buttons: ['copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5']
+                //     //         }
+                //     //     }
+                //     // })
+                // })
             })
         })
     </script>

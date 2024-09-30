@@ -149,7 +149,9 @@
                 var btn = $(this);
                 var loadingIcon = btn.siblings('.loading-icon');
                 var resourceId = btn.data('id');
-
+                btn.hide();
+                loadingIcon.show();
+                
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "This will wipe the existing record and cannot be undone!",
