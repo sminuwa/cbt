@@ -233,7 +233,7 @@ $time_elapsed = $time_control->elapsed;
                                             <button
                                                 type="submit"
                                                 name="change-paper"
-                                                class="b-r-0 text-white btn btn-{{ $subject->id == $s->subject_id ? 'warning':'light' }}">
+                                                class="b-r-0 text-white btn btn-{{ $subject->subject_id == $s->subject_id ? 'warning':'light' }}">
                                                 {{ $s->name }}
                                             </button>
                                         </form>
@@ -512,7 +512,7 @@ $time_elapsed = $time_control->elapsed;
             let answer_option_id = $(this).attr('answer_option_id');
             let scoring_mode = $(this).attr('scoring_mode');
             let time_control_id = {{ $time_control->id }};
-            let test_subject_id = {{ $subject->id }};
+            let test_subject_id = {{ $subject->subject_id }};
             currentStep = parseInt(question_step)
             showStep(currentStep, true)
             $.get('{{ route('candidate.test.answering') }}',
@@ -565,7 +565,7 @@ $time_elapsed = $time_control->elapsed;
             //update time control after every one minutes even if no activity
             if(every_one_minutes >= 10){
                 ++time_difference; // time difference in minutes
-                let test_subject_id = {{ $subject->id }};
+                let test_subject_id = {{ $subject->subject_id }};
                 $.get('{{ route('candidate.test.time_control') }}',
                     {
                         time_control_id: {{ $time_control->id }},

@@ -35,37 +35,37 @@ class ReportController extends Controller
         try {
             // return  $request;
             $subjects = Subject::distinct()->pluck('subject_code')->toArray();
-            $subjects = Subject::all();
-            // return $subjects;
-            $titles = $scores = $candidates = $results = [];
-            foreach($subjects as $subject){
-                $titles[$subject->id] = $subject->subject_code;
-            }
-            $scores = Score::selectRaw("
-                (
-                    SELECT CONCAT(surname,' ', firstname,' ', IFNULL(other_names, ''))
-                    FROM candidates 
-                    WHERE candidates.id = scheduled_candidates.candidate_id
-                    LIMIT 1
-                ) as fullname,
-                (
-                    SELECT indexing
-                    FROM candidates 
-                    WHERE candidates.id = scheduled_candidates.candidate_id
-                    LIMIT 1
-                ) as indexing,
-                scheduled_candidate_id,
-                candidate_id,
-                test_config_id,
-                sum(point_scored) as score
-            ")
-            ->join('scheduled_candidates','scheduled_candidates.id', 'scores.scheduled_candidate_id')
-            ->groupBy('scheduled_candidate_id')->get();
+            // $subjects = Subject::all();
+            // // return $subjects;
+            // $titles = $scores = $candidates = $results = [];
+            // foreach($subjects as $subject){
+            //     $titles[$subject->id] = $subject->subject_code;
+            // }
+            // $scores = Score::selectRaw("
+            //     (
+            //         SELECT CONCAT(surname,' ', firstname,' ', IFNULL(other_names, ''))
+            //         FROM candidates 
+            //         WHERE candidates.id = scheduled_candidates.candidate_id
+            //         LIMIT 1
+            //     ) as fullname,
+            //     (
+            //         SELECT indexing
+            //         FROM candidates 
+            //         WHERE candidates.id = scheduled_candidates.candidate_id
+            //         LIMIT 1
+            //     ) as indexing,
+            //     scheduled_candidate_id,
+            //     candidate_id,
+            //     test_config_id,
+            //     sum(point_scored) as score
+            // ")
+            // ->join('scheduled_candidates','scheduled_candidates.id', 'scores.scheduled_candidate_id')
+            // ->groupBy('scheduled_candidate_id')->get();
 
-            $candidates = Candidate::all();
-            // return $candidates;
-            return $scores;
-            return $titles;
+            // $candidates = Candidate::all();
+            // // return $candidates;
+            // // return $scores;
+            // // return $titles;
 
             $candidates = Candidate::select('candidates.indexing', 'candidates.firstname', 'candidates.surname', 'candidates.other_names')
                 ->join('scheduled_candidates', 'candidates.id', '=', 'scheduled_candidates.candidate_id')
@@ -78,7 +78,7 @@ class ReportController extends Controller
                 ->groupBy('candidates.indexing')
                 ->get();
 
-            return $candidates;
+            // return $candidates;
 
             $reports = [];
             foreach ($candidates as $candidate) {
