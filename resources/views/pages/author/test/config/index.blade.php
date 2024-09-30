@@ -193,6 +193,18 @@
                             <div class="row hours-cont">
                                 <div class="col-12 col-md-12">
                                     <div class="row">
+                                        <div class="col-12 col-md-12">
+                                            <div class="mb-3">
+                                                <label for="session" class="mb-2">Examination Type</label>
+                                                <select class="form-select form-control" id="exam_type_id" name="exam_type_id"
+                                                    required>
+                                                    @foreach ($exam_types as $exam_type)
+                                                        <option value="{{ $exam_type->id }}"
+                                                            >{{ $exam_type->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
                                         <div class="col-12 col-md-6">
                                             <div class="mb-3">
                                                 @php

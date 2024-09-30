@@ -18,6 +18,7 @@ use App\Models\TestInvigilator;
 use App\Models\TestQuestion;
 use App\Models\TestSection;
 use App\Models\TestSubject;
+use App\Models\ExamType;
 use App\Models\User;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -47,8 +48,8 @@ class TestConfigController extends Controller
                 ->orderBy('session', 'desc')
                 ->orderBy('created_at', 'desc')
                 ->get();
-                
-        return view('pages.author.test.config.index', compact('configs'));
+        $exam_types = ExamType::all();
+        return view('pages.author.test.config.index', compact('configs','exam_types'));
     }
 
     public function view(TestConfig $config): Factory|\Illuminate\Foundation\Application|View|Application
@@ -284,213 +285,116 @@ class TestConfigController extends Controller
 //    }
     public function bulkUpload(Request $request)
     {
-//         $candidate_papers = [];
-//         $schedule_id = $request->schedule_id;
-//         $test_config_id = $request->test_config_id;
-
-//         $file = $request->file;
-//         /*if(!$this->fileUploaded($file, time().'.xlsx'))
-//             return jResponse(false, 'File can not be uploaded to the disk.');*/
-//         // $rows = $this->getRecordFromExcel(Upload::class, $file);
-// //        return $rows;
-//         $sheets =  Excel::toArray(\App\Models\Upload::class, $file);
-        
-
-// //        $rows = Excel::toArray(new Upload::class, $file)[0];
-//         $codes = $candidates = $indexings = $indexes = $graduands = $graduand_papers = $uploaded_papers = $errors = [];
-//         foreach($sheets as $rows) {
-//             if(empty($rows[0])) // if the sheet doesn't start at row 10 it means the sheet is empty
-//                 continue;
-//             $title = $rows[0];
-//             $indexing = searchIndex($title, 'indexing');
-//             $papers = searchIndex($title, 'paper');
+        $candidate_papers = [];
+        $schedule_id = $request->schedule_id;
+        $test_config_id = $request->test_config_id;
+        $test = TestConfig::exam()->where('test_configs.id', $test_config_id)->first();
+        $schedule = Scheduling::where('id', $schedule_id)->first();
+        // return $test->exam_type_id;
+        $file = $request->file;
+        $sheets =  Excel::toArray(\App\Models\Upload::class, $file);
+        $exam_papers = Subject::select('id', 'subject_code as code')->orderBy('subject_code', 'asc')->get()->toArray();
+        $codes = $scheduled_candidates = $candidates = $candidate_ids = $candidate_papers = $uploaded_papers = $errors = [];
+        foreach($sheets as $rows) {
+            if(empty($rows[0])) // if the sheet doesn't start at row 10 it means the sheet is empty
+                continue;
+            $title = $rows[0];
+            $indexing = searchIndex($title, 'indexing');
+            $papers = searchIndex($title, 'paper');
             
-//             // get unique candidate indexing
-//             foreach ($rows as $key => $value) {
-//                 if ($key < 1)
-//                     continue;
-//                 $index_numbers[] = str_replace(' ', '', trim($value[$indexing]));
-//             }
-
-//             $index_numbers = array_filter($index_numbers);
-//             $candidates = Candidate::select('candidates.id', 'candidates.indexing')
-//             ->whereIn('candidates.indexing', $index_numbers)
-//             ->get()->toArray();
+            // get unique candidate indexing
+            foreach ($rows as $key => $value) {
+                if ($key < 1)
+                    continue;
+                $index_numbers[] = str_replace(' ', '', trim($value[$indexing]));
+            }
+            $index_numbers = array_filter($index_numbers);
+            $all_candidates = Candidate::select('candidates.id', 'candidates.indexing')
+            ->whereIn('candidates.indexing', $index_numbers)
+            ->get()->toArray();
             
             
-//             foreach ($rows as $key => $value) {
-//                 if ($key < 1) // skip first row which is considered a title row for the uploaded Excel file.
-//                     continue;
-//                 if(empty($value[$indexing]))
-//                     continue;
+            foreach ($rows as $key => $value) {
+                if ($key < 1) // skip first row which is considered a title row for the uploaded Excel file.
+                    continue;
+                if(empty($value[$indexing]))
+                    continue;
                 
-//                 $candidate = searchForId($value[$indexing], $institutions);
-//                 if (!$candidate) //skip if institution code is not found in the institution table
-//                     continue;
+                $cdd = searchForId($value[$indexing], $all_candidates);
+                if (!$cdd) //skip if institution code is not found in the institution table
+                    continue;
+                $candidate_ids[] = $cdd->id;
+                $uploaded_papers[trim($cdd->id)] = trim($value[$papers]);
+                $scheduled_candidates[] = [
+                    'exam_type_id' => $test->exam_type_id,
+                    'candidate_id' => $cdd->id,
+                ];
 
-        
-//                 $candidates[] = [
-//                     'institution_id' => $inst->id,
-//                     'number' => $number,
-//                     'indexing' => trim($value[$indexing]),
-//                     'surname' => trim($value[$surname]),
-//                     'firstname' => trim($value[$firstname]),
-//                     'othernames' => (trim($value[$othernames]) ?? null),
-//                     'gender' => (trim($value[$gender]) == 'F' ? 'Female' : 'Male'),
-//                     'cadre_id' => $cadre->id,
-//                     'year' => $year,
-//                     'type' => empty($value[$type]) ? 'fresh' : 'retrainee',
-//                     'status' => STATUS_INDEXED,
-//                 ];
-
-//             }
-
-//             return $candidates;
-
-//         }
-
-
-//         DB::beginTransaction();
-//         $err = [];
-//         foreach(array_chunk($candidates, 1000) as $key => $smallerArray) {
-//             if(!Candidate::upsert($smallerArray, ['indexing'])) {
-//                 reset_auto_increment('candidates');
-//                 $err[] = 'Something went wrong. [Candidate chunk upload] '.$key;
-//             }
-//         }
-
-//         if(empty($errors)){
-//             DB::commit();
-//             return jResponse(
-//                 true,
-//                 'Indexing backlog has been uploaded successfully'
-//             );
-//         }else{
-//             DB::rollback();
-//             return back()->with(['success' => false, 'message' => $e->getMessage()]);
-//         }
-
-
-
-
-
-
-
-
-
-
-        try {
-            $candidate_papers = [];
-            $schedule_id = $request->schedule_id;
-            $test_config_id = $request->test_config_id;
-            if (isset($request->file)) {
-                //  $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
-                $file = $request->file;
-                $rows = $this->getRecordFromExcel(Upload::class, $file);
-                array_shift($rows);
-
-
-                $tmp = array_column($rows, 1);
-                $rows = array_column($rows, 0);
-
-                $i = 0;
-                foreach ($rows as $row)
-                    $candidate_papers[$row] = explode(',', $tmp[$i++]);
-
-            } else {
-                $rows = explode(',', $request->candidate_number);
             }
-
-            $candidates = Candidate::select(['id', 'indexing'])->whereIn('indexing', $rows)->get();
-            $numbers = $candidates->pluck('indexing')->toArray();
 
             
 
-            $missing = array_values(array_diff($rows, $numbers));
+        }
 
-            $papers = [];
-            $pps = Subject::select(['id', 'subject_code as code'])->get();
-            foreach ($pps as $p) {
-                $papers[$p->code] = $p->id;
+        // return $candidate_papers;
+        
+        DB::beginTransaction();
+        $err = [];
+        foreach(array_chunk($scheduled_candidates, 500) as $key => $scheduled_candidate) {
+            if(!ScheduledCandidate::upsert($scheduled_candidate, ['candidate_id', 'exam_type_id'])) {
+                reset_auto_increment('scheduled_candidates');
+                $err[] = 'Something went wrong. [Scheduled candidates chunk upload] '.$key;
             }
+        }
 
-
-            $subjects = TestSubject::where(['test_config_id' => $test_config_id])->pluck('subject_id');
-
-            $schedules = CandidateSubject::with('candidate')->where(['schedule_id' => $schedule_id])
-                ->whereIn('scheduled_candidate_id', $candidates->pluck('id')->toArray())
-                ->whereIn('subject_id', $subjects)
-                ->delete();
-            // ->get();
-
-            // $size = count($candidates);
-            // if ($size != 0 && $size == count($schedules) / count($subjects))
-            //     return back()->with(['success' => false, 'message' => 'Oops! All of the candidates were already scheduled for this test']);
-            // else {
-            $scheduled_ids = [];
-            // foreach ($schedules as $schedule) {
-            //     if ($schedule->subject_id == $subjects[0]) {
-            //         $scheduled_ids[] = $schedule->candidate->id;
-            //     }
-            // }
-
-            $scheduled = count($scheduled_ids);
-            $tmp = array_values(array_diff($candidates->toArray(), $scheduled_ids));
-            $candidates = $tmp;
-            // }
-
-            foreach ($candidates as $k => $candidate) {
-                foreach ($candidate_papers as $key => $value) {
-                    if ($key == $candidate['indexing']) {
-                        $paper_ids = [];
-                        foreach ($papers as $i => $v)
-                            if (in_array($i, $value))
-                                $paper_ids[] = $v;
-
-                        $candidates[$k]['papers'] = $paper_ids;
-                    }
-                }
-            }
-
-            $chunks = array_chunk($candidates, 1000);
-
-            $scs = [];
-            $records = [];
-            $exam_type_id = Subject::find($subjects[0])->exam_type_id;
-
-            foreach ($chunks as $chunk) {
-                foreach ($chunk as $candidate) {
-                    $scs[] = [
-                        'exam_type_id' => $exam_type_id,
-                        'candidate_id' => $candidate['id'],
-                        //                        'reg_number' => $candidate['indexing'],
+        if(count($err) == 0){
+            reset_auto_increment('scheduled_candidates');
+            $get_schedules = ScheduledCandidate::whereIn('candidate_id', $candidate_ids)->get();
+            
+            foreach($get_schedules as $get_schedule){
+                $p =  explode(',',$uploaded_papers[$get_schedule->candidate_id]);
+                foreach($p as $exam_paper){
+                    if(!$ep = searchForId($exam_paper, $exam_papers))
+                        continue;
+                    $candidate_papers[] = [
+                        'schedule_id'=>$schedule->id,
+                        'scheduled_candidate_id' => $get_schedule->id,
+                        'subject_id' => $ep->id,
+                        'add_index'=>null,
+                        'enabled'=>1
                     ];
-                    ScheduledCandidate::upsert($scs, ['candidate_id', 'exam_type_id']);
-                    foreach ($subjects as $subject_id) {
-                        if (in_array($subject_id, $candidate['papers']))
-                            $records[] = [
-                                'scheduled_candidate_id' => ScheduledCandidate::where('candidate_id',$candidate['id'])->first()->id,
-                                'schedule_id' => $schedule_id,
-                                'subject_id' => $subject_id,
-                                'enabled' => 1
-                            ];
-                    }
-                    
                 }
-                CandidateSubject::upsert($records, ['scheduled_candidate_id', 'schedule_id', 'subject_id'], ['scheduled_candidate_id', 'schedule_id', 'subject_id']);
-                
-                
-                $records = [];
+
             }
-
-            $success = count($candidates);
-
-            $this->updateBatches($schedule_id);
-
+            // return $candidate_papers;
+            //                return $graduand_papers;
+            $err = [];
+            foreach(array_chunk($candidate_papers, 500) as $key => $candidate_paper) {
+                if(!CandidateSubject::upsert($candidate_paper, ['subject_id', 'scheduled_candidate_id','subject_id'])) {
+                    reset_auto_increment('candidate_subjects');
+                    $err[] = 'Something went wrong. [Graduands chunk upload]';
+                }
+            }
+            if(count($err) == 0){
+                reset_auto_increment('scheduled_candidates');
+            }else{
+                $errors[] = 'Something went wrong while updating papers records for candidates.';
+            }
+        }else {
+            $errors[] = 'Something went wrong while inserting candidate records.';
+        }
+        $success = count($scheduled_candidates);
+        $scheduled = $success;
+        $missing = [];
+        
+        if(empty($errors)){
+            // DB::commit();
             return view('pages.author.test.config.upload-report', compact('success', 'scheduled', 'missing'));
-        } catch (Exception $e) {
+        }else{
+            // DB::rollback();
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
+
     }
 
     private function updateBatches($schedule_id)
