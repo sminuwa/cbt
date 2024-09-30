@@ -128,8 +128,10 @@ class TestController extends Controller
         // return $candidate_subjects;
         if(count($candidate_subjects) < 1)
             return back()->with('Questions not available for you, contact system admin.');
-        $subject_id = $request->subject_id;
-        $subject = CandidateSubject::where('subject_id',$subject_id)->first();
+        $candidate_subject_id = $request->candidate_subject_id;
+        // return $subject_id;
+        $subject = CandidateSubject::find($candidate_subject_id);
+        // return $subject;
         if(!$subject || count($subject) < 1){
             $subject = CandidateSubject::find($candidate_subjects[0]->condidate_subject_id);
         }

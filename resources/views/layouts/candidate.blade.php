@@ -227,7 +227,7 @@ $time_elapsed = $time_control->elapsed;
                                 <div class="ribbon ribbon-primary ribbon-clip-right ribbon-right">
                                     @foreach($candidate_subjects as $s)
                                         <form action="" method="post" class="d-inline">
-                                            <input type="hidden" name='subject_id' value="{{ $s->subject_id }}">
+                                            <input type="hidden" name='candidate_subject_id' value="{{ $s->candidate_subject_id }}">
                                             <input type="hidden" name='scheduled_candidate_id' value="{{ $scheduled_candidate->id }}">
                                             <input type="hidden" name='test_config_id' value="{{ $test->id }}">
                                             <button
