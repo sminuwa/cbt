@@ -63,7 +63,7 @@ class ReportController extends Controller
             ->groupBy('scheduled_candidate_id')->get();
 
             $candidates = Candidate::all();
-            return $candidates;
+            // return $candidates;
             return $scores;
             return $titles;
 
