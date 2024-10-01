@@ -327,6 +327,7 @@ class TestConfigController extends Controller
                 $uploaded_papers[trim($cdd->id)] = trim($value[$papers]);
                 $scheduled_candidates[] = [
                     'exam_type_id' => $test->exam_type_id,
+                    'schedule_id' => $schedule->id,
                     'candidate_id' => $cdd->id,
                 ];
 
