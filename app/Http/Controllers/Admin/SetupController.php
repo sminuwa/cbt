@@ -107,21 +107,6 @@ class SetupController extends Controller
                 $testType['updated_at'] = Carbon::parse($testType['updated_at'])->format('Y-m-d H:i:s');
             }
 
-            // foreach ($data['presenations'] as &$testType) {
-            //     $testType['created_at'] = Carbon::parse($testType['created_at'])->format('Y-m-d H:i:s');
-            //     $testType['updated_at'] = Carbon::parse($testType['updated_at'])->format('Y-m-d H:i:s');
-            // }
-
-            // foreach ($data['time_controls'] as &$testType) {
-            //     $testType['created_at'] = Carbon::parse($testType['created_at'])->format('Y-m-d H:i:s');
-            //     $testType['updated_at'] = Carbon::parse($testType['updated_at'])->format('Y-m-d H:i:s');
-            // }
-
-            // foreach ($data['scores'] as &$testType) {
-            //     $testType['created_at'] = Carbon::parse($testType['created_at'])->format('Y-m-d H:i:s');
-            //     $testType['updated_at'] = Carbon::parse($testType['updated_at'])->format('Y-m-d H:i:s');
-            // }
-
             // foreach ($data['topics'] as &$testType) {
             //     $testType['created_at'] = Carbon::parse($testType['created_at'])->format('Y-m-d H:i:s');
             //     $testType['updated_at'] = Carbon::parse($testType['updated_at'])->format('Y-m-d H:i:s');
@@ -139,7 +124,9 @@ class SetupController extends Controller
                     Venue::query()->delete();
                     TestCode::query()->delete();
                     Topic::query()->delete();
-                    
+                    Presentation::query()->delete();
+                    TimeControl::query()->delete();
+                    Score::query()->delete();
                     // Insert new data
                     Centre::insert($data['centres']);
                     ExamType::insert($data['exam_types']);
@@ -147,9 +134,7 @@ class SetupController extends Controller
                     Venue::insert($data['venues']);
                     TestCode::insert($data['test_codes']);
                     Topic::insert($data['topics']);
-                    // Presentation::insert($data['presentations']);
-                    // TimeControl::insert($data['time_control']);
-                    // Score::insert($data['scores']);
+                    
                     // Log the pull
                     PullStatus::create([
                         'resource' => 'basic-data',
@@ -249,9 +234,6 @@ class SetupController extends Controller
                     User::where('id','>',4)->delete();
                     CandidateSubject::query()->delete();
                     QuestionBank::query()->delete();
-                    Presentation::query()->delete();
-                    TimeControll::query()->delete();
-                    Score::query()->delete();
                     // Insert new data
 
 //                    AdminCandidate::insert($data['']);
