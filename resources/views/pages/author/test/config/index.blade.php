@@ -39,7 +39,7 @@
                                 <button class="accordion-button collapsed accordion-light-primary txt-primary active"
                                     type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{ $config->id }}"
                                     aria-expanded="true" aria-controls="collapseOne">
-                                    {{ $config->session }} / {{ $config->test_code->name }} / {{ $config->test_type->name }}
+                                    {{ $config->title }} - {{ $config->session }} - {{ $config->test_code->name }} - {{ $config->test_type->name }}
                                     <i class="svg-color" data-feather="chevron-down"></i>
                                 </button>
                             </h2>
@@ -193,9 +193,9 @@
                             <div class="row hours-cont">
                                 <div class="col-12 col-md-12">
                                     <div class="row">
-                                        <div class="col-12 col-md-12">
+                                        <div class="col-12 col-md-8">
                                             <div class="mb-3">
-                                                <label for="session" class="mb-2">Examination Type</label>
+                                                <label for="session" class="mb-2">Select Type</label>
                                                 <select class="form-select form-control" id="exam_type_id" name="exam_type_id"
                                                     required>
                                                     @foreach ($exam_types as $exam_type)
@@ -203,6 +203,12 @@
                                                             >{{ $exam_type->name }}</option>
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <div class="mb-3">
+                                                <label for="title" class="mb-2">Test Title</label>
+                                                <input class="form-control" id="title" name="title" placeholder="Test Title" required>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6">
