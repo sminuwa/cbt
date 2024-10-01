@@ -350,7 +350,7 @@ class TestConfigController extends Controller
 
         if(count($err) == 0){
             reset_auto_increment('scheduled_candidates');
-            $get_schedules = ScheduledCandidate::whereIn('candidate_id', $candidate_ids)->get();
+            $get_schedules = ScheduledCandidate::whereIn(['candidate_id'=> $candidate_ids, 'schedule_id'=> $schedule->id])->get();
             
             foreach($get_schedules as $get_schedule){
                 $p =  explode(',',$uploaded_papers[$get_schedule->candidate_id]);
