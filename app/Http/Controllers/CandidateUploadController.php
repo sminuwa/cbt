@@ -276,30 +276,6 @@ class CandidateUploadController extends Controller
         return redirect()->back()->withErrors(['Candidate not found']);
     }
 
-    public function restoreCandidate(Request $request)
-    {
-        $restore=TimeControl::find($request->id);
-        $restore->ip = null;
-        $restore->save();
-        return response()->json(['status'=>true,'message' => 'IP address has been cleared successfully']);
-}
-public function endCandidateExam(Request $request)
-    {
-        $restore=TimeControl::find($request->id);
-        $restore->completed = 1;
-        $restore->save();
-        return response()->json(['status'=>true,'message' => 'Exam ended']);
-}
-public function adjustCandidateTime(Request $request)
-    {
-        $restore=TimeControl::find($request->id);
-        if($restore){
-            $restore->elapsed = $request->added_time ?? 0;
-            $restore->save();
-        }
-        return back();
-        return response()->json(['status'=>true,'message' => 'Time Adjusted successfully']);
-        // return response()->json(['message' => 'Time Adjusted successfully']);
-}
+    
 
 }

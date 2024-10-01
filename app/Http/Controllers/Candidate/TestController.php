@@ -237,10 +237,15 @@ class TestController extends Controller
         Session::put('time_control', $time_control);
         Session::put('time_difference', $time_difference);
         Session::put('remaining_seconds', $remaining_seconds);
+        return ['status'=>true, 'message'=>'Time is Up','url'=>route('candidate.test.submitted')];
+    }
 
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        return ['status'=>true, 'message'=>'Time is Up','url'=>route('candidate.auth.page')];
+
+    public function submitted(Request $request){
+
+        // Auth::guard('web')->logout();
+        // $request->session()->invalidate();
+        return view('pages.candidate.test.submission');
     }
 
 }

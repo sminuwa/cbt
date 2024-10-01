@@ -14,6 +14,7 @@ use App\Http\Controllers\SubjectsController;
 use App\Http\Controllers\TestConfigController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\VenueController;
+use App\Http\Controllers\CandidateController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Web\CBTApiController;
@@ -231,9 +232,10 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
 });
 
 Route::name('exam.')->prefix('exams')->group(function(){
-    Route::post('/restore', [CandidateUploadController::class, 'restoreCandidate'])->name('candidate.restore');
-    Route::post('/end/exams', [CandidateUploadController::class, 'endCandidateExam'])->name('candidate.endexam');
-    Route::post('/adjust/time', [CandidateUploadController::class, 'adjustCandidateTime'])->name('candidate.adjusttime');
+    Route::post('/restore', [CandidateController::class, 'restoreCandidate'])->name('candidate.restore');
+    Route::post('/end/exams', [CandidateController::class, 'endCandidateExam'])->name('candidate.endexam');
+    Route::post('/adjust/time', [CandidateController::class, 'adjustCandidateTime'])->name('candidate.adjusttime');
+    Route::post('/reset-password', [CandidateController::class, 'resetPassword'])->name('candidate.reset-password');
 });
 
 Route::name('api.v1.')->prefix('api/v1/')->group(function () {

@@ -151,14 +151,20 @@ $time_elapsed = $time_control->elapsed;
                     </span>
                 </div>
             </div>
-            <div class="nav-right col-xxl-7 col-xl-6 col-md-7 col-8 pull-right right-header p-0 ms-auto">
+            <div class="nav-right col-xxl-7 col-xl-7 col-md-7 col-8 pull-right right-header p-0 ms-auto">
                 <ul class="nav-menus">
-                    <div class="clock" id="clock">00:00:00</div> Time left
-                    <li class="profile-nav">
+                    <div class="clock" id="clock">00:00:00</div> Time Left
+                    <div>
+                        <button id="submitBtn" class="submitBtn btn btn-primary btn-sm ">
+                        {{-- <button id="" onclick="return confirm('Are you sure you want to submit this exam?')" class=" btn btn-primary btn-sm "> --}}
+                            Submit
+                        </button>
+                    </div>
+                    {{-- <li class="profile-nav">
                         <div class="media profile-media">
                             <img class="b-r-10" src="{{ $candidate->passport() }}" width="35"  alt="">
                         </div>
-                    </li>
+                    </li> --}}
                 </ul>
             </div>
         </div>
@@ -211,9 +217,7 @@ $time_elapsed = $time_control->elapsed;
                                         </div>
                                         <hr>
                                         <div class="text-center">
-                                            <button id="submitBtn" onclick="return confirm('Are you sure you want to submit this exam?')" class="submitBtn btn btn-primary btn-sm hidden">
-                                                Submit Exam
-                                            </button>
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -293,7 +297,7 @@ $time_elapsed = $time_control->elapsed;
                                         <button type="button" id="prevBtn" class="btn btn-square btn-outline-primary">Previous</button>
                                     </div>
                                     <div class="col-md-4 text-center">
-                                        <h3 class="d-inline"><span class="badge badge-primary" id="attempt-tracker">{{ count($question_answered) }} / {{ count($question_array) }}</span></h3>
+                                        <h3 class="d-inline"><span class="badge badge-primary" id="attempt-tracker">{{ count($question_answered) }} / {{ count($question_array) }}</span><br> <small style="font-size:18px">Attempted</small></h3>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="float-end">
@@ -494,7 +498,24 @@ $time_elapsed = $time_control->elapsed;
 
         $('body').on('click', '.submitBtn', function(e){
             e.preventDefault();
-            submit_test();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Once you submit this test, your session is over and cannot login back!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, submit!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    submit_test();
+                }else{
+                    loadingIcon.hide();
+                    btn.show();
+                }
+            });
+            // 
         })
         //clicking questions
         $('body').on('click', '.btn-question', function(){
@@ -551,13 +572,14 @@ $time_elapsed = $time_control->elapsed;
                 function(){
                     // console.log('Saving answer')
                 }).done(function(data){
+                    console.log(data)
                     if(data.status){
                         window.location.href = data.url;
                         // location = data.url;
                     }
                     console.log(data)
                 }).fail(function(data){
-                    // console.log(data)
+                    console.log(data)
                 })
         }
 

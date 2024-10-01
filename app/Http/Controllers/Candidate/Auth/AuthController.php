@@ -17,7 +17,8 @@ class AuthController extends Controller
 {
     //
 
-    public function index(){
+    public function index(Request $request){
+        
         $exams = TestConfig::exam()->get();
         return view('pages.candidate.auth.login',compact('exams'));
     }

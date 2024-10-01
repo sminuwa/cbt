@@ -479,11 +479,11 @@ class SetupController extends Controller
         $response = Http::withHeaders($headers)->post($apiUrl, compact('times','presentations','scores','body'));
         // return $response;
         // return $response['status'];
-        if ($response->successful()) {
-        // if ($response['status']) {
-            // TimeControl::where('pushed',0)->update(['pushed'=>1]);
-            // Presentation::where('pushed',0)->update(['pushed'=>1]);
-            // Score::where('pushed',0)->update(['pushed'=>1]);
+        // if ($response->successful()) {
+        if ($response['status']) {
+            TimeControl::where('pushed',0)->update(['pushed'=>1]);
+            Presentation::where('pushed',0)->update(['pushed'=>1]);
+            Score::where('pushed',0)->update(['pushed'=>1]);
             return response()->json(['success' => true, 'message' => 'Download Successful'], 200);
         }
 
