@@ -52,7 +52,7 @@ class MiscController extends Controller
     public function testConfig($year, $type, $code)
     {
         $configs = TestConfig::with(['test_type', 'test_code'])
-            ->select(['id', 'session', 'semester', 'test_type_id', 'test_code_id'])
+            ->select(['title','id', 'session', 'semester', 'test_type_id', 'test_code_id'])
             ->orderBy('session', 'desc')
             ->where(['session' => $year, 'test_type_id' => $type, 'test_code_id' => $code])
             ->get();
