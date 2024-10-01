@@ -62,7 +62,7 @@
                         <select name="test_id" class="form-control" type="text" required>
                             <option value="">-- Select Exam -- </option>
                             @foreach($exams as $exam)
-                                <option value="{{ $exam->id }}">{{ $exam->code }} - {{ $exam->type }} - {{ $exam->session }}</option>
+                                <option value="{{ $exam->id }}">{{ $exam->title }} - {{ $exam->code }} - {{ $exam->type }} - {{ $exam->session }}</option>
                             @endforeach
                         </select>
                     </div>
