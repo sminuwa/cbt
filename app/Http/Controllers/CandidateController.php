@@ -47,7 +47,7 @@ class CandidateController extends Controller
             $restore->elapsed = $request->new_time * 60 ?? $restore->elapsed;
             $restore->save();
         }
-        return response()->json(['status'=>true,'message' => 'Time Adjusted successfully']);
+        return response()->json(['status'=>true,'message' => 'Time adjusted successfully']);
         // return response()->json(['message' => 'Time Adjusted successfully']);
 }
 

@@ -155,7 +155,7 @@ $time_elapsed = $time_control->elapsed;
                 <ul class="nav-menus">
                     <div class="clock" id="clock">00:00:00</div> Time Left
                     <div>
-                        <button id="submitBtn" class="submitBtn btn btn-primary btn-sm ">
+                        <button id="submitBtn" class="submitBtn btn btn-primary btn-sm hidden">
                         {{-- <button id="" onclick="return confirm('Are you sure you want to submit this exam?')" class=" btn btn-primary btn-sm "> --}}
                             Submit
                         </button>
