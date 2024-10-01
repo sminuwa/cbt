@@ -17,7 +17,8 @@ class AuthController extends Controller
 {
     //
 
-    public function index(){
+    public function index(Request $request){
+        
         $exams = TestConfig::exam()->get();
         return view('pages.candidate.auth.login',compact('exams'));
     }
@@ -58,8 +59,10 @@ class AuthController extends Controller
             /*
                 checking if questions are available for the number of subject assigned for the configured test selected by
             */
+            // return $candidate_subjects;
             foreach($candidate_subjects as $key => $subject){
-                $error = CandidateSubject::find($subject->subject_id)->has_required_questions($test);
+                // return $subject;
+                $error = CandidateSubject::find($subject->condidate_subject_id)->has_required_questions($test);
                 if($error != 1)
                     return back()->with('error',$subject->name.': '.$error);
             }

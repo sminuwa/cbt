@@ -7165,6 +7165,7 @@ button.button-primary:hover {
 }
 .social-img img {
   height: 68px;
+  width: 68px;
   border-radius: 100%;
 }
 

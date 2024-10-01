@@ -74,7 +74,7 @@
                         <table style="margin: 0 auto; margin-bottom: 30px">
                             <tbody>
                             <tr class="logo-sec" style="display: flex; align-items: center; justify-content: space-between; width: 650px;">
-                                <td><img class="img-fluid" src="{{ asset('candidate/assets/images/logo/logo.png') }}" alt="" width="50"></td>
+                                <td><img class="img-fluid" src="{!! logo() !!}" alt="" width="50"></td>
                                 <td style="text-align: right; color:#999"><span>Instructions</span></td>
                             </tr>
                             </tbody>

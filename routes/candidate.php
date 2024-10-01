@@ -27,6 +27,7 @@ Route::middleware('auth:candidate')->name('test.')->prefix('test')->group(functi
     Route::get('/time_control',[TestController::class,'time_control'])->name('time_control');
     Route::get('/submit_test',[TestController::class,'submit_test'])->name('submit_test');
     Route::get('/goto-paper',[TestController::class,'goto_paper'])->name('goto_paper');
+    Route::get('/submitted',[TestController::class,'submitted'])->name('submitted');
 
     Route::view('test','pages.candidate.test.instruction');
 });

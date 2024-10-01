@@ -125,17 +125,21 @@ class TestController extends Controller
             return back()->with('error',implode(', ',$errors).'.');
         }
 
-        //return $candidate_subjects;
+        // return $candidate_subjects;
         if(count($candidate_subjects) < 1)
             return back()->with('Questions not available for you, contact system admin.');
-        $subject_id = $request->subject_id;
-        $subject = CandidateSubject::find($subject_id);
-        if(!$subject)
-            $subject = CandidateSubject::find($candidate_subjects[0]->subject_id);
-        $question_array = Presentation::question_papers($subject->id,$test->id, $scheduled_candidate->id);
+        $candidate_subject_id = $request->candidate_subject_id;
+        // return $subject_id;
+        $subject = CandidateSubject::find($candidate_subject_id);
+        // return $subject;
+        if(!$subject || count($subject) < 1){
+            $subject = CandidateSubject::find($candidate_subjects[0]->condidate_subject_id);
+        }
+        // return $subject;
+        $question_array = Presentation::question_papers($subject->subject_id,$test->id, $scheduled_candidate->id);
     //    return $question_array;
 //        $question_array = (object)$question_array;
-        $question_answered = Presentation::question_answered($subject->id,$test->id, $scheduled_candidate->id);
+        $question_answered = Presentation::question_answered($subject->subject_id,$test->id, $scheduled_candidate->id);
         // return $question_array;
         return view('pages.candidate.test.question', compact('question_array','question_answered','subject'));
     }
@@ -156,6 +160,7 @@ class TestController extends Controller
         $test_config_id = $request->test_config_id;
         $scheduled_candidate_id = $request->scheduled_candidate_id;
         $test_subject_id = $request->test_subject_id;
+        $answer = AnswerOption::where('id',$request->answer_option_id)->first();
         $scores = Score::where([
             'scheduled_candidate_id' => $scheduled_candidate_id,
             'test_config_id' => $test_config_id,
@@ -165,7 +170,7 @@ class TestController extends Controller
             $scores = new Score();
         $scores->scheduled_candidate_id = $scheduled_candidate_id;
         $scores->test_config_id = $test_config_id;
-        $scores->point_scored = $request->mark_per_question;
+        $scores->point_scored = $answer->correctness==1?$request->mark_per_question:0;
         $scores->question_bank_id = $request->question_bank_id;
         $scores->answer_option_id = $request->answer_option_id;
         $scores->time_elapse = now();
@@ -232,10 +237,15 @@ class TestController extends Controller
         Session::put('time_control', $time_control);
         Session::put('time_difference', $time_difference);
         Session::put('remaining_seconds', $remaining_seconds);
+        return ['status'=>true, 'message'=>'Time is Up','url'=>route('candidate.test.submitted')];
+    }
 
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        return ['status'=>true, 'message'=>'Time is Up','url'=>route('candidate.auth.page')];
+
+    public function submitted(Request $request){
+
+        // Auth::guard('web')->logout();
+        // $request->session()->invalidate();
+        return view('pages.candidate.test.submission');
     }
 
 }

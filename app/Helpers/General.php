@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\DB;
 
 
-const CHPRBN_CBT_API_KEY = "echt066";
-const CHPRBN_CBT_SECRET_KEY = "066echt";
+const CHPRBN_CBT_API_KEY = "echto66";
+const CHPRBN_CBT_SECRET_KEY = "o66";
 const CHPRBN_SERV_ADDR = "https://cbt.chprbn.gov.ng/api/v1/";
 
 

@@ -61,6 +61,7 @@
                                             @endif
                                             <button class="dropdown-item reset-password"
                                             data-id="{{ $candidate->id }}"
+                                            data-indexing="{{  $candidate->indexing }}"
                                             data-toggle="tooltip"
                                             data-bs-placement="top"
                                             data-bs-title="Reset Password"
@@ -133,8 +134,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to <strong>End</strong> this Candidate Exam <span
-                            class="candidate-indexing"></span> ?</p>
+                    <p>Are you sure you want to <strong>End</strong> this Candidate Exam 
+                        <span class="candidate-indexing"></span> ?</p>
                     <input class="time-control-id" type="hidden" name="id" id="id">
                 </div>
                 <div class="modal-footer">
@@ -154,21 +155,21 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Adjust time</h5>
+                <h5 class="modal-title">Adjust time for <span class="candidate-indexing"></span></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
-            <form action="{{ route('exam.candidate.adjusttime') }} " method="post">
+            <form class="adjust-time-form" action="{{ route('exam.candidate.adjusttime') }} " method="post">
                 @csrf
-                <input type="hidden" id="etype_id" name="id" />
                 <div class="modal-body">
+                    <input class="time-control-id" type="hidden" name="id" id="id">
                     <div class="hours-info">
                         <div class="row hours-cont">
                             <div class="col-12 col-md-12">
                                 <div class="row">
                                     <div class="col-12 col-md-12">
                                         <div class="mb-6">
-                                            <input id="custom-time-range" type="text">
+                                            <input id="custom-time-range" name="new_time" type="text">
                                         </div>
                                     </div>
                                 </div>
@@ -177,11 +178,40 @@
                     </div>
                 </div>
                 <div class="modal-footer submit-section text-end">
-                    <button type="button" data-bs-dismiss="modal"
-                        class="btn btn-sm btn-danger submit-btn text-light">
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-sm btn-danger submit-btn text-light"> 
                         Cancel
                     </button>
-                    <button type="submit" class="btn btn-sm btn-primary submit-btn text-light">Adjust</button>
+                    <button type="submit" data-bs-dismiss="modal" class="btn btn-sm btn-primary submit-btn text-light">Adjust</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="reset_password" tabindex="-1" role="dialog" aria-labelledby="exampleModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form class="reset-password-form" action="{{ route('exam.candidate.reset-password') }}" method="post">
+                <div class="modal-body">
+                    <div class="modal-toggle-wrapper">
+                        <h4>Reset Password for <span class="candidate-indexing"></span></h4>
+                        <div class="form-group my-2">
+                            {{-- <label for="reset-password">Reset Password</label> --}}
+                            <input type="text" name="password" id="reset-password" class="form-control" placeholder="Enter password" required>
+                        </div>
+                        <input class="time-control-id" type="hidden" name="id" id="id">
+
+                        @csrf
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-sm btn-danger submit-btn text-light">
+                        Cancel
+                    </button>
+                    <button type="submit" data-bs-dismiss="modal" class="btn btn-sm btn-primary submit-btn text-light">
+                        Restore
+                    </button>
                 </div>
             </form>
         </div>
@@ -240,6 +270,50 @@
             })
         })
 
+        $('.adjust-time-form').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'post',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.status) {
+
+                        Swal.fire({
+                            title: 'Success!',
+                            text: response.message,
+                            icon: 'success',
+                            confirmButtonText: 'Okay'
+                        })
+                    }
+                    console.log(response)
+                }
+            })
+        })
+
+        $('.reset-password-form').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'post',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.status) {
+                        $('#reset-password').val('')
+                        Swal.fire({
+                            title: 'Success!',
+                            text: response.message,
+                            icon: 'success',
+                            confirmButtonText: 'Okay'
+                        })
+                    }
+                    console.log(response)
+                }
+            })
+        })
+
+
+
         $('body').on('click', '.restore', function() {
             let candidate = $(this);
             console.log(candidate)
@@ -254,6 +328,14 @@
             $(".modal-body .time-control-id").val(candidate.data('id'));
             $(".modal-body .candidate-indexing").html(candidate.data('indexing'));
             $('#endexam').modal('toggle')
+        })
+
+        $('body').on('click', ' .reset-password', function() {
+            let candidate = $(this);
+            console.log(candidate)
+            $(".modal-body .time-control-id").val(candidate.data('id'));
+            $(".modal-body .candidate-indexing").html(candidate.data('indexing'));
+            $('#reset_password').modal('toggle')
         })
 
 
@@ -282,10 +364,12 @@
         // })
 
         $('body').on('click', '.adjust-time', function() {
+            
             let candidate = $(this)
-
             let minute = candidate.data('elapsed') / 60
-
+            $(".modal-body .time-control-id").val(candidate.data('id'));
+            $(".candidate-indexing").html(candidate.data('indexing'));
+            
             $("#custom-time-range").ionRangeSlider({
                 min: 0,
                 max: candidate.data('duration'),
