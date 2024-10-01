@@ -227,7 +227,7 @@ class SetupController extends Controller
                     TestSection::query()->delete();
                     TestSubject::query()->delete();
                     AnswerOption::query()->delete();
-                    User::where('id','>',1)->delete();
+                    User::where('id','>',4)->delete();
                     CandidateSubject::query()->delete();
                     QuestionBank::query()->delete();
                     // Insert new data
