@@ -211,24 +211,46 @@ class AttendanceController extends Controller
         try{
             $user = $request->user();
             $records = json_decode($request->getContent());
-            $candidate_ids = $attendance = [];
+            $candidate_ids = $pro = $pra = [];
             foreach($records as $record){
-                $candidate_ids[] = $record->scheduled_candidate_id;
-                    $attendance[] = [
-                        'candidate_id' => $record->candidate_id,
-                        'paper_id' => $record->paper_id,
-                        'practical_question_id' => $record->question_id,
-                        'schedule_id' => $record->schedule_id,
-                        'scheduled_candidate_id' => $record->scheduled_candidate_id,
-                        'score' => $record->score,
+                $practicals = $record->practicals;
+                $projects = $record->projects;
+                foreach($practicals as $practical){
+                    $candidate_ids[] = $practical->scheduled_candidate_id;
+                    $pro[] = [
+                        'candidate_id' => $practical->candidate_id,
+                        'paper_id' => $practical->paper_id,
+                        'practical_question_id' => $practical->question_id,
+                        'schedule_id' => $practical->schedule_id,
+                        'scheduled_candidate_id' => $practical->scheduled_candidate_id,
+                        'score' => $practical->score,
                     ];
+                }
+                foreach($projects as $project){
+                    $pra[] = [
+                        'scheduled_candidate_id' => $project->scheduled_candidate_id,
+                        'schedule_id' => $project->schedule_id,
+                        'candidate_id' => $project->candidate_id,
+                        'paper_id' => $project->paper_id,
+                        'score' => $project->score,
+                    ];
+                }
             }
 
-            if(!empty($attendance)){
-                if(PracticalExamination::upsert($attendance, ['scheduled_candidate_id', 'practical_question_id','paper_id', 'schedule_id']))
-                    return jResponse(true, 'Successful', $candidate_ids);
+            $error = "";
+            if(!empty($pro)){
+                if(PracticalExamination::upsert($pro, ['scheduled_candidate_id', 'practical_question_id','paper_id', 'schedule_id']))
+                    $error = "Something went wrong.";
 
             }
+
+            if(!empty($pra)){
+                if(ProjectAssessment::upsert($pra, ['scheduled_candidate_id', 'candidate_id','paper_id', 'schedule_id']))
+                    $error = "Something went wrong.";
+
+            }
+            if($error == "")
+                return jResponse(true, 'Successful', $candidate_ids);
 
             return jResponse(false, 'Something went wrong');
         }catch(\Exception $e){
