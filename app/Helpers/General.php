@@ -7,7 +7,7 @@ const CHPRBN_CBT_API_KEY = "echt066";
 const CHPRBN_CBT_SECRET_KEY = "660thce";
 const CHPRBN_SERV_ADDR = "https://zxcvbnm.chprbn.gov.ng/api/v1/";
 
-
+const APP_NAME = 'CHPRBN CBT Exam';
 
 if(!function_exists('logo')){
     function logo($width = 50, $height = 50){
