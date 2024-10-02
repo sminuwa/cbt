@@ -211,30 +211,28 @@ class AttendanceController extends Controller
         try{
             $user = $request->user();
             $records = json_decode($request->getContent());
+            $practicals = $records->practicals;
+            $projects = $records->projects;
             $candidate_ids = $pro = $pra = [];
-            foreach($records as $record){
-                $practicals = $record->practicals;
-                $projects = $record->projects;
-                foreach($practicals as $practical){
-                    $candidate_ids[] = $practical->scheduled_candidate_id;
-                    $pro[] = [
-                        'candidate_id' => $practical->candidate_id,
-                        'paper_id' => $practical->paper_id,
-                        'practical_question_id' => $practical->question_id,
-                        'schedule_id' => $practical->schedule_id,
-                        'scheduled_candidate_id' => $practical->scheduled_candidate_id,
-                        'score' => $practical->score,
-                    ];
-                }
-                foreach($projects as $project){
-                    $pra[] = [
-                        'scheduled_candidate_id' => $project->scheduled_candidate_id,
-                        'schedule_id' => $project->schedule_id,
-                        'candidate_id' => $project->candidate_id,
-                        'paper_id' => $project->paper_id,
-                        'score' => $project->score,
-                    ];
-                }
+            foreach($practicals as $practical){
+                $candidate_ids[] = $practical->scheduled_candidate_id;
+                $pro[] = [
+                    'candidate_id' => $practical->candidate_id,
+                    'paper_id' => $practical->paper_id,
+                    'practical_question_id' => $practical->question_id,
+                    'schedule_id' => $practical->schedule_id,
+                    'scheduled_candidate_id' => $practical->scheduled_candidate_id,
+                    'score' => $practical->score,
+                ];
+            }
+            foreach($projects as $project){
+                $pra[] = [
+                    'scheduled_candidate_id' => $project->scheduled_candidate_id,
+                    'schedule_id' => $project->schedule_id,
+                    'candidate_id' => $project->candidate_id,
+                    'paper_id' => $project->paper_id,
+                    'score' => $project->score,
+                ];
             }
 
             $error = "";
