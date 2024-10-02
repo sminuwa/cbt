@@ -238,16 +238,14 @@ class AttendanceController extends Controller
             }
 
             $error = "";
-            if(!empty($pra)){
-                if(PracticalExamination::upsert($pra, ['scheduled_candidate_id', 'practical_question_id','paper_id', 'schedule_id']))
-                    $error = "Something went wrong. Practical";
-
+            if(count($pra)> 0){
+                PracticalExamination::upsert($pra, ['scheduled_candidate_id', 'practical_question_id','paper_id', 'schedule_id']);
             }
 
-            if(!empty($pro)){
-                if(ProjectAssessment::upsert($pro, ['scheduled_candidate_id', 'candidate_id','paper_id', 'schedule_id']))
-                    $error = "Something went wrong. Project";
+            // return $pro;
 
+            if(count($pro) > 0){
+                ProjectAssessment::upsert($pro, ['scheduled_candidate_id', 'candidate_id','paper_id', 'schedule_id']);
             }
             if($error == "")
                 return jResponse(true, 'Successful', $candidate_ids);
