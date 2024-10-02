@@ -251,8 +251,8 @@ class AttendanceController extends Controller
             }
             if($error == "")
                 return jResponse(true, 'Successful', $candidate_ids);
-
-            return jResponse(false, 'Something went wrong');
+            else
+                return jResponse(false, $error);
         }catch(\Exception $e){
             return jResponse(false, 'Failed', 'Something went wrong. '. $e->getMessage() );
         }
