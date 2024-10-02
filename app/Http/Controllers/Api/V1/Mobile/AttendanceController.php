@@ -216,7 +216,8 @@ class AttendanceController extends Controller
             // return $practicals;
             $candidate_ids = $pro = $pra = [];
             foreach($practicals as $practical){
-                $candidate_ids[] = $practical->scheduled_candidate_id;
+                if(!in_array($practical->scheduled_candidate_id, $candidate_ids))
+                    $candidate_ids[] = $practical->scheduled_candidate_id;
                 $pra[] = [
                     'candidate_id' => $practical->candidate_id,
                     'paper_id' => $practical->paper_id,
