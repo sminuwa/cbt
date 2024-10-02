@@ -213,10 +213,11 @@ class AttendanceController extends Controller
             $records = json_decode($request->getContent());
             $practicals = $records->practicals;
             $projects = $records->projects;
+            // return $practicals;
             $candidate_ids = $pro = $pra = [];
             foreach($practicals as $practical){
                 $candidate_ids[] = $practical->scheduled_candidate_id;
-                $pro[] = [
+                $pra[] = [
                     'candidate_id' => $practical->candidate_id,
                     'paper_id' => $practical->paper_id,
                     'practical_question_id' => $practical->question_id,
@@ -226,7 +227,7 @@ class AttendanceController extends Controller
                 ];
             }
             foreach($projects as $project){
-                $pra[] = [
+                $pro[] = [
                     'scheduled_candidate_id' => $project->scheduled_candidate_id,
                     'schedule_id' => $project->schedule_id,
                     'candidate_id' => $project->candidate_id,
@@ -236,13 +237,13 @@ class AttendanceController extends Controller
             }
 
             $error = "";
-            if(!empty($pro)){
+            if(!empty($pra)){
                 if(PracticalExamination::upsert($pro, ['scheduled_candidate_id', 'practical_question_id','paper_id', 'schedule_id']))
                     $error = "Something went wrong.";
 
             }
 
-            if(!empty($pra)){
+            if(!empty($pro)){
                 if(ProjectAssessment::upsert($pra, ['scheduled_candidate_id', 'candidate_id','paper_id', 'schedule_id']))
                     $error = "Something went wrong.";
 
