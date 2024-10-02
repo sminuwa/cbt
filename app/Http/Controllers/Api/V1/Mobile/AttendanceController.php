@@ -240,13 +240,13 @@ class AttendanceController extends Controller
             $error = "";
             if(!empty($pra)){
                 if(PracticalExamination::upsert($pra, ['scheduled_candidate_id', 'practical_question_id','paper_id', 'schedule_id']))
-                    $error = "Something went wrong.";
+                    $error = "Something went wrong. Practical";
 
             }
 
             if(!empty($pro)){
                 if(ProjectAssessment::upsert($pro, ['scheduled_candidate_id', 'candidate_id','paper_id', 'schedule_id']))
-                    $error = "Something went wrong.";
+                    $error = "Something went wrong. Project";
 
             }
             if($error == "")
