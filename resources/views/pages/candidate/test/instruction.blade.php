@@ -60,6 +60,9 @@
                 width: 250px !important;
             }
         }
+        .font-semibold{
+            font-weight: bold !important;
+        }
     </style>
 </head>
 <body style="margin: 30px auto;">
@@ -83,42 +86,39 @@
                             <tbody>
                             <tr>
                                 <td style="padding: 30px">
-                                    <h2 style="text-align: center">Welcome to CHPRBN CBT Exam!</h2>
+                                    <h2 style="text-align: center">Welcome to {{ APP_NAME }}!</h2>
 
                                     <h3 class="text-lg font-bold mb-2">
                                         General instructions to candidates: <span class="font-normal">Read carefully</span>
                                     </h3>
                                     <ol class="list-decimal list-inside space-y-2 mb-6">
                                         <li>
-                                            Your time will start counting as soon as you click on
-                                            <span class="font-semibold">Start Exams</span>.
+                                            <span class="font-semibold">DO NOT</span> click submit button until you are done with the exams.
                                         </li>
-                                        <li>Click on the subject code to view the questions.</li>
+                                        <li>Once you click on the <span class="font-semibold">Submit</span> Button, you cannot log in to take the exam again.</li>
                                         <li>
-                                            Use the <span class="font-semibold">NAVIGATION</span> panel to quickly move to desired
-                                            questions.
+                                            Call the attention of the <span class="font-semibold">ECC/TSS</span> of the center whenever you have any challenge.
                                         </li>
-                                        <li>Answers are automatically saved as they are selected.</li>
+                                        <li>Your time will start counting as soon as you click on <span class="font-semibold">Start Exam.</span></li>
                                         <li>
-                                            Avoid using <span class="font-semibold">Forward, Backward, Refresh</span> buttons of your
-                                            browser as they may log you out.
+                                            Use the <span class="font-semibold">NAVIGATION</span> panel to quickly move to any desired questions.
                                         </li>
                                         <li>
-                                            Once you click on the <span class="font-semibold">Submit Button</span>, you cannot come back
-                                            to the test again.
+                                            Answers are automatically saved as they are selected.
                                         </li>
                                         <li>
-                                          <span class="font-semibold">
-                                              You are advised to adhere strictly to the examination Regulations/Discipline as spelt out
-                                            in the current University/Faculty prospectus and Information brochure. Ignorance of these
-                                            regulations will not be accepted as an excuse for any misdemeanors.
-                                          </span>
+                                            <span class="font-semibold">DO NOT</span> click forward, backward or refresh buttons on your browser.
                                         </li>
                                         <li>
-                                            Borrowing of pencils, biros, calculator etc is not allowed as each candidate is expected to
-                                            have his/hers.
+                                            Use the Alphabet letters <span class="font-semibold">(e.g. A,B,C,D)</span> on the keyboard that correspond with the question options to answer the questions. 
+                                            Use <span class="font-semibold">RIGHT</span> and <span class="font-semibold">LEFT</span> arrows to navigate to <span class="font-semibold">NEXT</span> and <span class="font-semibold">PREVIOUS</span> questions respectively.
                                         </li>
-                                        <li>GSM Handset(s) switched or un-switched are not allowed in the examination hall.</li>
+                                        <li>
+                                            You are advised to adhere strictly to the examination rules and regulations.
+                                        </li>
+                                        <li>
+                                            Any benefiting or incriminating materials (such phones, papers, etc.) are not allowed in the exam hall.
+                                        </li>
                                     </ol>
 
                                     <p><strong>Good luck!</strong></p>

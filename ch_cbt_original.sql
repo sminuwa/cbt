@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 02, 2024 at 04:31 PM
+-- Generation Time: Oct 02, 2024 at 10:35 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.13
 
@@ -535,7 +535,7 @@ CREATE TABLE `exam_types` (
 --
 
 INSERT INTO `exam_types` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'CHPRBN National Examination', '2024-10-02 14:20:08', '2024-10-02 14:20:08');
+(1, 'CHPRBN National Examination', '2024-10-02 14:57:24', '2024-10-02 14:57:24');
 
 -- --------------------------------------------------------
 
@@ -886,7 +886,8 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (81, 'App\\Models\\Centre', 1, 'mobile-app-access', 'aa5a1699db0d965d692340239e28d84476918d68438fd614995b27c04d58395e', '[\"server:mobile-app\"]', NULL, '2024-09-17 13:28:06', '2024-09-17 10:53:46', '2024-09-17 13:28:06'),
 (82, 'App\\Models\\Centre', 2, 'mobile-app-access', '289286f2d54a61ee6f631ff8b935b54911966968c33d0bc4c2a518345a638f5b', '[\"server:mobile-app\"]', NULL, '2024-09-17 13:28:38', '2024-09-17 13:28:28', '2024-09-17 13:28:38'),
 (86, 'App\\Models\\Centre', 18, 'mobile-app-access', '07a12a7ac9c17f963a2e30750a32a8bfaa576e586ba7b298af0d201b4730561d', '[\"server:mobile-app\"]', NULL, '2024-09-20 23:14:51', '2024-09-20 14:57:27', '2024-09-20 23:14:51'),
-(87, 'App\\Models\\Centre', 1, 'mobile-app-access', '9de4c9ea2f45b010fe8dc7965d95d05aba27ff0476c59885d85c816d4023b2af', '[\"server:mobile-app\"]', NULL, NULL, '2024-10-02 13:30:56', '2024-10-02 13:30:56');
+(87, 'App\\Models\\Centre', 1, 'mobile-app-access', '9de4c9ea2f45b010fe8dc7965d95d05aba27ff0476c59885d85c816d4023b2af', '[\"server:mobile-app\"]', NULL, NULL, '2024-10-02 13:30:56', '2024-10-02 13:30:56'),
+(88, 'App\\Models\\Centre', 1, 'mobile-app-access', '8bc3ffbce3b131c9216b8c6c3376e4bf142f568a0fcbd99c8f8d7d2d709106ce', '[\"server:mobile-app\"]', NULL, '2024-10-02 18:07:30', '2024-10-02 16:32:31', '2024-10-02 18:07:30');
 
 -- --------------------------------------------------------
 
@@ -906,16 +907,6 @@ CREATE TABLE `practical_examinations` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `practical_examinations`
---
-
-INSERT INTO `practical_examinations` (`id`, `scheduled_candidate_id`, `candidate_id`, `practical_question_id`, `paper_id`, `schedule_id`, `score`, `examiner`, `created_at`, `updated_at`) VALUES
-(1, 9349, 1124, 1, 4, 37, '2.00', 0, '2024-09-20 23:14:51', '2024-09-20 23:14:51'),
-(2, 9349, 1124, 2, 4, 37, '2.00', 0, '2024-09-20 23:14:51', '2024-09-20 23:14:51'),
-(3, 9351, 1125, 15, 4, 37, '1.00', 0, '2024-09-20 23:14:51', '2024-09-20 23:14:51'),
-(4, 9351, 1125, 16, 4, 37, '1.00', 0, '2024-09-20 23:14:51', '2024-09-20 23:14:51');
 
 -- --------------------------------------------------------
 
@@ -1055,14 +1046,6 @@ CREATE TABLE `project_assessments` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `project_assessments`
---
-
-INSERT INTO `project_assessments` (`id`, `scheduled_candidate_id`, `schedule_id`, `candidate_id`, `paper_id`, `score`, `examiner`, `created_at`, `updated_at`) VALUES
-(1, 9349, 37, 1124, 5, '17.00', 0, '2024-09-20 13:21:55', '2024-09-20 13:21:56'),
-(2, 9351, 37, 1125, 5, '15.50', 0, '2024-09-20 13:21:55', '2024-09-20 13:21:56');
-
 -- --------------------------------------------------------
 
 --
@@ -1078,30 +1061,6 @@ CREATE TABLE `pull_statuses` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `pull_statuses`
---
-
-INSERT INTO `pull_statuses` (`⁠ id ⁠`, `resource`, `pull_date`, `status`, `message`, `created_at`, `updated_at`) VALUES
-(1, 'basic-data', '2024-10-02 00:00:00', 'FAILURE', 'Failed to fetch data from API', '2024-10-02 13:43:19', '2024-10-02 13:43:19'),
-(4, 'basic-data', '2024-10-02 00:00:00', 'FAILURE', 'Failed to fetch data from API', '2024-10-02 13:45:34', '2024-10-02 13:45:34'),
-(5, 'basic-data', '2024-10-02 00:00:00', 'FAILURE', 'Failed to fetch data from API', '2024-10-02 13:45:58', '2024-10-02 13:45:58'),
-(6, 'basic-data', '2024-10-02 00:00:00', 'FAILURE', 'Failed to fetch data from API', '2024-10-02 13:46:36', '2024-10-02 13:46:36'),
-(7, 'basic-data', '2024-10-02 00:00:00', 'FAILURE', 'Failed to fetch data from API', '2024-10-02 13:46:47', '2024-10-02 13:46:47'),
-(8, 'basic-data', '2024-10-02 14:52:48', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 13:52:48', '2024-10-02 13:52:48'),
-(9, 'test-data', '2024-10-02 14:56:45', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 13:56:45', '2024-10-02 13:56:45'),
-(10, 'candidate-data', '2024-10-02 14:56:48', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 13:56:48', '2024-10-02 13:56:48'),
-(11, 'basic-data', '2024-10-02 14:58:31', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 13:58:31', '2024-10-02 13:58:31'),
-(12, 'test-data', '2024-10-02 14:58:32', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 13:58:32', '2024-10-02 13:58:32'),
-(13, 'candidate-data', '2024-10-02 14:58:34', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 13:58:34', '2024-10-02 13:58:34'),
-(14, 'basic-data', '2024-10-02 15:04:19', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 14:04:19', '2024-10-02 14:04:19'),
-(15, 'test-data', '2024-10-02 15:04:21', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 14:04:21', '2024-10-02 14:04:21'),
-(16, 'candidate-data', '2024-10-02 15:04:23', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 14:04:23', '2024-10-02 14:04:23'),
-(17, 'basic-data', '2024-10-02 15:20:08', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 14:20:08', '2024-10-02 14:20:08'),
-(18, 'test-data', '2024-10-02 15:20:11', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 14:20:11', '2024-10-02 14:20:11'),
-(19, 'candidate-data', '2024-10-02 15:20:14', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 14:20:14', '2024-10-02 14:20:14'),
-(20, 'test-data', '2024-10-02 15:22:15', 'SUCCESS', 'Data pulled and inserted successfully', '2024-10-02 14:22:15', '2024-10-02 14:22:15');
 
 -- --------------------------------------------------------
 
@@ -1319,14 +1278,6 @@ CREATE TABLE `schedulings` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `schedulings`
---
-
-INSERT INTO `schedulings` (`id`, `test_config_id`, `venue_id`, `date`, `maximum_batch`, `no_per_schedule`, `daily_start_time`, `daily_end_time`, `created_at`, `updated_at`) VALUES
-(1, 2, 1, '2024-10-02 00:00:00', 1, 250, '07:00:00', '23:59:00', '2024-09-25 04:48:23', '2024-09-30 11:07:09'),
-(5, 1, 1, '2024-10-02 00:00:00', 1, 250, '07:00:00', '23:59:00', '2024-09-25 04:50:34', '2024-09-25 04:50:34');
-
 -- --------------------------------------------------------
 
 --
@@ -1367,7 +1318,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('j6hoFhQrgrgbtX51pwW2rwcz80HEPDLgPg2NlW2k', 2, '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiVzlVaFFDVHRMbHFsRUJKRDJleU9sWXpRRE8xRTFubThDSHRCeGpFUiI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1MDoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FkbWluL3JlcG9ydHMvc3VtbWFyeS9yZXBvcnQiO31zOjk6Il9wcmV2aW91cyI7YToxOntzOjM6InVybCI7czozOToiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FkbWluL2V4YW1zL3NldHVwIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MjoibG9naW5fYWRtaW5fNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToyO30=', 1727878935);
+('j6hoFhQrgrgbtX51pwW2rwcz80HEPDLgPg2NlW2k', 2, '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiVzlVaFFDVHRMbHFsRUJKRDJleU9sWXpRRE8xRTFubThDSHRCeGpFUiI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1MDoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FkbWluL3JlcG9ydHMvc3VtbWFyeS9yZXBvcnQiO31zOjk6Il9wcmV2aW91cyI7YToxOntzOjM6InVybCI7czozNzoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FkbWluL2Rhc2hib2FyZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTI6ImxvZ2luX2FkbWluXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Mjt9', 1727886224),
+('wjoZnwFbdPjbtngegiZwUEq0uYtFGqv8riN08p2O', 146, '127.0.0.1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36', 'YTo5OntzOjY6Il90b2tlbiI7czo0MDoiT0RhMDQ1cVpvcFRjcnhkZ3IzOThTMzBaTjRRbHRodWtzOFc5T21EbSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czozNzoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FkbWluL2Rhc2hib2FyZCI7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjQ4OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvY2FuZGlkYXRlL3Rlc3QvaW5zdHJ1Y3Rpb24iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjU2OiJsb2dpbl9jYW5kaWRhdGVfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxNDY7czo5OiJjYW5kaWRhdGUiO086MjA6IkFwcFxNb2RlbHNcQ2FuZGlkYXRlIjozMjp7czoxMzoiACoAY29ubmVjdGlvbiI7czo1OiJteXNxbCI7czo4OiIAKgB0YWJsZSI7czoxMDoiY2FuZGlkYXRlcyI7czoxMzoiACoAcHJpbWFyeUtleSI7czoyOiJpZCI7czoxMDoiACoAa2V5VHlwZSI7czozOiJpbnQiO3M6MTI6ImluY3JlbWVudGluZyI7YjoxO3M6NzoiACoAd2l0aCI7YTowOnt9czoxMjoiACoAd2l0aENvdW50IjthOjA6e31zOjE5OiJwcmV2ZW50c0xhenlMb2FkaW5nIjtiOjA7czoxMDoiACoAcGVyUGFnZSI7aToxNTtzOjY6ImV4aXN0cyI7YjoxO3M6MTg6Indhc1JlY2VudGx5Q3JlYXRlZCI7YjowO3M6Mjg6IgAqAGVzY2FwZVdoZW5DYXN0aW5nVG9TdHJpbmciO2I6MDtzOjEzOiIAKgBhdHRyaWJ1dGVzIjthOjE4OntzOjI6ImlkIjtpOjE0NjtzOjg6ImluZGV4aW5nIjtzOjEyOiJCLzA2Ni8wMDIvMjEiO3M6MTI6InByb2dyYW1tZV9pZCI7aToyO3M6OToiZmlyc3RuYW1lIjtzOjU6IkFJU0hBIjtzOjc6InN1cm5hbWUiO3M6NToiQUhNQUQiO3M6MTE6Im90aGVyX25hbWVzIjtzOjQ6IlVNQVIiO3M6NjoiZ2VuZGVyIjtzOjY6IkZlbWFsZSI7czozOiJkb2IiO3M6MTA6IjIwMDEtMDUtMjEiO3M6NjoibGdhX2lkIjtOO3M6MTA6ImNvdW50cnlfaWQiO2k6MDtzOjk6ImV4YW1feWVhciI7aToyMDI0O3M6ODoicGFzc3dvcmQiO3M6NjA6IiQyeSQxMiRkZkFsSnFiVWtRNjlnRFVhYi9yLmF1OWlONHpkdUVQVmpVMzhackdjRDBYZjR6Zkd0eFBQaSI7czozOiJuaW4iO047czoxNDoicmVtZW1iZXJfdG9rZW4iO047czo5OiJhcGlfdG9rZW4iO047czo3OiJlbmFibGVkIjtzOjM6IlllcyI7czoxMDoiY3JlYXRlZF9hdCI7TjtzOjEwOiJ1cGRhdGVkX2F0IjtzOjE5OiIyMDI0LTEwLTAyIDIxOjE3OjM2Ijt9czoxMToiACoAb3JpZ2luYWwiO2E6MTg6e3M6MjoiaWQiO2k6MTQ2O3M6ODoiaW5kZXhpbmciO3M6MTI6IkIvMDY2LzAwMi8yMSI7czoxMjoicHJvZ3JhbW1lX2lkIjtpOjI7czo5OiJmaXJzdG5hbWUiO3M6NToiQUlTSEEiO3M6Nzoic3VybmFtZSI7czo1OiJBSE1BRCI7czoxMToib3RoZXJfbmFtZXMiO3M6NDoiVU1BUiI7czo2OiJnZW5kZXIiO3M6NjoiRmVtYWxlIjtzOjM6ImRvYiI7czoxMDoiMjAwMS0wNS0yMSI7czo2OiJsZ2FfaWQiO047czoxMDoiY291bnRyeV9pZCI7aTowO3M6OToiZXhhbV95ZWFyIjtpOjIwMjQ7czo4OiJwYXNzd29yZCI7czo2MDoiJDJ5JDEyJGRmQWxKcWJVa1E2OWdEVWFiL3IuYXU5aU40emR1RVBWalUzOFpyR2NEMFhmNHpmR3R4UFBpIjtzOjM6Im5pbiI7TjtzOjE0OiJyZW1lbWJlcl90b2tlbiI7TjtzOjk6ImFwaV90b2tlbiI7TjtzOjc6ImVuYWJsZWQiO3M6MzoiWWVzIjtzOjEwOiJjcmVhdGVkX2F0IjtOO3M6MTA6InVwZGF0ZWRfYXQiO3M6MTk6IjIwMjQtMTAtMDIgMjE6MTc6MzYiO31zOjEwOiIAKgBjaGFuZ2Vz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O3M6MTA6IgAqAGtleVR5cGUiO3M6MzoiaW50IjtzOjEyOiJpbmNyZW1lbnRpbmciO2I6MTtzOjc6IgAqAHdpdGgiO2E6MDp7fXM6MTI6IgAqAHdpdGhDb3VudCI7YTowOnt9czoxOToicHJldmVudHNMYXp5TG9hZGluZyI7YjowO3M6MTA6IgAqAHBlclBhZ2UiO2k6MTU7czo2OiJleGlzdHMiO2I6MTtzOjE4OiJ3YXNSZWNlbnRseUNyZWF0ZWQiO2I6MDtzOjI4OiIAKgBlc2NhcGVXaGVuQ2FzdGluZ1RvU3RyaW5nIjtiOjA7czoxMzoiACoAYXR0cmlidXRlcyI7YTozMDp7czoyOiJpZCI7aToyO3M6NToidGl0bGUiO3M6MjoiUDEiO3M6MTI6ImV4YW1fdHlwZV9pZCI7aToxO3M6MTM6InRlc3RfY2F0ZWdvcnkiO3M6MTQ6IlNpbmdsZSBTdWJqZWN0IjtzOjEwOiJ0b3RhbF9tYXJrIjtkOjA7czoxMjoidGVzdF9jb2RlX2lkIjtpOjI7czoxMjoidGVzdF90eXBlX2lkIjtpOjE7czo3OiJzZXNzaW9uIjtpOjIwMjQ7czo4OiJzZW1lc3RlciI7aToyO3M6MTY6ImRhaWx5X3N0YXJ0X3RpbWUiO047czoxNDoiZGFpbHlfZW5kX3RpbWUiO047czo4OiJkdXJhdGlvbiI7aTo0MDtzOjEzOiJzdGFydGluZ19tb2RlIjtzOjg6Im9uIGxvZ2luIjtzOjEyOiJkaXNwbGF5X21vZGUiO3M6MTU6InNpbmdsZSBxdWVzdGlvbiI7czoyMzoicXVlc3Rpb25fYWRtaW5pc3RyYXRpb24iO3M6NjoicmFuZG9tIjtzOjIxOiJvcHRpb25fYWRtaW5pc3RyYXRpb24iO3M6NjoicmFuZG9tIjtzOjg6InZlcnNpb25zIjtpOjE7czoxNDoiYWN0aXZlX3ZlcnNpb24iO2k6MTtzOjEyOiJpbml0aWF0ZWRfYnkiO2k6MTtzOjE0OiJkYXRlX2luaXRpYXRlZCI7czoxMDoiMjAyNC0wOS0yNCI7czo2OiJzdGF0dXMiO2k6MTtzOjExOiJlbmRvcnNlbWVudCI7czoyOiJubyI7czo4OiJwYXNzX2tleSI7czozOiJjYnQiO3M6MTI6InRpbWVfcGFkZGluZyI7aToyO3M6MTA6ImFsbG93X2NhbGMiO2k6MDtzOjEwOiJjcmVhdGVkX2F0IjtzOjE5OiIyMDI0LTA5LTI1IDA1OjQxOjM1IjtzOjEwOiJ1cGRhdGVkX2F0IjtzOjE5OiIyMDI0LTA5LTI1IDA1OjQyOjI0IjtzOjQ6ImNvZGUiO3M6NDoiQ0hFVyI7czo0OiJ0eXBlIjtzOjk6Ik1vY2sgRXhhbSI7czoxMToic2NoZWR1bGVfaWQiO2k6MTt9czoxMToiACoAb3JpZ2luYWwiO2E6MzA6e3M6MjoiaWQiO2k6MjtzOjU6InRpdGxlIjtzOjI6IlAxIjtzOjEyOiJleGFtX3R5cGVfaWQiO2k6MTtzOjEzOiJ0ZXN0X2NhdGVnb3J5IjtzOjE0OiJTaW5nbGUgU3ViamVjdCI7czoxMDoidG90YWxfbWFyayI7ZDowO3M6MTI6InRlc3RfY29kZV9pZCI7aToyO3M6MTI6InRlc3RfdHlwZV9pZCI7aToxO3M6Nzoic2Vzc2lvbiI7aToyMDI0O3M6ODoic2VtZXN0ZXIiO2k6MjtzOjE2OiJkYWlseV9zdGFydF90aW1lIjtOO3M6MTQ6ImRhaWx5X2VuZF90aW1lIjtOO3M6ODoiZHVyYXRpb24iO2k6NDA7czoxMzoic3RhcnRpbmdfbW9kZSI7czo4OiJvbiBsb2dpbiI7czoxMjoiZGlzcGxheV9tb2RlIjtzOjE1OiJzaW5nbGUgcXVlc3Rpb24iO3M6MjM6InF1ZXN0aW9uX2FkbWluaXN0cmF0aW9uIjtzOjY6InJhbmRvbSI7czoyMToib3B0aW9uX2FkbWluaXN0cmF0aW9uIjtzOjY6InJhbmRvbSI7czo4OiJ2ZXJzaW9ucyI7aToxO3M6MTQ6ImFjdGl2ZV92ZXJzaW9uIjtpOjE7czoxMjoiaW5pdGlhdGVkX2J5IjtpOjE7czoxNDoiZGF0ZV9pbml0aWF0ZWQiO3M6MTA6IjIwMjQtMDktMjQiO3M6Njoic3RhdHVzIjtpOjE7czoxMToiZW5kb3JzZW1lbnQiO3M6Mjoibm8iO3M6ODoicGFzc19rZXkiO3M6MzoiY2J0IjtzOjEyOiJ0aW1lX3BhZGRpbmciO2k6MjtzOjEwOiJhbGxvd19jYWxjIjtpOjA7czoxMDoiY3JlYXRlZF9hdCI7czoxOToiMjAyNC0wOS0yNSAwNTo0MTozNSI7czoxMDoidXBkYXRlZF9hdCI7czoxOToiMjAyNC0wOS0yNSAwNTo0MjoyNCI7czo0OiJjb2RlIjtzOjQ6IkNIRVciO3M6NDoidHlwZSI7czo5OiJNb2NrIEV4YW0iO3M6MTE6InNjaGVkdWxlX2lkIjtpOjE7fXM6MTA6IgAqAGNoYW5nZXMiO2E6MDp7fXM6ODoiACoAY2FzdHMiO2E6MTg6e2k6MDtzOjI6ImlkIjtzOjEwOiJ0b3RhbF9tYXJrIjtzOjU6ImZsb2F0IjtzOjEyOiJ0ZXN0X2NvZGVfaWQiO3M6MzoiaW50IjtzOjEyOiJ0ZXN0X3R5cGVfaWQiO3M6MzoiaW50IjtzOjc6InNlc3Npb24iO3M6MzoiaW50IjtzOjg6InNlbWVzdGVyIjtzOjM6ImludCI7czoxNjoiZGFpbHlfc3RhcnRfdGltZSI7czo4OiJkYXRldGltZSI7czoxNDoiZGFpbHlfZW5kX3RpbWUiO3M6ODoiZGF0ZXRpbWUiO3M6ODoiZHVyYXRpb24iO3M6MzoiaW50IjtzOjg6InZlcnNpb25zIjtzOjM6ImludCI7czoxNDoiYWN0aXZlX3ZlcnNpb24iO3M6MzoiaW50IjtzOjEyOiJpbml0aWF0ZWRfYnkiO3M6MzoiaW50IjtzOjE0OiJkYXRlX2luaXRpYXRlZCI7czo4OiJkYXRldGltZSI7czo2OiJzdGF0dXMiO3M6NDoiYm9vbCI7czoxMjoidGltZV9wYWRkaW5nIjtzOjM6ImludCI7czoxMDoiYWxsb3dfY2FsYyI7czo0OiJib29sIjtpOjE7czoyOiJpZCI7aToyO3M6MjoiaWQiO31zOjE3OiIAKgBjbGFzc0Nhc3RDYWNoZSI7YTowOnt9czoyMToiACoAYXR0cmlidXRlQ2FzdENhY2hlIjthOjA6e31zOjEzOiIAKgBkYXRlRm9ybWF0IjtOO3M6MTA6IgAqAGFwcGVuZHMiO2E6MDp7fXM6MTk6IgAqAGRpc3BhdGNoZXNFdmVudHMiO2E6MDp7fXM6MTQ6IgAqAG9ic2VydmFibGVzIjthOjA6e31zOjEyOiIAKgByZWxhdGlvbnMiO2E6Mjp7czo5OiJ0ZXN0X2NvZGUiO086MTk6IkFwcFxNb2RlbHNcVGVzdENvZGUiOjMwOntzOjEzOiIAKgBjb25uZWN0aW9uIjtzOjU6Im15c3FsIjtzOjg6IgAqAHRhYmxlIjtzOjEwOiJ0ZXN0X2NvZGVzIjtzOjEzOiIAKgBwcmltYXJ5S2V5IjtzOjI6ImlkIjtzOjEwOiIAKgBrZXlUeXBlIjtzOjM6ImludCI7czoxMjoiaW5jcmVtZW50aW5nIjtiOjE7czo3OiIAKgB3aXRoIjthOjA6e31zOjEyOiIAKgB3aXRoQ291bnQiO2E6MDp7fXM6MTk6InByZXZlbnRzTGF6eUxvYWRpbmciO2I6MDtzOjEwOiIAKgBwZXJQYWdlIjtpOjE1O3M6NjoiZXhpc3RzIjtiOjE7czoxODoid2FzUmVjZW50bHlDcmVhdGVkIjtiOjA7czoyODoiACoAZXNjYXBlV2hlbkNhc3RpbmdUb1N0cmluZyI7YjowO3M6MTM6IgAqAGF0dHJpYnV0ZXMiO2E6NDp7czoyOiJpZCI7aToyO3M6NDoibmFtZSI7czo0OiJDSEVXIjtzOjEwOiJjcmVhdGVkX2F0IjtzOjE5OiIyMDI0LTA0LTIzIDEzOjM1OjMwIjtzOjEwOiJ1cGRhdGVkX2F0IjtzOjE5OiIyMDI0LTA0LTIzIDEzOjM1OjMwIjt9czoxMToiACoAb3JpZ2luYWwiO2E6NDp7czoyOiJpZCI7aToyO3M6NDoibmFtZSI7czo0OiJDSEVXIjtzOjEwOiJjcmVhdGVkX2F0IjtzOjE5OiIyMDI0LTA0LTIzIDEzOjM1OjMwIjtzOjEwOiJ1cGRhdGVkX2F0IjtzOjE5OiIyMDI0LTA0LTIzIDEzOjM1OjMwIjt9czoxMDoiACoAY2hhbmdlcyI7YTowOnt9czo4OiIAKgBjYXN0cyI7YTowOnt9czoxNzoiACoAY2xhc3NDYXN0Q2FjaGUiO2E6MDp7fXM6MjE6IgAqAGF0dHJpYnV0ZUNhc3RDYWNoZSI7YTowOnt9czoxMzoiACoAZGF0ZUZvcm1hdCI7TjtzOjEwOiIAKgBhcHBlbmRzIjthOjA6e31zOjE5OiIAKgBkaXNwYXRjaGVzRXZlbnRzIjthOjA6e31zOjE0OiIAKgBvYnNlcnZhYmxlcyI7YTowOnt9czoxMjoiACoAcmVsYXRpb25zIjthOjA6e31zOjEwOiIAKgB0b3VjaGVzIjthOjA6e31zOjEwOiJ0aW1lc3RhbXBzIjtiOjE7czoxMzoidXNlc1VuaXF1ZUlkcyI7YjowO3M6OToiACoAaGlkZGVuIjthOjA6e31zOjEwOiIAKgB2aXNpYmxlIjthOjA6e31zOjExOiIAKgBmaWxsYWJsZSI7YTowOnt9czoxMDoiACoAZ3VhcmRlZCI7YTowOnt9fXM6OToidGVzdF90eXBlIjtPOjE5OiJBcHBcTW9kZWxzXFRlc3RUeXBlIjozMDp7czoxMzoiACoAY29ubmVjdGlvbiI7czo1OiJteXNxbCI7czo4OiIAKgB0YWJsZSI7czoxMDoidGVzdF90eXBlcyI7czoxMzoiACoAcHJpbWFyeUtleSI7czoyOiJpZCI7czoxMDoiACoAa2V5VHlwZSI7czozOiJpbnQiO3M6MTI6ImluY3JlbWVudGluZyI7YjoxO3M6NzoiACoAd2l0aCI7YTowOnt9czoxMjoiACoAd2l0aENvdW50IjthOjA6e31zOjE5OiJwcmV2ZW50c0xhenlMb2FkaW5nIjtiOjA7czoxMDoiACoAcGVyUGFnZSI7aToxNTtzOjY6ImV4aXN0cyI7YjoxO3M6MTg6Indhc1JlY2VudGx5Q3JlYXRlZCI7YjowO3M6Mjg6IgAqAGVzY2FwZVdoZW5DYXN0aW5nVG9TdHJpbmciO2I6MDtzOjEzOiIAKgBhdHRyaWJ1dGVzIjthOjQ6e3M6MjoiaWQiO2k6MTtzOjQ6Im5hbWUiO3M6OToiTW9jayBFeGFtIjtzOjEwOiJjcmVhdGVkX2F0IjtzOjE5OiIyMDI0LTA1LTAxIDIwOjQ4OjA0IjtzOjEwOiJ1cGRhdGVkX2F0IjtzOjE5OiIyMDI0LTA1LTAxIDIwOjQ4OjA0Ijt9czoxMToiACoAb3JpZ2luYWwiO2E6NDp7czoyOiJpZCI7aToxO3M6NDoibmFtZSI7czo5OiJNb2NrIEV4YW0iO3M6MTA6ImNyZWF0ZWRfYXQiO3M6MTk6IjIwMjQtMDUtMDEgMjA6NDg6MDQiO3M6MTA6InVwZGF0ZWRfYXQiO3M6MTk6IjIwMjQtMDUtMDEgMjA6NDg6MDQiO31zOjEwOiIAKgBjaGFuZ2VzIjthOjA6e31zOjg6IgAqAGNhc3RzIjthOjA6e31zOjE3OiIAKgBjbGFzc0Nhc3RDYWNoZSI7YTowOnt9czoyMToiACoAYXR0cmlidXRlQ2FzdENhY2hlIjthOjA6e31zOjEzOiIAKgBkYXRlRm9ybWF0IjtOO3M6MTA6IgAqAGFwcGVuZHMiO2E6MDp7fXM6MTk6IgAqAGRpc3BhdGNoZXNFdmVudHMiO2E6MDp7fXM6MTQ6IgAqAG9ic2VydmFibGVzIjthOjA6e31zOjEyOiIAKgByZWxhdGlvbnMiO2E6MDp7fXM6MTA6IgAqAHRvdWNoZXMiO2E6MDp7fXM6MTA6InRpbWVzdGFtcHMiO2I6MTtzOjEzOiJ1c2VzVW5pcXVlSWRzIjtiOjA7czo5OiIAKgBoaWRkZW4iO2E6MDp7fXM6MTA6IgAqAHZpc2libGUiO2E6MDp7fXM6MTE6IgAqAGZpbGxhYmxlIjthOjA6e31zOjEwOiIAKgBndWFyZGVkIjthOjA6e319fXM6MTA6IgAqAHRvdWNoZXMiO2E6MDp7fXM6MTA6InRpbWVzdGFtcHMiO2I6MTtzOjEzOiJ1c2VzVW5pcXVlSWRzIjtiOjA7czo5OiIAKgBoaWRkZW4iO2E6MDp7fXM6MTA6IgAqAHZpc2libGUiO2E6MDp7fXM6MTE6IgAqAGZpbGxhYmxlIjthOjA6e31zOjEwOiIAKgBndWFyZGVkIjthOjA6e319fQ==', 1727900563);
 
 -- --------------------------------------------------------
 
@@ -1403,9 +1355,9 @@ CREATE TABLE `subjects` (
 --
 
 INSERT INTO `subjects` (`id`, `subject_code`, `exam_type_id`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'P1', 1, 'Paper 1', '2024-10-02 14:22:15', '2024-10-02 14:22:15'),
-(2, 'P2', 1, 'Paper 2', '2024-10-02 14:22:15', '2024-10-02 14:22:15'),
-(3, 'P3', 1, 'Paper 3', '2024-10-02 14:22:15', '2024-10-02 14:22:15'),
+(1, 'P1', 1, 'Paper 1', '2024-10-02 14:57:27', '2024-10-02 14:57:27'),
+(2, 'P2', 1, 'Paper 2', '2024-10-02 14:57:27', '2024-10-02 14:57:27'),
+(3, 'P3', 1, 'Paper 3', '2024-10-02 14:57:27', '2024-10-02 14:57:27'),
 (4, 'PE', 1, 'Practical Examination', '2024-09-19 16:49:29', '2024-09-19 16:49:29'),
 (5, 'PA', 1, 'Project Assessment', '2024-09-19 16:49:47', '2024-09-19 16:49:47');
 
@@ -1487,8 +1439,8 @@ CREATE TABLE `test_configs` (
 --
 
 INSERT INTO `test_configs` (`id`, `title`, `exam_type_id`, `test_category`, `total_mark`, `test_code_id`, `test_type_id`, `session`, `semester`, `daily_start_time`, `daily_end_time`, `duration`, `starting_mode`, `display_mode`, `question_administration`, `option_administration`, `versions`, `active_version`, `initiated_by`, `date_initiated`, `status`, `endorsement`, `pass_key`, `time_padding`, `allow_calc`, `created_at`, `updated_at`) VALUES
-(1, NULL, 1, 'Single Subject', 0, 1, 1, 2024, 2, NULL, NULL, 40, 'on login', 'single question', 'random', 'random', 1, 1, 1, '2024-09-24', 1, 'no', 'cbt', 2, 0, '2024-09-25 04:41:24', '2024-09-25 04:42:44'),
-(2, NULL, 1, 'Single Subject', 0, 2, 1, 2024, 2, NULL, NULL, 40, 'on login', 'single question', 'random', 'random', 1, 1, 1, '2024-09-24', 1, 'no', 'cbt', 2, 0, '2024-09-25 04:41:35', '2024-09-25 04:42:24');
+(1, 'P1', 1, 'Single Subject', 0, 1, 1, 2024, 2, NULL, NULL, 40, 'on login', 'single question', 'random', 'random', 1, 1, 1, '2024-09-24', 1, 'no', 'cbt', 2, 0, '2024-09-25 04:41:24', '2024-09-25 04:42:44'),
+(2, 'P1', 1, 'Single Subject', 0, 2, 1, 2024, 2, NULL, NULL, 40, 'on login', 'single question', 'random', 'random', 1, 1, 1, '2024-09-24', 1, 'no', 'cbt', 2, 0, '2024-09-25 04:41:35', '2024-09-25 04:42:24');
 
 -- --------------------------------------------------------
 
@@ -2357,13 +2309,13 @@ ALTER TABLE `attendance_remarks`
 -- AUTO_INCREMENT for table `candidates`
 --
 ALTER TABLE `candidates`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=268;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `candidate_subjects`
 --
 ALTER TABLE `candidate_subjects`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=377;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `centres`
@@ -2459,13 +2411,13 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
 
 --
 -- AUTO_INCREMENT for table `practical_examinations`
 --
 ALTER TABLE `practical_examinations`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `practical_questions`
@@ -2507,7 +2459,7 @@ ALTER TABLE `project_assessments`
 -- AUTO_INCREMENT for table `pull_statuses`
 --
 ALTER TABLE `pull_statuses`
-  MODIFY `⁠ id ⁠` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `⁠ id ⁠` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `question_banks`
@@ -2543,19 +2495,19 @@ ALTER TABLE `role_permissions`
 -- AUTO_INCREMENT for table `scheduled_candidates`
 --
 ALTER TABLE `scheduled_candidates`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=189;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `schedulings`
 --
 ALTER TABLE `schedulings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `scores`
 --
 ALTER TABLE `scores`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=176;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `states`
@@ -2621,7 +2573,7 @@ ALTER TABLE `test_types`
 -- AUTO_INCREMENT for table `time_controls`
 --
 ALTER TABLE `time_controls`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `topics`
