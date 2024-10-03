@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Http;
 class CBTApiController extends Controller
 {
     
+    public function pullCandidate(Request $request){
+        return $request;
+    }
+
+
     public function generateCandidatePicture(Request $request){
         $year = date('Y');
         $candidate_pictures = Candidate::candidateWithoutPassport($year);
