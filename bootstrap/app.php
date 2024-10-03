@@ -39,6 +39,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'candidate/test/question',
             'toolbox/candidate_image_upload/generate',
             'pull-picture',
+            'pull-candidate',
             'api/*'
         ]);
     })
