@@ -11,11 +11,19 @@ class CBTApiController extends Controller
 {
     
     public function pullCandidate(Request $request){
-        return $request;
+        $candidates = $request->graduands;
+        // return $candidates;
+        foreach(array_chunk($candidates, 500) as $key=>$candidate){
+            if(!Candidate::upsert($candidate, ['indexing'])) {
+                reset_auto_increment('candidates');
+            }
+        }
+        return "Updated";
     }
 
 
     public function generateCandidatePicture(Request $request){
+        set_time_limit(0);
         $year = date('Y');
         $candidate_pictures = Candidate::candidateWithoutPassport($year);
         $candidate_ids = $candidate_pictures['candidate_ids'];
