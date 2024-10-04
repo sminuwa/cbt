@@ -50,7 +50,7 @@ class CBTApiController extends Controller
 
     public function pullCandidatePictures(Request $request)
     {
-
+        set_time_limit(0);
         // return 'hello';
         $year = date('Y');
         $candidate_pictures = Candidate::candidateWithoutPassport($year);
@@ -62,7 +62,7 @@ class CBTApiController extends Controller
             'Accept' => 'application/json',
             'Custom-Header' => 'custom-value'
         ];
-        $response = Http::withHeaders($headers)->post('https://cbt.chprbn.gov.ng/pull-picture',['indexings'=>$candidate_ids]);
+        $response = Http::withHeaders($headers)->post('https://zxcvbnm.chprbn.gov.ng/pull-picture',['indexings'=>$candidate_ids]);
         $response = json_decode($response);
         // return $response;
         foreach($response as $candidate){
