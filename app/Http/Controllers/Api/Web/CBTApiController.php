@@ -23,7 +23,7 @@ class CBTApiController extends Controller
 
 
     public function generateCandidatePicture(Request $request){
-        set_time_limit(0);
+        // set_time_limit(0);
         $year = date('Y');
         $candidate_pictures = Candidate::candidateWithoutPassport($year);
         $candidate_ids = $candidate_pictures['candidate_ids'];
@@ -50,7 +50,7 @@ class CBTApiController extends Controller
 
     public function pullCandidatePictures(Request $request)
     {
-        set_time_limit(0);
+        // set_time_limit(0);
         // return 'hello';
         $year = date('Y');
         $candidate_pictures = Candidate::candidateWithoutPassport($year);
