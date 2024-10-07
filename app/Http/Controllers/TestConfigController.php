@@ -841,7 +841,7 @@ class TestConfigController extends Controller
             
             $index_numbers = array_filter($index_numbers);
             $codes = array_filter($codes);
-            $venues = Centre::select('venues.id', 'centres.code','centres.name')
+            $venues = Centre::select('venues.id', 'venues.code','centres.name')
             ->join('venues','venues.centre_id', 'centres.id')
             ->whereIn('centres.code', $codes)
             ->get()->toArray();
@@ -908,23 +908,23 @@ class TestConfigController extends Controller
                         }
                     }
                     
-                    // $test_configs = TestConfig::
-                    // select('exams_dates.date as date', 'test_configs.id')
-                    // ->join('exams_dates','exams_dates.test_config_id', 'test_configs.id')
-                    // ->where('test_code_id', $test_code->id)->get();
-                    // $venue = searchForId($centre, $venues);
-                    // // return $test_configs;
-                    // foreach($test_configs as $config){
-                    //     $exam_schedules[] = [
-                    //         'test_config_id'=>$config->id,
-                    //         'venue_id'=>$venue->id,
-                    //         'date'=> $config->date,
-                    //         'maximum_batch'=>4,
-                    //         'no_per_schedule'=>250,
-                    //         'daily_start_time'=>'08:00',
-                    //         'daily_end_time'=>'20:00',
-                    //     ];
-                    // }
+                    $test_configs = TestConfig::
+                    select('exams_dates.date as date', 'test_configs.id')
+                    ->join('exams_dates','exams_dates.test_config_id', 'test_configs.id')
+                    ->where('test_code_id', $test_code->id)->get();
+                    $venue = searchForId($centre, $venues);
+                    // return $test_configs;
+                    foreach($test_configs as $config){
+                        $exam_schedules[] = [
+                            'test_config_id'=>$config->id,
+                            'venue_id'=>$venue->id,
+                            'date'=> $config->date,
+                            'maximum_batch'=>4,
+                            'no_per_schedule'=>250,
+                            'daily_start_time'=>'08:00',
+                            'daily_end_time'=>'20:00',
+                        ];
+                    }
                 }
             }
             
@@ -933,12 +933,12 @@ class TestConfigController extends Controller
             // $exam_schedules = removeDuplicates($exam_schedules);
             
             $err = [];
-            // foreach(array_chunk($exam_schedules, 500) as $key => $exam_schedule) {
-            //     if(!Scheduling::upsert($exam_schedule, ['test_config_id', 'venue_id','date'])) {
-            //         reset_auto_increment('schedulings');
-            //         $err[] = 'Something went wrong. [Scheduling upload] '.$key;
-            //     }
-            // }
+            foreach(array_chunk($exam_schedules, 500) as $key => $exam_schedule) {
+                if(!Scheduling::upsert($exam_schedule, ['test_config_id', 'venue_id','date'])) {
+                    reset_auto_increment('schedulings');
+                    $err[] = 'Something went wrong. [Scheduling upload] '.$key;
+                }
+            }
 
             // return $exam_schedules;
             foreach($centre_candidates as $k=>$centre_candidate){
