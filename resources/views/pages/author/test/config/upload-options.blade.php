@@ -50,7 +50,7 @@
                             <div class="col-5 col-md-12 col-xl-5 col-lg-5">
                                 <div class="form-group">
                                     <label for="candidate_number">Candidate Number:</label>
-                                    <input class="form-control" type="text" name="candidate_number"
+                                    <input class="form-control select2" type="text" name="candidate_number"
                                            id="candidate_number" placeholder="Candidate Numbers (comma separated)"
                                            required>
                                 </div>
