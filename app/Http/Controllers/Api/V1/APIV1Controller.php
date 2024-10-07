@@ -193,8 +193,12 @@ class APIV1Controller extends Controller
     }
 
     public function pushExams(Request $request){
+<<<<<<< HEAD
 
         $request->session()->flush();
+=======
+        // $request->session()->flush();
+>>>>>>> a06c05721fbb37627545b179bc9faacee3d02a36
         // return $request->body['api_key'];
         $api_key =  $request->body['api_key'] ?? $request->header('api_key');
         $secretKey = $request->body['secret_key'] ?? $request->header('secret_key');
