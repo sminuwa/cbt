@@ -132,7 +132,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
 
             Route::name('summary.')->prefix('summary')->group(function () {
                 Route::get('/report', 'reportSummary')->name('reports');
-                Route::post('/report/generate', 'generateReport')->name('generate.report');
+                Route::match(['GET','POST'],'/report/generate', 'generateReport')->name('generate.report');
 
                 Route::get('/question', 'questionSummary')->name('question');
                 Route::post('/question/generate', 'generateQuestionSummary')->name('generate.question');
