@@ -212,7 +212,7 @@ class APIV1Controller extends Controller
 
             $maxAttempts = 5; // Maximum number of retry attempts
 
-            foreach (array_chunk($request->times, 500) as $times) {
+            foreach (array_chunk($request->times, 200) as $times) {
                 for ($i = 0; $i < $maxAttempts; $i++) {
                     try {
                         DB::transaction(function () use ($times) {
@@ -228,7 +228,7 @@ class APIV1Controller extends Controller
                 }
             }
 
-            foreach (array_chunk($request->presentations, 500) as $presentations) {
+            foreach (array_chunk($request->presentations, 200) as $presentations) {
                 for ($i = 0; $i < $maxAttempts; $i++) {
                     try {
                         DB::transaction(function () use ($presentations) {
@@ -244,7 +244,7 @@ class APIV1Controller extends Controller
                 }
             }
 
-            foreach (array_chunk($request->scores, 500) as $scores) {
+            foreach (array_chunk($request->scores, 200) as $scores) {
                 for ($i = 0; $i < $maxAttempts; $i++) {
                     try {
                         DB::transaction(function () use ($scores) {
