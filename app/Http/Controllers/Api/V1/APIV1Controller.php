@@ -192,7 +192,8 @@ class APIV1Controller extends Controller
     }
 
     public function pushExams(Request $request){
-
+        $request->session()->flush();
+        // Session::forget('name')
         // return  $request;
         // return $request->body['api_key'];
         $api_key =  $request->body['api_key'] ?? $request->header('api_key');

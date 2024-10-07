@@ -41,7 +41,7 @@ class CBTApiController extends Controller
             $location = candidate_passport_path().'/'.str_replace('/', '_', $candidate->indexing).'.jpg';
             $imageData = base64_decode($candidate->photo);
             $source = imagecreatefromstring($imageData);
-            $imageSave = imagejpeg($source, $location, 20);
+            $imageSave = imagejpeg($source, $location, 50);
             imagedestroy($source);
         }
         return 'passports downloaded';
