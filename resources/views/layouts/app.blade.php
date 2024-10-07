@@ -189,7 +189,12 @@
 <!-- Theme js-->
 <script src="{{ asset('candidate/assets/js/script.js') }}"></script>
 {{-- <script src="{{ asset('candidate/assets/js/theme-customizer/customizer.js') }}"></script> --}}
-
+<script>
+    $(".select2").select2({
+      placeholder: "Select...",
+    });
+// $(".select2").select2();
+</script>
 @yield('script')
 </body>
 </html>

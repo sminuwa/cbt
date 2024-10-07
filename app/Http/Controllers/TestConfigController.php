@@ -18,8 +18,10 @@ use App\Models\TestInvigilator;
 use App\Models\TestQuestion;
 use App\Models\TestSection;
 use App\Models\TestSubject;
+use App\Models\TestCode;
 use App\Models\ExamType;
 use App\Models\User;
+use App\Models\Centre;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -245,44 +247,7 @@ class TestConfigController extends Controller
         $schedules = Scheduling::with('venue')->where(['test_config_id' => $config_id])->get();
         return view('pages.author.test.config.upload-options', compact('config_id', 'schedules'));
     }
-    //    public function uploadSingle(Request $request)
-//    {
-//        try {
-//            $schedule_id = $request->schedule_id;
-//            $candidates = Candidate::select(['id', 'indexing'])->whereIn('indexing', '873r')->get();
-//            $subjects = TestSubject::where(['test_config_id' => $request->test_config_id])->pluck('subject_id');
-//            $schedules = CandidateSubject::where(['schedule_id' => $schedule_id])
-//                ->whereIn('scheduled_candidate_id', $candidates->pluck('id')->toArray())
-//                ->whereIn('subject_id', $subjects)
-//                ->get();
-//
-//            if (count($schedules))
-//                return back()->with(['success' => false, 'message' => 'Oops! Candidate(s) with this number: '
-//                    . $request->candidate_number . ' was already scheduled for this test']);
-//
-//            if (count($candidates) == 0)
-//                return back()->with(['success' => false, 'message' => 'Oops! Candidate(s) record(s) not found!']);
-//
-//            $records = [];
-//            $scheduled = [];
-//            $exam_type_id = Subject::find($subjects[0])->exam_type_id;
-//
-//            foreach ($candidates as $candidate) {
-//                foreach ($subjects as $subject_id) {
-//                    $records[] = [
-//                        'scheduled_candidate_id' => $candidate->id,
-//                        'schedule_id' => $request->schedule_id,
-//                        'subject_id' => $subject_id
-//                    ];
-//                }
-//            }
-//            CandidateSubject::upsert($records, ['scheduled_candidate_id', 'schedule_id', 'subject_id']);
-//
-//            return $this->updateBatches($schedule_id);
-//        } catch (Exception $e) {
-//            return back()->with(['success' => false, 'message' => $e->getMessage()]);
-//        }
-//    }
+    
     public function bulkUpload(Request $request)
     {
         $candidate_papers = [];
@@ -835,4 +800,400 @@ class TestConfigController extends Controller
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+
+    public function uploadAllCandidates(Request $request){
+        $exam_type_id = $request->exam_type_id ?? 1;
+        $candidate_papers = [];
+        // $schedule_id = $request->schedule_id;
+        // $test_config_id = $request->test_config_id;
+        // $test = TestConfig::exam()->where('test_configs.id', $test_config_id)->first();
+        // $schedule = Scheduling::where('id', $schedule_id)->first();
+        // return $test->exam_type_id;
+        $file = $request->file;
+        $sheets =  Excel::toArray(Upload::class, $file);
+        // return $centres;
+        $exam_papers = Subject::select('id', 'subject_code as code')->orderBy('subject_code', 'asc')->get()->toArray();
+        // $all_candidates = Candidate::select('id', 'index')->get()->toArray();
+        $codes = $scheduled_candidates = $candidates = $candidate_ids = $candidate_papers = $uploaded_papers = $errors = [];
+        foreach($sheets as $rows) {
+            if(empty($rows[0])) // if the sheet doesn't start at row 10 it means the sheet is empty
+                continue;
+            $title = $rows[0];
+            $institution_code = searchIndex($title, 'institution');
+            $indexing = searchIndex($title, 'indexing');
+            $papers = searchIndex($title, 'paper');
+            $cadre = searchIndex($title, 'cadre');
+            $remark = searchIndex($title, 'remark');
+            // return $title;
+            // get unique candidate indexing
+            foreach ($rows as $key => $value) {
+                if ($key < 1)
+                    continue;
+                $code = str_replace("'", '', $value[$institution_code]);
+                if (!in_array($code, $codes))
+                    $codes[] = $code;
+                $index_numbers[] = str_replace(' ', '', trim($value[$indexing]));
+                $uploaded_papers[] = [
+                    'indexing'=>$value[$indexing],
+                    'papers'=>trim($value[$papers])
+                ];
+            }
+            
+            $index_numbers = array_filter($index_numbers);
+            $codes = array_filter($codes);
+            $venues = Centre::select('venues.id', 'centres.code','centres.name')
+            ->join('venues','venues.centre_id', 'centres.id')
+            ->whereIn('centres.code', $codes)
+            ->get()->toArray();
+            $all_candidates = Candidate::select('candidates.id', 'candidates.indexing')
+            ->whereIn('candidates.indexing', $index_numbers)
+            ->get()->toArray();
+            $all_subjects = Subject::select('id', 'subject_code as code')->get()->toArray();
+            $test_codes = TestCode::select('id', 'name')->get()->toArray();
+            // $tests = TestConfig::select('id', 'name')->get()->toArray();
+            // return $venues;
+            // return $test_codes;
+            
+            // return $codes;
+            // get cadres of each centres
+
+            //generate distinct centres for each cadre
+            $jchew = $chew = $cho = $bchs = $centre_cadres = [];
+            foreach ($rows as $key => $value) {
+                if ($key < 1)
+                    continue;
+                $code = str_replace("'", '', $value[$institution_code]);
+                $cad = $value[$cadre];
+                if($cad == 'JCHEW'){
+                    if (!in_array($code, $jchew))
+                        $jchew[] = $code;
+                }
+                if($cad == 'CHEW'){
+                    if (!in_array($code, $chew))
+                        $chew[] = $code;
+                }
+                if($cad == 'CHO'){
+                    if (!in_array($code, $cho))
+                        $cho[] = $code;
+                }
+                if($cad == 'BCHS'){
+                    if (!in_array($code, $bchs))
+                        $bchs[] = $code;
+                }
+                // return $centre_cadres;
+            }
+            $centre_cadres = [
+                'JCHEW'=>$jchew,
+                'CHEW'=>$chew,
+                'CHO'=>$cho,
+                'BCHS'=>$bchs
+            ];
+
+            //creating test schedules for all the institutions
+            // return $centre_cadres;
+            $new_codes = [];
+            $exam_schedules = $schedule_params = $centre_candidates = $centre_candidate_papers = [];
+            foreach($centre_cadres as $key=>$centre_cadre){
+                $test_code = searchForId($key, $test_codes);
+                foreach($centre_cadre as $centre){
+                    //get candidates records per centre
+                    foreach ($rows as $key => $value) {
+                        if ($key < 1)
+                            continue;
+                        // if($centre_candidates[$code])
+                        //     continue;
+                        $code = str_replace("'", '', $value[$institution_code]);
+                        if($code == $centre){
+                            $centre_candidates[$code][] = $value[$indexing];
+                        }
+                    }
+                    
+                    // $test_configs = TestConfig::
+                    // select('exams_dates.date as date', 'test_configs.id')
+                    // ->join('exams_dates','exams_dates.test_config_id', 'test_configs.id')
+                    // ->where('test_code_id', $test_code->id)->get();
+                    // $venue = searchForId($centre, $venues);
+                    // // return $test_configs;
+                    // foreach($test_configs as $config){
+                    //     $exam_schedules[] = [
+                    //         'test_config_id'=>$config->id,
+                    //         'venue_id'=>$venue->id,
+                    //         'date'=> $config->date,
+                    //         'maximum_batch'=>4,
+                    //         'no_per_schedule'=>250,
+                    //         'daily_start_time'=>'08:00',
+                    //         'daily_end_time'=>'20:00',
+                    //     ];
+                    // }
+                }
+            }
+            
+        
+            
+            // $exam_schedules = removeDuplicates($exam_schedules);
+            
+            $err = [];
+            // foreach(array_chunk($exam_schedules, 500) as $key => $exam_schedule) {
+            //     if(!Scheduling::upsert($exam_schedule, ['test_config_id', 'venue_id','date'])) {
+            //         reset_auto_increment('schedulings');
+            //         $err[] = 'Something went wrong. [Scheduling upload] '.$key;
+            //     }
+            // }
+
+            // return $exam_schedules;
+            foreach($centre_candidates as $k=>$centre_candidate){
+                $p1 = $p2 = $p3 = $pe = [];
+                $centre_candidates[$k] = array_unique($centre_candidate);
+                foreach($centre_candidates[$k] as $candidate){
+                    $pp = searchForId($candidate, $uploaded_papers);
+                    $all_papers = array_flip(explode(',', $pp->papers));
+                    // if(in_array('PA',$all_papers))
+                    //     unset($all_papers[array_search('PA', $all_papers)]);
+                    if(isset($all_papers['P1'])) $p1[] = $candidate;
+                    if(isset($all_papers['P2'])) $p2[] = $candidate;
+                    if(isset($all_papers['P3'])) $p3[] = $candidate;
+                    if(isset($all_papers['PE'])) $pe[] = $candidate;
+                }
+                $centre_candidate_papers[$k][] = [
+                    'P1' => $p1,
+                    'P2' => $p2,
+                    'P3' => $p3,
+                    'PE' => $pe,
+                ];
+            }
+
+            // $centre_candidate_papers = array_filter($centre_candidate_papers);
+            // return $centre_candidate_papers;
+            // uploading the schedules
+            
+
+            if(count($err) == 0){
+                reset_auto_increment('schedulings');
+                $get_schedules = Scheduling::
+                select('schedulings.id', 'schedulings.test_config_id', 'venue_id', 'schedulings.date','subjects.subject_code as code', 'test_subjects.id as test_subject_id','test_subjects.subject_id')
+                ->join('test_configs', 'test_configs.id', 'schedulings.test_config_id')
+                ->join('test_subjects', 'test_subjects.test_config_id', 'test_configs.id')
+                ->join('subjects', 'subjects.id', 'test_subjects.subject_id')
+                ->get()->toArray();
+                // return $get_schedules;
+                // return $centre_candidate_papers;
+                ini_set('memory_limit', '256M');
+                foreach($centre_candidate_papers as $code=>$centre_candidate_paper){
+                    $v = searchForId($code, $venues);
+                    if(!$v) // skip if center not available.
+                        continue;
+                    foreach($centre_candidate_paper as $candidate_paper){
+                        foreach($candidate_paper as $p=>$paper){
+                            $s = searchForId($p, $all_subjects);
+                            foreach($paper as $indexing){
+                                $candidate = SearchForId($indexing, $all_candidates);
+                                if(!$candidate)
+                                    continue;
+                                $test_subject_id = 15;
+                                $search_items = ['subject_id'=>$s->id,'test_subject_id'=>$test_subject_id, "venue_id" => $v->id];
+                                $filtered_schedules = search_multiple_param($search_items, $get_schedules);
+                                // return $filtered_schedules;
+                                foreach($filtered_schedules as $schedule){
+                                    $schedule_ids[]=$schedule->id;
+                                    $candidate_ids[]=$candidate->id;
+                                    $scheduled_candidates[] = [
+                                        'exam_type_id' => $exam_type_id,
+                                        'schedule_id' => $schedule->id,
+                                        'candidate_id' => $candidate->id,
+                                    ];
+                                    $candidate_subjects[] = [
+                                        'schedule_id'=>$schedule->id,
+                                        'subject_id' => $s->id,
+                                        'candidate_id'=> $candidate->id,
+                                        'test_subject_id'=> $test_subject_id,
+                                        'exam_type_id'=>$exam_type_id
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $scheduled_candidates = removeDuplicatesCandidateSchedule($scheduled_candidates);
+                foreach(array_chunk($scheduled_candidates, 500) as $key => $scheduled_candidate) {
+                    if(!ScheduledCandidate::upsert($scheduled_candidate, ['schedule_id','candidate_id', 'exam_type_id'])) {
+                        reset_auto_increment('scheduled_candidates');
+                        $err[] = 'Something went wrong. [Scheduled candidates chunk upload] '.$key;
+                    }
+                }
+
+                // return $scheduled_candidates;
+                $all_scheduled_candidates = ScheduledCandidate::
+                select('id', 'schedule_id', 'candidate_id')
+                ->get()->toArray();
+                //preparing the candidate_subjects
+                $candidate_subject_array = [];
+                foreach($candidate_subjects as $candidate_subject){
+                    $array = [
+                        'schedule_id'=>$candidate_subject['schedule_id'],
+                         'candidate_id'=>$candidate_subject['candidate_id']
+                    ];
+                    $schedule_candy = ScheduledCandidate::where([
+                        'schedule_id'=>$candidate_subject['schedule_id'],
+                        'candidate_id'=>$candidate_subject['candidate_id']
+                    ])->first();
+
+                    $candidate_papers[] = [
+                        'schedule_id'=>$candidate_subject['schedule_id'],
+                        'scheduled_candidate_id' => $schedule_candy->id,
+                        'subject_id' => $candidate_subject['subject_id'],
+                        'add_index'=>null,
+                        'enabled'=>1
+                    ];
+                }
+
+                foreach(array_chunk($candidate_papers, 500) as $key => $candidate_paper) {
+                    if(!CandidateSubject::upsert($candidate_paper, ['schedule_id', 'scheduled_candidate_id','subject_id'])) {
+                        reset_auto_increment('candidate_subjects');
+                        $err[] = 'Something went wrong. [Graduands chunk upload]';
+                    }
+                }
+
+                return $candidate_papers;
+
+
+
+                // return $candidate_subjects;
+                return $all_scheduled_candidates;
+
+                return $scheduled_candidates;
+
+                // return $centre_candidate_paper;
+                foreach($get_schedules as $get_schedule){
+                    $p =  explode(',',$uploaded_papers[$get_schedule->candidate_id]);
+                    foreach($p as $exam_paper){
+                        if(!$ep = searchForId($exam_paper, $exam_papers))
+                            continue;
+                        $candidate_papers[] = [
+                            'schedule_id'=>$schedule->id,
+                            'scheduled_candidate_id' => $get_schedule->id,
+                            'subject_id' => $ep->id,
+                            'add_index'=>null,
+                            'enabled'=>1
+                        ];
+                    }
+    
+                }
+                // return $candidate_papers;
+                //                return $graduand_papers;
+                $err = [];
+                
+                if(count($err) == 0){
+                    reset_auto_increment('scheduled_candidates');
+                }else{
+                    $errors[] = 'Something went wrong while updating papers records for candidates.';
+                }
+            }else {
+                $errors[] = 'Something went wrong while inserting candidate records.';
+            }
+            
+            
+
+            // preparing for candidate schedules
+            foreach($centre_candidates as $c=>$centre_candidate){
+                foreach($centre_candidate as $candidate){
+                    $cdd = searchForId($candidate, $all_candidates);
+                    $pp = searchForId($candidate, $uploaded_papers);
+                    $scheduled_candidates[] = [
+                        'exam_type_id' => $exam_type_id,
+                        'schedule_id' => 1,
+                        'candidate_id' => $cdd->id,
+                    ];
+                }
+                
+            }
+
+            return $scheduled_candidates;
+            
+            foreach ($rows as $key => $value) {
+                if ($key < 1) // skip first row which is considered a title row for the uploaded Excel file.
+                    continue;
+                if(empty($value[$indexing]))
+                    continue;
+                $cdd = searchForId($value[$indexing], $all_candidates);
+                $pp = searchForId($value[$indexing], $uploaded_papers);
+                
+                if (!$cdd) //skip if institution code is not found in the institution table
+                    continue;
+                return $cdd;
+                $candidate_ids[] = $cdd->id;
+                $uploaded_papers[trim($cdd->id)] = trim($value[$papers]);
+                $scheduled_candidates[] = [
+                    'exam_type_id' => $test->exam_type_id,
+                    'schedule_id' => $schedule->id,
+                    'candidate_id' => $cdd->id,
+                ];
+
+            }
+
+            
+
+        }
+
+        // return $candidate_papers;
+        
+        DB::beginTransaction();
+        $err = [];
+        foreach(array_chunk($scheduled_candidates, 500) as $key => $scheduled_candidate) {
+            if(!ScheduledCandidate::upsert($scheduled_candidate, ['candidate_id', 'exam_type_id'])) {
+                reset_auto_increment('scheduled_candidates');
+                $err[] = 'Something went wrong. [Scheduled candidates chunk upload] '.$key;
+            }
+        }
+
+        if(count($err) == 0){
+            reset_auto_increment('scheduled_candidates');
+            $get_schedules = ScheduledCandidate::whereIn('candidate_id', $candidate_ids)->where(['schedule_id'=> $schedule->id])->get();
+            
+            foreach($get_schedules as $get_schedule){
+                $p =  explode(',',$uploaded_papers[$get_schedule->candidate_id]);
+                foreach($p as $exam_paper){
+                    if(!$ep = searchForId($exam_paper, $exam_papers))
+                        continue;
+                    $candidate_papers[] = [
+                        'schedule_id'=>$schedule->id,
+                        'scheduled_candidate_id' => $get_schedule->id,
+                        'subject_id' => $ep->id,
+                        'add_index'=>null,
+                        'enabled'=>1
+                    ];
+                }
+
+            }
+            // return $candidate_papers;
+            //                return $graduand_papers;
+            $err = [];
+            foreach(array_chunk($candidate_papers, 500) as $key => $candidate_paper) {
+                if(!CandidateSubject::upsert($candidate_paper, ['subject_id', 'scheduled_candidate_id','subject_id'])) {
+                    reset_auto_increment('candidate_subjects');
+                    $err[] = 'Something went wrong. [Graduands chunk upload]';
+                }
+            }
+            if(count($err) == 0){
+                reset_auto_increment('scheduled_candidates');
+            }else{
+                $errors[] = 'Something went wrong while updating papers records for candidates.';
+            }
+        }else {
+            $errors[] = 'Something went wrong while inserting candidate records.';
+        }
+        $success = count($scheduled_candidates);
+        $scheduled = $success;
+        $missing = [];
+        
+        if(empty($errors)){
+            // DB::commit();
+            return view('pages.author.test.config.upload-report', compact('success', 'scheduled', 'missing'));
+        }else{
+            // DB::rollback();
+            return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    
 }

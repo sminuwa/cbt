@@ -64,6 +64,82 @@ function searchForId($search_value, $array) {
     return null;
 }
 
+
+function searchArrayWithMultipleParameters($array, $conditions) {
+    return array_filter($array, function($item) use ($conditions) {
+        foreach ($conditions as $key => $value) {
+            if (!isset($item[$key]) || $item[$key] != $value) {
+                return false; // If any condition is not met, return false
+            }
+        }
+        return true; // All conditions are met
+    });
+}
+
+function search_multiple_param($search_list, $array) {
+    // Create the result array
+    $result = [];
+    // Iterate over each array element
+    foreach ($array as $value) {
+        // Check if all search conditions match
+        $match = true;
+        foreach ($search_list as $k => $v) {
+            // If any condition is not met, mark match as false
+            if (!isset($value[$k]) || $value[$k] != $v) {
+                $match = false;
+                break;
+            }
+        }
+        // If all conditions are met, add to result
+        if ($match) {
+            // Cast the array to an object
+            $result[] = (object) $value;
+        }
+    }
+
+    // Return result as an object
+    return $result;
+}
+
+
+function removeDuplicates($array) {
+    $tempArray = [];
+    $uniqueArray = [];
+
+    foreach ($array as $item) {
+        // Create a unique key based on test_config_id, venue_id, and date
+        // $search_items = implode('-',$param);
+        $uniqueKey = $item['test_config_id'] . '-' . $item['venue_id'] . '-' . $item['date'];
+
+        // If the key is not in the temp array, add it and include the item in the result
+        if (!isset($tempArray[$uniqueKey])) {
+            $tempArray[$uniqueKey] = true;
+            $uniqueArray[] = $item;
+        }
+    }
+
+    return $uniqueArray;
+}
+
+function removeDuplicatesCandidateSchedule($array) {
+    $tempArray = [];
+    $uniqueArray = [];
+
+    foreach ($array as $item) {
+        // Create a unique key based on test_config_id, venue_id, and date
+        // $search_items = implode('-',$param);
+        $uniqueKey = $item['candidate_id'] . '-' . $item['schedule_id'] . '-' . $item['exam_type_id'];
+
+        // If the key is not in the temp array, add it and include the item in the result
+        if (!isset($tempArray[$uniqueKey])) {
+            $tempArray[$uniqueKey] = true;
+            $uniqueArray[] = $item;
+        }
+    }
+
+    return $uniqueArray;
+}
+
 function jResponse($status = true, $message = '', $data = []) {
     return response()->json(['status'=>$status, 'message'=>$message, 'data'=>$data]);
 }

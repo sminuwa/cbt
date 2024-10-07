@@ -5,76 +5,77 @@
 @endsection
 @section('content')
     <div class="row">
-        <x-head.tinymce-config/>
-        <div class="row patient-graph-col">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="row">
-                            <div>
-                                <h4 class="card-title d-flex justify-content-between">
-                                    <span>Report Summary</span>
-                                </h4>
-                            </div>
+        {{-- <x-head.tinymce-config/> --}}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div>
+                            <h4 class="card-title d-flex justify-content-between">
+                                <span>Report Summary</span>
+                            </h4>
                         </div>
                     </div>
-                    <div class="card-body pt-4">
-                        <form id="preview-form" method="post">
-                            @csrf
-                            <div class="row pb-3 pt-2">
-                                <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                    <div class="form-group">
-                                        <label for="test_type_id">Year:</label>
-                                        <select class="form-control form-select" name="year" id="year" required>
-                                            <option value="">Select Year</option>
-                                            @foreach($years as $year)
-                                                <option value="{{$year}}">{{ $year }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                    <div class="form-group">
-                                        <label for="year">Test Type:</label>
-                                        <select class="form-control form-select" name="type_id" id="type_id" required>
-                                            <option value="">Select Test Type</option>
-                                            @foreach(TestType::orderBy('name')->get() as $type)
-                                                <option value="{{$type->id}}">{{ $type->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                    <div class="form-group">
-                                        <label for="year">Cadre/Programme:</label>
-                                        <select class="form-control form-select" name="code_id" id="code_id" required>
-                                            <option value="">Select Cadre</option>
-                                            @foreach(TestCode::orderBy('name')->get() as $code)
-                                                <option value="{{$code->id}}">{{ $code->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                    <div class="form-group">
-                                        <label for="test_code_id">Test:</label>
-                                        <select class="form-control form-select" name="test_config_id" id="test_id"
-                                                required>
-                                            <option value="">Select</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-6 col-lg-4 col-xl-4">
-                                    <input type="submit" class="btn btn-info text-light mt-4" value="Generate"/>
+                </div>
+                <div class="card-body pt-4">
+                    <form id="preview-form" method="post">
+                        @csrf
+                        <div class="row">
+                            <div class="col-12 col-md-12 col-lg-12 col-xl-12 mb-3">
+                                <div class="form-group">
+                                    <label for="centre_id">Centre:</label>
+                                    <select class="form-control select2" name="centre_id" id="centre_id" required>
+                                        <option value="">Select centre</option>
+                                        @foreach($centres as $centre)
+                                            <option value="{{ $centre->id }}">{{ $centre->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
-                        </form>
-                    </div>
+                            <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                                <div class="form-group">
+                                    <label for="test_type_id">Year:</label>
+                                    <select class="form-control select2" name="year" id="year" required>
+                                        <option value="">Select Year</option>
+                                        @foreach($years as $year)
+                                            <option value="{{$year}}">{{ $year }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                                <div class="form-group">
+                                    <label for="year">Test Type:</label>
+                                    <select class="form-control select2" name="type_id" id="type_id" required>
+                                        <option value="">Select Test Type</option>
+                                        @foreach(TestType::orderBy('name')->get() as $type)
+                                            <option value="{{$type->id}}">{{ $type->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                                <div class="form-group">
+                                    <label for="year">Cadre/Programme:</label>
+                                    <select class="form-control select2" name="code_id" id="code_id" required>
+                                        <option value="">Select Cadre</option>
+                                        @foreach(TestCode::orderBy('name')->get() as $code)
+                                            <option value="{{$code->id}}">{{ $code->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                                <input type="submit" class="btn btn-info text-light mt-4" value="Generate"/>
+                            </div>
+                        </div>
+                    </form>
                 </div>
+            </div>
 
-                <div class="card card-table">
-                    <div id="report-div" class="card-body"></div>
-                </div>
+            <div class="card card-table">
+                <div id="report-div" class="card-body"></div>
             </div>
         </div>
     </div>
@@ -82,8 +83,8 @@
 
 @section('script')
     <!-- Datatables JS -->
-    <script src="{{ asset('assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/datatables.min.js') }}"></script>
+    {{-- <script src="{{ asset('assets/plugins/datatables/jquery.dataTables.min.js') }}"></script> --}}
+    {{-- <script src="{{ asset('assets/plugins/datatables/datatables.min.js') }}"></script> --}}
     <script>
         $(function () {
             $('#type_id, #code_id, #year').on('change', function () {
@@ -108,23 +109,17 @@
                     success:function(response){
                         console.log(response)
                         $('#report-div').html(response)
+                        $('.display').DataTable({
+                            responsive: true,
+                            dom: "Bfrtip",
+                            buttons: ["copyHtml5", "excelHtml5", "csvHtml5", "pdfHtml5"],
+                        });
                     },
                     error:function(err, hrx){
                         console.log(err)
                     }
                 })
-                // $.post('{{ route('admin.reports.summary.generate.report') }}', $(this).serialize(), function (response) {
-                //     //  console.log(response);
-                //     //  return
-                //     $('#report-div').html(response)
-                //     // $('#report').DataTable({
-                //     //     layout: {
-                //     //         topStart: {
-                //     //             buttons: ['copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5']
-                //     //         }
-                //     //     }
-                //     // })
-                // })
+                
             })
         })
     </script>
