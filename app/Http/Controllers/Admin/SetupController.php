@@ -485,9 +485,9 @@ class SetupController extends Controller
         // return $response['status'];
         // if ($response->successful()) {
         if ($response['status']) {
-            // TimeControl::where('pushed',0)->update(['pushed'=>1]);
-            // Presentation::where('pushed',0)->update(['pushed'=>1]);
-            // Score::where('pushed',0)->update(['pushed'=>1]);
+            TimeControl::where('pushed',0)->update(['pushed'=>1]);
+            Presentation::where('pushed',0)->update(['pushed'=>1]);
+            Score::where('pushed',0)->update(['pushed'=>1]);
             return response()->json(['success' => true, 'message' => 'Download Successful'], 200);
         }
 

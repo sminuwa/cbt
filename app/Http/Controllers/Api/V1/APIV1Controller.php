@@ -29,8 +29,6 @@ use App\Models\Venue;
 use App\Models\Topic;
 use Illuminate\Http\Request;
 use ZipArchive;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 
 class APIV1Controller extends Controller
 {
@@ -193,7 +191,7 @@ class APIV1Controller extends Controller
     }
 
     public function pushExams(Request $request){
-        // $request->session()->flush();
+
         // return $request->body['api_key'];
         $api_key =  $request->body['api_key'] ?? $request->header('api_key');
         $secretKey = $request->body['secret_key'] ?? $request->header('secret_key');
@@ -208,56 +206,6 @@ class APIV1Controller extends Controller
             foreach(array_chunk($request->scores, 200) as  $scores) {
                 Score::upsert($scores,['scheduled_candidate_id','test_config_id','question_bank_id','answer_option_id']);
             }
-
-            // $maxAttempts = 5; // Maximum number of retry attempts
-
-            // foreach (array_chunk($request->times, 200) as $times) {
-            //     for ($i = 0; $i < $maxAttempts; $i++) {
-            //         try {
-            //             DB::transaction(function () use ($times) {
-            //                 TimeControl::upsert($times, ['test_config_id', 'scheduled_candidate_id']);
-            //             });
-            //             break; // Break out of the retry loop if successful
-            //         } catch (\Exception $e) {
-            //             if ($e->getCode() !== 1213) { // If the exception is not a deadlock error, rethrow it
-            //                 throw $e;
-            //             }
-            //             usleep(100000); // Sleep for 100ms before retrying
-            //         }
-            //     }
-            // }
-
-            // foreach (array_chunk($request->presentations, 200) as $presentations) {
-            //     for ($i = 0; $i < $maxAttempts; $i++) {
-            //         try {
-            //             DB::transaction(function () use ($presentations) {
-            //                 Presentation::upsert($presentations, ['scheduled_candidate_id', 'test_config_id', 'test_section_id', 'question_bank_id']);
-            //             });
-            //             break;
-            //         } catch (\Exception $e) {
-            //             if ($e->getCode() !== 1213) {
-            //                 throw $e;
-            //             }
-            //             usleep(100000);
-            //         }
-            //     }
-            // }
-
-            // foreach (array_chunk($request->scores, 200) as $scores) {
-            //     for ($i = 0; $i < $maxAttempts; $i++) {
-            //         try {
-            //             DB::transaction(function () use ($scores) {
-            //                 Score::upsert($scores, ['scheduled_candidate_id', 'test_config_id', 'question_bank_id', 'answer_option_id']);
-            //             });
-            //             break;
-            //         } catch (\Exception $e) {
-            //             if ($e->getCode() !== 1213) {
-            //                 throw $e;
-            //             }
-            //             usleep(100000); // Retry after a brief pause
-            //         }
-            //     }
-            // }
 
             return response()->json(['status'=>1,'data'=>1]);
         }
