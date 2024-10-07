@@ -29,6 +29,9 @@
                         <a data-bs-toggle="modal" href="#add_new_config" class="btn btn-primary btn-xs px-3">
                             <i class="las la-plus text-white"></i>Add
                         </a>
+                        <a data-bs-toggle="modal" href="#upload-all-candidate" class="btn btn-primary btn-xs px-3">
+                            <i class="las la-plus text-white"></i>Upload All Candidates
+                        </a>
                     </div>
                 </div>
                 <div class="card-body">
@@ -276,6 +279,33 @@
                     <div class="modal-footer submit-section text-end">
                         <button type="submit" class="btn btn-sm btn-info submit-btn text-light">Create Test
                         </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade custom-modal" id="upload-all-candidate">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload All Candidates</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <form action="{{ route('admin.test.config.upload.all.candidate') }}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12 col-md-12">
+                                <div class="mb-3">
+                                    <label for="file" class="mb-2">Choose file...</label>
+                                    <input class="form-control" type="file" id="file" name="file" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer submit-section text-end">
+                        <button type="submit" class="btn btn-sm btn-info submit-btn text-light">Upload</button>
                     </div>
                 </form>
             </div>

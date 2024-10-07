@@ -95,6 +95,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
             Route::get('/{config}/manage/users/remove/invigilator/{id}', [TestConfigController::class, 'removeInvigilator'])->name('manage.users.remove.invigilator');
             Route::post('/manage/users/add/previewer', [TestConfigController::class, 'addPreviewer'])->name('manage.users.add.previewer');
             Route::get('/{config}/manage/users/remove/previewer/{id}', [TestConfigController::class, 'removePreviewer'])->name('manage.users.remove.previewer');
+            Route::POST('/upload-all-candidates',[TestConfigController::class,'uploadAllCandidates'])->name('upload.all.candidate');
         });
     });
 

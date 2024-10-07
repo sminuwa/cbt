@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Candidate;
+use App\Models\Centre;
 use App\Models\Score;
 use App\Models\Subject;
 use App\Models\TestConfig;
 use App\Models\TestQuestion;
 use App\Models\TestSubject;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -27,7 +29,8 @@ class ReportController extends Controller
     public function reportSummary()
     {
         $years = TestConfig::select('session')->groupBy('session')->orderBy('session', 'desc')->get()->pluck('session');
-        return view('pages.admin.reports.report-summary', compact('years'));
+        $centres = Centre::orderBy('name','asc')->get();
+        return view('pages.admin.reports.report-summary', compact('years', 'centres'));
     }
 
     public function generateReport(Request $request)
@@ -35,76 +38,123 @@ class ReportController extends Controller
         try {
             // return  $request;
             $subjects = Subject::distinct()->pluck('subject_code')->toArray();
-            // $subjects = Subject::all();
+            $subjects = Subject::all();
+            $centre_id = $request->centre_id;
+            $year = $request->year;
+            $code_id = $request->code_id;
+            $type_id = $request->type_id;
             // // return $subjects;
-            // $titles = $scores = $candidates = $results = [];
-            // foreach($subjects as $subject){
-            //     $titles[$subject->id] = $subject->subject_code;
-            // }
-            // $scores = Score::selectRaw("
-            //     (
-            //         SELECT CONCAT(surname,' ', firstname,' ', IFNULL(other_names, ''))
-            //         FROM candidates 
-            //         WHERE candidates.id = scheduled_candidates.candidate_id
-            //         LIMIT 1
-            //     ) as fullname,
-            //     (
-            //         SELECT indexing
-            //         FROM candidates 
-            //         WHERE candidates.id = scheduled_candidates.candidate_id
-            //         LIMIT 1
-            //     ) as indexing,
-            //     scheduled_candidate_id,
-            //     candidate_id,
-            //     test_config_id,
-            //     sum(point_scored) as score
-            // ")
-            // ->join('scheduled_candidates','scheduled_candidates.id', 'scores.scheduled_candidate_id')
-            // ->groupBy('scheduled_candidate_id')->get();
+            $titles = $scores = $candidates = $results = [];
+            foreach($subjects as $subject){
+                $titles[$subject->id] = $subject->subject_code;
+            }
+            $candidates = Candidate::selectRaw("
+                CONCAT(candidates.surname,' ', candidates.firstname,' ', IFNULL(candidates.other_names, '')) as fullname,
+                candidates.indexing as indexing,
+                scheduled_candidates.id as scheduled_candidate_id,
+                candidate_id,
+                test_configs.id as test_config_id,
+                centres.name as centre,
+                (
+                    SELECT sum(s.point_scored) 
+                    FROM scores s
+                    JOIN scheduled_candidates sc ON sc.id = s.scheduled_candidate_id
+                    JOIN candidates c ON c.id = sc.candidate_id
+                    JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
+                    JOIN subjects sj ON sj.id = cs.subject_id
+                    WHERE c.id = candidates.id
+                    AND sj.subject_code = 'P1'
+                ) as P1,
+                (
+                    SELECT sum(s.point_scored) 
+                    FROM scores s
+                    JOIN scheduled_candidates sc ON sc.id = s.scheduled_candidate_id
+                    JOIN candidates c ON c.id = sc.candidate_id
+                    JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
+                    JOIN subjects sj ON sj.id = cs.subject_id
+                    WHERE c.id = candidates.id
+                    AND sj.subject_code = 'P2'
+                ) as P2,
+                (
+                    SELECT sum(s.point_scored) 
+                    FROM scores s
+                    JOIN scheduled_candidates sc ON sc.id = s.scheduled_candidate_id
+                    JOIN candidates c ON c.id = sc.candidate_id
+                    JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
+                    JOIN subjects sj ON sj.id = cs.subject_id
+                    WHERE c.id = candidates.id
+                    AND sj.subject_code = 'P3'
+                ) as P3,
+                (
+                    SELECT sum(pe.score) 
+                    FROM practical_examinations pe
+                    WHERE pe.candidate_id = candidates.id
+                ) AS PE,
+                (
+                    SELECT sum(pa.score) 
+                    FROM project_assessments pa
+                    WHERE pa.candidate_id = candidates.id
+                ) AS PA
+
+            ")
+            ->join('scheduled_candidates','scheduled_candidates.candidate_id', 'candidates.id')
+            ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', 'scheduled_candidates.id')
+            ->join('schedulings', 'schedulings.id', 'scheduled_candidates.schedule_id')
+            ->join('test_configs','test_configs.id', 'schedulings.test_config_id')
+            ->join('venues','venues.id', 'schedulings.venue_id')
+            ->join('centres','centres.id', 'venues.centre_id')    
+            ->where([
+                'centres.id'=>$centre_id,
+                'candidates.exam_year'=>$year,
+                'test_configs.test_code_id'=>$code_id,
+                'test_configs.test_type_id'=>$type_id
+            ])
+            ->groupBy('candidates.id')
+            ->get();
 
             // $candidates = Candidate::all();
-            // // return $candidates;
-            // // return $scores;
+            // return $candidates;
+            // return $scores;
             // // return $titles;
 
-            $candidates = Candidate::select('candidates.indexing', 'candidates.firstname', 'candidates.surname', 'candidates.other_names')
-                ->join('scheduled_candidates', 'candidates.id', '=', 'scheduled_candidates.candidate_id')
-                ->join('candidate_subjects', 'scheduled_candidates.id', '=', 'candidate_subjects.scheduled_candidate_id')
-                ->join('subjects', 'candidate_subjects.subject_id', '=', 'subjects.id')
-                ->join('scores', 'scores.scheduled_candidate_id', '=', 'scheduled_candidates.id')
-                ->join('question_banks', 'scores.question_bank_id', '=', 'question_banks.id')
-                ->join('test_configs', 'scores.test_config_id', '=', 'test_configs.id')
-                ->where('test_config_id', $request->test_config_id)
-                ->groupBy('candidates.indexing')
-                ->get();
+            // $candidates = Candidate::select('candidates.indexing', 'candidates.firstname', 'candidates.surname', 'candidates.other_names')
+            //     ->join('scheduled_candidates', 'candidates.id', '=', 'scheduled_candidates.candidate_id')
+            //     ->join('candidate_subjects', 'scheduled_candidates.id', '=', 'candidate_subjects.scheduled_candidate_id')
+            //     ->join('subjects', 'candidate_subjects.subject_id', '=', 'subjects.id')
+            //     ->join('scores', 'scores.scheduled_candidate_id', '=', 'scheduled_candidates.id')
+            //     ->join('question_banks', 'scores.question_bank_id', '=', 'question_banks.id')
+            //     ->join('test_configs', 'scores.test_config_id', '=', 'test_configs.id')
+            //     ->where('test_config_id', $request->test_config_id)
+            //     ->groupBy('candidates.indexing')
+            //     ->get();
 
             // return $candidates;
 
-            $reports = [];
-            foreach ($candidates as $candidate) {
-                $candidateData = [
-                    'indexing' => $candidate->indexing,
-                    'surname' => $candidate->surname,
-                    'firstname' => $candidate->firstname,
-                    'other_names' => $candidate->other_names,
-                ];
+            // $reports = [];
+            // foreach ($candidates as $candidate) {
+            //     $candidateData = [
+            //         'indexing' => $candidate->indexing,
+            //         'surname' => $candidate->surname,
+            //         'firstname' => $candidate->firstname,
+            //         'other_names' => $candidate->other_names,
+            //     ];
 
-                foreach ($subjects as $subject) {
-                    $score = DB::table('scores')
-                        ->join('candidate_subjects', 'scores.scheduled_candidate_id', '=', 'candidate_subjects.scheduled_candidate_id')
-                        ->join('subjects', 'candidate_subjects.subject_id', '=', 'subjects.id')
-                        ->join('test_configs', 'scores.test_config_id', '=', 'test_configs.id')
-                        ->where('subjects.name', $subject)
-                        ->where('scores.scheduled_candidate_id', $candidate->scheduled_candidate_id)
-                        ->select(DB::raw('(scores.point_scored / test_configs.total_mark) * 100 as percentage'))
-                        ->value('percentage');
-                    $candidateData[$subject] = $score ? number_format($score, 2) . '%' : '';
-                }
+            //     foreach ($subjects as $subject) {
+            //         $score = DB::table('scores')
+            //             ->join('candidate_subjects', 'scores.scheduled_candidate_id', '=', 'candidate_subjects.scheduled_candidate_id')
+            //             ->join('subjects', 'candidate_subjects.subject_id', '=', 'subjects.id')
+            //             ->join('test_configs', 'scores.test_config_id', '=', 'test_configs.id')
+            //             ->where('subjects.name', $subject)
+            //             ->where('scores.scheduled_candidate_id', $candidate->scheduled_candidate_id)
+            //             ->select(DB::raw('(scores.point_scored / test_configs.total_mark) * 100 as percentage'))
+            //             ->value('percentage');
+            //         $candidateData[$subject] = $score ? number_format($score, 2) . '%' : '';
+            //     }
 
-                $reports[] = $candidateData;
-            }
+            //     $reports[] = $candidateData;
+            // }
 
-            return view('pages.admin.reports.ajax.report-summary', compact('reports', 'subjects'));
+            return view('pages.admin.reports.ajax.report-summary', compact('candidates', 'subjects'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

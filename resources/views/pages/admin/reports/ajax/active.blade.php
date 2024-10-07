@@ -142,8 +142,6 @@
     <script>
        
         $(document).ready(function () {
-
-        
             $('#restore').modal('hide');
             
             $('.restore_form').on('submit', function(e){

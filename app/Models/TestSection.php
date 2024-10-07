@@ -48,7 +48,7 @@ class TestSection extends Model
 
     public function test_subject()
     {
-        return $this->belongsTo(TestSubject::class)->with('subject');
+        return $this->belongsTo(TestSubject::class,'test_subject_id', 'id')->with('subject');
     }
 
     public function test_questions()
