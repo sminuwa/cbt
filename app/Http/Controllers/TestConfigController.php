@@ -841,7 +841,7 @@ class TestConfigController extends Controller
             
             $index_numbers = array_filter($index_numbers);
             $codes = array_filter($codes);
-            $venues = Centre::select('venues.id', 'centres.code','centres.name')
+            $venues = Centre::select('venues.id', 'venues.code','centres.name')
             ->join('venues','venues.centre_id', 'centres.id')
             ->whereIn('centres.code', $codes)
             ->get()->toArray();
