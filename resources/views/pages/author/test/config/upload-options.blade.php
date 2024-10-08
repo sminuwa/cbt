@@ -29,8 +29,8 @@
         </div>
         <div class="card-body pt-0" style="padding: 1px !important;"></div>
     </div>
-    <div class="card border-info">
-        <div class="card-header border-info">
+    <div class="card">
+        <div class="card-header">
             <ul class="nav nav-tabs nav-tabs-solid nav-tabs-rounded">
                 <li class="nav-item">
                     <a class="nav-link active" href="#bulk-upload" data-bs-toggle="tab">Bulk Upload</a>
@@ -58,7 +58,7 @@
                             <div class="col-7 col-md-12 col-xl-7 col-lg-7">
                                 <div class="form-group">
                                     <label for="schedule">Test Schedule:</label>
-                                    <select class="form-control select2" name="schedule_id" id="schedule" required>
+                                    <select class="form-control select22" name="schedule_id" id="schedule" required>
                                         @foreach($schedules as $schedule)
                                             <option value="{{$schedule->id}}">
                                                 {{  Carbon::parse($schedule->date)->format('D jS M, Y') }} -
@@ -132,7 +132,7 @@
        
     </script>
     <script>
-        $(".select2").select2({
+        $(".select22").select2({
           placeholder: "Select...",
         });
     // $(".select2").select2();
