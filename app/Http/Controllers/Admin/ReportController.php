@@ -49,68 +49,97 @@ class ReportController extends Controller
                 $titles[$subject->id] = $subject->subject_code;
             }
             $candidates = Candidate::selectRaw("
-                CONCAT(candidates.surname,' ', candidates.firstname,' ', IFNULL(candidates.other_names, '')) as fullname,
-                candidates.indexing as indexing,
-                scheduled_candidates.id as scheduled_candidate_id,
-                candidate_id,
-                test_configs.id as test_config_id,
-                centres.name as centre,
-                (
-                    SELECT sum(s.point_scored) 
-                    FROM scores s
-                    JOIN scheduled_candidates sc ON sc.id = s.scheduled_candidate_id
-                    JOIN candidates c ON c.id = sc.candidate_id
-                    JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
-                    JOIN subjects sj ON sj.id = cs.subject_id
-                    WHERE c.id = candidates.id
-                    AND sj.subject_code = 'P1'
-                ) as P1,
-                (
-                    SELECT sum(s.point_scored) 
-                    FROM scores s
-                    JOIN scheduled_candidates sc ON sc.id = s.scheduled_candidate_id
-                    JOIN candidates c ON c.id = sc.candidate_id
-                    JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
-                    JOIN subjects sj ON sj.id = cs.subject_id
-                    WHERE c.id = candidates.id
-                    AND sj.subject_code = 'P2'
-                ) as P2,
-                (
-                    SELECT sum(s.point_scored) 
-                    FROM scores s
-                    JOIN scheduled_candidates sc ON sc.id = s.scheduled_candidate_id
-                    JOIN candidates c ON c.id = sc.candidate_id
-                    JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
-                    JOIN subjects sj ON sj.id = cs.subject_id
-                    WHERE c.id = candidates.id
-                    AND sj.subject_code = 'P3'
-                ) as P3,
-                (
-                    SELECT sum(pe.score) 
-                    FROM practical_examinations pe
-                    WHERE pe.candidate_id = candidates.id
-                ) AS PE,
-                (
-                    SELECT sum(pa.score) 
-                    FROM project_assessments pa
-                    WHERE pa.candidate_id = candidates.id
-                ) AS PA
-
+                CONCAT(candidates.surname, ' ', candidates.firstname, ' ', IFNULL(candidates.other_names, '')) AS fullname,
+                candidates.indexing AS indexing,
+                scheduled_candidates.id AS scheduled_candidate_id,
+                candidates.id AS candidate_id,
+                test_configs.id AS test_config_id,
+                centres.name AS centre,
+                SUM(CASE WHEN subjects.subject_code = 'P1' THEN scores.point_scored ELSE 0 END) AS P1,
+                SUM(CASE WHEN subjects.subject_code = 'P2' THEN scores.point_scored ELSE 0 END) AS P2,
+                SUM(CASE WHEN subjects.subject_code = 'P3' THEN scores.point_scored ELSE 0 END) AS P3,
+                (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) AS PE,
+                (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) AS PA
             ")
-            ->join('scheduled_candidates','scheduled_candidates.candidate_id', 'candidates.id')
-            ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', 'scheduled_candidates.id')
-            ->join('schedulings', 'schedulings.id', 'scheduled_candidates.schedule_id')
-            ->join('test_configs','test_configs.id', 'schedulings.test_config_id')
-            ->join('venues','venues.id', 'schedulings.venue_id')
-            ->join('centres','centres.id', 'venues.centre_id')    
+            ->join('scheduled_candidates', 'scheduled_candidates.candidate_id', '=', 'candidates.id')
+            ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', '=', 'scheduled_candidates.id')
+            ->join('schedulings', 'schedulings.id', '=', 'scheduled_candidates.schedule_id')
+            ->join('test_configs', 'test_configs.id', '=', 'schedulings.test_config_id')
+            ->join('venues', 'venues.id', '=', 'schedulings.venue_id')
+            ->join('centres', 'centres.id', '=', 'venues.centre_id')
+            ->leftJoin('scores', 'scores.scheduled_candidate_id', '=', 'scheduled_candidates.id')
+            ->leftJoin('subjects', 'subjects.id', '=', 'candidate_subjects.subject_id')
             ->where([
-                'centres.id'=>$centre_id,
-                'candidates.exam_year'=>$year,
-                'test_configs.test_code_id'=>$code_id,
-                'test_configs.test_type_id'=>$type_id
+                'centres.id' => $centre_id,
+                'candidates.exam_year' => $year,
+                'test_configs.test_code_id' => $code_id,
+                'test_configs.test_type_id' => $type_id,
             ])
             ->groupBy('candidates.id')
             ->get();
+            // $candidates = Candidate::selectRaw("
+            //     CONCAT(candidates.surname,' ', candidates.firstname,' ', IFNULL(candidates.other_names, '')) as fullname,
+            //     candidates.indexing as indexing,
+            //     scheduled_candidates.id as scheduled_candidate_id,
+            //     candidate_id,
+            //     test_configs.id as test_config_id,
+            //     centres.name as centre,
+            //     (
+            //         SELECT sum(s.point_scored) 
+            //         FROM scores s
+            //         JOIN scheduled_candidates sc ON sc.id = s.scheduled_candidate_id
+            //         JOIN candidates c ON c.id = sc.candidate_id
+            //         JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
+            //         JOIN subjects sj ON sj.id = cs.subject_id
+            //         WHERE c.id = candidates.id
+            //         AND sj.subject_code = 'P1'
+            //     ) as P1,
+            //     (
+            //         SELECT sum(s.point_scored) 
+            //         FROM scores s
+            //         JOIN scheduled_candidates sc ON sc.id = s.scheduled_candidate_id
+            //         JOIN candidates c ON c.id = sc.candidate_id
+            //         JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
+            //         JOIN subjects sj ON sj.id = cs.subject_id
+            //         WHERE c.id = candidates.id
+            //         AND sj.subject_code = 'P2'
+            //     ) as P2,
+            //     (
+            //         SELECT sum(s.point_scored) 
+            //         FROM scores s
+            //         JOIN scheduled_candidates sc ON sc.id = s.scheduled_candidate_id
+            //         JOIN candidates c ON c.id = sc.candidate_id
+            //         JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
+            //         JOIN subjects sj ON sj.id = cs.subject_id
+            //         WHERE c.id = candidates.id
+            //         AND sj.subject_code = 'P3'
+            //     ) as P3,
+            //     (
+            //         SELECT sum(pe.score) 
+            //         FROM practical_examinations pe
+            //         WHERE pe.candidate_id = candidates.id
+            //     ) AS PE,
+            //     (
+            //         SELECT sum(pa.score) 
+            //         FROM project_assessments pa
+            //         WHERE pa.candidate_id = candidates.id
+            //     ) AS PA
+
+            // ")
+            // ->join('scheduled_candidates','scheduled_candidates.candidate_id', 'candidates.id')
+            // ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', 'scheduled_candidates.id')
+            // ->join('schedulings', 'schedulings.id', 'scheduled_candidates.schedule_id')
+            // ->join('test_configs','test_configs.id', 'schedulings.test_config_id')
+            // ->join('venues','venues.id', 'schedulings.venue_id')
+            // ->join('centres','centres.id', 'venues.centre_id')    
+            // ->where([
+            //     'centres.id'=>$centre_id,
+            //     'candidates.exam_year'=>$year,
+            //     'test_configs.test_code_id'=>$code_id,
+            //     'test_configs.test_type_id'=>$type_id
+            // ])
+            // ->groupBy('candidates.id')
+            // ->get();
 
             // $candidates = Candidate::all();
             // return $candidates;
