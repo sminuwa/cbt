@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\DB;
 
 
-const CHPRBN_CBT_API_KEY = "mchtmg151";
-const CHPRBN_CBT_SECRET_KEY = "151gmthcm";
+const CHPRBN_CBT_API_KEY = "mcchst124";
+const CHPRBN_CBT_SECRET_KEY = "421tshccm";
 const CHPRBN_SERV_ADDR = "https://zxcvbnm.chprbn.gov.ng/api/v1/";
 
 const APP_NAME = 'CHPRBN CBT Exam';
