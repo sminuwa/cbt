@@ -488,7 +488,7 @@ class SetupController extends Controller
             $times->update(['pushed'=>1]);
             // Presentation::where('pushed',0)->update(['pushed'=>1]);
             $scores->update(['pushed'=>1]);
-            Score::where('pushed',0)->update(['pushed'=>1]);
+            // Score::where('pushed',0)->update(['pushed'=>1]);
             return response()->json(['success' => true, 'message' => 'Download Successful'], 200);
         }
 
