@@ -459,9 +459,9 @@ class SetupController extends Controller
     public function pullExamToServer(Request $request){
         $tables = ['time_controls', 'presentations', 'scores']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
-        $times = TimeControl::where('pushed',0)->select(['test_config_id','scheduled_candidate_id','completed','start_time','current_time','elapsed','ip','pushed'])->get();
+        $times = TimeControl::limit()->where('pushed',0)->select(['test_config_id','scheduled_candidate_id','completed','start_time','current_time','elapsed','ip','pushed'])->get();
         // $presentations = Presentation::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','test_section_id','question_bank_id','answer_option_id','pushed'])->get();
-        $scores = Score::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','question_bank_id','answer_option_id','time_elapse','scoring_mode','point_scored','pushed'])->limit(500)->get();
+        $scores = Score::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','question_bank_id','answer_option_id','time_elapse','scoring_mode','point_scored','pushed'])->get();
 
 
         // return $scores;

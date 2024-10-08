@@ -197,13 +197,13 @@ class APIV1Controller extends Controller
         $secretKey = $request->body['secret_key'] ?? $request->header('secret_key');
         $center = Centre::where(['api_key'=>$api_key,'secret_key'=>$secretKey])->first();
         if($center){
-            foreach(array_chunk($request->times, 1000) as  $times) {
+            foreach(array_chunk($request->times, 500) as  $times) {
                 TimeControl::upsert($times,['test_config_id','scheduled_candidate_id']);
             }
             // foreach(array_chunk($request->presentations, 200) as  $presentations) {
             //     Presentation::upsert($presentations,['scheduled_candidate_id','test_config_id','test_section_id','question_bank_id']);
             // }
-            foreach(array_chunk($request->scores, 1000) as  $scores) {
+            foreach(array_chunk($request->scores, 500) as  $scores) {
                 Score::upsert($scores,['scheduled_candidate_id','test_config_id','question_bank_id','answer_option_id']);
             }
 
