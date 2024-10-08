@@ -129,7 +129,12 @@
 
 @section('script')
     <script>
-        $(function () {
-        })
+       
+    </script>
+    <script>
+        $(".select2").select2({
+          placeholder: "Select...",
+        });
+    // $(".select2").select2();
     </script>
 @endsection
