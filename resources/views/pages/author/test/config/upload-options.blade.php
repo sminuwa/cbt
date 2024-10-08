@@ -93,10 +93,12 @@
                                     <input class="form-control" type="file" name="file" id="file" required>
                                 </div>
                             </div>
-                            <div class="col-7 col-md-12 col-xl-7 col-lg-7">
+                            
+                            <div class="col-7 col-md-6 col-lg-4 col-xl-7">
                                 <div class="form-group">
-                                    <label for="schedule">Test Schedule:</label>
-                                    <select class="form-control form-select" name="schedule_id" id="schedule" required>
+                                    <label for="year">Test Schedule:</label>
+                                    <select class="form-control select2" name="schedule_id" id="schedule" required>
+                                        <option value="">Select Test Type</option>
                                         @foreach($schedules as $schedule)
                                             <option value="{{$schedule->id}}">
                                                 {{  Carbon::parse($schedule->date)->format('D jS M, Y') }} -
