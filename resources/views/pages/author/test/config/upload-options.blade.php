@@ -89,7 +89,8 @@
                         <div class="row">
                             <div class="col-5 col-md-12 col-lg-5 col-xl-5">
                                 <div class="form-group">
-                                    <label for="file"></label>
+                                    <label for="file">File:</label>
+                                    {{-- <label for="file"></label> --}}
                                     <input class="form-control" type="file" name="file" id="file" required>
                                 </div>
                             </div>
