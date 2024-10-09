@@ -89,4 +89,8 @@ class Scheduling extends Model
     {
         return $this->hasMany(TestInvigilator::class);
     }
+
+    public function pull_status(){
+        return $this->hasOne(SchedulePullStatus::class,'schedule_id');
+    }
 }

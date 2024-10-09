@@ -457,9 +457,11 @@ class SetupController extends Controller
     }
 
     public function pullExamToServer(Request $request){
+        ini_set('memory_limit','1024M');
         $tables = ['time_controls', 'presentations', 'scores']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
         $times = TimeControl::limit()->where('pushed',0)->select(['test_config_id','scheduled_candidate_id','completed','start_time','current_time','elapsed','ip','pushed'])->get();
+        $time_ids = $times->pluck('scheduled_candidate_id');
         // $presentations = Presentation::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','test_section_id','question_bank_id','answer_option_id','pushed'])->get();
         $scores = Score::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','question_bank_id','answer_option_id','time_elapse','scoring_mode','point_scored','pushed'])->get();
 
@@ -485,9 +487,9 @@ class SetupController extends Controller
         // return $response['status'];
         // if ($response->successful()) {
         if ($response['status']) {
-            $times->update(['pushed'=>1]);
+            TimeControl::whereIn('scheduled_candidate_id', $time_ids)->update(['pushed'=>1]);
             // Presentation::where('pushed',0)->update(['pushed'=>1]);
-            $scores->update(['pushed'=>1]);
+            Score::whereIn('scheduled_candidate_id', $time_ids)->update(['pushed'=>1]);
             // Score::where('pushed',0)->update(['pushed'=>1]);
             return response()->json(['success' => true, 'message' => 'Download Successful'], 200);
         }

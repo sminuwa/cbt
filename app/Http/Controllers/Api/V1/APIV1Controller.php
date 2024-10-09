@@ -25,6 +25,7 @@ use App\Models\User;
 use App\Models\TimeControl;
 use App\Models\Presentation;
 use App\Models\Score;
+use App\Models\SchedulePullStatus;
 use App\Models\Venue;
 use App\Models\Topic;
 use Illuminate\Http\Request;
@@ -119,6 +120,13 @@ class APIV1Controller extends Controller
             $data['scheduled_candidates'] = ScheduledCandidate::whereIn('id',$scheduledCandidateIds)->get();
             $candidateIds = $data['scheduled_candidates']->pluck('candidate_id');
             $data['candidates'] = Candidate::whereIn('id',$candidateIds)->get();
+            
+            foreach($data['schedules'] as $schedule){
+                $pull_status = new SchedulePullStatus();
+                $pull_status->schedule_id = $schedule->id;
+                $pull_status->total_candidate = ScheduledCandidate::where('schedule_id', $schedule->id)->count();
+                $pull_status->save();
+            }
             return response()->json(['status'=>1,'data'=>$data]);
         }
 

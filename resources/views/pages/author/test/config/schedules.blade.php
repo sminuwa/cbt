@@ -15,7 +15,7 @@
             </div>
         @endif
     @endif
-    <div class="card border-info">
+    <div class="card">
         <div class="card-header">
             <div class="row">
                 <div>
@@ -30,8 +30,8 @@
     </div>
     <div class="row mt-3">
         <div class="col-12 col-lg-12 col-xl-12 col-md-6">
-            <div class="card border-info">
-                <div class="card-header border-info">
+            <div class="card">
+                <div class="card-header">
                     New Schedule
                 </div>
                 <div class="card-body">
@@ -43,7 +43,7 @@
                             <div class="col-md-12 col-lg-3 col-xl-3">
                                 <div class="form-group">
                                     <label for="exam-dates">Test Date:</label>
-                                    <select class="form-control form-select" id="exam-dates" name="date" required>
+                                    <select class="form-control select2" id="exam-dates" name="date" required>
                                         @php
                                             $dates = ExamsDate::where(['test_config_id'=>$config_id])->get();
                                         @endphp
@@ -62,7 +62,7 @@
                                     @php
                                         $centres=Centre::all();
                                     @endphp
-                                    <select class="form-control form-select" id="centre" required>
+                                    <select class="form-control select2" id="centre" required>
                                         <option value="0">---</option>
                                         @foreach($centres as $centre)
                                             <option value="{{ $centre->id }}">{{ $centre->name }}</option>
@@ -73,7 +73,7 @@
                             <div id="venue-div" class="col-12 col-md-12 col-lg-3 col-xl-3" style="display: none">
                                 <div class="form-group">
                                     <label for="venue">Venue:</label>
-                                    <select class="form-control form-select" name="venue_id" id="venue" required>
+                                    <select class="form-control select2" name="venue_id" id="venue" required>
                                     </select>
                                 </div>
                             </div>
@@ -120,57 +120,59 @@
             </div>
         </div>
     </div>
-    <div class="card border-info">
-        <div class="card-header border-info">
+    <div class="card">
+        <div class="card-header">
             Existing Schedules
         </div>
         <div class="card-body p-3">
-            <table class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Date</th>
-                    <th>Centre</th>
-                    <th>Batches</th>
-                    <th>No. Per Batch</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-
-                @php
-                    $schedules = Scheduling::with('venue')->where(['test_config_id'=>$config_id])->get();
-                @endphp
-                <tbody>
-                @foreach($schedules as $schedule)
+            <div class="table-responsive">
+                <table class="display" id="export-button-sample">
+                    <thead>
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{  Carbon::parse($schedule->date)->format('D jS M, Y') }}</td>
-                        <td>{{ $schedule->venue->centre->name ?? null }}</td>
-                        <td>{{ $schedule->maximum_batch }}</td>
-                        <td>{{ $schedule->no_per_schedule }}</td>
-                        <td>{{  Carbon::parse($schedule->daily_start_time)->format('h:m a') }}</td>
-                        <td>{{  Carbon::parse($schedule->daily_end_time)->format('h:m a') }}</td>
-                        <td>
-                            <a class="btn btn-sm btn-warning text-light modify"
-                               data-id="{{$schedule->id}}" data-date="{{$schedule->date}}"
-                               data-venue="{{$schedule->venue->id}}" data-centre="{{$schedule->venue->centre->id}}"
-                               data-batch="{{$schedule->maximum_batch}}" data-count="{{$schedule->no_per_schedule}}"
-                               data-start="{{Carbon::parse($schedule->daily_start_time)->format('H:m')}}"
-                               data-end="{{Carbon::parse($schedule->daily_end_time)->format('H:m')}}"
-                               href="javascript:;">
-                                Modify
-                            </a>
-                            <a class="btn btn-sm btn-danger text-light"
-                               href="{{route('admin.test.config.schedules.delete',[$schedule->id])}}">
-                                Delete
-                            </a>
-                        </td>
+                        {{-- <th>#</th> --}}
+                        <th>Action</th>
+                        <th>Centre</th>
+                        <th>Candidates</th>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Batches</th>
+                        <th>No. Per Batch</th>
                     </tr>
-                @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    @foreach($schedules as $schedule)
+                        <tr>
+                            {{-- <td>{{ $loop->iteration }}</td> --}}
+                            <td>
+                                <a class="btn btn-sm btn-warning modify" style="padding: 2px 8px;"
+                                data-id="{{$schedule->id}}" data-date="{{$schedule->date}}"
+                                data-venue="{{$schedule->venue->id}}" data-centre="{{$schedule->venue->centre->id}}"
+                                data-batch="{{$schedule->maximum_batch}}" data-count="{{$schedule->no_per_schedule}}"
+                                data-start="{{Carbon::parse($schedule->daily_start_time)->format('H:m')}}"
+                                data-end="{{Carbon::parse($schedule->daily_end_time)->format('H:m')}}"
+                                href="javascript:;">
+                                    <i class="las la-edit"></i>
+                                </a>
+                                <a class="btn btn-sm btn-danger" style="padding: 2px 8px;"
+                                href="{{route('admin.test.config.schedules.delete',[$schedule->id])}}">
+                                <i class="las la-trash"></i>
+                                </a>
+                            </td>
+                            
+                            <td>{{ $schedule->venue->centre->name ?? null }}</td>
+                            <td>{{ $schedule->total_schedules ?? 0 }}</td>
+                            <td>{{  Carbon::parse($schedule->date)->format('D jS M, Y') }}</td>
+                            <td>{{  Carbon::parse($schedule->daily_start_time)->format('h:m a') }}</td>
+                            <td>{{  Carbon::parse($schedule->daily_end_time)->format('h:m a') }}</td>
+                            <td>{{ $schedule->maximum_batch }}</td>
+                            <td>{{ $schedule->no_per_schedule }}</td>
+                            
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 @endsection

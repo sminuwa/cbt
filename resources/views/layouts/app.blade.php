@@ -193,6 +193,12 @@
     $(".select2").select2({
       placeholder: "Select...",
     });
+
+    $('.display').DataTable({
+        responsive: true,
+        dom: "Bfrtip",
+        buttons: ["copyHtml5", "excelHtml5", "csvHtml5", "pdfHtml5"],
+    });
 // $(".select2").select2();
 </script>
 @yield('script')

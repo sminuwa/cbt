@@ -139,10 +139,23 @@ class TestConfigController extends Controller
         return ExamsDate::where(['test_config_id' => $config_id])->get();
     }
 
-    public function schedules($config_id): Factory|\Illuminate\Foundation\Application|View|Application
+    public function schedules($config_id)
     {
-        $schedules = Scheduling::where(['test_config_id' => $config_id])->get();
+        $schedules = Scheduling::
+        selectRaw("
+            schedulings.*,
+            (
+                SELECT count(id) 
+                FROM scheduled_candidates 
+                WHERE scheduled_candidates.schedule_id = schedulings.id
+            ) as total_schedules
+            
+        ")
+        ->with('venue','pull_status')
+        ->where(['test_config_id' => $config_id])->get();
+        return $schedules;
         return view('pages.author.test.config.schedules', compact('schedules', 'config_id'));
+
     }
 
     public function storeSchedule(Request $request): RedirectResponse
