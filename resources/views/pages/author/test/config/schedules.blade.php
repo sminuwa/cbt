@@ -132,7 +132,7 @@
                         {{-- <th>#</th> --}}
                         <th>Action</th>
                         <th>Centre</th>
-                        <th>Candidates</th>
+                        <th>Candidates (S/P/P)</th>
                         <th>Date</th>
                         <th>Start Time</th>
                         <th>End Time</th>
@@ -162,17 +162,9 @@
                             
                             <td>{{ $schedule->venue->centre->name ?? null }}</td>
                             <td>
-                                {{-- <span class="badge badge-info" style="padding: 2px 8px;"> --}}
-                                {{ $schedule->total_schedules ?? 0 }} Scheduled
-                                {{-- </span> --}}
-                                <br>
-                                {{-- <span class="badge badge-primary" style="padding: 2px 8px;"> --}}
-                                    {{ $schedule->pull_status->total_candidate ?? 0 }} Pulled
-                                {{-- </span> --}}
-                                <br>
-                                {{-- <span class="badge badge-success" style="padding: 2px 8px;"> --}}
-                                    {{ $schedule->total_pushed ?? 0 }} Pushed
-                                {{-- </span> --}}
+                                
+                                {{ $schedule->total_schedules ?? 0 }}/{{ $schedule->pull_status->total_candidate ?? 0 }}/{{ $schedule->total_pushed ?? 0 }}
+                               
                             </td>
                             <td>{{  Carbon::parse($schedule->date)->format('D jS M, Y') }}</td>
                             <td>{{ date('g:i A', strtotime($schedule->date.' '.$schedule->daily_start_time)) }}</td>
