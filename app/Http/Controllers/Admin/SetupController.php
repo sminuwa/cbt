@@ -165,6 +165,7 @@ class SetupController extends Controller
 
     public function pullTestResource(Request $request)
     {
+        return response()->json(['success' => false, 'message' => 'Failed to fetch data from API'], 200);
         // return $request;
         // return CHPRBN_CBT_API_KEY;
         $tables = ['exam_types', 'test_types', 'centres','venues']; // Replace with your table names
