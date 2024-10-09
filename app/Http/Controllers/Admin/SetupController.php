@@ -61,7 +61,7 @@ class SetupController extends Controller
 
     public function pullBasicResource(Request $request)
     {
-        
+        return response()->json(['success' => false, 'message' => 'Failed to fetch data from API'], 200);
         $tables = ['exam_types', 'test_types','test_codes', 'topics','centres','venues']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
         $apiUrl = $this->apiUrl('resource/basic');
@@ -274,6 +274,7 @@ class SetupController extends Controller
     }
 
     public function pullCandidateResource(Request $request) {
+        return response()->json(['success' => false, 'message' => 'Failed to fetch data from API'], 200);
         $tables = ['candidates', 'candidate_subjects', 'scheduled_candidates']; // Replace with your table names
         $this->backupService->backupAndTruncate($tables);
         $apiUrl = $this->apiUrl('resource/candidate');
