@@ -124,7 +124,7 @@
         <div class="card-header">
             Existing Schedules
         </div>
-        <div class="card-body p-3">
+        <div class="card-body">
             <div class="table-responsive">
                 <table class="display" id="export-button-sample">
                     <thead>
@@ -132,7 +132,9 @@
                         {{-- <th>#</th> --}}
                         <th>Action</th>
                         <th>Centre</th>
-                        <th>Candidates</th>
+                        <th>Scheduled</th>
+                        <th>Pulled</th>
+                        <th>Pushed</th>
                         <th>Date</th>
                         <th>Start Time</th>
                         <th>End Time</th>
@@ -161,7 +163,12 @@
                             </td>
                             
                             <td>{{ $schedule->venue->centre->name ?? null }}</td>
-                            <td>{{ $schedule->pull_status->total_candidate ?? 0 }}/{{ $schedule->total_schedules ?? 0 }} pulled</td>
+                            <td><span class="badge badge-primary" style="padding: 2px 8px;">
+                                {{ $schedule->total_schedules ?? 0 }} Scheduled</span></td>
+                            <td><span class="badge badge-success" style="padding: 2px 8px;">
+                                {{ $schedule->pull_status->total_candidate ?? 0 }} Pulled</span></td>
+                            <td><span class="badge badge-success" style="padding: 2px 8px;">
+                                {{ $schedule->total_pushed ?? 0 }} Pushed</span></td>
                             <td>{{  Carbon::parse($schedule->date)->format('D jS M, Y') }}</td>
                             <td>{{ date('g:i A', strtotime($schedule->date.' '.$schedule->daily_start_time)) }}</td>
                             <td>{{ date('g:i A', strtotime($schedule->date.' '.$schedule->daily_end_time)) }}</td>
@@ -222,6 +229,7 @@
                 $('#schedule_id').val($(this).data('id'))
                 $('#exam-dates').val($(this).data('date')).change()
                 $('#centre').val($(this).data('centre')).change()
+                // $('#centre').trigger('change')
                 $('#venue').val($(this).data('venue')).change()
                 $('#maximum_batch').val($(this).data('batch'))
                 $('#no_per_schedule').val($(this).data('count'))

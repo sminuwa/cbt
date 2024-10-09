@@ -148,7 +148,13 @@ class TestConfigController extends Controller
                 SELECT count(id) 
                 FROM scheduled_candidates 
                 WHERE scheduled_candidates.schedule_id = schedulings.id
-            ) as total_schedules
+            ) as total_schedules,
+            (
+                SELECT count(t.id) 
+                FROM time_controls t
+                JOIN scheduled_candidates sc ON sc.id = t.scheduled_candidate_id
+                WHERE sc.schedule_id = schedulings.id
+            ) as total_pushed
             
         ")
         ->with('venue','pull_status')
