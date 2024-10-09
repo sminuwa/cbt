@@ -153,7 +153,7 @@ class TestConfigController extends Controller
         ")
         ->with('venue','pull_status')
         ->where(['test_config_id' => $config_id])->get();
-        return $schedules;
+        // return $schedules;
         return view('pages.author.test.config.schedules', compact('schedules', 'config_id'));
 
     }

@@ -122,7 +122,9 @@ class APIV1Controller extends Controller
             $data['candidates'] = Candidate::whereIn('id',$candidateIds)->get();
             
             foreach($data['schedules'] as $schedule){
-                $pull_status = new SchedulePullStatus();
+                $pull_status = SchedulePullStatus::where('schedule_id',$schedule->id)->first();
+                if(!$pull_status)
+                    $pull_status = new SchedulePullStatus();
                 $pull_status->schedule_id = $schedule->id;
                 $pull_status->total_candidate = ScheduledCandidate::where('schedule_id', $schedule->id)->count();
                 $pull_status->save();

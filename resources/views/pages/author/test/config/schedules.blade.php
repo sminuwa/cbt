@@ -161,7 +161,7 @@
                             </td>
                             
                             <td>{{ $schedule->venue->centre->name ?? null }}</td>
-                            <td>{{ $schedule->total_schedules ?? 0 }}</td>
+                            <td>{{ $schedule->pull_status->total_candidate ?? 0 }}/{{ $schedule->total_schedules ?? 0 }} pulled</td>
                             <td>{{  Carbon::parse($schedule->date)->format('D jS M, Y') }}</td>
                             <td>{{  Carbon::parse($schedule->daily_start_time)->format('h:m a') }}</td>
                             <td>{{  Carbon::parse($schedule->daily_end_time)->format('h:m a') }}</td>
