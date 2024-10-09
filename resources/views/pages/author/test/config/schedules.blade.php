@@ -144,7 +144,7 @@
                     @foreach($schedules as $schedule)
                         <tr>
                             {{-- <td>{{ $loop->iteration }}</td> --}}
-                            <td>
+                            <td width=80>
                                 <a class="btn btn-sm btn-warning modify" style="padding: 2px 8px;"
                                 data-id="{{$schedule->id}}" data-date="{{$schedule->date}}"
                                 data-venue="{{$schedule->venue->id}}" data-centre="{{$schedule->venue->centre->id}}"
@@ -163,8 +163,8 @@
                             <td>{{ $schedule->venue->centre->name ?? null }}</td>
                             <td>{{ $schedule->pull_status->total_candidate ?? 0 }}/{{ $schedule->total_schedules ?? 0 }} pulled</td>
                             <td>{{  Carbon::parse($schedule->date)->format('D jS M, Y') }}</td>
-                            <td>{{  Carbon::parse($schedule->daily_start_time)->format('h:m a') }}</td>
-                            <td>{{  Carbon::parse($schedule->daily_end_time)->format('h:m a') }}</td>
+                            <td>{{ date('g:i A', strtotime($schedule->date.' '.$schedule->daily_start_time)) }}</td>
+                            <td>{{ date('g:i A', strtotime($schedule->date.' '.$schedule->daily_end_time)) }}</td>
                             <td>{{ $schedule->maximum_batch }}</td>
                             <td>{{ $schedule->no_per_schedule }}</td>
                             
