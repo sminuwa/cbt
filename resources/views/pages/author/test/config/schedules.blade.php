@@ -15,24 +15,15 @@
             </div>
         @endif
     @endif
-    <div class="card">
-        <div class="card-header">
-            <div class="row">
-                <div>
-                    <h4 class="card-title d-flex justify-content-between">
-                        <span>Test Schedules</span>
-                        <a href="{{ route('admin.test.config.index') }}" class="btn btn-info btn-xs text-light"><i class="las la-arrow-left"></i>Back</a>
-                    </h4>
-                </div>
-            </div>
-        </div>
-        <div class="card-body pt-0" style="padding: 1px !important;"></div>
-    </div>
+    
     <div class="row mt-3">
         <div class="col-12 col-lg-12 col-xl-12 col-md-6">
             <div class="card">
                 <div class="card-header">
-                    New Schedule
+                    <h4 class="card-title d-flex justify-content-between">
+                        <span>Test Schedules</span>
+                        <a href="{{ route('admin.test.config.index') }}" class="btn btn-info btn-xs text-light"><i class="las la-arrow-left"></i>Back</a>
+                    </h4>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('admin.test.config.schedules.store') }}" method="post">
