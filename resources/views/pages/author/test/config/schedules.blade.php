@@ -223,7 +223,7 @@
     <script>
         $(function () {
 
-            $('.schedule-candidates').click(function(){
+            $('body')on('click','.schedule-candidates',function(){
                 $('#schedule').val($(this).data('id'))
                 $('#test_config').val($(this).data('test_config_id')).change()
             })
