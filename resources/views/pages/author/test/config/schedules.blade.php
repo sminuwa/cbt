@@ -203,7 +203,7 @@
                 <form action="{{route('admin.test.config.upload.list')}}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
-                        <input type="hidden" name="test_config_id" id="test_config">
+                        <input type="hidden" name="test_config_id" id="test_config" required>
                         <input type="hidden" name="schedule_id" id="schedule" required>
                         <div class="row">
                             <div class="col-12 col-md-12">
@@ -224,8 +224,8 @@
         $(function () {
 
             $('body')on('click','.schedule-candidates',function(){
-                $('#schedule').val($(this).data('id'))
-                $('#test_config').val($(this).data('test_config_id')).change()
+                $('#schedule').val($(this).attr('data-id'))
+                $('#test_config').val($(this).attr('data-test_config_id')).change()
             })
 
             $('#exam-dates').on('change', function () {
