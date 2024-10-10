@@ -189,9 +189,8 @@
             </div>
         </div>
     </div>
-@endsection
 
-@section('script')
+
     <div class="modal fade custom-modal" id="schedule-candidates">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -220,16 +219,17 @@
                 </form>
         </div>
     </div>
+@endsection
+
+@section('script')
+    
     <script>
-        $('body')on('click','.schedule-candidates',function(){
-                $('#schedule').val($(this).attr('data-id'))
-                $('#test_config').val($(this).attr('data-test_config_id')).change()
-            })
-            
+        $('body').on('click','.schedule-candidates',function(){
+            $('#schedule').val($(this).attr('data-id'))
+            $('#test_config').val($(this).attr('data-test_config_id')).change()
+        })
+
         $(function () {
-
-            
-
             $('#exam-dates').on('change', function () {
                 if ($(this).val() !== '0') $('#centre-div').show()
                 else {
