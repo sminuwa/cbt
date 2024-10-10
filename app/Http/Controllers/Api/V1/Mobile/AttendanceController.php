@@ -43,7 +43,7 @@ class AttendanceController extends Controller
                 $venueIds = Venue::where('centre_id',$centre->id)->pluck('id');
                 $data = [];
 
-                $schedules = Scheduling::whereIn('venue_id',$venueIds)->whereDate("date",today())->limit(3)->get();
+                $schedules = Scheduling::whereIn('venue_id',$venueIds)->whereDate("date",today())->get();
                 $schedule_ids = $schedules->pluck('id');
                 $candidate_subjects = CandidateSubject::whereIn('schedule_id',$schedule_ids)->get();
                 //Use venue Ids to get Schedules for today

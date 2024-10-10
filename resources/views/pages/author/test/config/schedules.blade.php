@@ -144,7 +144,7 @@
                     @foreach($schedules as $schedule)
                         <tr>
                             {{-- <td>{{ $loop->iteration }}</td> --}}
-                            <td width=80>
+                            <td width="120">
                                 <a class="btn btn-sm btn-warning modify" style="padding: 2px 8px;"
                                 data-id="{{$schedule->id}}" data-date="{{$schedule->date}}"
                                 data-venue="{{$schedule->venue->id}}" data-centre="{{$schedule->venue->centre->id}}"
@@ -154,10 +154,20 @@
                                 href="javascript:;">
                                     <i class="las la-edit"></i>
                                 </a>
-                                <a class="btn btn-sm btn-danger" style="padding: 2px 8px;"
-                                href="{{route('admin.test.config.schedules.delete',[$schedule->id])}}">
+                                <a class="btn btn-sm btn-danger" style="padding: 2px 8px;" onclick="return confirm('Are you sure you want to delete this schedule? ')"
+                                    href="{{route('admin.test.config.schedules.delete',[$schedule->id])}}">
                                 <i class="las la-trash"></i>
                                 </a>
+
+                                <a class="btn btn-sm btn-info schedule-candidates" style="padding: 2px 15px;" 
+                                data-bs-toggle="modal" href="#schedule-candidates"
+                                data-id="{{$schedule->id}}"
+                                data-test_config_id="{{$schedule->test_config_id}}"
+                                >
+                                <i class="las la-upload"></i>
+                                </a>
+                                
+                                
                             </td>
                             
                             <td>{{ $schedule->venue->centre->name ?? null }}</td>
@@ -182,8 +192,42 @@
 @endsection
 
 @section('script')
+    <div class="modal fade custom-modal" id="schedule-candidates">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Candidates</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <form action="{{route('admin.test.config.upload.list')}}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" name="test_config_id" id="test_config">
+                        <input type="hidden" name="schedule_id" id="schedule" required>
+                        <div class="row">
+                            <div class="col-12 col-md-12">
+                                <div class="mb-3">
+                                    <label for="file" class="mb-2">Choose file...</label>
+                                    <input class="form-control" type="file" id="file" name="file" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer submit-section text-end">
+                        <button type="submit" class="btn btn-sm btn-info submit-btn text-light">Upload</button>
+                    </div>
+                </form>
+        </div>
+    </div>
     <script>
         $(function () {
+
+            $('.schedule-candidates').click(function(){
+                $('#schedule').val($(this).data('id'))
+                $('#test_config').val($(this).data('test_config_id')).change()
+            })
+
             $('#exam-dates').on('change', function () {
                 if ($(this).val() !== '0') $('#centre-div').show()
                 else {
