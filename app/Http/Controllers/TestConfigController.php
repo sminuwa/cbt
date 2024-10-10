@@ -375,6 +375,7 @@ class TestConfigController extends Controller
         
         if(empty($errors)){
             // DB::commit();
+            return back()->with('success',$success.' candidate(s) scheduled successfully.');
             return view('pages.author.test.config.upload-report', compact('success', 'scheduled', 'missing'));
         }else{
             // DB::rollback();
