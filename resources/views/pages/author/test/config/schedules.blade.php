@@ -221,12 +221,14 @@
         </div>
     </div>
     <script>
-        $(function () {
-
-            $('body')on('click','.schedule-candidates',function(){
+        $('body')on('click','.schedule-candidates',function(){
                 $('#schedule').val($(this).attr('data-id'))
                 $('#test_config').val($(this).attr('data-test_config_id')).change()
             })
+            
+        $(function () {
+
+            
 
             $('#exam-dates').on('change', function () {
                 if ($(this).val() !== '0') $('#centre-div').show()
