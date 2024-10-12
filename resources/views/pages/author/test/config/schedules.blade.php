@@ -258,7 +258,7 @@
                 }
             })
 
-            $('.modify').on('click', function () {
+            $('body').on('click','.modify', function () {
                 console.log($(this).data('start'))
                 $('#schedule_id').val($(this).data('id'))
                 $('#exam-dates').val($(this).data('date')).change()
