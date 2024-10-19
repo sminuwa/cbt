@@ -16,7 +16,8 @@
             <h4>Percentage Above & Below 50</h4>
           </div>
           <div class="card-body chart-block"> 
-            <canvas id="pieChart"> </canvas>
+            
+            <canvas id="pieChart" height="400"> </canvas>
           </div>
         </div>
     </div>
@@ -146,6 +147,8 @@ var barChart =new Chart(ctx, {
 
     },
     options: { 
+        responsive: true,
+        maintainAspectRatio: false  /
         plugins: {
             tooltip: {
                 enabled: false  // Disable tooltips
