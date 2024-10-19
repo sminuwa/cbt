@@ -140,32 +140,30 @@ class ReportController extends Controller
             // ->groupBy('candidates.id')
             ->first();
 
-            $statistics1 = DB::table(DB::raw("(WITH CandidateScores AS (
-                SELECT 
-                    candidates.id AS candidate_id,
+            $statistics1 = DB::table(DB::raw("
+            SELECT 
+                candidates.id AS candidate_id,
+                SUM(CASE WHEN subjects.subject_code = 'P1' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
+                SUM(CASE WHEN subjects.subject_code = 'P1' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
+                SUM(CASE WHEN subjects.subject_code = 'P2' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
+                SUM(CASE WHEN subjects.subject_code = 'P2' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
+                SUM(CASE WHEN subjects.subject_code = 'P3' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
+                SUM(CASE WHEN subjects.subject_code = 'P3' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count
+            FROM candidates
+            LEFT JOIN (
+                SELECT
+                    scheduled_candidates.candidate_id,
                     subjects.subject_code,
                     SUM(scores.point_scored) AS total_score
                 FROM scores
                 JOIN scheduled_candidates ON scheduled_candidates.id = scores.scheduled_candidate_id
                 JOIN candidate_subjects ON candidate_subjects.scheduled_candidate_id = scheduled_candidates.id
                 JOIN subjects ON subjects.id = candidate_subjects.subject_id
-                JOIN candidates ON candidates.id = scheduled_candidates.candidate_id
-                WHERE subjects.subject_code IN ('P1', 'P2', 'P3')
-                GROUP BY candidates.id, subjects.subject_code
-            )
-            SELECT 
-                candidates.id,
-                SUM(CASE WHEN cs.subject_code = 'P1' AND cs.total_score < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
-                SUM(CASE WHEN cs.subject_code = 'P1' AND cs.total_score >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
-                SUM(CASE WHEN cs.subject_code = 'P2' AND cs.total_score < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
-                SUM(CASE WHEN cs.subject_code = 'P2' AND cs.total_score >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
-                SUM(CASE WHEN cs.subject_code = 'P3' AND cs.total_score < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
-                SUM(CASE WHEN cs.subject_code = 'P3' AND cs.total_score >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count
-            FROM CandidateScores cs
-            JOIN candidates ON candidates.id = cs.candidate_id
+                GROUP BY scheduled_candidates.candidate_id, subjects.subject_code
+            ) AS scores_total ON scores_total.candidate_id = candidates.id
             GROUP BY candidates.id
-            ) AS summary"))
-            ->get();
+        "))
+    ->get();
             return $statistics1;
             // return $statistics;
             // $candidates = Candidate::selectRaw("
