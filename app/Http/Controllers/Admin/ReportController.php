@@ -140,57 +140,70 @@ class ReportController extends Controller
             // // ->groupBy('candidates.id')
             // ->first();
 
-            $statistics = DB::select("
-                SELECT 
-                    COUNT(DISTINCT candidates.id) AS total_candidates,
-                    SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
-                    SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
-                    SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
-                    SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
-                    SUM(CASE WHEN scores_total.subject_code = 'P3' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
-                    SUM(CASE WHEN scores_total.subject_code = 'P3' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count
-                FROM candidates
-                JOIN scheduled_candidates ON scheduled_candidates.candidate_id = candidates.id
-                JOIN schedulings ON schedulings.id = scheduled_candidates.schedule_id
-                JOIN venues ON venues.id = schedulings.venue_id
-                JOIN centres ON centres.id = venues.centre_id
-                JOIN test_configs ON test_configs.id = schedulings.test_config_id
-                LEFT JOIN (
-                    SELECT
-                        scheduled_candidates.candidate_id,
-                        subjects.subject_code,
-                        SUM(scores.point_scored) AS total_score
-                    FROM scores
-                    JOIN scheduled_candidates ON scheduled_candidates.id = scores.scheduled_candidate_id
-                    JOIN candidate_subjects ON candidate_subjects.scheduled_candidate_id = scheduled_candidates.id
-                    JOIN subjects ON subjects.id = candidate_subjects.subject_id
-                    JOIN schedulings ON schedulings.id = scheduled_candidates.schedule_id
-                    JOIN venues ON venues.id = schedulings.venue_id
-                    JOIN centres ON centres.id = venues.centre_id
-                    JOIN test_configs ON test_configs.id = schedulings.test_config_id
-                    WHERE centres.id = ? 
+            // $statistics = DB::select("
+            //     SELECT 
+            //         COUNT(DISTINCT candidates.id) AS total_candidates,
+            //         SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
+            //         SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
+            //         SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
+            //         SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
+            //         SUM(CASE WHEN scores_total.subject_code = 'P3' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
+            //         SUM(CASE WHEN scores_total.subject_code = 'P3' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count
+            //     FROM candidates
+            //     JOIN scheduled_candidates ON scheduled_candidates.candidate_id = candidates.id
+            //     JOIN schedulings ON schedulings.id = scheduled_candidates.schedule_id
+            //     JOIN venues ON venues.id = schedulings.venue_id
+            //     JOIN centres ON centres.id = venues.centre_id
+            //     JOIN test_configs ON test_configs.id = schedulings.test_config_id
+            //     LEFT JOIN (
+            //         SELECT
+            //             scheduled_candidates.candidate_id,
+            //             subjects.subject_code,
+            //             SUM(scores.point_scored) AS total_score
+            //         FROM scores
+            //         JOIN scheduled_candidates ON scheduled_candidates.id = scores.scheduled_candidate_id
+            //         JOIN candidate_subjects ON candidate_subjects.scheduled_candidate_id = scheduled_candidates.id
+            //         JOIN subjects ON subjects.id = candidate_subjects.subject_id
+            //         JOIN schedulings ON schedulings.id = scheduled_candidates.schedule_id
+            //         JOIN venues ON venues.id = schedulings.venue_id
+            //         JOIN centres ON centres.id = venues.centre_id
+            //         JOIN test_configs ON test_configs.id = schedulings.test_config_id
+            //         WHERE centres.id = ? 
                 
-                    AND test_configs.test_code_id = ? 
-                    AND test_configs.test_type_id = ?
-                    GROUP BY scores.scheduled_candidate_id
-                ) AS scores_total ON scores_total.candidate_id = candidates.id
-                WHERE centres.id = ? 
-                AND candidates.exam_year = ? 
-                AND test_configs.test_code_id = ? 
-                AND test_configs.test_type_id = ?
-                GROUP BY centres.id
+            //         AND test_configs.test_code_id = ? 
+            //         AND test_configs.test_type_id = ?
+            //         GROUP BY scores.scheduled_candidate_id
+            //     ) AS scores_total ON scores_total.candidate_id = candidates.id
+            //     WHERE centres.id = ? 
+            //     AND candidates.exam_year = ? 
+            //     AND test_configs.test_code_id = ? 
+            //     AND test_configs.test_type_id = ?
+            //     GROUP BY centres.id
                 
-                ", [$centre_id, $code_id, $type_id,$centre_id, $year, $code_id, $type_id]
-            );
+            //     ", [$centre_id, $code_id, $type_id,$centre_id, $year, $code_id, $type_id]
+            // );
         
+            
+            $statistics = [
+                'P1_below_50_count'=>0,
+                'P2_below_50_count'=>0,
+                'P3_below_50_count'=>0,
+                'PE_below_50_count'=>0,
+                'PA_below_50_count'=>0,
+                'P1_above_50_count'=>0,
+                'P2_above_50_count'=>0,
+                'P3_above_50_count'=>0,
+                'PE_above_50_count'=>0,
+                'PA_above_50_count'=>0,
+            ];
 
-
-
-
-
-        
-
-
+            foreach($candidates as $candidate){
+                if($candidate->P1 >= 50) $statistics['P1_above_50_count'] ++; else $statistics['P1_below_50_count'] ++;
+                if($candidate->P2 >= 50) $statistics['P2_above_50_count'] ++; else $statistics['P2_below_50_count'] ++;
+                if($candidate->P3 >= 50) $statistics['P3_above_50_count'] ++; else $statistics['P3_below_50_count'] ++;
+                if($candidate->PE >= 50) $statistics['PE_above_50_count'] ++; else $statistics['PE_below_50_count'] ++;
+                if($candidate->PA >= 50) $statistics['PA_above_50_count'] ++; else $statistics['PA_below_50_count'] ++;
+            }
 
             return $statistics;
             // return $statistics;
