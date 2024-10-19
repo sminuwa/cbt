@@ -17,7 +17,7 @@
           </div>
           <div class="card-body chart-block"> 
             
-            <canvas id="pieChart" height="150"> </canvas>
+            <canvas id="pieChart" height="210"> </canvas>
           </div>
         </div>
     </div>
@@ -163,15 +163,15 @@ var barChart =new Chart(ctx, {
                     weight: 'bold'
                 }
             },
-            title: {
-                display: true,
-                text: 'Score Above & Below 50',
-                color: '#006666',
-                font: {
-                    // weight: 'bold',
-                    size: 12
-                }
-            },
+            // title: {
+            //     display: true,
+            //     text: 'Score Above & Below 50',
+            //     color: '#006666',
+            //     font: {
+            //         // weight: 'bold',
+            //         size: 12
+            //     }
+            // },
             
         }
     },
