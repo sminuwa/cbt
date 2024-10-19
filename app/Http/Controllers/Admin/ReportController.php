@@ -143,6 +143,7 @@ class ReportController extends Controller
             $statistics = DB::select("
     SELECT 
         candidates.id AS candidate_id,
+        candidates.exam_year
         SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
         SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
         SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
