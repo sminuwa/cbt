@@ -17,7 +17,7 @@
           </div>
           <div class="card-body chart-block"> 
             
-            <canvas id="pieChart" height="400"> </canvas>
+            <canvas id="pieChart" height="150"> </canvas>
           </div>
         </div>
     </div>
@@ -137,8 +137,8 @@ var barChart =new Chart(ctx, {
         'rgb(255, 205, 86)'
         ],
         data: [
-                {{ round(($percentages->above_50 / ($percentages->above_50+$percentages->below_50)) * 100) }}, 
-                {{ round(($percentages->below_50 / ($percentages->above_50+$percentages->below_50)) * 100) }}, 
+                {{ round(($percentages->above_50 / (($percentages->above_50+$percentages->below_50)?:1)) * 100) }}, 
+                {{ round(($percentages->below_50 / (($percentages->above_50+$percentages->below_50)?:1)) * 100) }}, 
             ],
         hoverOffset: 4
     }],
