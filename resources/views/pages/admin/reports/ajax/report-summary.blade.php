@@ -139,8 +139,8 @@ var barChart =new Chart(ctx, {
         'rgb(255, 205, 86)'
         ],
         data: [
-                {{ ($percentages->above_50 / $percentages->total) * 100 }}, 
-                {{ ($percentages->below_50 / $percentages->total) * 100 }}, 
+                {{ ($percentages->above_50 / ($percentages->above_50+$percentages->below_50)) * 100 }}, 
+                {{ ($percentages->below_50 / ($percentages->above_50+$percentages->below_50)) * 100 }}, 
             ],
         hoverOffset: 4
     }]
