@@ -104,9 +104,9 @@ var barChart =new Chart(ctx, {
                 anchor: 'end',
                 formatter: (value) => value, // Display the value itself
                 color: 'black',  // Customize text color
-                font: {
-                    weight: 'bold'
-                }
+                // font: {
+                //     weight: 'bold'
+                // }
             },
             title: {
                 display: true,
@@ -128,7 +128,7 @@ var ctx = document.getElementById('pieChart');
 var barChart =new Chart(ctx, {
     type: 'pie',
     data: {
-    labels: ["Above 50%", "Below 50%"],
+    labels: ["Above 50% (P1-PA)", "Below 50% (P1-PA)"],
     datasets: [{
         label: "Pie Chart",
         backgroundColor: [
@@ -159,9 +159,7 @@ var barChart =new Chart(ctx, {
                 anchor: 'end',
                 formatter: (value) => value, // Display the value itself
                 color: 'black',  // Customize text color
-                font: {
-                    weight: 'bold'
-                }
+                
             },
             // title: {
             //     display: true,
