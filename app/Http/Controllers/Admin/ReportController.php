@@ -77,6 +77,49 @@ class ReportController extends Controller
             ])
             ->groupBy('candidates.id')
             ->get();
+
+
+            $statistics = Candidate::selectRaw("
+                COUNT(candidates.id) AS total_candidates,
+
+                -- Total count of candidates with below 50 in each subject/assessment
+                SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
+                SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
+                SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
+                SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) < 50 THEN 1 ELSE 0 END) AS PE_below_50_count,
+                SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) < 50 THEN 1 ELSE 0 END) AS PA_below_50_count,
+
+                -- Total count of candidates with above 50 in each subject/assessment
+                SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
+                SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
+                SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count,
+                SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) AS PE_above_50_count,
+                SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) AS PA_above_50_count,
+
+                -- Percentage calculations
+                (SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P1_above_50_percentage,
+                (SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P2_above_50_percentage,
+                (SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P3_above_50_percentage,
+                (SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS PE_above_50_percentage,
+                (SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS PA_above_50_percentage
+            ")
+            ->join('scheduled_candidates', 'scheduled_candidates.candidate_id', '=', 'candidates.id')
+            ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', '=', 'scheduled_candidates.id')
+            ->join('schedulings', 'schedulings.id', '=', 'scheduled_candidates.schedule_id')
+            ->join('test_configs', 'test_configs.id', '=', 'schedulings.test_config_id')
+            ->join('venues', 'venues.id', '=', 'schedulings.venue_id')
+            ->join('centres', 'centres.id', '=', 'venues.centre_id')
+            ->leftJoin('scores', 'scores.scheduled_candidate_id', '=', 'scheduled_candidates.id')
+            ->leftJoin('subjects', 'subjects.id', '=', 'candidate_subjects.subject_id')
+            ->where([
+                'centres.id' => $centre_id,
+                'candidates.exam_year' => $year,
+                'test_configs.test_code_id' => $code_id,
+                'test_configs.test_type_id' => $type_id,
+            ])
+            ->first();
+
+            // return $statistics;
             // $candidates = Candidate::selectRaw("
             //     CONCAT(candidates.surname,' ', candidates.firstname,' ', IFNULL(candidates.other_names, '')) as fullname,
             //     candidates.indexing as indexing,
@@ -183,7 +226,7 @@ class ReportController extends Controller
             //     $reports[] = $candidateData;
             // }
 
-            return view('pages.admin.reports.ajax.report-summary', compact('candidates', 'subjects'));
+            return view('pages.admin.reports.ajax.report-summary', compact('candidates', 'subjects','statistics'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

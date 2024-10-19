@@ -117,6 +117,7 @@
                     },
                     error:function(err, hrx){
                         console.log(err)
+                        console.log(err)
                     }
                 })
                 

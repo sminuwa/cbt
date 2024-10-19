@@ -183,7 +183,10 @@
 
 {{-- <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script> --}}
 <!-- Plugins JS Ends-->
-
+<script src="{{ asset('candidate/assets/js/chart/google/google-chart-loader.js') }}"></script>
+{{-- <script src="{{ asset('candidate/assets/js/chart/google/google-chart.js') }}"></script> --}}
+<script src="{{ asset('candidate/assets/js/chart/chartjs/chart.min.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/chart/chartjs/chart.custom.js') }}"></script>
 <!-- calendar js-->
 <script src="{{ asset('candidate/assets/js/height-equal.js') }}"></script>
 <!-- Theme js-->
@@ -200,6 +203,8 @@
         buttons: ["copyHtml5", "excelHtml5", "csvHtml5", "pdfHtml5"],
     });
 // $(".select2").select2();
+
+
 </script>
 @yield('script')
 </body>
