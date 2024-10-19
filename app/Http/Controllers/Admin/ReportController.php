@@ -205,7 +205,7 @@ class ReportController extends Controller
                 if($candidate->PA >= 10) $statistics['PA_above_50_count'] ++; else $statistics['PA_below_50_count'] ++;
             }
 
-            return $statistics;
+            // return $statistics;
             // return $statistics;
             // $candidates = Candidate::selectRaw("
             //     CONCAT(candidates.surname,' ', candidates.firstname,' ', IFNULL(candidates.other_names, '')) as fullname,
