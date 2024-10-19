@@ -56,9 +56,7 @@
 </div>
 
 <script>
-
 var ctx = document.getElementById('barChart');
-
 var barChart =new Chart(ctx, {
     type: 'bar',
     data: {
@@ -122,6 +120,35 @@ var barChart =new Chart(ctx, {
         }
     },
     plugins: [ChartDataLabels]
+  });
+
+
+var ctx = document.getElementById('pieChart');
+var barChart =new Chart(ctx, {
+    type: 'pie',
+    data: {
+    labels: ["Above 50%", "Below 50%"],
+    
+    
+
+    datasets: [{
+        label: "Pie Chart",
+        backgroundColor: [
+        'rgb(255, 99, 132)',
+        'rgb(54, 162, 235)',
+        'rgb(255, 205, 86)'
+        ],
+        data: [
+                {{ ($percentages->above_50 / $percentages->total) * 100 }}, 
+                {{ ($percentages->below_50 / $percentages->total) * 100 }}, 
+            ],
+        hoverOffset: 4
+    }]
+
+
+
+    },
+    
   });
 </script>
 {{-- <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> --}}

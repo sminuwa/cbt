@@ -106,6 +106,15 @@ class ReportController extends Controller
             }
 
             $statistics = (object)$statistics;
+            
+            $percentages = [
+                'blow_50'=>0,
+                'above_50'=>0,
+                'total'=>count($candidates),
+            ];
+            $percentages['above_50'] = $statistics->P1_above_50_count + $statistics->P2_above_50_count + $statistics->P3_above_50_count+ $statistics->PE_above_50_count + $statistics->PA_above_50_count;
+            $percentages['below_50'] = $statistics->P1_above_50_count + $statistics->P2_above_50_count + $statistics->P3_below_50_count+ $statistics->PE_below_50_count + $statistics->PA_below_50_count;
+            $percentages = (object)$percentages;
             // return $statistics;
             // return $statistics;
             // $candidates = Candidate::selectRaw("
@@ -214,7 +223,7 @@ class ReportController extends Controller
             //     $reports[] = $candidateData;
             // }
 
-            return view('pages.admin.reports.ajax.report-summary', compact('candidates', 'subjects','statistics'));
+            return view('pages.admin.reports.ajax.report-summary', compact('candidates', 'subjects','statistics','percentages'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
