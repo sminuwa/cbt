@@ -141,38 +141,38 @@ class ReportController extends Controller
             // ->first();
 
             $statistics = DB::select("
-            SELECT 
-                candidates.id AS candidate_id,
-                SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
-                SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
-                SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
-                SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
-                SUM(CASE WHEN scores_total.subject_code = 'P3' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
-                SUM(CASE WHEN scores_total.subject_code = 'P3' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count
-            FROM candidates
-            LEFT JOIN (
-                SELECT
-                    scheduled_candidates.candidate_id,
-                    subjects.subject_code,
-                    SUM(scores.point_scored) AS total_score
-                FROM scores
-                JOIN scheduled_candidates ON scheduled_candidates.id = scores.scheduled_candidate_id
-                JOIN candidate_subjects ON candidate_subjects.scheduled_candidate_id = scheduled_candidates.id
-                JOIN subjects ON subjects.id = candidate_subjects.subject_id
-                JOIN schedulings ON schedulings.id = scheduled_candidates.schedule_id
-                JOIN test_configs ON test_configs.id = schedulings.test_config_id
-                JOIN venues ON venues.id = schedulings.venue_id
-                JOIN centres ON centres.id = venues.centre_id
-                JOIN candidates ON candidates.id = scheduled_candidates.candidate_id -- Added this join here
-                WHERE 
-                    centres.id = ? AND 
-                    candidates.exam_year = ? AND
-                    test_configs.test_code_id = ? AND
-                    test_configs.test_type_id = ?
-                GROUP BY scores.scheduled_candidate_id
-            ) AS scores_total ON scores_total.candidate_id = candidates.id
-            GROUP BY candidates.id
-        ", [$centre_id, $year, $code_id, $type_id]);
+    SELECT 
+        COUNT(candidates.id) AS total_candidates,
+        SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
+        SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
+        SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
+        SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
+        SUM(CASE WHEN scores_total.subject_code = 'P3' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
+        SUM(CASE WHEN scores_total.subject_code = 'P3' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count
+    FROM candidates
+    LEFT JOIN (
+        SELECT
+            scheduled_candidates.candidate_id,
+            subjects.subject_code,
+            SUM(scores.point_scored) AS total_score
+        FROM scores
+        JOIN scheduled_candidates ON scheduled_candidates.id = scores.scheduled_candidate_id
+        JOIN candidate_subjects ON candidate_subjects.scheduled_candidate_id = scheduled_candidates.id
+        JOIN subjects ON subjects.id = candidate_subjects.subject_id
+        JOIN schedulings ON schedulings.id = scheduled_candidates.schedule_id
+        JOIN test_configs ON test_configs.id = schedulings.test_config_id
+        JOIN venues ON venues.id = schedulings.venue_id
+        JOIN centres ON centres.id = venues.centre_id
+        JOIN candidates ON candidates.id = scheduled_candidates.candidate_id
+        WHERE 
+            centres.id = ? AND 
+            candidates.exam_year = ? AND
+            test_configs.test_code_id = ? AND
+            test_configs.test_type_id = ?
+        GROUP BY scheduled_candidates.candidate_id, subjects.subject_code
+    ) AS scores_total ON scores_total.candidate_id = candidates.id
+", [$centre_id, $year, $code_id, $type_id]);
+
         
 
 
