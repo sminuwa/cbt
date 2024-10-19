@@ -159,10 +159,21 @@ class ReportController extends Controller
         JOIN scheduled_candidates ON scheduled_candidates.id = scores.scheduled_candidate_id
         JOIN candidate_subjects ON candidate_subjects.scheduled_candidate_id = scheduled_candidates.id
         JOIN subjects ON subjects.id = candidate_subjects.subject_id
-        GROUP BY scores.scheduled_candidate_id
+        JOIN schedulings ON schedulings.id = scheduled_candidates.schedule_id
+        JOIN test_configs ON test_configs.id = schedulings.test_config_id
+        JOIN venues ON venues.id = schedulings.venue_id
+        JOIN centres ON centres.id = venues.centre_id
+        WHERE 
+            centres.id = ? AND 
+            candidates.exam_year = ? AND
+            test_configs.test_code_id = ? AND
+            test_configs.test_type_id = ?
+        GROUP BY scheduled_candidates.candidate_id, subjects.subject_code
     ) AS scores_total ON scores_total.candidate_id = candidates.id
     GROUP BY candidates.id
-");
+", [$centre_id, $year, $code_id, $type_id]);
+
+
 
             return $statistics;
             // return $statistics;
