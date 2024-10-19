@@ -128,9 +128,6 @@ var barChart =new Chart(ctx, {
     type: 'pie',
     data: {
     labels: ["Above 50%", "Below 50%"],
-    
-    
-
     datasets: [{
         label: "Pie Chart",
         backgroundColor: [
@@ -143,11 +140,39 @@ var barChart =new Chart(ctx, {
                 {{ round(($percentages->below_50 / ($percentages->above_50+$percentages->below_50)) * 100) }}, 
             ],
         hoverOffset: 4
-    }]
+    }],
 
 
 
     },
+    options: { 
+        plugins: {
+            tooltip: {
+                enabled: false  // Disable tooltips
+            },
+            datalabels: {  // Configure datalabels to show on top of each bar
+                display: true,
+                align: 'end',
+                anchor: 'end',
+                formatter: (value) => value, // Display the value itself
+                color: 'black',  // Customize text color
+                font: {
+                    weight: 'bold'
+                }
+            },
+            title: {
+                display: true,
+                text: 'Score Above & Below 50',
+                color: '#006666',
+                font: {
+                    // weight: 'bold',
+                    size: 12
+                }
+            },
+            
+        }
+    },
+    plugins: [ChartDataLabels]
     
   });
 </script>
