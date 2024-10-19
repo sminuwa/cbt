@@ -117,6 +117,7 @@ class ReportController extends Controller
                 'test_configs.test_code_id' => $code_id,
                 'test_configs.test_type_id' => $type_id,
             ])
+            ->groupBy('candidates.id')
             ->first();
 
             // return $statistics;
