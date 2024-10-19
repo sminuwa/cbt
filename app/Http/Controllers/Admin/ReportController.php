@@ -80,32 +80,28 @@ class ReportController extends Controller
 
 
             $statistics = Candidate::selectRaw("
-                COUNT(DISTINCT candidates.id) AS total_candidates,  -- Ensuring unique candidate counting
+                COUNT(candidates.id) AS total_candidates,
 
                 -- Total count of candidates with below 50 in each subject/assessment
                 SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
                 SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
                 SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
-                
-                -- Accurate PE score from subquery
-                SUM(CASE WHEN pe_scores.total_pe_score < 50 THEN 1 ELSE 0 END) AS PE_below_50_count,
-
-                -- Accurate PA score from subquery (note: PA threshold is 10 as per your example)
-                SUM(CASE WHEN pa_scores.total_pa_score < 10 THEN 1 ELSE 0 END) AS PA_below_50_count,
+                SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) < 50 THEN 1 ELSE 0 END) AS PE_below_50_count,
+                SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) <  THEN 1 ELSE 0 END) AS PA_below_50_count,
 
                 -- Total count of candidates with above 50 in each subject/assessment
                 SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
                 SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
                 SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count,
-                SUM(CASE WHEN pe_scores.total_pe_score >= 50 THEN 1 ELSE 0 END) AS PE_above_50_count,
-                SUM(CASE WHEN pa_scores.total_pa_score >= 10 THEN 1 ELSE 0 END) AS PA_above_50_count,
+                SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) AS PE_above_50_count,
+                SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) >= 10 THEN 1 ELSE 0 END) AS PA_above_50_count,
 
-                -- Percentage calculations (dividing by distinct total candidates)
-                (SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(DISTINCT candidates.id)) * 100 AS P1_above_50_percentage,
-                (SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(DISTINCT candidates.id)) * 100 AS P2_above_50_percentage,
-                (SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(DISTINCT candidates.id)) * 100 AS P3_above_50_percentage,
-                (SUM(CASE WHEN pe_scores.total_pe_score >= 50 THEN 1 ELSE 0 END) / COUNT(DISTINCT candidates.id)) * 100 AS PE_above_50_percentage,
-                (SUM(CASE WHEN pa_scores.total_pa_score >= 10 THEN 1 ELSE 0 END) / COUNT(DISTINCT candidates.id)) * 100 AS PA_above_50_percentage
+                -- Percentage calculations
+                (SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P1_above_50_percentage,
+                (SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P2_above_50_percentage,
+                (SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P3_above_50_percentage,
+                (SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS PE_above_50_percentage,
+                (SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) >= 10 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS PA_above_50_percentage
             ")
             ->join('scheduled_candidates', 'scheduled_candidates.candidate_id', '=', 'candidates.id')
             ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', '=', 'scheduled_candidates.id')
@@ -115,20 +111,14 @@ class ReportController extends Controller
             ->join('centres', 'centres.id', '=', 'venues.centre_id')
             ->leftJoin('scores', 'scores.scheduled_candidate_id', '=', 'scheduled_candidates.id')
             ->leftJoin('subjects', 'subjects.id', '=', 'candidate_subjects.subject_id')
-
-            
-            ->leftJoin(DB::raw("(SELECT candidate_id, SUM(score) AS total_pe_score FROM practical_examinations GROUP BY candidate_id) AS pe_scores"), 'pe_scores.candidate_id', '=', 'candidates.id')
-
-            ->leftJoin(DB::raw("(SELECT candidate_id, SUM(score) AS total_pa_score FROM project_assessments GROUP BY candidate_id) AS pa_scores"), 'pa_scores.candidate_id', '=', 'candidates.id')
-
             ->where([
+                'centres.id' => $centre_id,
                 'candidates.exam_year' => $year,
                 'test_configs.test_code_id' => $code_id,
-                'test_configs.test_type_id' => $type_id
+                'test_configs.test_type_id' => $type_id,
             ])
-            ->groupBy('centres.id')  
+            ->groupBy('candidates.id')
             ->first();
-
 
             // return $statistics;
             // $candidates = Candidate::selectRaw("
