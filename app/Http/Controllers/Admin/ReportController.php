@@ -92,11 +92,11 @@ class ReportController extends Controller
             ];
 
             foreach($candidates as $candidate){
-                if($candidate->P1 >= 50) $statistics['P1_above_50_count'] ++; else $statistics['P1_below_50_count'] ++;
-                if($candidate->P2 >= 50) $statistics['P2_above_50_count'] ++; else $statistics['P2_below_50_count'] ++;
-                if($candidate->P3 >= 50) $statistics['P3_above_50_count'] ++; else $statistics['P3_below_50_count'] ++;
-                if($candidate->PE >= 50) $statistics['PE_above_50_count'] ++; else $statistics['PE_below_50_count'] ++;
-                if($candidate->PA >= 10) $statistics['PA_above_50_count'] ++; else $statistics['PA_below_50_count'] ++;
+                if($candidate->P1 < 50 && $candidate->P1 > 0) $statistics['P1_below_50_count'] ++; else $statistics['P1_above_50_count'] ++;
+                if($candidate->P2 < 50 && $candidate->P2 > 0) $statistics['P2_below_50_count'] ++; else $statistics['P2_above_50_count'] ++;
+                if($candidate->P3 < 50 && $candidate->P3 > 0) $statistics['P3_below_50_count'] ++; else $statistics['P3_above_50_count'] ++;
+                if($candidate->PE < 50 && $candidate->PE > 0) $statistics['PE_below_50_count'] ++; else $statistics['PE_above_50_count'] ++;
+                if($candidate->PA < 10 && $candidate->PA > 0) $statistics['PA_below_50_count'] ++; else $statistics['PA_above_50_count'] ++;
             }
 
             $statistics = (object)$statistics;
