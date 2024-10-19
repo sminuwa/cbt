@@ -71,51 +71,66 @@
     barDatasetSpacing: 1,
   };
   var belowChartCtx = document.getElementById("belowChart").getContext("2d");
-  var aboveChartCtx = document.getElementById("aboveChart").getContext("2d");
+//   var aboveChartCtx = document.getElementById("aboveChart").getContext("2d");
   var belowChart = new Chart(belowChartCtx).Bar(
     {
         labels: ["P1", "P2", "P3", "PE", "PA"],
         datasets: [
-        {
-            label: "Below",
-            fillColor: "rgba(0, 102, 102, 0.5)",
-            strokeColor: RihoAdminConfig.primary,
-            highlightFill: "rgba(0, 102, 102, 0.2)",
-            highlightStroke: RihoAdminConfig.primary,
-            data: [
-                {{ $statistics->P1_below_50_count }}, 
-                {{ $statistics->P2_below_50_count }}, 
-                {{ $statistics->P3_below_50_count }}, 
-                {{ $statistics->PE_below_50_count }}, 
-                {{ $statistics->PA_below_50_count }}, 
-            ],
-        },
+            {
+                label: "My First dataset",
+                fillColor: "rgba(0, 102, 102, 0.2)",
+                strokeColor: RihoAdminConfig.primary,
+                highlightFill: "rgba(0, 102, 102, 0.2)",
+                highlightStroke: RihoAdminConfig.primary,
+                data: [
+                        {{ $statistics->P1_below_50_count }}, 
+                        {{ $statistics->P2_below_50_count }}, 
+                        {{ $statistics->P3_below_50_count }}, 
+                        {{ $statistics->PE_below_50_count }}, 
+                        {{ $statistics->PA_below_50_count }}, 
+                    ],
+            },
+            {
+                label: "My Second dataset",
+                fillColor: "rgba(254, 106, 73, 0.3)", 
+                strokeColor: RihoAdminConfig.secondary,
+                highlightFill: "rgba(254, 106, 73, 0.3)",
+                highlightStroke: RihoAdminConfig.secondary, 
+                data: [
+                        {{ $statistics->P1_above_50_count }}, 
+                        {{ $statistics->P2_above_50_count }}, 
+                        {{ $statistics->P3_above_50_count }}, 
+                        {{ $statistics->PE_above_50_count }}, 
+                        {{ $statistics->PA_above_50_count }}, 
+                    ],
+            },
         ],
+            
     }, 
     barOptions
   );
-  var aboveChart = new Chart(aboveChartCtx).Bar(
-    {
-        labels: ["P1", "P2", "P3", "PE", "PA"],
-        datasets: [
-        {
-            label: "Below",
-            fillColor: "rgba(0, 102, 102, 0.5)",
-            strokeColor: RihoAdminConfig.primary,
-            highlightFill: "rgba(0, 102, 102, 0.2)",
-            highlightStroke: RihoAdminConfig.primary,
-            data: [
-                {{ $statistics->P1_above_50_count }}, 
-                {{ $statistics->P2_above_50_count }}, 
-                {{ $statistics->P3_above_50_count }}, 
-                {{ $statistics->PE_above_50_count }}, 
-                {{ $statistics->PA_above_50_count }}, 
-            ],
-        },
-        ],
-    }, 
-    barOptions
-  );
+//   var aboveChart = new Chart(aboveChartCtx).Bar(
+//     {
+//         labels: ["P1", "P2", "P3", "PE", "PA"],
+//         datasets: [
+//         {
+//             label: "Below",
+//             fillColor: "rgba(0, 102, 102, 0.5)",
+//             strokeColor: RihoAdminConfig.primary,
+//             highlightFill: "rgba(0, 102, 102, 0.2)",
+//             highlightStroke: RihoAdminConfig.primary,
+//             data: [
+//                 {{ $statistics->P1_above_50_count }}, 
+//                 {{ $statistics->P2_above_50_count }}, 
+//                 {{ $statistics->P3_above_50_count }}, 
+//                 {{ $statistics->PE_above_50_count }}, 
+//                 {{ $statistics->PA_above_50_count }}, 
+//             ],
+//         },
+//         ],
+//     }, 
+//     barOptions
+//   );
   
   
   
