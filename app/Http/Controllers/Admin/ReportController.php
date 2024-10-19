@@ -142,7 +142,7 @@ class ReportController extends Controller
 
             $statistics = DB::select("
     SELECT 
-        COUNT(DISTINCT candidates.id) AS total_candidates,  -- Ensuring only unique candidates from the specific centre
+        COUNT(DISTINCT candidates.id) AS total_candidates,  -- Count unique candidates from the specific centre
         SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
         SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
         SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
@@ -154,7 +154,7 @@ class ReportController extends Controller
     JOIN schedulings ON schedulings.id = scheduled_candidates.schedule_id
     JOIN venues ON venues.id = schedulings.venue_id
     JOIN centres ON centres.id = venues.centre_id
-    JOIN test_configs ON test_configs.id = schedulings.test_config_id  -- Join with test_configs table
+    JOIN test_configs ON test_configs.id = schedulings.test_config_id
     LEFT JOIN (
         SELECT
             scheduled_candidates.candidate_id,
@@ -169,9 +169,10 @@ class ReportController extends Controller
     WHERE centres.id = ? 
     AND candidates.exam_year = ? 
     AND test_configs.test_code_id = ? 
-    AND test_configs.test_type_id = ?  -- Updated condition for test_type_id in test_configs
+    AND test_configs.test_type_id = ?
     GROUP BY centres.id
 ", [$centre_id, $year, $code_id, $type_id]);
+
 
 
 
