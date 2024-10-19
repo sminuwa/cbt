@@ -169,7 +169,7 @@ class ReportController extends Controller
                     candidates.exam_year = ? AND
                     test_configs.test_code_id = ? AND
                     test_configs.test_type_id = ?
-                GROUP BY scheduled_candidates.candidate_id, subjects.subject_code
+                GROUP BY scores.scheduled_candidate_id
             ) AS scores_total ON scores_total.candidate_id = candidates.id
             GROUP BY candidates.id
         ", [$centre_id, $year, $code_id, $type_id]);
