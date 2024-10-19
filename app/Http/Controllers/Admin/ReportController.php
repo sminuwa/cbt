@@ -154,6 +154,7 @@ class ReportController extends Controller
     JOIN schedulings ON schedulings.id = scheduled_candidates.schedule_id
     JOIN venues ON venues.id = schedulings.venue_id
     JOIN centres ON centres.id = venues.centre_id
+    JOIN test_configs ON test_configs.id = schedulings.test_config_id  -- Join with test_configs table
     LEFT JOIN (
         SELECT
             scheduled_candidates.candidate_id,
@@ -167,10 +168,11 @@ class ReportController extends Controller
     ) AS scores_total ON scores_total.candidate_id = candidates.id
     WHERE centres.id = ? 
     AND candidates.exam_year = ? 
-    AND schedulings.test_config_id = ? 
-    AND schedulings.test_type_id = ?  -- Including the test_type_id condition
+    AND test_configs.test_code_id = ? 
+    AND test_configs.test_type_id = ?  -- Updated condition for test_type_id in test_configs
     GROUP BY centres.id
 ", [$centre_id, $year, $code_id, $type_id]);
+
 
 
 
