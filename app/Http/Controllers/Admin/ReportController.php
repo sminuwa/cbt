@@ -159,7 +159,7 @@ class ReportController extends Controller
         JOIN scheduled_candidates ON scheduled_candidates.id = scores.scheduled_candidate_id
         JOIN candidate_subjects ON candidate_subjects.scheduled_candidate_id = scheduled_candidates.id
         JOIN subjects ON subjects.id = candidate_subjects.subject_id
-        GROUP BY scheduled_candidates.candidate_id, subjects.subject_code
+        GROUP BY scores.scheduled_candidate_id
     ) AS scores_total ON scores_total.candidate_id = candidates.id
     GROUP BY candidates.id
 ");
