@@ -137,8 +137,8 @@ var barChart =new Chart(ctx, {
         'rgb(255, 205, 86)'
         ],
         data: [
-                {{ round(($percentages->above_50 / (($percentages->above_50+$percentages->below_50)?:1)) * 100) }}, 
-                {{ round(($percentages->below_50 / (($percentages->above_50+$percentages->below_50)?:1)) * 100) }}, 
+                {{ round(($percentages->above_50 / max(($percentages->above_50+$percentages->below_50),1)) * 100) }}, 
+                {{ round(($percentages->below_50 / max(($percentages->above_50+$percentages->below_50),1)) * 100) }}, 
             ],
         hoverOffset: 4
     }],
@@ -148,7 +148,7 @@ var barChart =new Chart(ctx, {
     },
     options: { 
         responsive: true,
-        maintainAspectRatio: false  /
+        maintainAspectRatio: false,
         plugins: {
             tooltip: {
                 enabled: false  // Disable tooltips
