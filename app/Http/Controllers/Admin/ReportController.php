@@ -87,21 +87,21 @@ class ReportController extends Controller
                 SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
                 SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
                 SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) < 50 THEN 1 ELSE 0 END) AS PE_below_50_count,
-                SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) < 50 THEN 1 ELSE 0 END) AS PA_below_50_count,
+                SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) < 10 THEN 1 ELSE 0 END) AS PA_below_50_count,
 
                 -- Total count of candidates with above 50 in each subject/assessment
                 SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
                 SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
                 SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count,
                 SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) AS PE_above_50_count,
-                SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) AS PA_above_50_count,
+                SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) >= 10 THEN 1 ELSE 0 END) AS PA_above_50_count,
 
                 -- Percentage calculations
                 (SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P1_above_50_percentage,
                 (SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P2_above_50_percentage,
                 (SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P3_above_50_percentage,
                 (SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS PE_above_50_percentage,
-                (SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS PA_above_50_percentage
+                (SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) >= 10 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS PA_above_50_percentage
             ")
             ->join('scheduled_candidates', 'scheduled_candidates.candidate_id', '=', 'candidates.id')
             ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', '=', 'scheduled_candidates.id')
