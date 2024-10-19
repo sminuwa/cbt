@@ -79,92 +79,92 @@ class ReportController extends Controller
             ->get();
 
 
-            $statistics = Candidate::selectRaw("
-                COUNT(candidates.id) AS total_candidates,
+            // $statistics = Candidate::selectRaw("
+            //     COUNT(candidates.id) AS total_candidates,
 
-                -- Total count of candidates with below 50 in each subject/assessment
-                -- SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
-                SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
-                SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
-                SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) < 50 THEN 1 ELSE 0 END) AS PE_below_50_count,
-                SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) < 10 THEN 1 ELSE 0 END) AS PA_below_50_count,
+            //     -- Total count of candidates with below 50 in each subject/assessment
+            //     -- SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
+            //     SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
+            //     SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
+            //     SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) < 50 THEN 1 ELSE 0 END) AS PE_below_50_count,
+            //     SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) < 10 THEN 1 ELSE 0 END) AS PA_below_50_count,
 
-                -- Total count of candidates with above 50 in each subject/assessment
-                SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
-                SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
-                SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count,
-                SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) AS PE_above_50_count,
-                SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) >= 10 THEN 1 ELSE 0 END) AS PA_above_50_count,
+            //     -- Total count of candidates with above 50 in each subject/assessment
+            //     SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
+            //     SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
+            //     SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count,
+            //     SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) AS PE_above_50_count,
+            //     SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) >= 10 THEN 1 ELSE 0 END) AS PA_above_50_count,
 
-                -- Percentage calculations
-                (SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P1_above_50_percentage,
-                (SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P2_above_50_percentage,
-                (SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P3_above_50_percentage,
-                (SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS PE_above_50_percentage,
-                (SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) >= 10 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS PA_above_50_percentage,
+            //     -- Percentage calculations
+            //     (SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P1_above_50_percentage,
+            //     (SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P2_above_50_percentage,
+            //     (SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS P3_above_50_percentage,
+            //     (SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) >= 50 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS PE_above_50_percentage,
+            //     (SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) >= 10 THEN 1 ELSE 0 END) / COUNT(candidates.id)) * 100 AS PA_above_50_percentage,
 
-                SUM(
-                    CASE 
-                    WHEN subjects.subject_code = 'P1' 
-                    AND 
-                    (
-                        SELECT sum(s.point_scored) 
-                        FROM scores s
-                        JOIN scheduled_candidates sc ON sc.id = s.scheduled_candidate_id
-                        JOIN candidates c ON c.id = sc.candidate_id
-                        JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
-                        JOIN subjects sj ON sj.id = cs.subject_id
-                        WHERE c.id = candidates.id
-                        AND sj.subject_code = 'P1'
-                    )  < 50 
-                    THEN 1 
-                    ELSE 0 
-                    END
-                ) AS P1_below_50_count
+            //     SUM(
+            //         CASE 
+            //         WHEN subjects.subject_code = 'P1' 
+            //         AND 
+            //         (
+            //             SELECT sum(s.point_scored) 
+            //             FROM scores s
+            //             JOIN scheduled_candidates sc ON sc.id = s.scheduled_candidate_id
+            //             JOIN candidates c ON c.id = sc.candidate_id
+            //             JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
+            //             JOIN subjects sj ON sj.id = cs.subject_id
+            //             WHERE c.id = candidates.id
+            //             AND sj.subject_code = 'P1'
+            //         )  < 50 
+            //         THEN 1 
+            //         ELSE 0 
+            //         END
+            //     ) AS P1_below_50_count
                 
-            ")
-            ->join('scheduled_candidates', 'scheduled_candidates.candidate_id', '=', 'candidates.id')
-            ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', '=', 'scheduled_candidates.id')
-            ->join('schedulings', 'schedulings.id', '=', 'scheduled_candidates.schedule_id')
-            ->join('test_configs', 'test_configs.id', '=', 'schedulings.test_config_id')
-            ->join('venues', 'venues.id', '=', 'schedulings.venue_id')
-            ->join('centres', 'centres.id', '=', 'venues.centre_id')
-            ->leftJoin('scores', 'scores.scheduled_candidate_id', '=', 'scheduled_candidates.id')
-            ->leftJoin('subjects', 'subjects.id', '=', 'candidate_subjects.subject_id')
-            ->where([
-                'centres.id' => $centre_id,
-                'candidates.exam_year' => $year,
-                'test_configs.test_code_id' => $code_id,
-                'test_configs.test_type_id' => $type_id,
-            ])
-            // ->groupBy('candidates.id')
-            ->first();
+            // ")
+            // ->join('scheduled_candidates', 'scheduled_candidates.candidate_id', '=', 'candidates.id')
+            // ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', '=', 'scheduled_candidates.id')
+            // ->join('schedulings', 'schedulings.id', '=', 'scheduled_candidates.schedule_id')
+            // ->join('test_configs', 'test_configs.id', '=', 'schedulings.test_config_id')
+            // ->join('venues', 'venues.id', '=', 'schedulings.venue_id')
+            // ->join('centres', 'centres.id', '=', 'venues.centre_id')
+            // ->leftJoin('scores', 'scores.scheduled_candidate_id', '=', 'scheduled_candidates.id')
+            // ->leftJoin('subjects', 'subjects.id', '=', 'candidate_subjects.subject_id')
+            // ->where([
+            //     'centres.id' => $centre_id,
+            //     'candidates.exam_year' => $year,
+            //     'test_configs.test_code_id' => $code_id,
+            //     'test_configs.test_type_id' => $type_id,
+            // ])
+            // // ->groupBy('candidates.id')
+            // ->first();
 
-            $statistics1 = DB::table(DB::raw("
-            SELECT 
-                candidates.id AS candidate_id,
-                SUM(CASE WHEN subjects.subject_code = 'P1' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
-                SUM(CASE WHEN subjects.subject_code = 'P1' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
-                SUM(CASE WHEN subjects.subject_code = 'P2' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
-                SUM(CASE WHEN subjects.subject_code = 'P2' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
-                SUM(CASE WHEN subjects.subject_code = 'P3' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
-                SUM(CASE WHEN subjects.subject_code = 'P3' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count
-            FROM candidates
-            LEFT JOIN (
-                SELECT
-                    scheduled_candidates.candidate_id,
-                    subjects.subject_code,
-                    SUM(scores.point_scored) AS total_score
-                FROM scores
-                JOIN scheduled_candidates ON scheduled_candidates.id = scores.scheduled_candidate_id
-                JOIN candidate_subjects ON candidate_subjects.scheduled_candidate_id = scheduled_candidates.id
-                JOIN subjects ON subjects.id = candidate_subjects.subject_id
-                GROUP BY scheduled_candidates.candidate_id, subjects.subject_code
-            ) AS scores_total ON scores_total.candidate_id = candidates.id
-            GROUP BY candidates.id
-        "))
-    ->get();
-            return $statistics1;
+            $statistics = DB::select("
+    SELECT 
+        candidates.id AS candidate_id,
+        SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
+        SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
+        SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
+        SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P2_above_50_count,
+        SUM(CASE WHEN scores_total.subject_code = 'P3' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
+        SUM(CASE WHEN scores_total.subject_code = 'P3' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count
+    FROM candidates
+    LEFT JOIN (
+        SELECT
+            scheduled_candidates.candidate_id,
+            subjects.subject_code,
+            SUM(scores.point_scored) AS total_score
+        FROM scores
+        JOIN scheduled_candidates ON scheduled_candidates.id = scores.scheduled_candidate_id
+        JOIN candidate_subjects ON candidate_subjects.scheduled_candidate_id = scheduled_candidates.id
+        JOIN subjects ON subjects.id = candidate_subjects.subject_id
+        GROUP BY scheduled_candidates.candidate_id, subjects.subject_code
+    ) AS scores_total ON scores_total.candidate_id = candidates.id
+    GROUP BY candidates.id
+");
+
+            return $statistics;
             // return $statistics;
             // $candidates = Candidate::selectRaw("
             //     CONCAT(candidates.surname,' ', candidates.firstname,' ', IFNULL(candidates.other_names, '')) as fullname,
