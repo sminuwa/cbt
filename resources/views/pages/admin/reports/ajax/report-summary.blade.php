@@ -93,19 +93,22 @@ var barChart =new Chart(ctx, {
                 ],
         }],
     },
-    options: {
-        scaleBeginAtZero: true,
-        scaleShowGridLines: true,
-        scaleGridLineColor: "rgba(0,0,0,0.1)",
-        scaleGridLineWidth: 1,
-        scaleShowHorizontalLines: true,
-        scaleShowVerticalLines: true,
-        barShowStroke: true,
-        barStrokeWidth: 2,
-        barValueSpacing: 5,
-        barDatasetSpacing: 1,
-        
+    
+    options: { 
         plugins: {
+            tooltip: {
+                enabled: false  // Disable tooltips
+            },
+            datalabels: {  // Configure datalabels to show on top of each bar
+                display: true,
+                align: 'end',
+                anchor: 'end',
+                formatter: (value) => value, // Display the value itself
+                color: 'black',  // Customize text color
+                font: {
+                    weight: 'bold'
+                }
+            },
             title: {
                 display: true,
                 text: 'Score Above & Below 50',
@@ -117,6 +120,8 @@ var barChart =new Chart(ctx, {
             },
             
         }
-    }
+    },
+    plugins: [ChartDataLabels]
   });
 </script>
+{{-- <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> --}}

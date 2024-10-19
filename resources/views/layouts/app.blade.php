@@ -187,7 +187,10 @@
 {{-- <script src="{{ asset('candidate/assets/js/chart/google/google-chart.js') }}"></script> --}}
 {{-- <script src="{{ asset('candidate/assets/js/chart/chartjs/chart.min.js') }}"></script> --}}
 <script src="{{ asset('candidate/assets/js/chart/chartjs/chartjs.js') }}"></script>
-<script src="{{ asset('candidate/assets/js/chart/chartjs/chartjs-datalables.js') }}"></script>
+<script src="{{ asset('candidate/assets/js/chart/chartjs/chartjs-datalabels.js') }}"></script>
+{{-- <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> <!-- Include the DataLabels plugin --> --}}
+
+
 {{-- <script src="{{ asset('candidate/assets/js/chart/chartjs/chart.custom.js') }}"></script> --}}
 <!-- calendar js-->
 <script src="{{ asset('candidate/assets/js/height-equal.js') }}"></script>
