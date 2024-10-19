@@ -3,7 +3,7 @@
     <div class="col-xl-6 col-md-12 box-col-6">
         <div class="card border-none">
           <div class="card-header"> 
-            <h4>Above 50%</h4>
+            <h4>Above 50</h4>
           </div>
           <div class="card-body chart-block"> 
             <canvas id="aboveChart"> </canvas>
@@ -13,7 +13,7 @@
     <div class="col-xl-6 col-md-12 box-col-6">
         <div class="card border-none">
           <div class="card-header"> 
-            <h4>Below 50%</h4>
+            <h4>Below 50</h4>
           </div>
           <div class="card-body chart-block"> 
             <canvas id="belowChart"> </canvas>
@@ -77,7 +77,7 @@
         labels: ["P1", "P2", "P3", "PE", "PA"],
         datasets: [
             {
-                label: "My First dataset",
+                label: "Above 50",
                 fillColor: "rgba(0, 102, 102, 0.2)",
                 strokeColor: RihoAdminConfig.primary,
                 highlightFill: "rgba(0, 102, 102, 0.2)",
@@ -91,7 +91,7 @@
                     ],
             },
             {
-                label: "My Second dataset",
+                label: "Below 50",
                 fillColor: "rgba(254, 106, 73, 0.3)", 
                 strokeColor: RihoAdminConfig.secondary,
                 highlightFill: "rgba(254, 106, 73, 0.3)",
