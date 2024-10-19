@@ -154,11 +154,14 @@ var barChart =new Chart(ctx, {
                 enabled: false  // Disable tooltips
             },
             datalabels: {  // Configure datalabels to show on top of each bar
-                display: true,
-                align: 'end',
-                anchor: 'end',
-                formatter: (value) => value, // Display the value itself
-                color: 'black',  // Customize text color
+                color: 'white',  // Text color
+                anchor: 'center',  // Position inside the pie
+                align: 'center',   // Align to the center
+                formatter: (value, ctx) => {
+                    let sum = ctx.dataset.data.reduce((a, b) => a + b, 0);  // Sum of all values
+                    let percentage = (value / sum * 100).toFixed(2) + "%";  // Display percentage
+                    return percentage;  // Return percentage
+                }
                 
             },
             // title: {
