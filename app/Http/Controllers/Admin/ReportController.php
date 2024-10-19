@@ -87,7 +87,7 @@ class ReportController extends Controller
                 SUM(CASE WHEN subjects.subject_code = 'P2' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
                 SUM(CASE WHEN subjects.subject_code = 'P3' AND scores.point_scored < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
                 SUM(CASE WHEN (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) < 50 THEN 1 ELSE 0 END) AS PE_below_50_count,
-                SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) <  THEN 1 ELSE 0 END) AS PA_below_50_count,
+                SUM(CASE WHEN (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) < 10 THEN 1 ELSE 0 END) AS PA_below_50_count,
 
                 -- Total count of candidates with above 50 in each subject/assessment
                 SUM(CASE WHEN subjects.subject_code = 'P1' AND scores.point_scored >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
