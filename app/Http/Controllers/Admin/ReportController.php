@@ -142,7 +142,7 @@ class ReportController extends Controller
 
             $statistics = DB::select("
     SELECT 
-        COUNT(candidates.id) AS total_candidates,
+        COUNT(DISTINCT candidates.id) AS total_candidates,  -- Ensuring only unique candidates from the specific centre
         SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P1_below_50_count,
         SUM(CASE WHEN scores_total.subject_code = 'P1' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P1_above_50_count,
         SUM(CASE WHEN scores_total.subject_code = 'P2' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P2_below_50_count,
@@ -150,6 +150,10 @@ class ReportController extends Controller
         SUM(CASE WHEN scores_total.subject_code = 'P3' AND scores_total.total_score < 50 THEN 1 ELSE 0 END) AS P3_below_50_count,
         SUM(CASE WHEN scores_total.subject_code = 'P3' AND scores_total.total_score >= 50 THEN 1 ELSE 0 END) AS P3_above_50_count
     FROM candidates
+    JOIN scheduled_candidates ON scheduled_candidates.candidate_id = candidates.id
+    JOIN schedulings ON schedulings.id = scheduled_candidates.schedule_id
+    JOIN venues ON venues.id = schedulings.venue_id
+    JOIN centres ON centres.id = venues.centre_id
     LEFT JOIN (
         SELECT
             scheduled_candidates.candidate_id,
@@ -159,19 +163,16 @@ class ReportController extends Controller
         JOIN scheduled_candidates ON scheduled_candidates.id = scores.scheduled_candidate_id
         JOIN candidate_subjects ON candidate_subjects.scheduled_candidate_id = scheduled_candidates.id
         JOIN subjects ON subjects.id = candidate_subjects.subject_id
-        JOIN schedulings ON schedulings.id = scheduled_candidates.schedule_id
-        JOIN test_configs ON test_configs.id = schedulings.test_config_id
-        JOIN venues ON venues.id = schedulings.venue_id
-        JOIN centres ON centres.id = venues.centre_id
-        JOIN candidates ON candidates.id = scheduled_candidates.candidate_id
-        WHERE 
-            centres.id = ? AND 
-            candidates.exam_year = ? AND
-            test_configs.test_code_id = ? AND
-            test_configs.test_type_id = ?
         GROUP BY scheduled_candidates.candidate_id, subjects.subject_code
     ) AS scores_total ON scores_total.candidate_id = candidates.id
+    WHERE centres.id = ? 
+    AND candidates.exam_year = ? 
+    AND schedulings.test_config_id = ? 
+    AND schedulings.test_type_id = ?  -- Including the test_type_id condition
+    GROUP BY centres.id
 ", [$centre_id, $year, $code_id, $type_id]);
+
+
 
         
 
