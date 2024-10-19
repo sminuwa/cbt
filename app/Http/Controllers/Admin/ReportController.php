@@ -157,21 +157,27 @@ class ReportController extends Controller
             ->join('test_configs', 'test_configs.id', '=', 'schedulings.test_config_id')
             ->leftJoin(DB::raw('(
                     SELECT
-                        scheduled_candidates.candidate_id,
-                        subjects.subject_code,
-                        SUM(scores.point_scored) AS total_score
-                    FROM scores
-                    JOIN scheduled_candidates ON scheduled_candidates.id = scores.scheduled_candidate_id
-                    JOIN candidate_subjects ON candidate_subjects.scheduled_candidate_id = scheduled_candidates.id
-                    JOIN subjects ON subjects.id = candidate_subjects.subject_id
-                    GROUP BY scheduled_candidates.candidate_id, subjects.subject_code
+                        sc.candidate_id,
+                        cs.subject_code,
+                        SUM(s.point_scored) AS total_score
+                    FROM scores s
+                    JOIN scheduled_candidates sc ON sc.id = s.scheduled_candidate_id
+                    JOIN candidate_subjects csub ON csub.scheduled_candidate_id = sc.id
+                    JOIN subjects sub ON sub.id = csub.subject_id
+                    JOIN schedulings sch ON sch.id = sc.schedule_id
+                    JOIN venues v ON v.id = sch.venue_id
+                    JOIN centres c ON c.id = v.centre_id
+                    WHERE c.id = ? AND sch.test_config_id = ? AND sch.test_type_id = ?
+                    GROUP BY sc.candidate_id, cs.subject_code
                 ) AS scores_total'), 'scores_total.candidate_id', '=', 'candidates.id')
             ->where('centres.id', $centre_id)
             ->where('candidates.exam_year', $year)
             ->where('test_configs.test_code_id', $code_id)
             ->where('test_configs.test_type_id', $type_id)
             ->groupBy('centres.id')
+            ->setBindings([$centre_id, $code_id, $type_id]) // Set the bindings for the subquery
             ->first();
+        
 
 
 
