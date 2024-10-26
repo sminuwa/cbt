@@ -47,11 +47,13 @@
                 </td>
                 <td>{{$candidate->indexing}}</td>
                 <td>{{$candidate->fullname}}</td>
+                <td>{{ $candidate->year ?? date('Y') }}</td>
                 <td>{{ $candidate->P1 ?? 0 }}</td>
                 <td>{{ $candidate->P2 ?? 0 }}</td>
                 <td>{{ $candidate->P3 ?? 0 }}</td>
                 <td>{{ $candidate->PE ?? 0 }}</td>
                 <td>{{ $candidate->PA ?? 0 }}</td>
+                <td>{{ $candidate->attempt ?? 1 }}</td>
             </tr>
         @endforeach
         </tbody>
