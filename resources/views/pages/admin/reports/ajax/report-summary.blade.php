@@ -30,11 +30,13 @@
             <th>#</th>
             <th>Exam No.</th>
             <th>Fullname</th>
+            <th>Year</th>
             <th>P1</th>
             <th>P2</th>
             <th>P3</th>
             <th>PE</th>
             <th>PA</th>
+            <th>Attempt</th>
         </tr>
         </thead>
         <tbody>

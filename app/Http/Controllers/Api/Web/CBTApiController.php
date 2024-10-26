@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Http;
 class CBTApiController extends Controller
 {
     
+
+    
     public function pullCandidate(Request $request){
         $candidates = $request->graduands;
         // return $candidates;
@@ -19,6 +21,43 @@ class CBTApiController extends Controller
             }
         }
         return "Updated";
+    }
+
+    public function summary_reports(Request $request){
+        $graduands = Graduand::selectRaw("
+            candidates.indexing, 
+            candidates.cadre_id as programme_id,
+            candidates.firstname,
+            candidates.surname,
+            candidates.othernames as other_names,
+            candidates.gender,
+            candidates.dob,
+            candidates.lga_id,
+            156 as country_id,
+            graduands.year as exam_year,
+            candidates.surname as password,
+            '' as nin,
+            '' as remember_token,
+            '' as api_token,
+            1 as enabled,
+            candidates.id as registration_id,
+            IF(graduands.remark = 'resit', 2, 1) as attempt
+        ")
+        ->where(['graduands.status'=>'submitted', 'pushed'=>'0'])
+        ->join('candidates','candidates.id', 'graduands.candidate_id')
+        // ->limit(500)
+        ->get();
+
+        // return $graduands;
+        $headers = [
+            'Authorization' => 'Bearer your-token-here',
+            'Accept' => 'application/json',
+            'Custom-Header' => 'custom-value'
+        ];
+        return $response = Http::withHeaders($headers)->post('https://zxcvbnm.chprbn.gov.ng/pull-candidate',['graduands'=>$graduands]);
+        if ($response->successful()) {
+            return $response;
+        }
     }
 
 

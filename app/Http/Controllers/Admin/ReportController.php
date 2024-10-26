@@ -59,7 +59,9 @@ class ReportController extends Controller
                 SUM(CASE WHEN subjects.subject_code = 'P2' THEN scores.point_scored ELSE 0 END) AS P2,
                 SUM(CASE WHEN subjects.subject_code = 'P3' THEN scores.point_scored ELSE 0 END) AS P3,
                 (SELECT SUM(pe.score) FROM practical_examinations pe WHERE pe.candidate_id = candidates.id) AS PE,
-                (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) AS PA
+                (SELECT SUM(pa.score) FROM project_assessments pa WHERE pa.candidate_id = candidates.id) AS PA,
+                candidates.attempt as attempt,
+                candidates.exam_year as year
             ")
             ->join('scheduled_candidates', 'scheduled_candidates.candidate_id', '=', 'candidates.id')
             ->join('candidate_subjects', 'candidate_subjects.scheduled_candidate_id', '=', 'scheduled_candidates.id')
