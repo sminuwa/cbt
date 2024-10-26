@@ -28,7 +28,7 @@
         <thead>
         <tr>
             <th>#</th>
-            <th>Exam No.</th>
+            <th>Indexing (Exam No.)</th>
             <th>Fullname</th>
             <th>Year</th>
             <th>P1</th>
