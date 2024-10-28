@@ -213,7 +213,7 @@
 
                 @endif
                 
-                @if(auth()->user()->role == '1')
+                @if(auth()->user()->role == '2')
                 <li class="sidebar-list">
                     <i class="fa fa-thumb-tack"> </i>
                     <a class="sidebar-link sidebar-title" href="#">
