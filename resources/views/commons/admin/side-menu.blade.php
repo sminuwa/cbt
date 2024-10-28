@@ -81,7 +81,7 @@
                                         $user->canDo('toolbox.authorization.role.index');
                 @endphp
                 {{-- to be remove once permission is back to live --}}
-                @if(auth()->user()->username == 'admin') 
+                @if(auth()->user()->role == '1') 
                 @if($showTestConfigs)
                 <li class="sidebar-list">
                     <i class="fa fa-thumb-tack"> </i>
@@ -145,8 +145,6 @@
                 </li>
                 @endif
 
-                
-
                 @if($showToolbox)
                 <li class="sidebar-list">
                     <i class="fa fa-thumb-tack"> </i>
@@ -189,9 +187,9 @@
                         @if($user->canDo('admin.reports.summary.presentation'))
                             <li><a href="{{ route('admin.reports.summary.presentation') }}">Presentation Summary</a></li>
                         @endif
-                        @if($user->canDo('admin.reports.active.index'))
+                        {{-- @if($user->canDo('admin.reports.active.index'))
                             <li><a href="{{ route('admin.reports.active.index') }}">Active Candidates</a></li>
-                        @endif
+                        @endif --}}
                     </ul>
                 </li>
                 @endif
@@ -213,8 +211,30 @@
                 </li>
                 @endif
 
-                @endif 
-
+                @endif
+                
+                @if(auth()->user()->role == '1')
+                <li class="sidebar-list">
+                    <i class="fa fa-thumb-tack"> </i>
+                    <a class="sidebar-link sidebar-title" href="#">
+                        <i class="las la-chart-pie la-md-2x"></i>
+                        <span>Report </span></a>
+                    <ul class="sidebar-submenu">
+                        @if($user->canDo('admin.reports.summary.reports'))
+                            <li><a href="{{ route('admin.reports.summary.reports') }}">Report Summary</a></li>
+                        @endif
+                        @if($user->canDo('admin.reports.summary.question'))
+                            <li><a href="{{ route('admin.reports.summary.question') }}">Question Summary</a></li>
+                        @endif
+                        @if($user->canDo('admin.reports.summary.presentation'))
+                            <li><a href="{{ route('admin.reports.summary.presentation') }}">Presentation Summary</a></li>
+                        @endif
+                        {{-- @if($user->canDo('admin.reports.active.index'))
+                            <li><a href="{{ route('admin.reports.active.index') }}">Active Candidates</a></li>
+                        @endif --}}
+                    </ul>
+                </li>
+                @endif
 
                 @if($showManageExams)
                 <li class="sidebar-list">
@@ -237,8 +257,7 @@
                 </li>
                 @endif
                 
-                
-
+            
 
                 <li class="sidebar-list">
                     <i class="fa fa-thumb-tack"> </i>
