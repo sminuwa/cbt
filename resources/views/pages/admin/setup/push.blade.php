@@ -224,7 +224,7 @@
                 type: 'GET',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    batch_size: 1,
+                    batch_size: 10,
                     total_records: totalRecords,
                 },
                 success: function (response) {
@@ -279,13 +279,7 @@
                             sendBatch();
                         } else {
                            // Delay for 2 seconds before showing the success message
-                            setTimeout(() => {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Complete',
-                                    text: 'All records have been pushed successfully!'
-                                });
-                            }, 2000); // 2-second delay
+                            showSuccess()
                         }
                     } else {
                         Swal.fire({
@@ -332,6 +326,7 @@
             // });
 
             $('.pull-btn').click(function () {
+                
                 Swal.fire({
                     title: 'Pushing Records...',
                     html: `
@@ -357,6 +352,19 @@
                 var progressBar = $('#progress-bar');
                 progressBar.css('width', percentage + '%');
                 progressBar.text(percentage + '%');
+            }
+
+            function showSuccess() {
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Records Pushed Successfully!',
+                        text: 'Click OK to reload the page.',
+                        showConfirmButton: true
+                    }).then(() => {
+                        location.reload(); // Reload the page after clicking OK
+                    });
+                }, 2000); // Add a 2-second delay after progress bar completion
             }
         });
     </script>
