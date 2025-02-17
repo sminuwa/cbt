@@ -81,7 +81,7 @@
                                         $user->canDo('toolbox.authorization.role.index');
                 @endphp
                 {{-- to be remove once permission is back to live --}}
-                @if(auth()->user()->role == '1') 
+                @if(auth()->user()->id == '1') 
                 @if($showTestConfigs)
                 <li class="sidebar-list">
                     <i class="fa fa-thumb-tack"> </i>

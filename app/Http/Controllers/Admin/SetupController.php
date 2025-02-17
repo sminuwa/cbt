@@ -36,6 +36,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use ZipArchive;
 
 class SetupController extends Controller
@@ -456,46 +457,119 @@ class SetupController extends Controller
         return view("pages.admin.setup.push",compact('counts'));
     }
 
-    public function pullExamToServer(Request $request){
-        ini_set('memory_limit','1024M');
-        $tables = ['time_controls', 'presentations', 'scores']; // Replace with your table names
+    // public function pullExamToServer(Request $request){
+    //     ini_set('memory_limit','1024M');
+    //     $tables = ['time_controls', 'presentations', 'scores']; // Replace with your table names
+    //     $this->backupService->backupAndTruncate($tables);  //backing up the files to the file syste in case something happened to the record while pushing online.
+
+    //     $times = TimeControl::limit(50)->where('pushed',0)->select(['test_config_id','scheduled_candidate_id','completed','start_time','current_time','elapsed','ip','pushed'])->get();
+    //     $time_ids = $times->pluck('scheduled_candidate_id');
+    //     // $presentations = Presentation::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','test_section_id','question_bank_id','answer_option_id','pushed'])->get();
+    //     $scores = Score::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','question_bank_id','answer_option_id','time_elapse','scoring_mode','point_scored','pushed'])->get();
+
+    //     // return $scores;
+    //     $apiUrl = $this->apiUrl('resource/push');
+
+    //     // Define headers if necessary
+    //     $headers = [
+    //         'Accept' => 'application/json',
+    //         'api_key'=>CHPRBN_CBT_API_KEY,
+    //         'secret_key'=>CHPRBN_CBT_SECRET_KEY
+    //     ];
+
+    //     $body = [
+    //         'api_key'=>CHPRBN_CBT_API_KEY,
+    //         'secret_key'=>CHPRBN_CBT_SECRET_KEY
+    //     ];
+
+    //     // Fetch data from the API
+    //     $response = Http::withHeaders($headers)->post($apiUrl, compact('times','scores','body'));
+    //     // return $response;
+    //     // return $response['status'];
+    //     // if ($response->successful()) {
+    //     if ($response['status']) {
+    //         TimeControl::whereIn('scheduled_candidate_id', $time_ids)->update(['pushed'=>1]);
+    //         // Presentation::where('pushed',0)->update(['pushed'=>1]);
+    //         Score::whereIn('scheduled_candidate_id', $time_ids)->update(['pushed'=>1]);
+    //         // Score::where('pushed',0)->update(['pushed'=>1]);
+    //         return response()->json(['success' => true, 'message' => 'Download Successful'], 200);
+    //     }
+
+    //     // return ;
+    // }
+
+    public function pullExamToServer(Request $request)
+    {
+        ini_set('memory_limit', '1024M');
+
+        $batchSize = $request->batch_size ?? 50; // Default batch size to 50
+        $totalRecords = $request->total_records;
+        $tables = ['time_controls', 'presentations', 'scores'];
+
+        // Backup and truncate (if necessary)
         $this->backupService->backupAndTruncate($tables);
-        $times = TimeControl::limit()->where('pushed',0)->select(['test_config_id','scheduled_candidate_id','completed','start_time','current_time','elapsed','ip','pushed'])->get();
+
+        // Fetch records to be pushed in this batch
+        $times = TimeControl::where('pushed', 0)
+            ->limit($batchSize)
+            ->select(['test_config_id', 'scheduled_candidate_id', 'completed', 'start_time', 'current_time', 'elapsed', 'ip', 'pushed'])
+            ->get();
+
         $time_ids = $times->pluck('scheduled_candidate_id');
-        // $presentations = Presentation::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','test_section_id','question_bank_id','answer_option_id','pushed'])->get();
-        $scores = Score::where('pushed',0)->select(['scheduled_candidate_id','test_config_id','question_bank_id','answer_option_id','time_elapse','scoring_mode','point_scored','pushed'])->get();
 
+        $scores = Score::whereIn('scheduled_candidate_id', $time_ids)
+            ->where('pushed', 0)
+            ->select(['scheduled_candidate_id', 'test_config_id', 'question_bank_id', 'answer_option_id', 'time_elapse', 'scoring_mode', 'point_scored', 'pushed'])
+            ->get();
 
-        // return $scores;
         $apiUrl = $this->apiUrl('resource/push');
 
-        // Define headers if necessary
         $headers = [
             'Accept' => 'application/json',
-            'api_key'=>CHPRBN_CBT_API_KEY,
-            'secret_key'=>CHPRBN_CBT_SECRET_KEY
+            'api_key' => CHPRBN_CBT_API_KEY,
+            'secret_key' => CHPRBN_CBT_SECRET_KEY
         ];
 
         $body = [
-            'api_key'=>CHPRBN_CBT_API_KEY,
-            'secret_key'=>CHPRBN_CBT_SECRET_KEY
+            'api_key' => CHPRBN_CBT_API_KEY,
+            'secret_key' => CHPRBN_CBT_SECRET_KEY,
+            // 'times' => $times,
+            // 'scores' => $scores
         ];
 
-        // Fetch data from the API
+        // Send data to external API
         $response = Http::withHeaders($headers)->post($apiUrl, compact('times','scores','body'));
-        // return $response;
-        // return $response['status'];
-        // if ($response->successful()) {
-        if ($response['status']) {
-            TimeControl::whereIn('scheduled_candidate_id', $time_ids)->update(['pushed'=>1]);
-            // Presentation::where('pushed',0)->update(['pushed'=>1]);
-            Score::whereIn('scheduled_candidate_id', $time_ids)->update(['pushed'=>1]);
-            // Score::where('pushed',0)->update(['pushed'=>1]);
-            return response()->json(['success' => true, 'message' => 'Download Successful'], 200);
+        // $response = Http::withHeaders($headers)->post($apiUrl, $body);
+        Log::error($body);
+        // if ($response->successful() && $response['status']) {
+        if ($response['status']){
+            // Mark records as pushed
+            TimeControl::whereIn('scheduled_candidate_id', $time_ids)->update(['pushed' => 1]);
+            Score::whereIn('scheduled_candidate_id', $time_ids)->update(['pushed' => 1]);
+
+            // Calculate remaining records
+            $remainingRecords = TimeControl::where('pushed', 0)->count();
+
+            // return response()->json([
+            //     'success' => true,
+            //     'message' => 'Batch pushed successfully',
+            //     'remaining_records' => $remainingRecords
+            // ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Batch processed successfully',
+                'remainingRecords' => $remainingRecords,
+                'totalRecords' => $totalRecords
+            ]);
         }
 
-        // return ;
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to push records'
+        ], 500);
     }
+
 
 
     protected function validateAndCorrectTime($timeString)
