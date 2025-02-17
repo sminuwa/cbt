@@ -2,17 +2,18 @@
 
 @section('content')
 <div class="row">
+    @if(auth()->user()->id==1)
     <div class="col-sm-12 col-xl-6 box-col-6">
-        <div class="card">
-          <div class="card-header">
-            <h4>Paper Report</h4>
-          </div>
-          <div class="card-body chart-block">
-            <div class="chart-overflow" id="column-chart1"></div>
-          </div>
+      <div class="card">
+        <div class="card-header">
+          <h4>Paper Report</h4>
         </div>
-    </div>
-    <div class="col-sm-12 col-xl-6 box-col-6">
+        <div class="card-body chart-block">
+          <div class="chart-overflow" id="column-chart1"></div>
+        </div>
+      </div>
+  </div>
+  <div class="col-sm-12 col-xl-6 box-col-6">
     <div class="card">
         <div class="card-header">
         <h4>Paper Report</h4>
@@ -21,7 +22,9 @@
         <div class="chart-overflow" id="pie-chart1"></div>
         </div>
     </div>
-    </div>
+  </div>
+
+    @endif
     
     <div class="col-sm-12">
       <div class="card">
@@ -50,7 +53,7 @@
                         </div>
                     </div>
                 </div>
-                    <div class="col-xl-4 col-sm-6">
+                    <div class="col-xl-6 col-sm-12">
                         <div class="card o-hidden small-widget">
                             <div class="card-body total-project border-l-primary border-3">
                             <span class="f-light f-w-500 f-14">Submitted</span>
@@ -67,7 +70,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-4 col-sm-6">
+                    <div class="col-xl-6 col-sm-12">
                         <div class="card o-hidden small-widget">
                             <div class="card-body total-project border-l-primary border-3">
                             <span class="f-light f-w-500 f-14">In progress</span>
@@ -84,7 +87,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-4 col-sm-6 ">
+                    {{-- <div class="col-xl-4 col-sm-6 ">
                         <div class="card o-hidden small-widget">
                             <div class="card-body border-l-primary border-3">
                             <span class="f-light f-w-500 f-14">Pending</span>
@@ -100,7 +103,7 @@
                             @include('components.bubbles')
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                 </div>
                 
