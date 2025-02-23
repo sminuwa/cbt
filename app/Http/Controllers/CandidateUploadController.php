@@ -127,7 +127,7 @@ class CandidateUploadController extends Controller
 
     public function imageIndex()
     {
-        $year = date('Y');
+        $year = 2024; //date('Y');
         $candidate_pictures = Candidate::candidateWithoutPassport($year);
         return view('pages.toolbox.candidate_image_upload',compact('candidate_pictures'));
     }

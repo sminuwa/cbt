@@ -63,7 +63,7 @@ class CBTApiController extends Controller
 
     public function generateCandidatePicture(Request $request){
         // set_time_limit(0);
-        $year = date('Y');
+        $year = 2024;//date('Y');
         $candidate_pictures = Candidate::candidateWithoutPassport($year);
         $candidate_ids = $candidate_pictures['candidate_ids'];
         
@@ -80,7 +80,7 @@ class CBTApiController extends Controller
             $location = candidate_passport_path().'/'.str_replace('/', '_', $candidate->indexing).'.jpg';
             $imageData = base64_decode($candidate->photo);
             $source = imagecreatefromstring($imageData);
-            $imageSave = imagejpeg($source, $location, 50);
+            $imageSave = imagejpeg($source, $location, 40);
             imagedestroy($source);
         }
         return 'passports downloaded';
@@ -91,7 +91,7 @@ class CBTApiController extends Controller
     {
         // set_time_limit(0);
         // return 'hello';
-        $year = date('Y');
+        $year = 2024;//date('Y');
         $candidate_pictures = Candidate::candidateWithoutPassport($year);
         $candidate_ids = $candidate_pictures['candidate_ids'];
         // return $candidate_ids;
