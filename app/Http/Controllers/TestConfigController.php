@@ -270,11 +270,15 @@ class TestConfigController extends Controller
     
     public function bulkUpload(Request $request)
     {
+        // return $request;
         $candidate_papers = [];
         $schedule_id = $request->schedule_id;
         $test_config_id = $request->test_config_id;
         $test = TestConfig::exam()->where('test_configs.id', $test_config_id)->first();
         $schedule = Scheduling::where('id', $schedule_id)->first();
+        $test_config = TestConfig::where('id', $test_config_id)->first();
+        $test_title = $test_config->title;
+        // return $test;
         // return $test->exam_type_id;
         $file = $request->file;
         $sheets =  Excel::toArray(\App\Models\Upload::class, $file);
@@ -305,6 +309,9 @@ class TestConfigController extends Controller
                 if(empty($value[$indexing]))
                     continue;
                 
+                if(strtolower($value[$papers]) != strtolower($test_title))
+                    continue;
+                
                 $cdd = searchForId($value[$indexing], $all_candidates);
                 if (!$cdd) //skip if institution code is not found in the institution table
                     continue;
@@ -322,7 +329,7 @@ class TestConfigController extends Controller
 
         }
 
-        // return $candidate_papers;
+        // return $scheduled_candidates;
         
         DB::beginTransaction();
         $err = [];
