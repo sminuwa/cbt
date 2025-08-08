@@ -92,14 +92,14 @@
         $(function () {
             $('#subject_id').on('change', function () {
                 let id = $(this).val();
-                $.get('{{ route('admin.questions.authoring.topics',[':id']) }}'.replace(':id', id), function (data) {
+                $.get('{{ route('admin.authoring.topics',[':id']) }}'.replace(':id', id), function (data) {
                     $('#topic_id').html(data)
                 })
             })
 
             $('#preview-form').on('submit', function (e) {
                 e.preventDefault()
-                $.post('{{ route('admin.questions.authoring.load.preview') }}', $(this).serialize(), function (response) {
+                $.post('{{ route('admin.authoring.load.preview') }}', $(this).serialize(), function (response) {
                     $('#questions-div').html(response)
                 })
             })

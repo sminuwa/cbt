@@ -66,7 +66,7 @@ class CandidateLoginController extends Controller
 
     protected function sendFailedLoginResponse(Request $request)
     {
-        return redirect()->route('auth.admin.login')
+        return redirect()->route('candidate.auth.page')
             ->withInput($request->only('email', 'remember'))
             ->withErrors([
                 'email' => __('auth.failed'),

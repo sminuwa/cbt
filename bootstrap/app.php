@@ -26,7 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         //
 //        if(!Auth::guard('admin')->check())
-//            $middleware->redirectGuestsTo('auth/adm/login');
+//            $middleware->redirectGuestsTo('admin/auth');
 //        else
         // $middleware->add('centre', \App\Http\Middleware\CentreGuard::class);
         $middleware->alias([

@@ -83,7 +83,7 @@
 
             $('#preview-form').on('submit', function (e) {
                 e.preventDefault()
-                $.post('{{ route('admin.questions.authoring.load.questions') }}', $(this).serialize(), function (response) {
+                $.post('{{ route('admin.authoring.load.questions') }}', $(this).serialize(), function (response) {
                     $('#questions-div').html(response)
                     $('#questions').DataTable()
                 })
@@ -95,7 +95,7 @@
             })
 
             function fetchTopics(id, target) {
-                $.get('{{ route('admin.questions.authoring.topics',[':id']) }}'.replace(':id', id), function (data) {
+                $.get('{{ route('admin.authoring.topics',[':id']) }}'.replace(':id', id), function (data) {
                     target.html(data)
                 })
             }

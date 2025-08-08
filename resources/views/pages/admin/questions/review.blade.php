@@ -26,7 +26,7 @@
         <div class="row patient-graph-col">
             <div class="col-12">
                 <h4 class="mb-5 mt-5">Review Question(s)</h4>
-                <form method="post" action="{{ route('admin.questions.authoring.store') }}">
+                <form method="post" action="{{ route('admin.authoring.submit') }}">
                     <input type="hidden" name="subject_id" value="{{$subjectId}}">
                     <input type="hidden" name="topic_id" value="{{$topicId}}">
                     @csrf

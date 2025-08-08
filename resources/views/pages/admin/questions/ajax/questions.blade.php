@@ -1,5 +1,5 @@
 @if(count($questions) > 0 )
-    <form id="form-to" action="{{ route('admin.questions.authoring.relocate.questions') }}" method="post">
+    <form id="form-to" action="{{ route('admin.authoring.relocate.questions') }}" method="post">
         @csrf
         <div class="card p-2">
             <table id="questions" class="table table-bordered">

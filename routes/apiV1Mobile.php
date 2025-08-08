@@ -10,7 +10,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('/cadres', [\App\Http\Controllers\Api\V1\Mobile\MiscController::class,'cadres']);
     Route::get('/cadre/{id}', [\App\Http\Controllers\Api\V1\Mobile\MiscController::class,'cadre']);
     Route::get('/papers', [\App\Http\Controllers\Api\V1\Mobile\MiscController::class,'papers']);
-    Route::get('/paper/{code}', [\App\Http\Controllers\Api\Mobile\MiscController::class,'paper']);
+    Route::get('/paper/{code}', [\App\Http\Controllers\Api\V1\Mobile\MiscController::class,'paper']);
     Route::get('/attendance-remarks', [\App\Http\Controllers\Api\V1\Mobile\MiscController::class,'attendanceRemark']);
     Route::get('/assessment-forms', [\App\Http\Controllers\Api\V1\Mobile\MiscController::class,'assessmentForms']);
     Route::get('/assessment-areas', [\App\Http\Controllers\Api\V1\Mobile\MiscController::class,'assessmentAreas']);

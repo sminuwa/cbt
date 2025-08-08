@@ -1,14 +1,8 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\QuestionController;
-use App\Http\Controllers\Auth\CandidateLoginController;
-use App\Http\Controllers\Auth\UserLoginController;
-use App\Http\Controllers\Candidate\Auth\AuthController;
-use App\Http\Controllers\Candidate\MiscController;
-use App\Http\Controllers\Candidate\TestController;
-use App\Http\Controllers\TestConfigController;
-use App\Http\Controllers\TopicController;
+use App\Http\Controllers\Student\Auth\AuthController;
+use App\Http\Controllers\Student\Dashboard\MiscController;
+use App\Http\Controllers\Student\Exam\TestController;
 use Illuminate\Support\Facades\Route;
 
 

@@ -87,6 +87,16 @@
             }
         }
     </style>
+    <style type="text/css">
+        @media only screen and (max-width: 767px){
+            .score-breakdown {
+                flex-direction: column !important;
+            }
+            .score-card {
+                min-width: 100% !important;
+            }
+        }
+    </style>
 </head>
 <body style="margin: 30px auto;">
 <?php
@@ -121,21 +131,127 @@
                                     <div class="social-img-wrap">
                                         <div class="social-img"><img class="img-fluid" src="{{ $candidate->passport() }}" alt="profile"></div>
                                     </div>
+                                    
                                     <div class="social-details">
                                         <h5 class="mb-1">
                                             <a href="#" class="text-uppercase">{{ $candidate->fullname() }}</a>
                                         </h5>
                                         <span class="f-light">Exam No: {{ $candidate->indexing ?? null }}</span>
                                         <hr>
-                                        <h2 style="text-align: center">
-                                            You have successfully submitted your test.
-                                            <br>
-                                            <small>Good luck!</small>
-                                        </h2>
-                                        <br>
+                                        
+                                        <?php
+                                            // Calculate exam scores
+                                            use App\Models\Score;
+                                            use App\Models\CandidateSubject;
+                                            
+                                            $total_score = 0;
+                                            $total_questions = 0;
+                                            $subject_scores = [];
+                                            
+                                            // Get all scores for this candidate and test
+                                            $scores = Score::where([
+                                                'scheduled_candidate_id' => $scheduled_candidate->id,
+                                                'test_config_id' => $test->id
+                                            ])->get();
+                                            
+                                            // Get candidate subjects for this test
+                                            $candidate_subjects = CandidateSubject::where('scheduled_candidate_id', $scheduled_candidate->id)
+                                                ->join('subjects', 'subjects.id', '=', 'candidate_subjects.subject_id')
+                                                ->select('candidate_subjects.*', 'subjects.name as subject_name')
+                                                ->get();
+                                            
+                                            // Calculate scores by subject
+                                            foreach($candidate_subjects as $subject) {
+                                                $subject_total = 0;
+                                                $subject_questions = 0;
+                                                
+                                                foreach($scores as $score) {
+                                                    // Get question bank to determine subject
+                                                    $question = \App\Models\QuestionBank::find($score->question_bank_id);
+                                                    if($question && $question->subject_id == $subject->subject_id) {
+                                                        $subject_total += $score->point_scored;
+                                                        $subject_questions++;
+                                                    }
+                                                }
+                                                
+                                                $subject_scores[] = [
+                                                    'name' => $subject->subject_name,
+                                                    'score' => $subject_total,
+                                                    'questions' => $subject_questions,
+                                                    'percentage' => $subject_questions > 0 ? round(($subject_total / $subject_questions) * 100, 2) : 0
+                                                ];
+                                                
+                                                $total_score += $subject_total;
+                                                $total_questions += $subject_questions;
+                                            }
+                                            
+                                            $overall_percentage = $total_questions > 0 ? round(($total_score / $total_questions) * 100, 2) : 0;
+                                        ?>
+                                        
+                                        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                                            <h3 style="text-align: center; color: #28a745; margin-bottom: 20px;">
+                                                <i class="fa fa-check-circle"></i> Exam Completed Successfully!
+                                            </h3>
+                                            
+                                            <!-- Overall Score -->
+                                            {{-- <div style="text-align: center; margin-bottom: 25px;">
+                                                <div style="background-color: #007bff; color: white; padding: 15px; border-radius: 8px; display: inline-block; min-width: 200px;">
+                                                    <h4 style="margin: 0; font-size: 24px;">{{ $overall_percentage }}%</h4>
+                                                    <p style="margin: 5px 0 0 0;">Overall Score</p>
+                                                    <small>({{ $total_score }} out of {{ $total_questions }} questions)</small>
+                                                </div>
+                                            </div> --}}
+                                            
+                                            <!-- Subject-wise Breakdown -->
+                                            {{-- @if(count($subject_scores) > 1)
+                                            <div style="margin-bottom: 20px;">
+                                                <h5 style="text-align: center; margin-bottom: 15px;">Subject-wise Performance</h5>
+                                                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
+                                                    @foreach($subject_scores as $subject)
+                                                    <div style="background-color: white; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; min-width: 180px; text-align: center;">
+                                                        <h6 style="margin: 0 0 10px 0; color: #495057;">{{ $subject['name'] }}</h6>
+                                                        <div style="font-size: 20px; font-weight: bold; color: 
+                                                            @if($subject['percentage'] >= 70) #28a745
+                                                            @elseif($subject['percentage'] >= 50) #ffc107
+                                                            @else #dc3545
+                                                            @endif
+                                                        ;">
+                                                            {{ $subject['percentage'] }}%
+                                                        </div>
+                                                        <small style="color: #6c757d;">{{ $subject['score'] }}/{{ $subject['questions'] }}</small>
+                                                    </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                            @endif --}}
+                                            
+                                            <!-- Performance Message -->
+                                            {{-- <div style="text-align: center; margin: 20px 0;">
+                                                @if($overall_percentage >= 70)
+                                                    <div style="color: #28a745; font-weight: bold;">
+                                                        <i class="fa fa-star"></i> Excellent Performance!
+                                                    </div>
+                                                @elseif($overall_percentage >= 50)
+                                                    <div style="color: #ffc107; font-weight: bold;">
+                                                        <i class="fa fa-thumbs-up"></i> Good Job!
+                                                    </div>
+                                                @endif
+                                            </div> --}}
+                                            
+                                            <!-- Submission Details -->
+                                            <div style="background-color: #e9ecef; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                                                <h6 style="margin: 0 0 10px 0;">Submission Details:</h6>
+                                                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 14px;">
+                                                    <span><strong>Submitted:</strong> {{ date('M d, Y H:i:s') }}</span>
+                                                    <span><strong>Duration:</strong> {{ gmdate('H:i:s', $time_control->elapsed) }}</span>
+                                                    <span><strong style="color:red">Total Score:</strong> {{ $total_score }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
                                         <div class="text-center">
                                             <a href="{{ route('candidate.auth.page') }}" style="padding: 10px; background-color: #006666; color: #fff; display: inline-block; border-radius:30px; margin-bottom:18px; font-weight:600; padding:0.6rem 1.75rem;">
-                                                Okay
+                                                Continue
                                             </a>
                                         </div>
                                     </div>

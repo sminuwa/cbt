@@ -1,20 +1,24 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\QuestionController;
-use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\SetupController;
+use App\Http\Controllers\Admin\Questions\QuestionController;
+use App\Http\Controllers\Admin\Authoring\AuthorController;
+use App\Http\Controllers\Admin\Toolbox\ToolboxController;
+use App\Http\Controllers\Admin\Reports\ReportController;
+use App\Http\Controllers\Admin\System\SetupController;
 use App\Http\Controllers\Api\V1\APIV1Controller;
 use App\Http\Controllers\Auth\UserLoginController;
-use App\Http\Controllers\CandidateUploadController;
-use App\Http\Controllers\CentreController;
-use App\Http\Controllers\ExamTypeController;
+use App\Http\Controllers\Student\Dashboard\CandidateUploadController;
+use App\Http\Controllers\Admin\System\CentreController;
+use App\Http\Controllers\Admin\Tests\ExamTypeController;
 use App\Http\Controllers\MiscController;
-use App\Http\Controllers\SubjectsController;
-use App\Http\Controllers\TestConfigController;
-use App\Http\Controllers\TopicController;
-use App\Http\Controllers\VenueController;
-use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\Admin\System\SubjectsController;
+use App\Http\Controllers\Admin\Tests\TestConfigController;
+use App\Http\Controllers\Admin\System\TopicController;
+use App\Http\Controllers\Admin\System\TestCodeController;
+use App\Http\Controllers\Admin\System\TestTypeController;
+use App\Http\Controllers\Admin\System\VenueController;
+use App\Http\Controllers\Student\Dashboard\CandidateController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Web\CBTApiController;
@@ -23,12 +27,10 @@ Route::get('/', function () {
     return redirect()->route('candidate.auth.page');
 });
 
-Route::name('auth.')->prefix('auth/')->group(function () {
-    Route::name('admin.')->prefix('adm/')->group(function () {
-        Route::get('login', [UserLoginController::class, 'showLoginForm'])->name('login')->middleware('guest');
-        Route::post('login', [UserLoginController::class, 'login'])->name('login.proc');
-        Route::get('logout', [UserLoginController::class, 'logout'])->name('logout');
-    });
+Route::name('admin.auth.')->prefix('admin/auth')->group(function () {
+    Route::get('/', [UserLoginController::class, 'showLoginForm'])->name('login')->middleware('guest');
+    Route::post('/', [UserLoginController::class, 'login'])->name('login.proc');
+    Route::get('/logout', [UserLoginController::class, 'logout'])->name('logout');
 
 //    Route::name('candidate.')->prefix('/')->group(function () {
 //        Route::get('login', [CandidateLoginController::class, 'showLoginForm'])->name('login');
@@ -49,6 +51,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
             Route::get('/', [TestConfigController::class, 'index'])->name('index');
             Route::get('/{config}/view', [TestConfigController::class, 'view'])->name('view');
             Route::post('/store', [TestConfigController::class, 'store'])->name('store');
+            Route::delete('/{config}', [TestConfigController::class, 'destroy'])->name('delete');
             Route::get('/{config}/basics', [TestConfigController::class, 'basics'])->name('basics');
             Route::post('/basics/store', [TestConfigController::class, 'storeBasics'])->name('basics.store');
 
@@ -79,6 +82,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
             Route::get('/{config}/composition', [TestConfigController::class, 'composition'])->name('composition');
             Route::get('/{testSubject}/composition/compose', [TestConfigController::class, 'compose'])->name('composition.compose');
             Route::post('/composition/compose/store', [TestConfigController::class, 'storeSection'])->name('composition.compose.store');
+            Route::delete('/composition/section/{testSection}', [TestConfigController::class, 'deleteSection'])->name('composition.section.delete');
             Route::get('/{testSection}/composition/compose/questions', [TestConfigController::class, 'questions'])->name('composition.compose.questions');
             Route::get('/composition/load/questions', [TestConfigController::class, 'loadQuestions'])->name('compose.questions.load');
             Route::post('/composition/questions/store', [TestConfigController::class, 'storeQuestions'])->name('compose.questions.store');
@@ -100,26 +104,27 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
     });
 
     Route::name('questions.')->prefix('questions')->group(function () {
-        Route::name('authoring.')->prefix('authoring')->group(function () {
-            Route::get('/', [QuestionController::class, 'index'])->name('index');
-            Route::get('/author', [QuestionController::class, 'author'])->name('author');
-            Route::post('/author', [QuestionController::class, 'authorPost'])->name('post');
-            Route::get('/review/{subject}/{topic}', [QuestionController::class, 'review'])->name('review');
-            Route::post('/store', [QuestionController::class, 'store'])->name('store');
-            Route::get('/completed/{duplicates}', [QuestionController::class, 'completed'])->name('completed');
-            Route::get('/preview', [QuestionController::class, 'preview'])->name('preview');
-            Route::post('/preview/load', [QuestionController::class, 'loadPreview'])->name('load.preview');
-            Route::get('/edit/questions', [QuestionController::class, 'editQuestions'])->name('edit.questions');
-            Route::get('/edit/{question}', [QuestionController::class, 'editQuestion'])->name('edit.question');
-            Route::post('/store/question', [QuestionController::class, 'storeQuestion'])->name('store.question');
+        Route::get('/', [QuestionController::class, 'questions'])->name('index');
+    });
 
-            Route::get('/move/questions', [QuestionController::class, 'moveQuestions'])->name('move.questions');
-            Route::post('/load/questions', [QuestionController::class, 'loadQuestions'])->name('load.questions');
-            Route::post('/relocate/questions', [QuestionController::class, 'relocateQuestions'])->name('relocate.questions');
+    Route::name('authoring.')->prefix('authoring')->group(function () {
+        Route::get('/', [AuthorController::class, 'index'])->name('index');
+        Route::post('/store', [AuthorController::class, 'store'])->name('store');
+        Route::get('/review/{subject}/{topic}', [AuthorController::class, 'review'])->name('review');
+        Route::post('/submit', [AuthorController::class, 'submit'])->name('submit');
+        Route::get('/completed/{duplicates}', [AuthorController::class, 'completed'])->name('completed');
+        Route::get('/preview', [AuthorController::class, 'preview'])->name('preview');
+        Route::post('/preview/load', [AuthorController::class, 'loadPreview'])->name('load.preview');
+        Route::get('/edit/questions', [AuthorController::class, 'editQuestions'])->name('edit.questions');
+        Route::get('/edit/{question}', [AuthorController::class, 'editQuestion'])->name('edit.question');
+        Route::post('/update/question', [AuthorController::class, 'updateQuestion'])->name('update.question');
 
-            Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('topics');
-            Route::post('topics/add', [TopicController::class, 'storeTopic'])->name('topics.add');
-        });
+        Route::get('/move/questions', [AuthorController::class, 'moveQuestions'])->name('move.questions');
+        Route::post('/load/questions', [AuthorController::class, 'loadQuestions'])->name('load.questions');
+        Route::post('/relocate/questions', [AuthorController::class, 'relocateQuestions'])->name('relocate.questions');
+
+        Route::get('topics/{subject}', [TopicController::class, 'topicBy'])->name('topics');
+        Route::post('topics/add', [TopicController::class, 'storeTopic'])->name('topics.add');
     });
 
     Route::controller(ReportController::class)->group(function () {
@@ -167,48 +172,6 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
         Route::post('pull/candidate', [SetupController::class, 'pullCandidateResource'])->name('pull.candidate');
         Route::post('pull/candidate/picture', [SetupController::class, 'pullCandidatePictures'])->name('pull.candidate.pictures');
     });
-});
-
-Route::name('toolbox.')->prefix('toolbox')->group(function () {
-    Route::name('candidate-types.')->prefix('candidate-types')->group(function () {
-        Route::get('/', [ExamTypeController::class, 'index'])->name('index');
-        Route::post('etype/store', [ExamTypeController::class, 'store'])->name('store');
-        Route::get('etype/delete/{examType}', [ExamTypeController::class, 'destroy'])->name('delete');
-    });
-    Route::name('center_venue.')->prefix('center_venue')->group(function () {
-        Route::get('/', [CentreController::class, 'index'])->name('home');
-        Route::post('centre/store', [CentreController::class, 'store'])->name('center.store');
-        Route::post('centre/edit/{id}', [CentreController::class, 'edit'])->name('center.edit');
-        Route::post('centre/delete', [CentreController::class, 'destroy'])->name('center.destroy');
-        Route::post('venue/store', [VenueController::class, 'store'])->name('venue.store');
-        Route::get('venue/delete/{venue}', [VenueController::class, 'destroy'])->name('venue.delete');
-    });
-    Route::name('subject.')->prefix('subjects')->group(function () {
-        Route::get('/', [SubjectsController::class, 'index'])->name('home');
-        Route::post('sub/store', [SubjectsController::class, 'create'])->name('store');
-        Route::get('sub/delete/{subject}', [SubjectsController::class, 'destroy'])->name('delete');
-    });
-
-    Route::name('candidate_upload.')->prefix('candidate_upload')->group(function () {
-        Route::get('upload-cand', [CandidateUploadController::class, 'index'])->name('upload.candidate');
-        Route::post('upload-candidate-data', [CandidateUploadController::class, 'upload'])->name('upload.candidate.data');
-
-    });
-
-    Route::name('candidate_image_upload.')->prefix('candidate_image_upload')->group(function () {
-        Route::get('upload-candidate', [CandidateUploadController::class, 'imageIndex'])->name('upload.images');
-        Route::post('upload-candidate-image', [CandidateUploadController::class, 'imageUpload'])->name('upload.image.data');
-        //Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('invigilator');
-
-    });
-
-    Route::name('invigilator.')->prefix('invigilator')->group(function () {
-        Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('index');
-        Route::post('/increase-time', [CandidateUploadController::class, 'viewCandidateTime'])->name('increase-time.view');
-        Route::post('/save-time', [CandidateUploadController::class, 'saveTimeAdjustment'])->name('save-time.adjust');
-        Route::post('/reset_password', [CandidateUploadController::class, 'resetCandidatePassword'])->name('reset.password');
-        Route::post('/load-profile', [CandidateUploadController::class, 'loadProfile'])->name('candidate.loadProfile');
-    });
 
     Route::name('authorization.')->prefix('authorization/')->group(function () {
         Route::get('/users', [SetupController::class, 'users'])->name('users.index');
@@ -224,11 +187,65 @@ Route::name('toolbox.')->prefix('toolbox')->group(function () {
         Route::any('/role/user/detach', [SetupController::class, 'roleUserDetach'])->name('role.user.detach');
     });
 
-    Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
-        Route::get('/', [SetupController::class, 'index'])->name('index');
-        Route::post('pull/basic', [SetupController::class, 'pullBasicResource'])->name('pull.basic');
-        Route::post('pull/test', [SetupController::class, 'pullTestResource'])->name('pull.test');
-        Route::get('push/finished', [SetupController::class, 'pullExamToServer'])->name('push.finished');
+    Route::name('toolbox.')->prefix('toolbox')->group(function () {
+        Route::name('candidate-types.')->prefix('candidate-types')->group(function () {
+            Route::get('/', [ExamTypeController::class, 'index'])->name('index');
+            Route::post('etype/store', [ExamTypeController::class, 'store'])->name('store');
+            Route::get('etype/delete/{examType}', [ExamTypeController::class, 'destroy'])->name('delete');
+        });
+        Route::name('center_venue.')->prefix('center_venue')->group(function () {
+            Route::get('/', [CentreController::class, 'index'])->name('home');
+            Route::post('centre/store', [CentreController::class, 'store'])->name('center.store');
+            Route::post('centre/edit/{id}', [CentreController::class, 'edit'])->name('center.edit');
+            Route::post('centre/delete', [CentreController::class, 'destroy'])->name('center.destroy');
+            Route::post('venue/store', [VenueController::class, 'store'])->name('venue.store');
+            Route::get('venue/delete/{venue}', [VenueController::class, 'destroy'])->name('venue.delete');
+        });
+        Route::name('subject.')->prefix('subjects')->group(function () {
+            Route::get('/', [SubjectsController::class, 'index'])->name('home');
+            Route::post('sub/store', [SubjectsController::class, 'create'])->name('store');
+            Route::get('sub/delete/{subject}', [SubjectsController::class, 'destroy'])->name('delete');
+        });
+
+        Route::name('topics.')->prefix('topics')->group(function () {
+            Route::get('/', [TopicController::class, 'index'])->name('index');
+            Route::post('/store', [TopicController::class, 'store'])->name('store');
+            Route::get('/delete/{topic}', [TopicController::class, 'destroy'])->name('delete');
+        });
+
+        Route::name('test-codes.')->prefix('test-codes')->group(function () {
+            Route::get('/', [TestCodeController::class, 'index'])->name('index');
+            Route::post('/store', [TestCodeController::class, 'store'])->name('store');
+            Route::get('/delete/{testCode}', [TestCodeController::class, 'destroy'])->name('delete');
+        });
+
+        Route::name('test-types.')->prefix('test-types')->group(function () {
+            Route::get('/', [TestTypeController::class, 'index'])->name('index');
+            Route::post('/store', [TestTypeController::class, 'store'])->name('store');
+            Route::get('/delete/{testType}', [TestTypeController::class, 'destroy'])->name('delete');
+        });
+
+        Route::name('candidate_upload.')->prefix('candidate_upload')->group(function () {
+            Route::get('upload-cand', [CandidateUploadController::class, 'index'])->name('upload.candidate');
+            Route::post('upload-candidate-data', [CandidateUploadController::class, 'upload'])->name('upload.candidate.data');
+
+        });
+
+        Route::name('candidate_image_upload.')->prefix('candidate_image_upload')->group(function () {
+            Route::get('upload-candidate', [CandidateUploadController::class, 'imageIndex'])->name('upload.images');
+            Route::post('upload-candidate-image', [CandidateUploadController::class, 'imageUpload'])->name('upload.image.data');
+            //Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('invigilator');
+
+        });
+
+        Route::name('invigilator.')->prefix('invigilator')->group(function () {
+            Route::get('invigilator', [CandidateUploadController::class, 'invigilator'])->name('index');
+            Route::post('/increase-time', [CandidateUploadController::class, 'viewCandidateTime'])->name('increase-time.view');
+            Route::post('/save-time', [CandidateUploadController::class, 'saveTimeAdjustment'])->name('save-time.adjust');
+            Route::post('/reset_password', [CandidateUploadController::class, 'resetCandidatePassword'])->name('reset.password');
+            Route::post('/load-profile', [CandidateUploadController::class, 'loadProfile'])->name('candidate.loadProfile');
+        });
+
     });
 });
 

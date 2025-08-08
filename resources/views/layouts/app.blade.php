@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="keywords" content="">
-    <meta name="author" content="CHPRBN">
+    <meta name="author" content="{{ org_acronym() }}">
     <link rel="icon" href="{!! logo() !!}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('candidate/assets/images/favicon.png') }}" type="image/x-icon">
-    <title>CBT Exam</title>
+    <title>{{ org_acronym() }} CBT Exam</title>
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('candidate/assets/css/font-awesome.css') }}">

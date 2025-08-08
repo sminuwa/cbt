@@ -7,7 +7,16 @@ const CHPRBN_CBT_API_KEY = "shtl095";
 const CHPRBN_CBT_SECRET_KEY = "590lths";
 const CHPRBN_SERV_ADDR = "https://qwertyuiop.chprbn.gov.ng/api/v1/";
 
-const APP_NAME = 'CHPRBN CBT Exam';
+const APP_NAME = 'RMRDC 2025 Promotional Exam';
+
+// Organization Configuration
+const ORG_NAME = 'Raw Materials Research and Development Council';
+const ORG_SHORT_NAME = 'RMRDC';
+const ORG_ACRONYM = 'RMRDC';
+const ORG_WEBSITE = 'https://www.rmrdc.gov.ng/';
+const ORG_EMAIL = 'info@rmrdc.gov.ng/';
+const ORG_PHONE = '+234-XXX-XXX-XXXX';
+const ORG_ADDRESS = 'Abuja, Nigeria';
 
 if(!function_exists('logo')){
     function logo($width = 50, $height = 50){
@@ -142,4 +151,112 @@ function removeDuplicatesCandidateSchedule($array) {
 
 function jResponse($status = true, $message = '', $data = []) {
     return response()->json(['status'=>$status, 'message'=>$message, 'data'=>$data]);
+}
+
+// Organization Helper Functions
+if (!function_exists('org_name')) {
+    /**
+     * Get the full organization name
+     * @return string
+     */
+    function org_name() {
+        return ORG_NAME;
+    }
+}
+
+if (!function_exists('org_short_name')) {
+    /**
+     * Get the organization short name
+     * @return string
+     */
+    function org_short_name() {
+        return ORG_SHORT_NAME;
+    }
+}
+
+if (!function_exists('org_acronym')) {
+    /**
+     * Get the organization acronym
+     * @return string
+     */
+    function org_acronym() {
+        return ORG_ACRONYM;
+    }
+}
+
+if (!function_exists('org_website')) {
+    /**
+     * Get the organization website
+     * @return string
+     */
+    function org_website() {
+        return ORG_WEBSITE;
+    }
+}
+
+if (!function_exists('org_email')) {
+    /**
+     * Get the organization email
+     * @return string
+     */
+    function org_email() {
+        return ORG_EMAIL;
+    }
+}
+
+if (!function_exists('org_phone')) {
+    /**
+     * Get the organization phone
+     * @return string
+     */
+    function org_phone() {
+        return ORG_PHONE;
+    }
+}
+
+if (!function_exists('org_address')) {
+    /**
+     * Get the organization address
+     * @return string
+     */
+    function org_address() {
+        return ORG_ADDRESS;
+    }
+}
+
+if (!function_exists('org_full_details')) {
+    /**
+     * Get all organization details as an array
+     * @return array
+     */
+    function org_full_details() {
+        return [
+            'name' => ORG_NAME,
+            'short_name' => ORG_SHORT_NAME,
+            'acronym' => ORG_ACRONYM,
+            'website' => ORG_WEBSITE,
+            'email' => ORG_EMAIL,
+            'phone' => ORG_PHONE,
+            'address' => ORG_ADDRESS,
+        ];
+    }
+}
+
+if (!function_exists('org_display_name')) {
+    /**
+     * Get organization display name with optional format
+     * @param string $format Options: 'full', 'short', 'acronym'
+     * @return string
+     */
+    function org_display_name($format = 'full') {
+        switch ($format) {
+            case 'short':
+                return ORG_SHORT_NAME;
+            case 'acronym':
+                return ORG_ACRONYM;
+            case 'full':
+            default:
+                return ORG_NAME;
+        }
+    }
 }

@@ -27,7 +27,7 @@
         <div class="row patient-graph-col">
             <div class="col-12">
                 <h4 class="mb-5 mt-5">Edit Question</h4>
-                <form id="preview-form" method="post" action="{{ route('admin.questions.authoring.store.question') }}">
+                <form id="preview-form" method="post" action="{{ route('admin.authoring.update.question') }}">
                     <input type="hidden" name="question_id" value="{{ $question->id }}">
                     @csrf
                     <div class="row pt-2">
@@ -144,7 +144,7 @@
         $(function () {
             $('#subject_id').on('change', function () {
                 let id = $(this).val();
-                $.get('{{ route('admin.questions.authoring.topics',[':id']) }}'.replace(':id', id), function (data) {
+                $.get('{{ route('admin.authoring.topics',[':id']) }}'.replace(':id', id), function (data) {
                     $('#topic_id').html(data)
                 })
             })

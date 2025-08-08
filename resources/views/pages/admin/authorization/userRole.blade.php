@@ -17,7 +17,7 @@
             <td>{{$roleUser->display_name}}</td>
             <td>{{$roleUser->email}}</td>
             <td>
-                <a href="{{ route("toolbox.authorization.role.user.detach")}}" data-user-id ={{$roleUser->id}} data-role-id="{{$role_id}}" class="btn btn-primary btn-sm detachUser">
+                <a href="{{ route("admin.authorization.role.user.detach")}}" data-user-id ={{$roleUser->id}} data-role-id="{{$role_id}}" class="btn btn-primary btn-sm detachUser">
                     <i class="fa fa-trach"></i>
                     Detach
                 </a>

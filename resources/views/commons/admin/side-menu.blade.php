@@ -53,17 +53,20 @@
                                     $user->canDo('admin.test.config.manage.users');
 
                     // Question Bank Menu
-                    $showQuestionBank = $user->canDo('admin.questions.authoring.author') ||
-                                        $user->canDo('admin.questions.authoring.edit.questions') ||
-                                        $user->canDo('admin.questions.authoring.move.questions') ||
-                                        $user->canDo('admin.questions.authoring.preview');
+                    $showQuestionBank = $user->canDo('admin.authoring.index') ||
+                                        $user->canDo('admin.authoring.edit.questions') ||
+                                        $user->canDo('admin.authoring.move.questions') ||
+                                        $user->canDo('admin.authoring.preview');
 
                     // Toolbox Menu
-                    $showToolbox = $user->canDo('toolbox.center_venue.home') ||
-                                $user->canDo('toolbox.subject.home') ||
-                                $user->canDo('toolbox.candidate-types.index') ||
-                                $user->canDo('toolbox.candidate_upload.upload.candidate') ||
-                                $user->canDo('toolbox.candidate_image_upload.upload.images');
+                    $showToolbox = $user->canDo('admin.toolbox.center_venue.home') ||
+                                $user->canDo('admin.toolbox.subject.home') ||
+                                $user->canDo('admin.toolbox.topics.index') ||
+                                $user->canDo('admin.toolbox.test-codes.index') ||
+                                $user->canDo('admin.toolbox.test-types.index') ||
+                                $user->canDo('admin.toolbox.candidate-types.index') ||
+                                $user->canDo('admin.toolbox.candidate_upload.upload.candidate') ||
+                                $user->canDo('admin.toolbox.candidate_image_upload.upload.images');
 
                     // Report Menu
                     $showReport = $user->canDo('admin.reports.summary.reports') ||
@@ -73,12 +76,12 @@
 
                     // Manage Exams Menu
                     $showManageExams = $user->canDo('admin.exams.setup.index') ||
-                                    $user->canDo('toolbox.invigilator.index') ||
+                                    $user->canDo('admin.toolbox.invigilator.index') ||
                                     $user->canDo('admin.exams.setup.push');
 
                     // Authorisation Menu
-                    $showAuthorisation = $user->canDo('toolbox.authorization.users.index') ||
-                                        $user->canDo('toolbox.authorization.role.index');
+                    $showAuthorisation = $user->canDo('admin.authorization.users.index') ||
+                                        $user->canDo('admin.authorization.role.index');
                 @endphp
                 {{-- to be remove once permission is back to live --}}
                 @if(auth()->user()->id == '1') 
@@ -129,17 +132,17 @@
                         <i class="las la-question-circle la-md-2x"></i>
                         <span>Question Bank </span></a>
                     <ul class="sidebar-submenu">
-                        @if($user->canDo('admin.questions.authoring.author'))
-                            <li><a href="{{ route('admin.questions.authoring.author') }}">Author Questions</a></li>
+                        @if($user->canDo('admin.authoring.index'))
+                            <li><a href="{{ route('admin.authoring.index') }}">Author Questions</a></li>
                         @endif
-                        @if($user->canDo('admin.questions.authoring.edit.questions'))
-                            <li><a href="{{ route('admin.questions.authoring.edit.questions') }}">Modify Questions</a></li>
+                        @if($user->canDo('admin.authoring.edit.questions'))
+                            <li><a href="{{ route('admin.authoring.edit.questions') }}">Modify Questions</a></li>
                         @endif
-                        @if($user->canDo('admin.questions.authoring.move.questions'))
-                            <li><a href="{{ route('admin.questions.authoring.move.questions') }}">Move Questions</a></li>
+                        @if($user->canDo('admin.authoring.move.questions'))
+                            <li><a href="{{ route('admin.authoring.move.questions') }}">Move Questions</a></li>
                         @endif
-                        @if($user->canDo('admin.questions.authoring.preview'))
-                            <li><a href="{{ route('admin.questions.authoring.preview') }}">Preview Questions</a></li>
+                        @if($user->canDo('admin.authoring.preview'))
+                            <li><a href="{{ route('admin.authoring.preview') }}">Preview Questions</a></li>
                         @endif
                     </ul>
                 </li>
@@ -152,20 +155,29 @@
                         <i class="las la-cog la-md-2x"></i>
                         <span>Toolbox</span></a>
                     <ul class="sidebar-submenu">
-                        @if($user->canDo('toolbox.center_venue.home'))
-                            <li><a href="{{ route('toolbox.center_venue.home') }}">Centres</a></li>
+                        @if($user->canDo('admin.toolbox.center_venue.home'))
+                            <li><a href="{{ route('admin.toolbox.center_venue.home') }}">Centres</a></li>
                         @endif
-                        @if($user->canDo('toolbox.subject.home'))
-                            <li><a href="{{ route('toolbox.subject.home') }}">Papers</a></li>
+                        @if($user->canDo('admin.toolbox.subject.home'))
+                            <li><a href="{{ route('admin.toolbox.subject.home') }}">Papers</a></li>
                         @endif
-                        @if($user->canDo('toolbox.candidate-types.index'))
-                            <li><a href="{{ route('toolbox.candidate-types.index') }}">Exam Type</a></li>
+                        @if($user->canDo('admin.toolbox.topics.index'))
+                            <li><a href="{{ route('admin.toolbox.topics.index') }}">Topics</a></li>
                         @endif
-                        @if($user->canDo('toolbox.candidate_upload.upload.candidate'))
-                            <li><a href="{{ route('toolbox.candidate_upload.upload.candidate') }}">Candidates</a></li>
+                        @if($user->canDo('admin.toolbox.test-codes.index'))
+                            <li><a href="{{ route('admin.toolbox.test-codes.index') }}">Test Codes</a></li>
                         @endif
-                        @if($user->canDo('toolbox.candidate_image_upload.upload.images'))
-                            <li><a href="{{ route('toolbox.candidate_image_upload.upload.images') }}">Candidate Pictures</a></li>
+                        @if($user->canDo('admin.toolbox.test-types.index'))
+                            <li><a href="{{ route('admin.toolbox.test-types.index') }}">Test Types</a></li>
+                        @endif
+                        @if($user->canDo('admin.toolbox.candidate-types.index'))
+                            <li><a href="{{ route('admin.toolbox.candidate-types.index') }}">Exam Type</a></li>
+                        @endif
+                        @if($user->canDo('admin.toolbox.candidate_upload.upload.candidate'))
+                            <li><a href="{{ route('admin.toolbox.candidate_upload.upload.candidate') }}">Candidates</a></li>
+                        @endif
+                        @if($user->canDo('admin.toolbox.candidate_image_upload.upload.images'))
+                            <li><a href="{{ route('admin.toolbox.candidate_image_upload.upload.images') }}">Candidate Pictures</a></li>
                         @endif
                     </ul>
                 </li>
@@ -201,11 +213,11 @@
                         <i class="las la-user-shield la-md-2x"></i>
                         <span>Authorisation </span></a>
                     <ul class="sidebar-submenu">
-                        @if($user->canDo('toolbox.authorization.users.index'))
-                            <li><a href="{{ route('toolbox.authorization.users.index') }}">Users</a></li>
+                        @if($user->canDo('admin.authorization.users.index'))
+                            <li><a href="{{ route('admin.authorization.users.index') }}">Users</a></li>
                         @endif
-                        @if($user->canDo('toolbox.authorization.role.index'))
-                            <li><a href="{{ route('toolbox.authorization.role.index') }}">Roles</a></li>
+                        @if($user->canDo('admin.authorization.role.index'))
+                            <li><a href="{{ route('admin.authorization.role.index') }}">Roles</a></li>
                         @endif
                     </ul>
                 </li>
@@ -246,8 +258,8 @@
                         @if($user->canDo('admin.exams.setup.index'))
                             <li><a href="{{ route('admin.exams.setup.index') }}">Pull Record</a></li>
                         @endif
-                        @if($user->canDo('toolbox.invigilator.index'))
-                            <li><a href="{{ route('toolbox.invigilator.index') }}">Candidates</a></li>
+                        @if($user->canDo('admin.toolbox.invigilator.index'))
+                            <li><a href="{{ route('admin.toolbox.invigilator.index') }}">Candidates</a></li>
                         @endif
                         @if($user->canDo('admin.exams.setup.push'))
                             <li><a href="{{ route('admin.exams.setup.push') }}">Push Record</a></li>
@@ -262,7 +274,7 @@
                 <li class="sidebar-list">
                     <i class="fa fa-thumb-tack"> </i>
                     <a class="sidebar-link text-white sidebar-title link-nav"
-                        href="{{ route('auth.admin.logout') }}">
+                        href="{{ route('admin.auth.logout') }}">
                         <i class="las la-sign-out-alt la-md-2x"></i>
                         <span>Logout</span>
                     </a>

@@ -147,7 +147,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
-                <form action="{{route("toolbox.authorization.role.save")}}" method="post">
+                <form action="{{route("admin.authorization.role.save")}}" method="post">
                    @csrf
                     <div class="modal-body">
                         <div class="hours-info">
@@ -190,7 +190,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
-                <form action="{{route("toolbox.authorization.permission.save")}}" method="post" >
+                <form action="{{route("admin.authorization.permission.save")}}" method="post" >
                     @csrf
                     <div class="modal-body">
                         <div class="hours-info">
@@ -233,7 +233,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
-                <form action="{{route("toolbox.authorization.role.user.save")}}" method="post" >
+                <form action="{{route("admin.authorization.role.user.save")}}" method="post" >
                     @csrf
                     <input type="hidden" name="role_id" id="ru_role_id">
                     <div class="modal-body" >
@@ -272,7 +272,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
-                <form action="{{route("toolbox.authorization.role.permission.save")}}" method="post">
+                <form action="{{route("admin.authorization.role.permission.save")}}" method="post">
                     @csrf
                     <input type="hidden" name="role_id" id="mdx_role_id" value="">
                    <div class="modal-body" id="rolePermLoad">
@@ -313,7 +313,7 @@
                 role_id = $(this).attr('role-id');
                 $("#mdx_role_id").val(role_id);
                 $.ajax({
-                    url:"{{route("toolbox.authorization.role.permission")}}",
+                    url:"{{route("admin.authorization.role.permission")}}",
                     data:{role_id:role_id},
                     type:"get",
                     success:function(data){
@@ -396,7 +396,7 @@
 
             function loadUser(roleId){
                 $.ajax({
-                    url:"{{route("toolbox.authorization.role.users")}}",
+                    url:"{{route("admin.authorization.role.users")}}",
                     data:{role_id:roleId},
                     type:"get",
                     success:function(data){

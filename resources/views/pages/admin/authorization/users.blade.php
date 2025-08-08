@@ -150,7 +150,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
-                <form action="{{route("toolbox.authorization.user.save")}}" method="post">
+                <form action="{{route("admin.authorization.user.save")}}" method="post">
                    @csrf
                     <div class="modal-body">
                         <div class="hours-info">
@@ -207,7 +207,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
-                <form action="{{route("toolbox.authorization.user.edit")}}" method="post">
+                <form action="{{route("admin.authorization.user.edit")}}" method="post">
                    @csrf
                    <input type="hidden" name="user_id" id="user_id">
                     <div class="modal-body">
@@ -363,7 +363,7 @@
 
             function loadUser(roleId){
                 $.ajax({
-                    url:"{{route("toolbox.authorization.role.users")}}",
+                    url:"{{route("admin.authorization.role.users")}}",
                     data:{role_id:roleId},
                     type:"get",
                     success:function(data){

@@ -66,7 +66,7 @@ class UserLoginController extends Controller
 
     protected function sendFailedLoginResponse(Request $request)
     {
-        return redirect()->route('auth.admin.login')
+        return redirect()->route('admin.auth.login')
             ->withInput($request->only('email', 'remember'))
             ->withErrors([
                 'email' => __('auth.failed'),
@@ -82,6 +82,6 @@ class UserLoginController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect(route('auth.admin.login'));
+        return redirect(route('admin.auth.login'));
     }
 }

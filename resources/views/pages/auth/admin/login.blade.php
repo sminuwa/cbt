@@ -49,7 +49,7 @@
                         </a>
                     </div>
                     <div class="login-main">
-                        <form class="theme-form" action="{{route('auth.admin.login.proc')}}" method="POST">
+                        <form class="theme-form" action="{{route('admin.auth.login.proc')}}" method="POST">
                             <h4>Admin Sign in </h4>
                             <p>Enter your username & password to login</p>
                             @csrf

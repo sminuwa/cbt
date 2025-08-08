@@ -28,7 +28,7 @@
             <h4 class="f-w-600">Computer Based Test (CBT)</h4>
           </div>
         </div>
-        <div class="welcome-content d-xl-block d-none"><span class="text-truncate col-12">Community Health Practitioners Registration Board of Nigeria </span></div>
+        <div class="welcome-content d-xl-block d-none"><span class="text-truncate col-12">{{ org_name() }} </span></div>
       </div>
       <div class="nav-right col-xxl-7 col-xl-6 col-md-7 col-8 pull-right right-header p-0 ms-auto">
         <ul class="nav-menus"> 
@@ -50,7 +50,7 @@
               <li><a href="#"><i data-feather="user"></i><span>My Profile</span></a></li>
               <li><a href="#"><i data-feather="mail"></i><span>Inbox</span></a></li>
               <li> <a href="#"> <i data-feather="settings"></i><span>Settings</span></a></li>
-              <li><a class="btn btn-pill btn-outline-primary btn-sm" href="{{ route('auth.admin.logout') }}">Log Out</a></li>
+              <li><a class="btn btn-pill btn-outline-primary btn-sm" href="{{ route('admin.auth.logout') }}">Log Out</a></li>
             </ul>
           </li>
         </ul>

@@ -21,29 +21,7 @@
                     <form id="preview-form" method="post">
                         @csrf
                         <div class="row">
-                            <div class="col-12 col-md-12 col-lg-12 col-xl-12 mb-3">
-                                <div class="form-group">
-                                    <label for="centre_id">Centre:</label>
-                                    <select class="form-control select2" name="centre_id" id="centre_id" required>
-                                        <option value="">Select centre</option>
-                                        @foreach($centres as $centre)
-                                            <option value="{{ $centre->id }}">{{ $centre->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6 col-lg-4 col-xl-4">
-                                <div class="form-group">
-                                    <label for="test_type_id">Year:</label>
-                                    <select class="form-control select2" name="year" id="year" required>
-                                        <option value="">Select Year</option>
-                                        @foreach($years as $year)
-                                            <option value="{{$year}}">{{ $year }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                            <div class="col-12 col-md-4 col-lg-4 col-xl-4 mb-3">
                                 <div class="form-group">
                                     <label for="year">Test Type:</label>
                                     <select class="form-control select2" name="type_id" id="type_id" required>
@@ -54,13 +32,48 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6 col-lg-4 col-xl-4">
+                            <div class="col-12 col-md-8 col-lg-8 col-xl-8 mb-3">
+                                <div class="form-group">
+                                    <label for="centre_id">Centre:</label>
+                                    <select class="form-control select2" name="centre_id" id="centre_id" required>
+                                        <option value="">Select centre</option>
+                                        @foreach($centres as $centre)
+                                            <option value="{{ $centre->id }}">{{ $centre->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-4 col-xl-4 mb-3">
+                                <div class="form-group">
+                                    <label for="test_type_id">Year:</label>
+                                    <select class="form-control select2" name="year" id="year" required>
+                                        <option value="">Select Year</option>
+                                        @foreach($years as $year)
+                                            <option value="{{$year}}">{{ $year }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-md-6 col-lg-4 col-xl-4 mb-3">
                                 <div class="form-group">
                                     <label for="year">Cadre/Programme:</label>
                                     <select class="form-control select2" name="code_id" id="code_id" required>
                                         <option value="">Select Cadre</option>
                                         @foreach(TestCode::orderBy('name')->get() as $code)
                                             <option value="{{$code->id}}">{{ $code->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-md-6 col-lg-4 col-xl-4 mb-3">
+                                <div class="form-group">
+                                    <label for="subject_id">Subject:</label>
+                                    <select class="form-control select2" name="subject_id" id="subject_id">
+                                        <option value="all">All Subjects</option>
+                                        @foreach($subjects as $subject)
+                                            <option value="{{$subject->id}}">{{ $subject->subject_code }} - {{ $subject->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>

@@ -28,6 +28,9 @@ class Helper
             $questionText = str_replace('<br>', '', $questionText);
             $questionText = strip_tags(str_replace('&nbsp;', '', $questionText),'<img>');
             $questionText = str_replace('</span></p> <p class="MsoNormal"><span lang="EN">', '', $questionText);
+            
+            // Convert HTML entities to appropriate characters
+            $questionText = self::convertHtmlEntities($questionText);
 
             // Remove the last element (empty string) from the array
 //            array_pop($parts);
@@ -39,6 +42,9 @@ class Helper
                 $optionText = strip_tags(trim(str_replace('<br>', '', $optionText)),'<img>');
                 $optionText = strip_tags(trim(str_replace('&nbsp;', '', $optionText)),'<img>');
                 $optionText = strip_tags(trim(str_replace('<br style="mso-special-character: line-break;"><!--[endif]--></span></p>', '', $optionText)),'<img>');
+                
+                // Convert HTML entities to appropriate characters in options
+                $optionText = self::convertHtmlEntities($optionText);
 
                 $options[] = (object)[
                     'text' => $optionText,
@@ -61,5 +67,44 @@ class Helper
     public static function indexToChar($index)
     {
         return chr($index + 65);
+    }
+
+    /**
+     * Convert HTML entities to appropriate plain text characters
+     * 
+     * @param string $text
+     * @return string
+     */
+    public static function convertHtmlEntities($text)
+    {
+        // First, use PHP's built-in html_entity_decode to handle most entities
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        
+        // Apply custom replacements for common problematic characters
+        
+        // Dashes and hyphens - convert to regular hyphen
+        $text = str_replace("\xE2\x80\x93", '-', $text); // En dash
+        $text = str_replace("\xE2\x80\x94", '-', $text); // Em dash
+        $text = str_replace("\xE2\x88\x92", '-', $text); // Minus sign
+        
+        // Ellipsis - convert to 5 dots
+        $text = str_replace("\xE2\x80\xA6", '.....', $text); // Unicode ellipsis
+        
+        // Quotes - convert to regular quotes
+        $text = str_replace("\xE2\x80\x98", "'", $text); // Left single quote
+        $text = str_replace("\xE2\x80\x99", "'", $text); // Right single quote
+        $text = str_replace("\xE2\x80\x9C", '"', $text); // Left double quote
+        $text = str_replace("\xE2\x80\x9D", '"', $text); // Right double quote
+        
+        // Non-breaking spaces and special spaces
+        $text = str_replace("\xC2\xA0", ' ', $text);     // Non-breaking space
+        $text = str_replace("\xE2\x80\x82", ' ', $text); // En space
+        $text = str_replace("\xE2\x80\x83", ' ', $text); // Em space
+        $text = str_replace("\xE2\x80\x89", ' ', $text); // Thin space
+        
+        // Mathematical symbols
+        $text = str_replace("\xC3\x97", 'x', $text);     // Multiplication sign
+        
+        return trim($text);
     }
 }

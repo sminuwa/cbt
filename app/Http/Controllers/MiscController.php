@@ -41,7 +41,7 @@ class MiscController extends Controller
                 $faculty->mapped = in_array($faculty->id, $mapped_ids);
         }
 
-        return view('pages.author.test.config.ajax.faculty-mappings', compact('faculties', 'config_id'));
+        return view('pages.admin.authoring.ajax.faculty-mappings', compact('faculties', 'config_id'));
     }
 
     public function batchCapacity(Venue $venue)

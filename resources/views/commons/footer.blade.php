@@ -5,7 +5,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12 footer-copyright text-center">
-          <p class="mb-0">Copyright 2024 <a href="https://chprbn.gov.ng" target="_blank">CHPRBN.</a> All Rights Reserved</p>
+          <p class="mb-0">Copyright {{ date('Y') }} <a href="{{ org_website() }}" target="_blank">{{ org_acronym() }}.</a> All Rights Reserved</p>
         </div>
       </div>
     </div>

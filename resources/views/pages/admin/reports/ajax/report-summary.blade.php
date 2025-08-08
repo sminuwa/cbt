@@ -31,12 +31,9 @@
             <th>Indexing (Exam No.)</th>
             <th>Fullname</th>
             <th>Year</th>
-            <th>P1</th>
-            <th>P2</th>
-            <th>P3</th>
-            <th>PE</th>
-            <th>PA</th>
-            <th>Attempt</th>
+            @foreach($subjects as $subject)
+                <th>{{ $subject->subject_code }}</th>
+            @endforeach
         </tr>
         </thead>
         <tbody>
@@ -48,12 +45,12 @@
                 <td>{{$candidate->indexing}}</td>
                 <td>{{$candidate->fullname}}</td>
                 <td>{{ $candidate->year ?? date('Y') }}</td>
-                <td>{{ $candidate->P1 ?? 0 }}</td>
-                <td>{{ $candidate->P2 ?? 0 }}</td>
-                <td>{{ $candidate->P3 ?? 0 }}</td>
-                <td>{{ $candidate->PE ?? 0 }}</td>
-                <td>{{ $candidate->PA ?? 0 }}</td>
-                <td>{{ $candidate->attempt ?? 1 }}</td>
+                @foreach($subjects as $subject)
+                    @php
+                        $columnAlias = 'subject_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $subject->subject_code);
+                    @endphp
+                    <td>{{ $candidate->{$columnAlias} ?? 0 }}</td>
+                @endforeach
             </tr>
         @endforeach
         </tbody>
@@ -65,7 +62,7 @@ var ctx = document.getElementById('barChart');
 var barChart =new Chart(ctx, {
     type: 'bar',
     data: {
-    labels: ["P1", "P2", "P3", "PE", "PA"],
+    labels: [@foreach($subjects as $subject)"{{ $subject->subject_code }}",@endforeach],
     datasets: [
         {
             label: "Above 50",
@@ -74,11 +71,9 @@ var barChart =new Chart(ctx, {
             highlightFill: "rgba(0, 102, 102, 0.2)",
             highlightStroke: RihoAdminConfig.primary,
             data: [
-                    {{ $statistics->P1_above_50_count }}, 
-                    {{ $statistics->P2_above_50_count }}, 
-                    {{ $statistics->P3_above_50_count }}, 
-                    {{ $statistics->PE_above_50_count }}, 
-                    {{ $statistics->PA_above_50_count }}, 
+                    @foreach($subjects as $subject)
+                        {{ $statistics->{$subject->subject_code . '_above_50_count'} ?? 0 }}, 
+                    @endforeach
                 ],
         },
         {
@@ -88,11 +83,9 @@ var barChart =new Chart(ctx, {
             highlightFill: "rgba(254, 106, 73, 0.3)",
             highlightStroke: RihoAdminConfig.secondary, 
             data: [
-                    {{ $statistics->P1_below_50_count }}, 
-                    {{ $statistics->P2_below_50_count }}, 
-                    {{ $statistics->P3_below_50_count }}, 
-                    {{ $statistics->PE_below_50_count }}, 
-                    {{ $statistics->PA_below_50_count }}, 
+                    @foreach($subjects as $subject)
+                        {{ $statistics->{$subject->subject_code . '_below_50_count'} ?? 0 }}, 
+                    @endforeach
                 ],
         }],
     },
@@ -132,7 +125,7 @@ var ctx = document.getElementById('pieChart');
 var barChart =new Chart(ctx, {
     type: 'pie',
     data: {
-    labels: ["Above 50% (P1-PA)", "Below 50% (P1-PA)"],
+    labels: ["Above 50% (All Subjects)", "Below 50% (All Subjects)"],
     datasets: [{
         label: "Pie Chart",
         backgroundColor: [

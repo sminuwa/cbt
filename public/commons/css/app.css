@@ -16,3 +16,7 @@
 .sidebar-wrapper{
     bottom:40px;
 }
+
+.list-group .list-group-item{
+    padding:6px;
+}
