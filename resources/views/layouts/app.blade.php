@@ -138,6 +138,16 @@
 <script src="{{ asset('candidate/assets/js/custom-card/custom-card.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/tooltip-init.js') }}"></script>
 
+<script>
+// Global error handler for Tagify issues
+window.addEventListener('error', function(e) {
+    if (e.message && (e.message.includes('tagify') || e.message.includes('getAttribute'))) {
+        console.warn('Tagify error caught and handled:', e.message);
+        e.preventDefault();
+        return false;
+    }
+});
+</script>
 <script src="{{ asset('candidate/assets/js/select2/tagify.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/select2/tagify.polyfills.min.js') }}"></script>
 <script src="{{ asset('candidate/assets/js/select2/intltelinput.min.js') }}"></script>

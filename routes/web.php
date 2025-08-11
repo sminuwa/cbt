@@ -116,6 +116,13 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
         Route::get('/preview', [AuthorController::class, 'preview'])->name('preview');
         Route::post('/preview/load', [AuthorController::class, 'loadPreview'])->name('load.preview');
         Route::get('/edit/questions', [AuthorController::class, 'editQuestions'])->name('edit.questions');
+        Route::post('/load/questions/improved', [AuthorController::class, 'loadQuestionsImproved'])->name('load.questions.improved');
+        Route::get('/get/question/{question}', [AuthorController::class, 'getQuestion'])->name('get.question');
+        Route::post('/delete/question', [AuthorController::class, 'deleteQuestion'])->name('delete.question');
+        Route::post('/bulk/edit', [AuthorController::class, 'bulkEditQuestions'])->name('bulk.edit');
+        Route::post('/bulk/delete', [AuthorController::class, 'bulkDeleteQuestions'])->name('bulk.delete');
+        Route::get('/export/questions', [AuthorController::class, 'exportQuestions'])->name('export.questions');
+        Route::get('/export/questions/docx', [AuthorController::class, 'exportQuestionsDocx'])->name('export.questions.docx');
         Route::get('/edit/{question}', [AuthorController::class, 'editQuestion'])->name('edit.question');
         Route::post('/update/question', [AuthorController::class, 'updateQuestion'])->name('update.question');
 

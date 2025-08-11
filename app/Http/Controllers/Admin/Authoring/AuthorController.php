@@ -156,9 +156,8 @@ class AuthorController extends Controller
                 'title' => $question->text,
                 'topic_id' => $request->topic_id,
                 'subject_id' => $request->subject_id,
-                'difficulty_level' => $question->difficulty != 'S' 
-                    ? ($question->difficulty == 'M' ? 'moderate' : 'difficult') 
-                    : null,
+                'difficulty_level' => $question->difficulty == 'S' ? 'simple' 
+                    : ($question->difficulty == 'M' ? 'moderate' : 'difficult'),
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
@@ -221,9 +220,8 @@ class AuthorController extends Controller
                     'title' => $question->text,
                     'topic_id' => $request->topic_id,
                     'subject_id' => $request->subject_id,
-                    'difficulty_level' => $question->difficulty != 'S' 
-                        ? ($question->difficulty == 'M' ? 'moderate' : 'difficult') 
-                        : null,
+                    'difficulty_level' => $question->difficulty == 'S' ? 'simple' 
+                        : ($question->difficulty == 'M' ? 'moderate' : 'difficult'),
                     'created_at' => $now,
                     'updated_at' => $now,
                 ];
@@ -431,6 +429,507 @@ class AuthorController extends Controller
     public function editQuestions()
     {
         return view('pages.admin.questions.edit-questions-index');
+    }
+
+
+    /**
+     * Load questions with advanced filtering for improved interface
+     */
+    public function loadQuestionsImproved(Request $request)
+    {
+        try {
+            $query = QuestionBank::with(['answer_options'])
+                ->where('author', Auth::user()->id);
+
+            // Apply filters
+            if ($request->filled('subject_id')) {
+                $query->where('subject_id', $request->subject_id);
+            }
+
+            if ($request->filled('topic_id')) {
+                $query->where('topic_id', $request->topic_id);
+            }
+
+            if ($request->filled('difficulty_level')) {
+                $query->where('difficulty_level', $request->difficulty_level);
+            }
+
+            if ($request->filled('status')) {
+                $query->where('active', $request->status);
+            }
+
+            // Search functionality
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'LIKE', '%' . $search . '%')
+                      ->orWhere('id', 'LIKE', '%' . $search . '%')
+                      ->orWhereHas('answer_options', function($optQuery) use ($search) {
+                          $optQuery->where('question_option', 'LIKE', '%' . $search . '%');
+                      });
+                });
+            }
+
+            // Sorting
+            $sortBy = $request->get('sort_by', 'created_at');
+            $sortDirection = $request->get('sort_direction', 'desc');
+            $query->orderBy($sortBy, $sortDirection);
+
+            // Pagination
+            $perPage = $request->get('per_page', 25);
+            $questions = $query->paginate($perPage);
+
+            // Calculate statistics
+            $stats = $this->calculateQuestionStats($request);
+
+            // Generate HTML for questions
+            $html = $this->renderQuestionsHTML($questions, $request->boolean('bulk_mode'));
+
+            // Generate pagination HTML
+            $pagination = $questions->appends($request->all())->render();
+
+            return response()->json([
+                'success' => true,
+                'html' => $html,
+                'pagination' => $pagination,
+                'stats' => $stats,
+                'total' => $questions->total()
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error loading questions: ' . $e->getMessage(), [
+                'user_id' => Auth::user()->id,
+                'request_data' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error loading questions. Please try again.',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
+
+    /**
+     * Get single question for editing
+     */
+    public function getQuestion(QuestionBank $question)
+    {
+        // Ensure user can only edit their own questions
+        if ($question->author !== Auth::user()->id) {
+            abort(403, 'Unauthorized access to this question.');
+        }
+
+        $question->load('answer_options');
+        
+        return view('pages.admin.questions.partials.edit-question-form', compact('question'));
+    }
+
+    /**
+     * Delete a question
+     */
+    public function deleteQuestion(Request $request)
+    {
+        try {
+            $question = QuestionBank::where('id', $request->question_id)
+                ->where('author', Auth::user()->id)
+                ->first();
+
+            if (!$question) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Question not found or you do not have permission to delete it.'
+                ], 404);
+            }
+
+            // Delete associated answer options first
+            $question->answer_options()->delete();
+            
+            // Delete the question
+            $question->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Question deleted successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error deleting question: ' . $e->getMessage(), [
+                'user_id' => Auth::user()->id,
+                'question_id' => $request->question_id,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting question. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Bulk edit questions
+     */
+    public function bulkEditQuestions(Request $request)
+    {
+        try {
+            $questionIds = explode(',', $request->selected_questions);
+            $questionIds = array_filter($questionIds); // Remove empty values
+
+            if (empty($questionIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No questions selected.'
+                ], 400);
+            }
+
+            $updated = 0;
+            $updateData = [];
+
+            // Prepare update data
+            if ($request->filled('bulk_subject_id')) {
+                $updateData['subject_id'] = $request->bulk_subject_id;
+            }
+
+            if ($request->filled('bulk_topic_id')) {
+                $updateData['bulk_topic_id'] = $request->bulk_topic_id;
+            }
+
+            if ($request->filled('bulk_difficulty')) {
+                $updateData['difficulty_level'] = $request->bulk_difficulty;
+            }
+
+            if ($request->filled('bulk_status')) {
+                $updateData['active'] = $request->bulk_status;
+            }
+
+            if (!empty($updateData)) {
+                $updateData['updated_at'] = now();
+                
+                $updated = QuestionBank::whereIn('id', $questionIds)
+                    ->where('author', Auth::user()->id)
+                    ->update($updateData);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Questions updated successfully.',
+                'updated' => $updated
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error bulk editing questions: ' . $e->getMessage(), [
+                'user_id' => Auth::user()->id,
+                'request_data' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating questions. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Bulk delete questions
+     */
+    public function bulkDeleteQuestions(Request $request)
+    {
+        try {
+            $questionIds = $request->question_ids;
+
+            if (empty($questionIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No questions selected.'
+                ], 400);
+            }
+
+            // Delete answer options first
+            AnswerOption::whereHas('question_bank', function($query) use ($questionIds) {
+                $query->whereIn('id', $questionIds)
+                      ->where('author', Auth::user()->id);
+            })->delete();
+
+            // Delete questions
+            $deleted = QuestionBank::whereIn('id', $questionIds)
+                ->where('author', Auth::user()->id)
+                ->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Questions deleted successfully.',
+                'deleted' => $deleted
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error bulk deleting questions: ' . $e->getMessage(), [
+                'user_id' => Auth::user()->id,
+                'request_data' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting questions. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Export questions
+     */
+    public function exportQuestions(Request $request)
+    {
+        try {
+            $query = QuestionBank::with(['answer_options', 'subject', 'topic'])
+                ->where('author', Auth::user()->id);
+
+            // Apply same filters as the main query
+            if ($request->filled('subject_id')) {
+                $query->where('subject_id', $request->subject_id);
+            }
+
+            if ($request->filled('topic_id')) {
+                $query->where('topic_id', $request->topic_id);
+            }
+
+            if ($request->filled('difficulty_level')) {
+                $query->where('difficulty_level', $request->difficulty_level);
+            }
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'LIKE', '%' . $search . '%')
+                      ->orWhere('id', 'LIKE', '%' . $search . '%');
+                });
+            }
+
+            // If exporting selected questions only
+            if ($request->boolean('selected_only') && $request->filled('selected_questions')) {
+                $selectedIds = explode(',', $request->selected_questions);
+                $query->whereIn('id', $selectedIds);
+            }
+
+            $questions = $query->get();
+
+            // Generate CSV
+            $filename = 'questions_export_' . date('Y-m-d_H-i-s') . '.csv';
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            ];
+
+            $callback = function() use ($questions) {
+                $file = fopen('php://output', 'w');
+                
+                // CSV headers
+                fputcsv($file, [
+                    'ID', 'Subject', 'Topic', 'Question', 'Difficulty', 'Status',
+                    'Option A', 'Option B', 'Option C', 'Option D', 'Correct Answer',
+                    'Created Date', 'Updated Date'
+                ]);
+
+                foreach ($questions as $question) {
+                    $options = $question->answer_options->pluck('question_option')->toArray();
+                    $correctAnswer = '';
+                    
+                    foreach ($question->answer_options as $index => $option) {
+                        if ($option->correctness == 1) {
+                            $correctAnswer = chr(65 + $index); // A, B, C, D...
+                            break;
+                        }
+                    }
+
+                    fputcsv($file, [
+                        $question->id,
+                        $question->subject ? $question->subject->name : 'N/A',
+                        $question->topic ? $question->topic->name : 'N/A',
+                        strip_tags($question->title),
+                        ucfirst($question->difficulty_level ?? ''),
+                        $question->active ? 'Active' : 'Inactive',
+                        isset($options[0]) ? strip_tags($options[0]) : '',
+                        isset($options[1]) ? strip_tags($options[1]) : '',
+                        isset($options[2]) ? strip_tags($options[2]) : '',
+                        isset($options[3]) ? strip_tags($options[3]) : '',
+                        $correctAnswer,
+                        $question->created_at->format('Y-m-d H:i:s'),
+                        $question->updated_at->format('Y-m-d H:i:s'),
+                    ]);
+                }
+
+                fclose($file);
+            };
+
+            return response()->stream($callback, 200, $headers);
+
+        } catch (\Exception $e) {
+            Log::error('Error exporting questions: ' . $e->getMessage(), [
+                'user_id' => Auth::user()->id,
+                'request_data' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Error exporting questions. Please try again.');
+        }
+    }
+
+    /**
+     * Calculate question statistics
+     */
+    private function calculateQuestionStats(Request $request)
+    {
+        $baseQuery = QuestionBank::where('author', Auth::user()->id);
+
+        // Apply same filters as main query for accurate stats
+        if ($request->filled('subject_id')) {
+            $baseQuery->where('subject_id', $request->subject_id);
+        }
+
+        if ($request->filled('topic_id')) {
+            $baseQuery->where('topic_id', $request->topic_id);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $baseQuery->where(function($q) use ($search) {
+                $q->where('title', 'LIKE', '%' . $search . '%')
+                  ->orWhere('id', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        return [
+            'total' => $baseQuery->count(),
+            'simple' => (clone $baseQuery)->where('difficulty_level', 'simple')->count(),
+            'moderate' => (clone $baseQuery)->where('difficulty_level', 'moderate')->count(),
+            'difficult' => (clone $baseQuery)->where('difficulty_level', 'difficult')->count(),
+        ];
+    }
+
+    /**
+     * Export questions in DOCX format (compatible with authoring format)
+     */
+    public function exportQuestionsDocx(Request $request)
+    {
+        try {
+            $query = QuestionBank::with(['answer_options', 'subject', 'topic'])
+                ->where('author', Auth::user()->id);
+
+            // Apply same filters as the main query
+            if ($request->filled('subject_id')) {
+                $query->where('subject_id', $request->subject_id);
+            }
+
+            if ($request->filled('topic_id')) {
+                $query->where('topic_id', $request->topic_id);
+            }
+
+            if ($request->filled('difficulty_level')) {
+                $query->where('difficulty_level', $request->difficulty_level);
+            }
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'LIKE', '%' . $search . '%')
+                      ->orWhere('id', 'LIKE', '%' . $search . '%');
+                });
+            }
+
+            // If exporting selected questions only
+            if ($request->boolean('selected_only') && $request->filled('selected_questions')) {
+                $selectedIds = explode(',', $request->selected_questions);
+                $query->whereIn('id', $selectedIds);
+            }
+
+            $questions = $query->get();
+
+            // Generate DOCX
+            $phpWord = new \PhpOffice\PhpWord\PhpWord();
+            $section = $phpWord->addSection();
+
+            // Add header
+            $section->addTitle('Question Bank Export', 1);
+            $section->addText('Subject: ' . ($questions->first()->subject->name ?? 'Mixed Subjects'));
+            $section->addText('Topic: ' . ($questions->first()->topic->name ?? 'Mixed Topics'));
+            $section->addText('Total Questions: ' . $questions->count());
+            $section->addText('Export Date: ' . now()->format('Y-m-d H:i:s'));
+            $section->addTextBreak(2);
+
+            // Add format guide
+            $section->addTitle('Format Guide', 2);
+            $section->addText('This document uses the following format markers:');
+            $section->addText('?? - Question separator');
+            $section->addText('** - Option separator');
+            $section->addText('== - Correct answer marker');
+            $section->addText('{S} - Simple difficulty, {M} - Moderate difficulty, {D} - Difficult difficulty');
+            $section->addTextBreak(2);
+
+            // Add questions in authoring format
+            foreach ($questions as $question) {
+                // Convert difficulty level to format code
+                $difficultyCode = 'M'; // Default to moderate
+                switch ($question->difficulty_level) {
+                    case 'simple':
+                        $difficultyCode = 'S';
+                        break;
+                    case 'moderate':
+                        $difficultyCode = 'M';
+                        break;
+                    case 'difficult':
+                        $difficultyCode = 'D';
+                        break;
+                }
+
+                // Add question text with difficulty marker
+                $questionText = '??' . strip_tags($question->title) . ' {' . $difficultyCode . '}';
+                $section->addText($questionText);
+
+                // Add options
+                if ($question->answer_options && count($question->answer_options) > 0) {
+                    foreach ($question->answer_options as $option) {
+                        $optionText = $option->correctness == 1 
+                            ? '**' . strip_tags($option->question_option) . ' =='
+                            : '**' . strip_tags($option->question_option);
+                        $section->addText($optionText);
+                    }
+                }
+
+                $section->addTextBreak(1);
+            }
+
+            // Create temporary file
+            $tempFile = tempnam(sys_get_temp_dir(), 'questions_export');
+            $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+            $objWriter->save($tempFile);
+
+            // Generate filename
+            $filename = 'questions_export_' . date('Y-m-d_H-i-s') . '.docx';
+
+            // Return file download
+            return response()->download($tempFile, $filename)->deleteFileAfterSend();
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error exporting questions: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Render questions HTML using partial view
+     */
+    private function renderQuestionsHTML($questions, $bulkMode = false)
+    {
+        return view('pages.admin.questions.partials.questions-list', [
+            'questions' => $questions,
+            'bulkMode' => $bulkMode,
+            'showPagination' => false
+        ])->render();
     }
 
     /**

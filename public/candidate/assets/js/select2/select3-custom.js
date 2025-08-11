@@ -1,4 +1,5 @@
 // Tagify JS
+try {
 (function () {
   ("use strict");
   // 1. Basic Select
@@ -7,13 +8,18 @@
   var input = document.querySelector("input[name=basic]");
 
   // initialize Tagify on the above input node reference
-  new Tagify(input);
+  if (input) {
+    new Tagify(input);
+  }
 
   // 2. Random suggestions
 
-  var input = document.querySelector('input[name="input-custom-dropdown"]'),
-    // init Tagify script on the above inputs
-    tagify = new Tagify(input, {
+  var input = document.querySelector('input[name="input-custom-dropdown"]');
+  
+  if (!input) return;
+  
+  // init Tagify script on the above inputs
+  var tagify = new Tagify(input, {
       whitelist: [
         "A# .NET",
         "A# (Axiom)",
@@ -227,8 +233,11 @@
 
   // 3. Movie suggestions
 
-  var input = document.querySelector("textarea[name=tags2]"),
-    tagify = new Tagify(input, {
+  var input = document.querySelector("textarea[name=tags2]");
+  
+  if (!input) return;
+  
+  var tagify = new Tagify(input, {
       enforceWhitelist: true,
       delimiters: null,
       whitelist: [
@@ -468,9 +477,12 @@
 
   // 4.Render Suggestions List Manually
 
-  var input = document.querySelector("input[name=tags-manual-suggestions]"),
-    // init Tagify script on the above inputs
-    tagify = new Tagify(input, {
+  var input = document.querySelector("input[name=tags-manual-suggestions]");
+  
+  if (!input) return;
+  
+  // init Tagify script on the above inputs
+  var tagify = new Tagify(input, {
       whitelist: [
         ".NET",
         "Software Enginner",
@@ -709,14 +721,25 @@
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentElement
   function renderSuggestionsList() {
-    tagify.dropdown.show(); // load the list
-    tagify.DOM.scope.parentNode.appendChild(tagify.DOM.dropdown);
+    try {
+      if (tagify && tagify.dropdown && typeof tagify.dropdown.show === 'function') {
+        tagify.dropdown.show(); // load the list
+        if (tagify.DOM && tagify.DOM.scope && tagify.DOM.scope.parentNode && tagify.DOM.dropdown) {
+          tagify.DOM.scope.parentNode.appendChild(tagify.DOM.dropdown);
+        }
+      }
+    } catch (error) {
+      console.warn('Tagify dropdown error:', error);
+    }
   }
 
   // 5. Colors select options
 
-  var input = document.querySelector("input[name=tags3]"),
-    tagify = new Tagify(input, {
+  var input = document.querySelector("input[name=tags3]");
+  
+  if (!input) return; // Exit if input element doesn't exist
+  
+  var tagify = new Tagify(input, {
       pattern: /^.{0,20}$/, // Validate typed tag(s) by Regex. Here maximum chars length is defined as "20"
       delimiters: ",| ", // add new tags when a comma or a space character is entered
       trim: false, // if "delimiters" setting is using space as a delimeter, then "trim" should be set to "false"
@@ -1150,7 +1173,10 @@
 
   // 6. Flag Selections
 
-  var tagify = new Tagify(document.querySelector("input[name=tags3-1]"), {
+  var flagInput = document.querySelector("input[name=tags3-1]");
+  if (!flagInput) return; // Exit if input element doesn't exist
+
+  var tagify = new Tagify(flagInput, {
     delimiters: null,
     templates: {
       tag: function (tagData) {
@@ -1460,16 +1486,22 @@
   tagify.addTags(tagsToAdd);
 
   // 7. Readonly options
-  var input = document.querySelector("input[name=tags4]"),
-    tagify = new Tagify(input);
+  var input = document.querySelector("input[name=tags4]");
+  if (input) {
+    var tagify = new Tagify(input);
+  }
 
   // 8. Read and write options
-  var input = document.querySelector("input[name=tags-readonly-mix]"),
-    tagify = new Tagify(input);
+  var input2 = document.querySelector("input[name=tags-readonly-mix]");
+  if (input2) {
+    var tagify2 = new Tagify(input2);
+  }
 
   // 9. Disabled readonly
-  var input = document.querySelector("input[name=disabledInput]"),
-    tagify = new Tagify(input);
+  var input3 = document.querySelector("input[name=disabledInput]");
+  if (input3) {
+    var tagify3 = new Tagify(input3);
+  }
 
   // 10. Single-Value Select
   var input = document.querySelector("input[name=tags-select-mode]");
@@ -1477,36 +1509,48 @@
   var input2 = document.querySelector("input[name=tags-select-v-mode");
   var input3 = document.querySelector("input[name=tags-s-value-mode");
 
-  tagify = new Tagify(input, {
-    enforceWhitelist: true,
-    mode: "select",
-    whitelist: ["Riho", "Roxo", "Tivo"],
-    blacklist: ["foo", "bar"],
-  });
+  if (input) {
+    var tagify = new Tagify(input, {
+      enforceWhitelist: true,
+      mode: "select",
+      whitelist: ["Riho", "Roxo", "Tivo"],
+      blacklist: ["foo", "bar"],
+    });
+  }
 
-  tagify = new Tagify(input1, {
-    enforceWhitelist: true,
-    mode: "select",
-    whitelist: ["Web designer", "UI/UX designer", "Web devloper"],
-    blacklist: ["foo", "bar"],
-  });
+  if (input1) {
+    var tagify1 = new Tagify(input1, {
+      enforceWhitelist: true,
+      mode: "select",
+      whitelist: ["Web designer", "UI/UX designer", "Web devloper"],
+      blacklist: ["foo", "bar"],
+    });
+  }
 
-  tagify = new Tagify(input2, {
-    enforceWhitelist: true,
-    mode: "select",
-    whitelist: ["UI Kits", "Bonus UI", "Bookmarks"],
-    blacklist: ["foo", "bar"],
-  });
+  if (input2) {
+    var tagify2 = new Tagify(input2, {
+      enforceWhitelist: true,
+      mode: "select",
+      whitelist: ["UI Kits", "Bonus UI", "Bookmarks"],
+      blacklist: ["foo", "bar"],
+    });
+  }
 
-  tagify = new Tagify(input3, {
-    enforceWhitelist: true,
-    mode: "select",
-    whitelist: ["Forms", "Charts", "Blog"],
-    blacklist: ["foo", "bar"],
-  });
+  if (input3) {
+    var tagify3 = new Tagify(input3, {
+      enforceWhitelist: true,
+      mode: "select",
+      whitelist: ["Forms", "Charts", "Blog"],
+      blacklist: ["foo", "bar"],
+    });
+  }
   // bind events
-  tagify.on("add", onAddTag);
-  tagify.DOM.input.addEventListener("focus", onSelectFocus);
+  if (typeof tagify !== 'undefined' && tagify) {
+    tagify.on("add", onAddTag);
+    if (tagify.DOM && tagify.DOM.input) {
+      tagify.DOM.input.addEventListener("focus", onSelectFocus);
+    }
+  }
 
   function onAddTag(e) {
     console.log(e.detail);
@@ -1529,8 +1573,11 @@
     );
   });
 
-  var emailsearch = document.querySelector(".customLook"),
-    tagify = new Tagify(emailsearch, {
+  var emailsearch = document.querySelector(".customLook");
+  
+  if (!emailsearch) return;
+  
+  var tagify = new Tagify(emailsearch, {
       // email address validation (https://stackoverflow.com/a/46181/104380)
       pattern:
         /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -1555,3 +1602,6 @@
     console.log("invalid", e.detail);
   }
 })();
+} catch (error) {
+  console.warn('Tagify initialization error:', error);
+}
