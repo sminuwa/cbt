@@ -20,3 +20,19 @@
 .list-group .list-group-item{
     padding:6px;
 }
+
+.dropdown-menu{
+    background:#fff;
+}
+.dropdown-menu .dropdown-item{
+    background: none;;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > th:first-child:before {
+    top: 20px;
+
+}
+
+.card .card-header{
+    padding:10px;
+}

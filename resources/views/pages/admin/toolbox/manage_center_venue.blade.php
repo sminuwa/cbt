@@ -94,7 +94,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
-                <form action="{{ route('toolbox.center_venue.center.store') }}" method="post">
+                <form action="{{ route('admin.toolbox.center_venue.center.store') }}" method="post">
                     @csrf
                     <input type="hidden" id="type_id" name="type_id"/>
                     <div class="modal-body">
@@ -151,7 +151,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
-                <form action="{{route('toolbox.center_venue.venue.store')}}" method="post">
+                <form action="{{route('admin.toolbox.center_venue.venue.store')}}" method="post">
                     @csrf
                     <input type="hidden" id="venue_id"  name="id"/>
                     <div class="modal-body">
@@ -240,7 +240,7 @@
                 $('#venueLocation').val('')
                 $('#capacity').val('')
                 $('#form').attr('method', 'post')
-                $('#form').attr('action', '{{route('toolbox.center_venue.center.store')}}')
+                $('#form').attr('action', '{{route('admin.toolbox.center_venue.center.store')}}')
             })
 
             $(document).on('click', '.edit', function () {
@@ -261,7 +261,7 @@
             $('#btnDelete').on('click', function () {
                 let id = $(".modal-body #id").val()
                 console.log(id)
-                $.get('{{route('toolbox.center_venue.venue.delete',[':id'])}}'.replace(':id', id),
+                $.get('{{route('admin.toolbox.center_venue.venue.delete',[':id'])}}'.replace(':id', id),
                     function (response) {
                         console.log(response)
                         $('#delete').modal('hide')

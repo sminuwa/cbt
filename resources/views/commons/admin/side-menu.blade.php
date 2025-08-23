@@ -82,6 +82,12 @@
                     // Authorisation Menu
                     $showAuthorisation = $user->canDo('admin.authorization.users.index') ||
                                         $user->canDo('admin.authorization.role.index');
+
+                    // Candidates Menu
+                    $showCandidates = $user->canDo('admin.candidates.manage.index');
+
+                    // Centres Menu
+                    $showCentres = $user->canDo('admin.centres.manage.index');
                 @endphp
                 {{-- to be remove once permission is back to live --}}
                 @if(auth()->user()->id == '1') 
@@ -202,6 +208,34 @@
                         {{-- @if($user->canDo('admin.reports.active.index'))
                             <li><a href="{{ route('admin.reports.active.index') }}">Active Candidates</a></li>
                         @endif --}}
+                    </ul>
+                </li>
+                @endif
+
+                @if($showCandidates)
+                <li class="sidebar-list">
+                    <i class="fa fa-thumb-tack"> </i>
+                    <a class="sidebar-link sidebar-title" href="#">
+                        <i class="las la-users la-md-2x"></i>
+                        <span>Candidates</span></a>
+                    <ul class="sidebar-submenu">
+                        @if($user->canDo('admin.candidates.manage.index'))
+                            <li><a href="{{ route('admin.candidates.manage.index') }}">Manage</a></li>
+                        @endif
+                    </ul>
+                </li>
+                @endif
+
+                @if($showCentres)
+                <li class="sidebar-list">
+                    <i class="fa fa-thumb-tack"> </i>
+                    <a class="sidebar-link sidebar-title" href="#">
+                        <i class="las la-building la-md-2x"></i>
+                        <span>Centres</span></a>
+                    <ul class="sidebar-submenu">
+                        @if($user->canDo('admin.centres.manage.index'))
+                            <li><a href="{{ route('admin.centres.manage.index') }}">Manage</a></li>
+                        @endif
                     </ul>
                 </li>
                 @endif

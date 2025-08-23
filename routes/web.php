@@ -194,19 +194,46 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
         Route::any('/role/user/detach', [SetupController::class, 'roleUserDetach'])->name('role.user.detach');
     });
 
+    Route::name('candidates.')->prefix('candidates')->group(function () {
+        Route::name('manage.')->prefix('manage')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'index'])->name('index');
+            Route::get('/data', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'getData'])->name('data');
+            Route::post('/pull', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'pullCandidates'])->name('pull');
+            Route::get('/{id}', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'show'])->name('show');
+            Route::put('/{id}', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'update'])->name('update');
+            Route::delete('/{id}', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'destroy'])->name('delete');
+        });
+    });
+
+    Route::name('centres.')->prefix('centres')->group(function () {
+        Route::name('manage.')->prefix('manage')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\Centre\CentreController::class, 'index'])->name('index');
+            Route::get('/data', [App\Http\Controllers\Admin\Centre\CentreController::class, 'getData'])->name('data');
+            Route::get('/available', [App\Http\Controllers\Admin\Centre\CentreController::class, 'getAvailableCentres'])->name('available');
+            Route::post('/', [App\Http\Controllers\Admin\Centre\CentreController::class, 'store'])->name('store');
+            Route::get('/{id}', [App\Http\Controllers\Admin\Centre\CentreController::class, 'show'])->name('show');
+            Route::put('/{id}', [App\Http\Controllers\Admin\Centre\CentreController::class, 'update'])->name('update');
+            Route::delete('/{id}', [App\Http\Controllers\Admin\Centre\CentreController::class, 'destroy'])->name('destroy');
+            Route::post('/venue', [App\Http\Controllers\Admin\Centre\VenueController::class, 'store'])->name('venue.store');
+            Route::delete('/venue/{id}', [App\Http\Controllers\Admin\Centre\VenueController::class, 'destroy'])->name('venue.destroy');
+            Route::post('/candidate/delete', [App\Http\Controllers\Admin\Centre\CentreController::class, 'deleteCandidate'])->name('candidate.delete');
+            Route::post('/candidate/reschedule', [App\Http\Controllers\Admin\Centre\CentreController::class, 'rescheduleCandidate'])->name('candidate.reschedule');
+        });
+    });
+
     Route::name('toolbox.')->prefix('toolbox')->group(function () {
+        Route::name('center_venue.')->prefix('center-venue')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\Centre\CentreController::class, 'index'])->name('home');
+            Route::post('/center/store', [App\Http\Controllers\Admin\Centre\CentreController::class, 'store'])->name('center.store');
+            Route::put('/center/{id}', [App\Http\Controllers\Admin\Centre\CentreController::class, 'update'])->name('center.edit');
+            Route::delete('/center/{id}', [App\Http\Controllers\Admin\Centre\CentreController::class, 'destroy'])->name('center.destroy');
+            Route::post('/venue/store', [App\Http\Controllers\Admin\Centre\VenueController::class, 'store'])->name('venue.store');
+            Route::delete('/venue/{id}', [App\Http\Controllers\Admin\Centre\VenueController::class, 'destroy'])->name('venue.delete');
+        });
         Route::name('candidate-types.')->prefix('candidate-types')->group(function () {
             Route::get('/', [ExamTypeController::class, 'index'])->name('index');
             Route::post('etype/store', [ExamTypeController::class, 'store'])->name('store');
             Route::get('etype/delete/{examType}', [ExamTypeController::class, 'destroy'])->name('delete');
-        });
-        Route::name('center_venue.')->prefix('center_venue')->group(function () {
-            Route::get('/', [CentreController::class, 'index'])->name('home');
-            Route::post('centre/store', [CentreController::class, 'store'])->name('center.store');
-            Route::post('centre/edit/{id}', [CentreController::class, 'edit'])->name('center.edit');
-            Route::post('centre/delete', [CentreController::class, 'destroy'])->name('center.destroy');
-            Route::post('venue/store', [VenueController::class, 'store'])->name('venue.store');
-            Route::get('venue/delete/{venue}', [VenueController::class, 'destroy'])->name('venue.delete');
         });
         Route::name('subject.')->prefix('subjects')->group(function () {
             Route::get('/', [SubjectsController::class, 'index'])->name('home');

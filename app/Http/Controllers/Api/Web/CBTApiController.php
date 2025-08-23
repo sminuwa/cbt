@@ -13,14 +13,42 @@ class CBTApiController extends Controller
 
     
     public function pullCandidate(Request $request){
-        $candidates = $request->graduands;
-        // return $candidates;
-        foreach(array_chunk($candidates, 500) as $key=>$candidate){
-            if(!Candidate::upsert($candidate, ['indexing'])) {
-                reset_auto_increment('candidates');
+        try {
+            $headers = [
+                'Authorization' => 'Bearer your-token-here',
+                'Accept' => 'application/json',
+                'Custom-Header' => 'custom-value'
+            ];
+            
+            $response = Http::withHeaders($headers)->get('https://app.chprbn.gov.ng/push-candidate');
+            
+            if (!$response->successful()) {
+                return response()->json(['error' => 'Failed to fetch candidates from external API'], 500);
             }
+            
+            $candidates = $response->json();
+            
+            if (empty($candidates)) {
+                return response()->json(['message' => 'No candidates found'], 200);
+            }
+            
+            $updatedCount = 0;
+            foreach(array_chunk($candidates, 500) as $key => $candidateBatch){
+                if(Candidate::upsert($candidateBatch, ['indexing'])) {
+                    $updatedCount += count($candidateBatch);
+                } else {
+                    reset_auto_increment('candidates');
+                }
+            }
+            
+            return response()->json([
+                'message' => 'Candidates updated successfully', 
+                'count' => $updatedCount
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error pulling candidates: ' . $e->getMessage()], 500);
         }
-        return "Updated";
     }
 
     public function summary_reports(Request $request){

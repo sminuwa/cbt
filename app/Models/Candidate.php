@@ -25,6 +25,11 @@ class Candidate extends Authenticatable
         return ($this->surname ?? '').' '.($this->firstname ?? ''). ' '.($this->other_names ?? '');
     }
 
+    public function testCode()
+    {
+        return $this->belongsTo(TestCode::class, 'programme_id');
+    }
+
 
     public function indexing_to_image_name(){
         return str_replace('/', '_', $this->indexing);
