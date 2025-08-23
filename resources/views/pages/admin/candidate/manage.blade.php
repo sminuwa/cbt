@@ -22,17 +22,20 @@
     <div class="card">
         <div class="card-header">
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-3">
                     <h4 class="card-title">
                         <span>Manage Candidates</span>
                     </h4>
                 </div>
-                <div class="col-md-4 text-end">
+                <div class="col-md-9 text-end">
                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#filterModal">
                         <i class="las la-filter"></i> Filter
                     </button>
                     <button type="button" id="pull-candidates-btn" class="btn btn-success btn-sm">
                         <i class="las la-download"></i> Pull Candidates
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#imageManagementModal">
+                        <i class="las la-images"></i> Images
                     </button>
                 </div>
             </div>
@@ -234,6 +237,139 @@
                 <div class="modal-body">
                     <div id="candidate-details">
                         <!-- Candidate details will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Management Modal -->
+    <div class="modal fade" id="imageManagementModal" tabindex="-1" aria-labelledby="imageManagementModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageManagementModalLabel">
+                        <i class="las la-images text-info"></i> Candidate Image Management
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Statistics Section -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-body text-center">
+                                    <h4 class="text-info mb-0" id="candidates-without-images">Loading...</h4>
+                                    <p class="mb-0">Candidates without images</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <h4 class="text-success mb-0" id="total-candidates">Loading...</h4>
+                                    <p class="mb-0">Total candidates</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6><i class="las la-magic"></i> Generate Images</h6>
+                            <p class="text-muted small">Generate images for candidates without passport photos using external API</p>
+                            
+                            <!-- Year Selection -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-2">
+                                        <label for="generate_year" class="form-label text-muted small">Year:</label>
+                                        <select class="form-control form-control-sm" id="generate_year" name="generate_year">
+                                            <option value="{{ date('Y') }}">{{ date('Y') }} (Current Year)</option>
+                                            @for($year = date('Y'); $year >= 2020; $year--)
+                                                <option value="{{ $year }}">{{ $year }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="generate_batch_size" class="form-label text-muted small">
+                                            Batch Size:
+                                            <span style="float:right">
+                                                <i class="las la-info-circle" 
+                                                   title="Smaller batches are more reliable but slower"></i>
+                                            </span>
+                                        </label>
+                                        <select class="form-control form-control-sm" id="generate_batch_size" name="generate_batch_size">
+                                            <option value="5">5 images per batch</option>
+                                            <option value="10" selected>10 images per batch</option>
+                                            <option value="15">15 images per batch</option>
+                                            <option value="20">20 images per batch</option>
+                                            <option value="25">25 images per batch</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="button" class="btn btn-primary btn-block" id="generate-images-btn">
+                                        <i class="las la-magic"></i> Generate Missing Images
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-md-12">
+                                    <h6><i class="las la-upload"></i> Manual Upload</h6>
+                                    <div class="alert alert-info">
+                                        <h6><i class="las la-info-circle"></i> Upload Instructions:</h6>
+                                        <ul class="mb-0">
+                                            <li>Supported image formats: <strong>.jpg</strong> only</li>
+                                            <li>File naming: Use candidate's <strong>exam number</strong> (indexing) with underscores instead of slashes</li>
+                                            <li>Example: If exam number is "2024/001", filename should be "2024_001.jpg"</li>
+                                            <li>Maximum file size per image: 5MB</li>
+                                            <li>You can select multiple images at once</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <form id="uploadImagesForm" enctype="multipart/form-data">
+                                        <div class="form-group mb-3">
+                                            <label for="image_files" class="form-label">Select Image Files</label>
+                                            <input type="file" class="form-control" id="image_files" name="files[]" 
+                                                   accept=".jpg,.jpeg" multiple required>
+                                            <div class="form-text">Choose one or more .jpg image files</div>
+                                        </div>
+                                        
+                                        <!-- Progress Bar (hidden by default) -->
+                                        <div class="progress" id="image-upload-progress" style="display: none;">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                                 role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        
+                                        <!-- Upload Status -->
+                                        <div id="image-upload-status" class="mt-3"></div>
+                                        
+                                        <div class="text-end">
+                                            <button type="submit" class="btn btn-info" id="upload-images-btn">
+                                                <i class="las la-cloud-upload-alt"></i> Upload Images
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="las la-download"></i> Pull Images</h6>
+                            <p class="text-muted small">Download candidate images from external source</p>
+                            <button type="button" class="btn btn-success btn-block" id="pull-images-btn">
+                                <i class="las la-download"></i> Pull Images from Server
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -554,6 +690,302 @@
                     $('#candidates-table').DataTable().destroy();
                 }
             });
+
+            // ===========================================
+            // IMAGE MANAGEMENT FUNCTIONALITY
+            // ===========================================
+
+            // Load image statistics when modal is shown
+            $('#imageManagementModal').on('shown.bs.modal', function () {
+                loadImageStatistics();
+            });
+
+            // Function to load image statistics
+            function loadImageStatistics() {
+                var selectedYear = $('#generate_year').val();
+                
+                $.ajax({
+                    url: '{{ route("admin.candidates.manage.image.stats") }}',
+                    type: 'GET',
+                    data: {
+                        year: selectedYear
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if(response.success) {
+                            $('#candidates-without-images').text(response.without_images.toLocaleString());
+                            $('#total-candidates').text(response.total_candidates.toLocaleString());
+                        } else {
+                            $('#candidates-without-images').text('Error');
+                            $('#total-candidates').text('Error');
+                        }
+                    },
+                    error: function(xhr) {
+                        $('#candidates-without-images').text('Error');
+                        $('#total-candidates').text('Error');
+                    }
+                });
+            }
+
+            // Refresh statistics when year changes
+            $(document).on('change', '#generate_year', function() {
+                loadImageStatistics();
+            });
+
+            // Pull Images functionality
+            $('#pull-images-btn').click(function() {
+                var btn = $(this);
+                var originalText = btn.html();
+                
+                // Check if there are candidates without images first
+                var candidatesWithoutImages = parseInt($('#candidates-without-images').text().replace(/,/g, ''));
+                
+                if (candidatesWithoutImages === 0) {
+                    Swal.fire('Info', 'All candidates already have images!', 'info');
+                    return;
+                }
+                
+                // Show loading state
+                btn.prop('disabled', true).html('<i class="las la-spinner fa-spin"></i> Pulling Images...');
+                
+                $.ajax({
+                    url: '{{ route("admin.candidates.manage.image.pull") }}',
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success message
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message,
+                                showConfirmButton: true
+                            }).then(() => {
+                                loadImageStatistics(); // Refresh stats
+                            });
+                        } else {
+                            Swal.fire('Error', response.message || 'Error pulling images', 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        var errorMessage = 'Error pulling images';
+                        if(xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        Swal.fire('Error', errorMessage, 'error');
+                    },
+                    complete: function() {
+                        btn.prop('disabled', false).html(originalText);
+                    }
+                });
+            });
+
+            // Generate Images functionality with batch processing
+            $('#generate-images-btn').click(function() {
+                var btn = $(this);
+                var originalText = btn.html();
+                
+                // Check if there are candidates without images first
+                var candidatesWithoutImages = parseInt($('#candidates-without-images').text().replace(/,/g, ''));
+                
+                if (candidatesWithoutImages === 0) {
+                    Swal.fire('Info', 'All candidates already have images!', 'info');
+                    return;
+                }
+                
+                Swal.fire({
+                    title: 'Generating Images...',
+                    html: `
+                        <p>Please wait while candidate images are being generated.</p>
+                        <div class="progress" style="height: 25px;">
+                            <div id="generate-progress-bar" 
+                                class="progress-bar progress-bar-striped progress-bar-animated" 
+                                role="progressbar" 
+                                style="width: 0%; height: 25px; background-color: #007bff;">
+                                0%
+                            </div>
+                        </div>
+                        <p class="mt-2"><small id="generate-status-text">Initializing...</small></p>
+                    `,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        btn.prop('disabled', true).html('<i class="las la-spinner fa-spin"></i> Generating...');
+                        generateImagesBatch();
+                    }
+                });
+
+                function generateImagesBatch() {
+                    // Get selected values
+                    var selectedYear = $('#generate_year').val();
+                    var selectedBatchSize = $('#generate_batch_size').val();
+                    
+                    $.ajax({
+                        url: '{{ route("admin.candidates.manage.image.generate") }}',
+                        type: 'POST',
+                        data: {
+                            year: selectedYear,
+                            batch_size: selectedBatchSize
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                var progressPercentage = Math.round(((candidatesWithoutImages - response.remaining) / candidatesWithoutImages) * 100);
+                                $('#generate-progress-bar').css('width', progressPercentage + '%').text(progressPercentage + '%');
+                                $('#generate-status-text').text(`Processed ${candidatesWithoutImages - response.remaining} of ${candidatesWithoutImages} candidates`);
+                                
+                                if (response.remaining > 0) {
+                                    // Continue processing
+                                    setTimeout(generateImagesBatch, 1000);
+                                } else {
+                                    // Complete
+                                    setTimeout(() => {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success!',
+                                            text: 'All candidate images have been generated successfully!',
+                                            showConfirmButton: true
+                                        }).then(() => {
+                                            loadImageStatistics(); // Refresh stats
+                                        });
+                                    }, 1000);
+                                }
+                            } else {
+                                Swal.fire('Error', response.message || 'Error generating images', 'error');
+                            }
+                        },
+                        error: function(xhr) {
+                            var errorMessage = 'Error generating images';
+                            if(xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
+                            Swal.fire('Error', errorMessage, 'error');
+                        },
+                        complete: function() {
+                            btn.prop('disabled', false).html(originalText);
+                        }
+                    });
+                }
+            });
+
+            // Manual Image Upload functionality
+            $('#uploadImagesForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                var fileInput = $('#image_files')[0];
+                var files = fileInput.files;
+                
+                if (!files || files.length === 0) {
+                    Swal.fire('Error', 'Please select at least one image file to upload.', 'error');
+                    return;
+                }
+                
+                // Validate files
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    
+                    // Check file type
+                    if (!file.type.startsWith('image/jpeg') && !file.name.toLowerCase().endsWith('.jpg')) {
+                        Swal.fire('Error', `File "${file.name}" is not a valid JPG image.`, 'error');
+                        return;
+                    }
+                    
+                    // Check file size (5MB max)
+                    if (file.size > 5 * 1024 * 1024) {
+                        Swal.fire('Error', `File "${file.name}" exceeds the 5MB size limit.`, 'error');
+                        return;
+                    }
+                }
+                
+                var formData = new FormData();
+                for (var i = 0; i < files.length; i++) {
+                    formData.append('files[]', files[i]);
+                }
+                
+                var uploadBtn = $('#upload-images-btn');
+                var originalBtnText = uploadBtn.html();
+                var progressBar = $('#image-upload-progress');
+                var statusDiv = $('#image-upload-status');
+                
+                // Show progress bar and update button
+                progressBar.show();
+                uploadBtn.prop('disabled', true).html('<i class="las la-spinner fa-spin"></i> Uploading...');
+                statusDiv.html('<div class="alert alert-info"><i class="las la-info-circle"></i> Processing image files, please wait...</div>');
+                
+                $.ajax({
+                    url: '{{ route("admin.candidates.manage.image.upload") }}',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    xhr: function() {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener("progress", function(evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = (evt.loaded / evt.total) * 100;
+                                progressBar.find('.progress-bar').css('width', percentComplete + '%');
+                            }
+                        }, false);
+                        return xhr;
+                    },
+                    success: function(response) {
+                        if(response.success) {
+                            // Show success message
+                            statusDiv.html('<div class="alert alert-success"><i class="las la-check-circle"></i> ' + response.message + '</div>');
+                            
+                            // Show detailed results if available
+                            if (response.results) {
+                                var resultHtml = '<div class="mt-2"><h6>Upload Results:</h6><ul class="small">';
+                                response.results.forEach(function(result) {
+                                    var icon = result.success ? 'las la-check text-success' : 'las la-times text-danger';
+                                    resultHtml += `<li><i class="${icon}"></i> ${result.filename}: ${result.message}</li>`;
+                                });
+                                resultHtml += '</ul></div>';
+                                statusDiv.append(resultHtml);
+                            }
+                            
+                            // Reset form and refresh statistics
+                            $('#uploadImagesForm')[0].reset();
+                            loadImageStatistics();
+                        } else {
+                            // Show error message
+                            statusDiv.html('<div class="alert alert-danger"><i class="las la-exclamation-circle"></i> ' + response.message + '</div>');
+                        }
+                    },
+                    error: function(xhr) {
+                        var errorMessage = 'Error uploading image files';
+                        if(xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if(xhr.responseJSON && xhr.responseJSON.errors) {
+                            errorMessage = Object.values(xhr.responseJSON.errors).flat().join(', ');
+                        }
+                        
+                        statusDiv.html('<div class="alert alert-danger"><i class="las la-exclamation-circle"></i> ' + errorMessage + '</div>');
+                    },
+                    complete: function() {
+                        // Hide progress bar and restore button
+                        progressBar.hide().find('.progress-bar').css('width', '0%');
+                        uploadBtn.prop('disabled', false).html(originalBtnText);
+                    }
+                });
+            });
+            
+            // Clear image upload form when modal is closed
+            $('#imageManagementModal').on('hidden.bs.modal', function () {
+                $('#uploadImagesForm')[0].reset();
+                $('#image-upload-status').empty();
+                $('#image-upload-progress').hide().find('.progress-bar').css('width', '0%');
+            });
+
         });
     </script>
 @endsection

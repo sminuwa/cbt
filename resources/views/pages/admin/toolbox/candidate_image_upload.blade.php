@@ -48,7 +48,7 @@
                             </form>
                         </div>
                         <div class="col-md-6">
-                            <form action="{{route('toolbox.candidate_image_upload.upload.image.data')}}" method="post" enctype="multipart/form-data">
+                            <form action="{{route('admin.toolbox.candidate_image_upload.upload.image.data')}}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 <div class="alert alert-warning">
                                     <b style="color:#00d9ff;">NOTE:</b> Supported image format: .jpg

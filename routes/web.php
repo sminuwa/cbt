@@ -198,10 +198,19 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
         Route::name('manage.')->prefix('manage')->group(function () {
             Route::get('/', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'index'])->name('index');
             Route::get('/data', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'getData'])->name('data');
+            Route::post('/upload-excel', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'uploadExcel'])->name('upload.excel');
             Route::post('/pull', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'pullCandidates'])->name('pull');
             Route::get('/{id}', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'show'])->name('show');
             Route::put('/{id}', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'update'])->name('update');
             Route::delete('/{id}', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'destroy'])->name('delete');
+            
+            // Image management routes
+            Route::name('image.')->prefix('image')->group(function () {
+                Route::get('/stats', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'getImageStats'])->name('stats');
+                Route::post('/generate', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'generateImages'])->name('generate');
+                Route::post('/pull', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'pullImages'])->name('pull');
+                Route::post('/upload', [App\Http\Controllers\Admin\Candidate\CandidateController::class, 'uploadImages'])->name('upload');
+            });
         });
     });
 
