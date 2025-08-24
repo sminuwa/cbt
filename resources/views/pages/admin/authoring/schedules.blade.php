@@ -533,7 +533,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="form-check mt-4">
-                                        <input class="form-check-input" type="checkbox" id="overwrite_existing_schedules" name="overwrite_existing">
+                                        <input class="form-check-input" type="checkbox" id="overwrite_existing_schedules" name="overwrite_existing_schedules">
                                         <label class="form-check-label" for="overwrite_existing_schedules">
                                             Overwrite existing candidate schedules
                                         </label>

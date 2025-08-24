@@ -3,9 +3,9 @@
 use Illuminate\Support\Facades\DB;
 
 
-const CHPRBN_CBT_API_KEY = "shtl095";
-const CHPRBN_CBT_SECRET_KEY = "590lths";
-const CHPRBN_SERV_ADDR = "https://qwertyuiop.chprbn.gov.ng/api/v1/";
+const CHPRBN_CBT_API_KEY = "chstj018";
+const CHPRBN_CBT_SECRET_KEY = "chstj018810jtshc";
+const CHPRBN_SERV_ADDR = "https://asdfghjkl.lkjhgfdsa.chprbn.gov.ng/api/v1/";
 
 const APP_NAME = 'RMRDC 2025 Promotional Exam';
 

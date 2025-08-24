@@ -1588,10 +1588,10 @@ class TestConfigController extends Controller
                 'test_config_id' => 'required|exists:test_configs,id',
                 'default_date' => 'nullable|date',
                 'scheduling_mode' => 'required|in:auto,create,existing',
-                'overwrite_existing' => 'nullable|boolean'
+                'overwrite_existing_schedules' => 'nullable'
             ]);
 
-            
+            // return $request;
 
             $file = $request->file('file');
             $testConfig = TestConfig::find($config_id);
@@ -1618,7 +1618,7 @@ class TestConfigController extends Controller
             // Get existing centres for mapping
             $centres = Centre::with('venues')->get()->keyBy('name');
             
-            DB::beginTransaction();
+            // DB::beginTransaction();
 
             foreach ($sheets as $rows) {
                 if (empty($rows[0])) continue; // Skip empty sheets
@@ -1736,24 +1736,6 @@ class TestConfigController extends Controller
                             'schedule_id' => $schedule->id,
                         ];
 
-                        // Prepare papers/subjects data for batch insert
-                        // if ($papers && $paperCol !== null) {
-                        //     $paperCodes = array_map('trim', explode(',', $papers));
-                        //     foreach ($paperCodes as $paperCode) {
-                        //         $subject = $examPapers->get($paperCode);
-                        //         if ($subject) {
-                        //             // We'll need to match this with the scheduled candidate later
-                        //             $candidateSubjectsData[] = [
-                        //                 'candidate_id' => $candidate->id, // Temporary - will be replaced with scheduled_candidate_id
-                        //                 'schedule_id' => $schedule->id,
-                        //                 'subject_id' => $subject->id,
-                        //                 'enabled' => 1,
-                        //                 'add_index' => null,
-                        //             ];
-                        //         }
-                        //     }
-                        // }
-
                         $processedCount++;
                         
                     } catch (Exception $e) {
@@ -1768,11 +1750,11 @@ class TestConfigController extends Controller
                 if (!empty($scheduledCandidatesData)) {
                     try {
                         // Remove existing scheduled candidates if overwriting
-                        // if ($request->overwrite_existing && !empty($candidateIds)) {
-                        //     ScheduledCandidate::whereIn('candidate_id', $candidateIds)
-                        //         ->where('exam_type_id', $testConfig->exam_type_id ?? 1)
-                        //         ->delete();
-                        // }
+                        if ($request->overwrite_existing_schedules && !empty($candidateIds)) {
+                            ScheduledCandidate::whereIn('candidate_id', $candidateIds)
+                                ->where('exam_type_id', $testConfig->exam_type_id ?? 1)
+                                ->delete();
+                        }
                         
                         foreach (array_chunk($scheduledCandidatesData, 1000) as $chunk) {
                             ScheduledCandidate::upsert($chunk, ['candidate_id', 'exam_type_id', 'schedule_id']);
@@ -1824,7 +1806,7 @@ class TestConfigController extends Controller
             } 
                 // Batch insert candidate subjects
                 
-            DB::commit();
+            // DB::commit();
 
             $message = "Batch scheduling completed. Processed {$processedCount} out of {$totalCandidates} candidates.";
             if ($errorCount > 0) {
@@ -1843,7 +1825,7 @@ class TestConfigController extends Controller
             ]);
 
         } catch (Exception $e) {
-            DB::rollback();
+            // DB::rollback();
             return response()->json([
                 'success' => false,
                 'message' => 'Error processing batch scheduling: ' . $e->getMessage()
