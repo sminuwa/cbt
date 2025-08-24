@@ -33,13 +33,12 @@ class AuthController extends Controller
 //            return ['status'=>false,'message'=>'You are not allowed to access this portal.'];
         $username = $request->username;
         $password = $request->password;
-        $centre_user = Centre::where('username', $username)->first();
+        $centre_user = Centre::where('api_key', $username)->first();
             // return $practitioner_record;
         if(!$centre_user)
             return back()->with('error', 'Invalid credentials')->withInput();
         if($password == $centre_user->password)
         Centre::where('id', $centre_user->id)->update(['password'=>bcrypt($centre_user->password)]);
-        $credentials = ["username" => $request->username, "password" => $request->password];
             $credentials = ["api_key" => $request->username, "password" => $request->password];
             if (Auth::guard('centre')->attempt($credentials)) {
                 // auth()->guard('centre')->user();
