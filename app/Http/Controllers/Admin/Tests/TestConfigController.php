@@ -1584,7 +1584,7 @@ class TestConfigController extends Controller
     {
         try {
             $request->validate([
-                'file' => 'required|mimes:xls,xlsx|max:10240', // 10MB max
+                'file' => 'required|mimes:xls,xlsx,csv|max:10240', // 10MB max
                 'test_config_id' => 'required|exists:test_configs,id',
                 'default_date' => 'nullable|date',
                 'scheduling_mode' => 'required|in:auto,create,existing',

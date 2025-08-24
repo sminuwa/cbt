@@ -495,7 +495,7 @@
                                 <div class="form-group">
                                     <label for="batch_schedule_file">Excel File <span class="text-danger">*</span></label>
                                     <input class="form-control" type="file" id="batch_schedule_file" name="file" 
-                                           accept=".xls,.xlsx" required>
+                                           accept=".xls,.xlsx,.csv" required>
                                     <small class="form-text text-muted">Accepted formats: .xls, .xlsx (Max: 10MB)</small>
                                 </div>
                             </div>
@@ -1057,7 +1057,7 @@
                 // Validate file type
                 const fileName = fileInput.files[0].name;
                 const fileExtension = fileName.split('.').pop().toLowerCase();
-                if (!['xls', 'xlsx'].includes(fileExtension)) {
+                if (!['xls', 'xlsx','csv'].includes(fileExtension)) {
                     Swal.fire('Error', 'Please select a valid Excel file (.xls or .xlsx)', 'error');
                     return;
                 }
