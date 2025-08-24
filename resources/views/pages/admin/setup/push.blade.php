@@ -149,7 +149,7 @@
             // function sendBatch(batchSize, totalRecords, processedRecords = 0) {
             function sendBatch() {
                 $.ajax({
-                url: '{{ route("admin.exams.setup.push") }}',
+                url: '{{ route("admin.exams.setup.push.finished") }}',
                 type: 'GET',
                 data: {
                     _token: '{{ csrf_token() }}',
@@ -157,7 +157,7 @@
                     total_records: totalRecords,
                 },
                 success: function (response) {
-                    
+                    console.log(response);
                     if (response.success) {
                         // Initialize totalRecords only on the first response
                         if (totalRecords === 0) {
@@ -198,31 +198,6 @@
                 });
             }
 
-            // $('.pull-btn').click(function () {
-            //     // Fetch total records before starting (this can be from a separate endpoint or passed as a variable)
-            //     // let totalRecords = {{ $counts }} // Example total records (replace with actual dynamic value)
-            //     var btn = $(this);
-            //     var loadingIcon = btn.siblings('.loading-icon');
-            //     var resourceId = btn.data('id');
-            //     btn.hide();
-            //     loadingIcon.show();
-            //     // Show Swal with progress bar
-            //     Swal.fire({
-            //     title: 'Pushing Records...',
-            //     html: `
-            //         <p id="progress-text">0% completed</p>
-            //         <div style="position: relative; width: 100%; background-color: #e0e0e0; border-radius: 10px; height: 20px;">
-            //         <div id="swal-progress-bar" style="width: 0%; height: 100%; background-color: #3085d6; border-radius: 10px;"></div>
-            //         </div>
-            //     `,
-            //     allowOutsideClick: false,
-            //     showCancelButton: false,
-            //     showConfirmButton: false
-            //     });
-
-            //     // Start sending batches
-            //     sendBatch(50, totalRecords);
-            // });
 
             $('.pull-btn').click(function () {
                 

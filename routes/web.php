@@ -181,6 +181,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
         Route::post('pull/test', [SetupController::class, 'pullTestResource'])->name('pull.test');
         Route::post('pull/candidate', [SetupController::class, 'pullCandidateResource'])->name('pull.candidate');
         Route::post('pull/candidate/picture', [SetupController::class, 'pullCandidatePictures'])->name('pull.candidate.pictures');
+        Route::get('push/finished', [SetupController::class, 'pullExamToServer'])->name('push.finished');
     });
 
     Route::name('authorization.')->prefix('authorization/')->group(function () {

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1\Mobile;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\User;
+use App\Models\Centre;
+use App\Models\User as ModelsUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,6 +31,15 @@ class AuthController extends Controller
             
 //        if(!$check->canAccess('attendance.mobile.login') || !$check->canAccess('attendance.desktop.login'))
 //            return ['status'=>false,'message'=>'You are not allowed to access this portal.'];
+        $username = $request->username;
+        $password = $request->password;
+        $centre_user = Centre::where('username', $username)->first();
+            // return $practitioner_record;
+        if(!$centre_user)
+            return back()->with('error', 'Invalid credentials')->withInput();
+        if($password == $centre_user->password)
+        Centre::where('id', $centre_user->id)->update(['password'=>bcrypt($centre_user->password)]);
+        $credentials = ["username" => $request->username, "password" => $request->password];
             $credentials = ["api_key" => $request->username, "password" => $request->password];
             if (Auth::guard('centre')->attempt($credentials)) {
                 // auth()->guard('centre')->user();
