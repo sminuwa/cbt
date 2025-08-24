@@ -85,6 +85,9 @@
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
                             <i class="las la-plus-circle"></i> Add Individual Schedule
                         </button>
+                        <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#batchScheduleCandidatesModal">
+                            <i class="las la-upload"></i> Batch Schedule Candidates
+                        </button>
                         <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#batchRescheduleModal">
                             <i class="las la-calendar-alt"></i> Batch Reschedule
                         </button>
@@ -453,6 +456,122 @@
         </div>
     </div>
 
+    <!-- Batch Schedule Candidates Modal -->
+    <div class="modal fade" id="batchScheduleCandidatesModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Batch Schedule Candidates</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="batchScheduleCandidatesForm" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" name="test_config_id" value="{{$config_id}}">
+                        
+                        <!-- Instructions -->
+                        <div class="alert alert-info mb-4">
+                            <h6 class="alert-heading mb-2">
+                                <i class="las la-info-circle"></i> Instructions
+                            </h6>
+                            <div class="small">
+                                <p class="mb-2">Upload an Excel file to schedule multiple candidates at once. Your Excel file should contain these columns:</p>
+                                <ul class="mb-2">
+                                    <li><strong>indexing</strong> - Candidate index/registration number</li>
+                                    <li><strong>centre</strong> - Centre name (must match existing centres)</li>
+                                    <li><strong>paper</strong> - Paper/subject codes (comma-separated if multiple)</li>
+                                </ul>
+                                <p class="mb-0">
+                                    <a href="{{ asset('assets/candidate_batch_schedule_template.xlsx') }}" class="btn btn-sm btn-outline-primary" download="candidate_batch_schedule_template.csv">
+                                        <i class="las la-download"></i> Download Template
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- File Upload Section -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="batch_schedule_file">Excel File <span class="text-danger">*</span></label>
+                                    <input class="form-control" type="file" id="batch_schedule_file" name="file" 
+                                           accept=".xls,.xlsx" required>
+                                    <small class="form-text text-muted">Accepted formats: .xls, .xlsx (Max: 10MB)</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="batch_schedule_date">Default Schedule Date</label>
+                                    <select class="form-control select2" id="batch_schedule_date" name="default_date" data-placeholder="Select Default Date">
+                                        @php
+                                            $dates = ExamsDate::where(['test_config_id'=>$config_id])->get();
+                                        @endphp
+                                        <option value="">Select Default Date</option>
+                                        @foreach($dates as $date)
+                                            <option value="{{$date->date}}">
+                                                {{ Carbon::parse($date->date)->format('D, jS M, Y') }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <small class="form-text text-muted">Used when date is not specified in Excel</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Options Section -->
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="batch_schedule_mode">Scheduling Mode</label>
+                                    <select class="form-control" id="batch_schedule_mode" name="scheduling_mode">
+                                        <option value="auto">Auto-assign to available schedules</option>
+                                        <option value="create">Create new schedules as needed</option>
+                                        <option value="existing">Only use existing schedules</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" id="overwrite_existing_schedules" name="overwrite_existing">
+                                        <label class="form-check-label" for="overwrite_existing_schedules">
+                                            Overwrite existing candidate schedules
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Section -->
+                        <div id="batch_schedule_progress" class="mt-4" style="display: none;">
+                            <div class="progress mb-2">
+                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <small class="text-muted d-block" id="progress_text">Processing candidates...</small>
+                                    <div id="progress_details" class="mt-2" style="display: none;">
+                                        <div class="small">
+                                            <span class="text-success">✓ Processed: <span id="processed_count">0</span></span> | 
+                                            <span class="text-danger">✗ Errors: <span id="error_count">0</span></span> | 
+                                            <span class="text-info">➤ Total: <span id="total_count">0</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-info" id="batchScheduleCandidatesBtn">
+                            <i class="las la-upload"></i> Process Upload
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade custom-modal" id="schedule-candidates">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -550,7 +669,7 @@
             }, 1000);
 
             // Reinitialize Select2 when modals are shown
-            $('#addScheduleModal, #scheduleAllCentersModal, #batchRescheduleModal').on('shown.bs.modal', function () {
+            $('#addScheduleModal, #scheduleAllCentersModal, #batchRescheduleModal, #batchScheduleCandidatesModal').on('shown.bs.modal', function () {
                 initializeSelect2();
             });
 
@@ -915,6 +1034,144 @@
                         });
                     }
                 });
+            });
+
+            // Batch Schedule Candidates functionality
+            $('#batchScheduleCandidatesForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const $submitBtn = $('#batchScheduleCandidatesBtn');
+                const $progress = $('#batch_schedule_progress');
+                const $progressBar = $progress.find('.progress-bar');
+                const $progressText = $('#progress_text');
+                const $progressDetails = $('#progress_details');
+                
+                // Validate file
+                const fileInput = $('#batch_schedule_file')[0];
+                if (!fileInput.files || !fileInput.files[0]) {
+                    Swal.fire('Error', 'Please select an Excel file to upload', 'error');
+                    return;
+                }
+                
+                // Validate file type
+                const fileName = fileInput.files[0].name;
+                const fileExtension = fileName.split('.').pop().toLowerCase();
+                if (!['xls', 'xlsx'].includes(fileExtension)) {
+                    Swal.fire('Error', 'Please select a valid Excel file (.xls or .xlsx)', 'error');
+                    return;
+                }
+                
+                // Show confirmation
+                Swal.fire({
+                    title: 'Process Batch Scheduling?',
+                    text: 'This will process the Excel file and schedule candidates according to the data provided.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#17a2b8',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Process File'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Disable submit button and show progress
+                        $submitBtn.prop('disabled', true).html('<i class="las la-spinner la-spin"></i> Processing...');
+                        $progress.show();
+                        $progressBar.css('width', '10%');
+                        $progressText.text('Uploading file...');
+                        
+                        $.ajax({
+                            url: '{{ route('admin.test.config.batch-schedule-candidates', $config_id) }}',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            xhr: function() {
+                                var xhr = new XMLHttpRequest();
+                                xhr.upload.addEventListener('progress', function(e) {
+                                    if (e.lengthComputable) {
+                                        var percentComplete = (e.loaded / e.total) * 50; // Upload is 50% of total progress
+                                        $progressBar.css('width', percentComplete + '%');
+                                    }
+                                });
+                                return xhr;
+                            },
+                            success: function(response) {
+                                $progressBar.css('width', '100%');
+                                $progressText.text('Processing complete!');
+                                
+                                console.log(response);
+                                if (response.success) {
+                                    // Show detailed results if available
+                                    if (response.details) {
+                                        $progressDetails.show();
+                                        $('#processed_count').text(response.details.processed || 0);
+                                        $('#error_count').text(response.details.errors || 0);
+                                        $('#total_count').text(response.details.total || 0);
+                                    }
+                                    
+                                    setTimeout(() => {
+                                        let message = response.message;
+                                        if (response.details && response.details.processed > 0) {
+                                            message += `\n\nProcessed: ${response.details.processed} candidates`;
+                                            if (response.details.errors > 0) {
+                                                message += `\nErrors: ${response.details.errors} candidates could not be processed`;
+                                            }
+                                        }
+                                        
+                                        Swal.fire({
+                                            title: 'Success!',
+                                            text: message,
+                                            icon: 'success',
+                                            confirmButtonText: 'OK'
+                                        }).then(() => {
+                                            // location.reload();
+                                        });
+                                    }, 1000);
+                                } else {
+                                    Swal.fire('Error', response.message || 'An error occurred while processing the file', 'error');
+                                }
+                                
+                                // Reset form
+                                $submitBtn.prop('disabled', false).html('<i class="las la-upload"></i> Process Upload');
+                                setTimeout(() => {
+                                    $progress.hide();
+                                    $progressBar.css('width', '0%');
+                                    $progressDetails.hide();
+                                    if (response.success) {
+                                        $('#batchScheduleCandidatesModal').modal('hide');
+                                    }
+                                }, response.success ? 1500 : 500);
+                            },
+                            error: function(xhr, status, error) {
+                                $progressBar.css('width', '0%');
+                                $progress.hide();
+                                $progressDetails.hide();
+                                $submitBtn.prop('disabled', false).html('<i class="las la-upload"></i> Process Upload');
+                                
+                                let message = 'An error occurred while processing the file.';
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    message = xhr.responseJSON.message;
+                                } else if (xhr.status === 413) {
+                                    message = 'File is too large. Please use a smaller file.';
+                                } else if (xhr.status === 422) {
+                                    message = 'Invalid file format or missing required data.';
+                                }
+                                
+                                Swal.fire('Error', message, 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Reset batch scheduling modal when closed
+            $('#batchScheduleCandidatesModal').on('hidden.bs.modal', function () {
+                $('#batchScheduleCandidatesForm')[0].reset();
+                $('#batch_schedule_progress').hide();
+                $('#progress_details').hide();
+                $('.progress-bar').css('width', '0%');
+                $('#batchScheduleCandidatesBtn').prop('disabled', false).html('<i class="las la-upload"></i> Process Upload');
+                initializeSelect2();
             });
         })
     </script>

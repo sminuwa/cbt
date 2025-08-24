@@ -34,6 +34,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -1577,6 +1578,327 @@ class TestConfigController extends Controller
                 'message' => 'Error rescheduling schedules: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function batchScheduleCandidates(Request $request, $config_id)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xls,xlsx|max:10240', // 10MB max
+                'test_config_id' => 'required|exists:test_configs,id',
+                'default_date' => 'nullable|date',
+                'scheduling_mode' => 'required|in:auto,create,existing',
+                'overwrite_existing' => 'nullable|boolean'
+            ]);
+
+            
+
+            $file = $request->file('file');
+            $testConfig = TestConfig::find($config_id);
+            
+            if (!$testConfig) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Test configuration not found.'
+                ], 404);
+            }
+
+            // Process Excel file
+            $sheets = Excel::toArray(\App\Models\Upload::class, $file);
+
+            
+            $processedCount = 0;
+            $errorCount = 0;
+            $errors = [];
+            $totalCandidates = 0;
+
+            // Get existing subjects for mapping
+            // $examPapers = Subject::select('id', 'subject_code as code')->orderBy('subject_code', 'asc')->get()->keyBy('code');
+            $exam_papers = Subject::select('id', 'subject_code as code')->orderBy('subject_code', 'asc')->get()->toArray();
+            // Get existing centres for mapping
+            $centres = Centre::with('venues')->get()->keyBy('name');
+            
+            DB::beginTransaction();
+
+            foreach ($sheets as $rows) {
+                if (empty($rows[0])) continue; // Skip empty sheets
+                
+                $titleRow = $rows[0];
+                
+                // Find column indexes
+                $indexingCol = $this->searchColumnIndex($titleRow, 'indexing');
+                $centreCol = $this->searchColumnIndex($titleRow, 'centre');
+                $paperCol = $this->searchColumnIndex($titleRow, 'paper');
+                
+                if ($indexingCol === null || $centreCol === null) {
+                    $errors[] = 'Required columns (indexing, centre) not found in Excel file';
+                    continue;
+                }
+
+                // First pass: collect all unique indexings and centre names
+                $indexings = [];
+                $centreNames = [];
+                foreach ($rows as $key => $row) {
+                    if ($key < 1 || empty($row[$indexingCol])) continue; // Skip header and empty rows
+                    
+                    $candidateIndexing = trim($row[$indexingCol]);
+                    $centreName = trim($row[$centreCol]);
+                    
+                    if (!in_array($candidateIndexing, $indexings)) {
+                        $indexings[] = $candidateIndexing;
+                    }
+                    
+                    if (!in_array($centreName, $centreNames)) {
+                        $centreNames[] = $centreName;
+                    }
+                }
+                
+                // Fetch all candidates and centres in single queries to avoid N+1
+                $candidatesArray = Candidate::select('id', 'indexing')
+                    ->whereIn('indexing', $indexings)
+                    ->get()
+                    ->toArray();
+                
+                $centresArray = Centre::select('id','name')->with('venues')
+                    ->whereIn('name', $centreNames)
+                    ->get()
+                    ->toArray();
+
+                // return $centresArray;
+
+                // Prepare batch arrays
+                $scheduledCandidatesData = [];
+                $candidateSubjectsData = [];
+                $candidateIds = [];
+                $candidateScheduleId = [];
+                $uploaded_papers = [];
+                $schedulesByVenue = []; // Cache schedules to avoid recreating them
+                
+                // Second pass: process the data
+                foreach ($rows as $key => $row) {
+                    if ($key < 1 || empty($row[$indexingCol])) continue; // Skip header and empty rows
+                    
+                    $totalCandidates++;
+                    $candidateIndexing = trim($row[$indexingCol]);
+                    $centreName = trim($row[$centreCol]);
+                    $papers = isset($row[$paperCol]) ? trim($row[$paperCol]) : '';
+                    
+                    try {
+                        // Find candidate using searchForId helper
+                        $candidate = searchForId($candidateIndexing, $candidatesArray, 'indexing');
+                        if (!$candidate) {
+                            $errors[] = "Candidate not found: {$candidateIndexing}";
+                            $errorCount++;
+                            continue;
+                        }
+
+                        // Find centre using searchForId helper
+                        $centre = searchForId($centreName, $centresArray, 'name');
+                        if (!$centre || !isset($centre->venues) || empty($centre->venues)) {
+                            $errors[] = "Centre or venue not found: {$centreName}";
+                            $errorCount++;
+                            continue;
+                        }
+
+                        // Get available venue (first one for now)
+                        $venue = $centre->venues[0];
+                        $venueId = $venue['id'];
+                        
+                        // Find or create schedule based on mode (cache to avoid recreating)
+                        if (!isset($schedulesByVenue[$venueId])) {
+                            $schedule = $this->findOrCreateSchedule(
+                                $config_id, 
+                                $venueId, 
+                                $request->default_date, 
+                                $request->scheduling_mode
+                            );
+                            
+                            if (!$schedule) {
+                                $errors[] = "Could not create schedule for {$centreName}";
+                                $errorCount++;
+                                continue;
+                            }
+                            
+                            $schedulesByVenue[$venueId] = $schedule;
+                        } else {
+                            $schedule = $schedulesByVenue[$venueId];
+                        }
+
+                        // return $schedulesByVenue;
+                        // Prepare scheduled candidate data for batch insert
+                        $candidateIds[] = $candidate->id;
+                        $uploaded_papers[trim($candidate->id)] = trim($papers);
+                        if(!in_array($schedule->id, $candidateScheduleId))
+                            $candidateScheduleId[]= $schedule->id;
+                        $scheduledCandidatesData[] = [
+                            'candidate_id' => $candidate->id,
+                            'exam_type_id' => $testConfig->exam_type_id ?? 1,
+                            'schedule_id' => $schedule->id,
+                        ];
+
+                        // Prepare papers/subjects data for batch insert
+                        // if ($papers && $paperCol !== null) {
+                        //     $paperCodes = array_map('trim', explode(',', $papers));
+                        //     foreach ($paperCodes as $paperCode) {
+                        //         $subject = $examPapers->get($paperCode);
+                        //         if ($subject) {
+                        //             // We'll need to match this with the scheduled candidate later
+                        //             $candidateSubjectsData[] = [
+                        //                 'candidate_id' => $candidate->id, // Temporary - will be replaced with scheduled_candidate_id
+                        //                 'schedule_id' => $schedule->id,
+                        //                 'subject_id' => $subject->id,
+                        //                 'enabled' => 1,
+                        //                 'add_index' => null,
+                        //             ];
+                        //         }
+                        //     }
+                        // }
+
+                        $processedCount++;
+                        
+                    } catch (Exception $e) {
+                        $errors[] = "Error processing {$candidateIndexing}: " . $e->getMessage();
+                        $errorCount++;
+                    }
+                }
+                
+                // return $candidateScheduleId;
+
+                // Batch insert scheduled candidates
+                if (!empty($scheduledCandidatesData)) {
+                    try {
+                        // Remove existing scheduled candidates if overwriting
+                        // if ($request->overwrite_existing && !empty($candidateIds)) {
+                        //     ScheduledCandidate::whereIn('candidate_id', $candidateIds)
+                        //         ->where('exam_type_id', $testConfig->exam_type_id ?? 1)
+                        //         ->delete();
+                        // }
+                        
+                        foreach (array_chunk($scheduledCandidatesData, 1000) as $chunk) {
+                            ScheduledCandidate::upsert($chunk, ['candidate_id', 'exam_type_id', 'schedule_id']);
+                        }
+                        Log::info('Inserted scheduled candidates: ' . count($scheduledCandidatesData));
+                        // Reset auto increment to clean up any gaps
+                        reset_auto_increment('scheduled_candidates');
+
+                        foreach($candidateScheduleId as $schedule){
+                            // return $schedule;
+                            $get_schedules = ScheduledCandidate::whereIn('candidate_id', $candidateIds)->where(['schedule_id'=> $schedule])->get();
+                            // return $get_schedules;
+                            foreach($get_schedules as $get_schedule){
+                                $p =  explode(',',$uploaded_papers[$get_schedule->candidate_id]);
+                                foreach($p as $exam_paper){
+                                    if(!$ep = searchForId($exam_paper, $exam_papers))
+                                        continue;
+                                    $candidate_papers[] = [
+                                        'schedule_id'=>$schedule,
+                                        'scheduled_candidate_id' => $get_schedule->id,
+                                        'subject_id' => $ep->id,
+                                        'add_index'=>null,
+                                        'enabled'=>1
+                                    ];
+                                }
+
+                            }
+
+                            $err = [];
+                            foreach(array_chunk($candidate_papers, 500) as $key => $candidate_paper) {
+                                if(!CandidateSubject::upsert($candidate_paper, ['subject_id', 'scheduled_candidate_id','subject_id'])) {
+                                    reset_auto_increment('candidate_subjects');
+                                    $err[] = 'Something went wrong. [Graduands chunk upload]';
+                                }
+                            }
+                            if(count($err) == 0){
+                                reset_auto_increment('scheduled_candidates');
+                            }else{
+                                $errors[] = 'Something went wrong while updating papers records for candidates.';
+                            }
+                        }
+                        
+                    } catch (Exception $batchError) {
+                        $errors[] = 'Error inserting scheduled candidates: ' . $batchError->getMessage();
+                        throw $batchError; // Re-throw to trigger rollback
+                    }
+                }
+                
+            } 
+                // Batch insert candidate subjects
+                
+            DB::commit();
+
+            $message = "Batch scheduling completed. Processed {$processedCount} out of {$totalCandidates} candidates.";
+            if ($errorCount > 0) {
+                $message .= " {$errorCount} errors occurred.";
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'details' => [
+                    'processed' => $processedCount,
+                    'errors' => $errorCount,
+                    'total' => $totalCandidates
+                ],
+                'error_details' => $errors
+            ]);
+
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error processing batch scheduling: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function searchColumnIndex($titleRow, $searchTerm)
+    {
+        foreach ($titleRow as $index => $value) {
+            if (stripos(strtolower($value), strtolower($searchTerm)) !== false) {
+                return $index;
+            }
+        }
+        return null;
+    }
+
+    private function findOrCreateSchedule($configId, $venueId, $defaultDate, $mode)
+    {
+        // First try to find existing schedule
+        $existingSchedule = Scheduling::where([
+            'test_config_id' => $configId,
+            'venue_id' => $venueId
+        ])
+        ->when($defaultDate, function($query, $date) {
+            return $query->where('date', $date);
+        })
+        ->first();
+
+        if ($existingSchedule) {
+            return $existingSchedule;
+        }
+
+        // If mode is 'existing', don't create new schedules
+        if ($mode === 'existing') {
+            return null;
+        }
+
+        // Create new schedule
+        if ($mode === 'create' || $mode === 'auto') {
+            $schedule = new Scheduling();
+            $schedule->test_config_id = $configId;
+            $schedule->venue_id = $venueId;
+            $schedule->date = $defaultDate ?: now()->addDays(7)->format('Y-m-d'); // Default to next week
+            $schedule->maximum_batch = 1;
+            $schedule->no_per_schedule = 50;
+            $schedule->daily_start_time = '08:00';
+            $schedule->daily_end_time = '17:00';
+            
+            if ($schedule->save()) {
+                return $schedule;
+            }
+        }
+
+        return null;
     }
 
     public function destroy(TestConfig $config): RedirectResponse

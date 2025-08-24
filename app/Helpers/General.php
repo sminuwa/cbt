@@ -48,7 +48,7 @@ function searchIndex($array, $column_name){
     return null;
 }
 
-function searchForId($search_value, $array) {
+function searchForId($search_value, $array, $search_field = null) {
     // Iterating over main array
     foreach ($array as $key1 => $val1) {
         $temp_path = array();
@@ -57,17 +57,24 @@ function searchForId($search_value, $array) {
         // Check if this value is an array
         // with atleast one element
         if(is_array($val1) and count($val1)) {
-            // Iterating over the nested array
-            foreach ($val1 as $key2 => $val2) {
-                if(strtoupper($val2) == strtoupper($search_value)) {
-                    // Adding current key to search path
-                    array_push($temp_path, $key2);
-                    return (object)$array[$key1] = $val1;
+            // If search_field is specified, look in that field specifically
+            if ($search_field && isset($val1[$search_field])) {
+                if(is_string($val1[$search_field]) && strtoupper($val1[$search_field]) == strtoupper($search_value)) {
+                    return (object)$val1;
+                }
+            } else {
+                // Iterating over the nested array
+                foreach ($val1 as $key2 => $val2) {
+                    if(is_string($val2) && strtoupper($val2) == strtoupper($search_value)) {
+                        // Adding current key to search path
+                        array_push($temp_path, $key2);
+                        return (object)$val1;
+                    }
                 }
             }
         }
-        elseif(strtoupper($val1) == strtoupper($search_value)) {
-            return (object)$array[$key1] = $val1;
+        elseif(is_string($val1) && strtoupper($val1) == strtoupper($search_value)) {
+            return (object)$array[$key1];
         }
     }
     return null;
