@@ -37,19 +37,19 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
     padding:10px;
 }
 
-/* Select2 Bootstrap 4 styling to match form-control inputs */
+/* Select2 styling to match custom form-control inputs */
 .select2-container--bootstrap4 .select2-selection--single {
     height: calc(1.5em + 0.75rem + 2px) !important;
     padding: 0.375rem 0.75rem;
-    font-size: 1rem;
+    font-size: 15px;
     font-weight: 400;
-    line-height: 1.5;
-    color: #495057;
+    line-height: 15px;
+    color: #333333;
     background-color: #fff;
     background-clip: padding-box;
-    border: 1px solid #ced4da;
+    border: 1px solid #dcdcdc;
     border-radius: 0.25rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out;
 }
 
 .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
@@ -57,12 +57,13 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
     padding-right: 20px;
     height: auto;
     margin-top: -1px;
-    color: #495057;
-    line-height: 1.5;
+    color: #333333;
+    line-height: 15px;
 }
 
 .select2-container--bootstrap4 .select2-selection--single .select2-selection__placeholder {
-    color: #6c757d;
+    color: #858585;
+    font-size: 14px;
 }
 
 .select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow {
@@ -74,7 +75,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
 }
 
 .select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow b {
-    border-color: #495057 transparent transparent transparent;
+    border-color: #333333 transparent transparent transparent;
     border-style: solid;
     border-width: 5px 4px 0 4px;
     height: 0;
@@ -88,21 +89,21 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
 
 /* Focus state */
 .select2-container--bootstrap4.select2-container--focus .select2-selection--single {
-    border-color: #80bdff;
+    border-color: #bbb;
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    box-shadow: none;
 }
 
 /* Disabled state */
 .select2-container--bootstrap4 .select2-selection--single.select2-selection--disabled {
     background-color: #e9ecef;
-    border-color: #ced4da;
+    border-color: #dcdcdc;
     color: #6c757d;
 }
 
 /* Dropdown styling */
 .select2-container--bootstrap4 .select2-dropdown {
-    border-color: #ced4da;
+    border-color: #dcdcdc;
     border-radius: 0.25rem;
     z-index: 9999;
 }
@@ -120,12 +121,12 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
 }
 
 .select2-container--bootstrap4 .select2-dropdown .select2-search__field {
-    border: 1px solid #ced4da !important;
+    border: 1px solid #dcdcdc !important;
     border-radius: 0.25rem;
     padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #495057;
+    font-size: 15px;
+    line-height: 15px;
+    color: #333333;
     background-color: #fff;
     width: 100%;
     box-sizing: border-box;
@@ -133,13 +134,13 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
 }
 
 .select2-container--bootstrap4 .select2-dropdown .select2-search__field:focus {
-    border-color: #80bdff !important;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: #bbb !important;
+    box-shadow: none;
 }
 
 .select2-container--bootstrap4 .select2-results__option {
     padding: 0.375rem 0.75rem;
-    color: #495057;
+    color: #333333;
 }
 
 .select2-container--bootstrap4 .select2-results__option--highlighted {
@@ -149,7 +150,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
 
 .select2-container--bootstrap4 .select2-results__option[aria-selected=true] {
     background-color: #e9ecef;
-    color: #495057;
+    color: #333333;
 }
 
 /* Clear button styling */
@@ -166,7 +167,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
 }
 
 .select2-container--bootstrap4 .select2-selection__clear:hover {
-    color: #495057;
+    color: #333333;
 }
 
 /* Multi-select styling */
@@ -174,7 +175,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
     min-height: calc(1.5em + 0.75rem + 2px);
     padding-bottom: 0;
     padding-right: 0.75rem;
-    border: 1px solid #ced4da;
+    border: 1px solid #dcdcdc;
     border-radius: 0.25rem;
     background-color: #fff;
 }
@@ -218,10 +219,11 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
 /* Ensure search input receives focus */
 .select2-container--bootstrap4 .select2-search--dropdown .select2-search__field {
     background: #fff;
-    border: 1px solid #ced4da;
+    border: 1px solid #dcdcdc;
     border-radius: 0.25rem;
-    color: #495057;
-    font-size: 1rem;
+    color: #333333;
+    font-size: 15px;
+    line-height: 15px;
     outline: none;
     padding: 0.375rem 0.75rem;
     width: 100%;
@@ -229,8 +231,8 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
 }
 
 .select2-container--bootstrap4 .select2-search--dropdown .select2-search__field:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: #bbb;
+    box-shadow: none;
 }
 
 /* Results container */
@@ -396,10 +398,66 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
     box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.1);
 }
 
+/* Generic Select2 styling (for any theme) */
+.select2-container .select2-selection--single {
+    height: calc(1.5em + 0.75rem + 2px) !important;
+    font-size: 15px;
+    line-height: 15px;
+    color: #333333;
+    border: 1px solid #dcdcdc;
+    border-radius: 0.25rem;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+    color: #333333;
+    line-height: 15px;
+}
+
+.select2-container .select2-selection--single .select2-selection__placeholder {
+    color: #858585;
+    font-size: 14px;
+}
+
+.select2-container--focus .select2-selection--single,
+.select2-container--open .select2-selection--single {
+    border-color: #bbb;
+    box-shadow: none;
+}
+
+.select2-dropdown {
+    border-color: #dcdcdc;
+}
+
+.select2-search__field {
+    border: 1px solid #dcdcdc !important;
+    color: #333333;
+    font-size: 15px;
+    line-height: 15px;
+}
+
+.select2-search__field:focus {
+    border-color: #bbb !important;
+    box-shadow: none;
+}
+
+.select2-results__option {
+    color: #333333;
+}
+
+.select2-results__option[aria-selected=true] {
+    color: #333333;
+}
+
+/* Default theme arrow height adjustment */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 17px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 576px) {
+    .select2-container .select2-selection--single,
     .select2-container--bootstrap4 .select2-selection--single {
-        font-size: 0.875rem;
+        font-size: 14px;
         padding: 0.25rem 0.5rem;
         height: calc(1.5em + 0.5rem + 2px) !important;
     }
@@ -408,8 +466,9 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
         height: calc(1.5em + 0.5rem);
     }
     
+    .select2-search__field,
     .select2-container--bootstrap4 .select2-dropdown .select2-search__field {
-        font-size: 0.875rem;
+        font-size: 14px;
         padding: 0.25rem 0.5rem;
     }
     
