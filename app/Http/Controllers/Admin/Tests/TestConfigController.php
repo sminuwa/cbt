@@ -1788,19 +1788,14 @@ class TestConfigController extends Controller
                             }
 
                             $err = [];
-                            foreach(array_chunk($candidate_papers, 500) as $key => $candidate_paper) {
+                            foreach(array_chunk($candidate_papers, 1000) as $key => $candidate_paper) {
                                 if(!CandidateSubject::upsert($candidate_paper, ['subject_id', 'scheduled_candidate_id','subject_id'])) {
                                     reset_auto_increment('candidate_subjects');
-                                    $err[] = 'Something went wrong. [Graduands chunk upload]';
+                                    $err[] = 'Something went wrong. ';
                                 }
                             }
-                            Log::info($err);
-                            if(count($err) == 0){
-                                reset_auto_increment('scheduled_candidates');
-                            }else{
-                                $errors[] = 'Something went wrong while updating papers records for candidates.';
-                            }
                         }
+                        
                         
                     } catch (Exception $batchError) {
                         $errors[] = 'Error inserting scheduled candidates: ' . $batchError->getMessage();
