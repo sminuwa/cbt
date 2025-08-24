@@ -1124,7 +1124,7 @@
                                             icon: 'success',
                                             confirmButtonText: 'OK'
                                         }).then(() => {
-                                            // location.reload();
+                                            location.reload();
                                         });
                                     }, 1000);
                                 } else {
