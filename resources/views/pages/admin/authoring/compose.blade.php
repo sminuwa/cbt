@@ -73,43 +73,72 @@
                                 <div class="accordion-item border mb-2">
                                     <!-- Accordion Header -->
                                     <h2 class="accordion-header" id="heading{{ $section->id }}">
-                                        <button class="accordion-button collapsed" type="button" 
-                                                data-bs-toggle="collapse" data-bs-target="#collapse{{ $section->id }}"
-                                                aria-expanded="false" aria-controls="collapse{{ $section->id }}">
-                                            <div class="d-flex justify-content-between align-items-center w-100 me-3">
-                                                <div class="d-flex align-items-center">
-                                                    <span class="badge bg-secondary me-2">{{ $loop->iteration }}</span>
-                                                    <div>
-                                                        <strong class="text-dark">{{ $section->title }}</strong>
-                                                        @if($section->instruction)
-                                                            <br><small class="text-muted">{{ Str::limit(strip_tags($section->instruction), 60) }}</small>
+                                        <div class="d-flex align-items-center">
+                                            <!-- Accordion Button -->
+                                            <button class="accordion-button collapsed flex-grow-1" type="button" 
+                                                    data-bs-toggle="collapse" data-bs-target="#collapse{{ $section->id }}"
+                                                    aria-expanded="false" aria-controls="collapse{{ $section->id }}">
+                                                <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="badge bg-secondary me-2">{{ $loop->iteration }}</span>
+                                                        <div>
+                                                            <strong class="text-dark">{{ $section->title }}</strong>
+                                                            @if($section->instruction)
+                                                                <br><small class="text-muted">{{ Str::limit(strip_tags($section->instruction), 60) }}</small>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <!-- Question Status -->
+                                                        <div class="text-center">
+                                                            <small class="text-muted d-block">Questions</small>
+                                                            <span class="badge {{ $isComplete ? 'bg-success' : ($composedQuestions > 0 ? 'bg-warning' : 'text-dark') }}">
+                                                                {{ $composedQuestions }}/{{ $totalQuestions }}
+                                                            </span>
+                                                        </div>
+                                                        <!-- Total Marks -->
+                                                        <div class="text-center">
+                                                            <small class="text-muted d-block">Total Marks</small>
+                                                            <span class="badge bg-info">{{ $section->num_to_answer * $section->mark_per_question }}</span>
+                                                        </div>
+                                                        <!-- Status Icon -->
+                                                        @if($isComplete)
+                                                            <i class="las la-check-circle text-success fs-5"></i>
+                                                        @elseif($composedQuestions > 0)
+                                                            <i class="las la-clock text-warning fs-5"></i>
+                                                        @else
+                                                            <i class="las la-exclamation-circle text-danger fs-5"></i>
                                                         @endif
                                                     </div>
                                                 </div>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <!-- Question Status -->
-                                                    <div class="text-center">
-                                                        <small class="text-muted d-block">Questions</small>
-                                                        <span class="badge {{ $isComplete ? 'bg-success' : ($composedQuestions > 0 ? 'bg-warning' : 'text-dark') }}">
-                                                            {{ $composedQuestions }}/{{ $totalQuestions }}
-                                                        </span>
-                                                    </div>
-                                                    <!-- Total Marks -->
-                                                    <div class="text-center">
-                                                        <small class="text-muted d-block">Total Marks</small>
-                                                        <span class="badge bg-info">{{ $section->num_to_answer * $section->mark_per_question }}</span>
-                                                    </div>
-                                                    <!-- Status Icon -->
-                                                    @if($isComplete)
-                                                        <i class="las la-check-circle text-success fs-5"></i>
-                                                    @elseif($composedQuestions > 0)
-                                                        <i class="las la-clock text-warning fs-5"></i>
-                                                    @else
-                                                        <i class="las la-exclamation-circle text-danger fs-5"></i>
-                                                    @endif
-                                                </div>
+                                            </button>
+                                            
+                                            <!-- Action Buttons - Outside accordion button -->
+                                            <div class="d-flex gap-1 ms-2 me-2">
+                                                <a class="btn btn-primary btn-sm compose"
+                                                   href="{{route('admin.test.config.composition.compose.questions',[$section->id])}}"
+                                                   title="Manage questions for this section">
+                                                    <i class="las la-plus"></i>
+                                                </a>
+                                                <button class="btn btn-outline-warning btn-sm edit" 
+                                                        data-id="{{ $section->id }}"
+                                                        data-title="{{$section->title}}"
+                                                        data-mark="{{$section->mark_per_question}}"
+                                                        data-count="{{$section->num_to_answer}}"
+                                                        data-easy="{{$section->num_of_easy}}"
+                                                        data-mod="{{$section->num_of_moderate}}"
+                                                        data-diff="{{$section->num_of_difficult}}"
+                                                        data-inst="{{$section->instruction}}"
+                                                        title="Edit section settings">
+                                                    <i class="las la-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger btn-sm remove"
+                                                        data-id="{{ $section->id }}"
+                                                        title="Delete this section">
+                                                    <i class="las la-trash"></i>
+                                                </button>
                                             </div>
-                                        </button>
+                                        </div>
                                     </h2>
                                     
                                     <!-- Accordion Body -->
@@ -193,48 +222,29 @@
                                                     </div>
                                                 </div>
                                                 
-                                                <!-- Action Buttons -->
-                                                <div class="col-md-4">
-                                                    <div class="d-grid gap-2">
-                                                        <a class="btn btn-primary compose"
-                                                           href="{{route('admin.test.config.composition.compose.questions',[$section->id])}}">
-                                                            <i class="las la-plus me-1"></i>Manage Questions
-                                                        </a>
-                                                        <button class="btn btn-outline-warning edit" 
-                                                                data-id="{{ $section->id }}"
-                                                                data-title="{{$section->title}}"
-                                                                data-mark="{{$section->mark_per_question}}"
-                                                                data-count="{{$section->num_to_answer}}"
-                                                                data-easy="{{$section->num_of_easy}}"
-                                                                data-mod="{{$section->num_of_moderate}}"
-                                                                data-diff="{{$section->num_of_difficult}}"
-                                                                data-inst="{{$section->instruction}}">
-                                                            <i class="las la-edit me-1"></i>Edit Section
-                                                        </button>
-                                                        <button class="btn btn-outline-danger remove"
-                                                                data-id="{{ $section->id }}">
-                                                            <i class="las la-trash me-1"></i>Delete Section
-                                                        </button>
-                                                    </div>
-                                                    
-                                                    <!-- Section Stats Card -->
-                                                    <div class="card mt-3">
-                                                        <div class="card-body p-3">
-                                                            <h6 class="card-title text-muted mb-2">Section Stats</h6>
-                                                            <div class="row text-center">
-                                                                <div class="col-6">
-                                                                    <div class="text-primary">
-                                                                        <i class="las la-question-circle"></i>
+                                                <!-- Section Stats Card -->
+                                                <div class="col-md-12">
+                                                    <div class="row justify-content-center">
+                                                        <div class="col-md-6">
+                                                            <div class="card">
+                                                                <div class="card-body p-3">
+                                                                    <h6 class="card-title text-muted mb-2 text-center">Section Progress Stats</h6>
+                                                                    <div class="row text-center">
+                                                                        <div class="col-6">
+                                                                            <div class="text-primary">
+                                                                                <i class="las la-question-circle"></i>
+                                                                            </div>
+                                                                            <small class="text-muted d-block">Questions</small>
+                                                                            <strong>{{ $composedQuestions }}/{{ $totalQuestions }}</strong>
+                                                                        </div>
+                                                                        <div class="col-6">
+                                                                            <div class="text-success">
+                                                                                <i class="las la-percentage"></i>
+                                                                            </div>
+                                                                            <small class="text-muted d-block">Complete</small>
+                                                                            <strong>{{ $completionPercentage }}%</strong>
+                                                                        </div>
                                                                     </div>
-                                                                    <small class="text-muted d-block">Questions</small>
-                                                                    <strong>{{ $composedQuestions }}/{{ $totalQuestions }}</strong>
-                                                                </div>
-                                                                <div class="col-6">
-                                                                    <div class="text-success">
-                                                                        <i class="las la-percentage"></i>
-                                                                    </div>
-                                                                    <small class="text-muted d-block">Complete</small>
-                                                                    <strong>{{ $completionPercentage }}%</strong>
                                                                 </div>
                                                             </div>
                                                         </div>

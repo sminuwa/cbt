@@ -122,41 +122,51 @@
                                 <div class="accordion-item border mb-2 paper-row">
                                     <!-- Accordion Header -->
                                     <h2 class="accordion-header" id="heading{{ $registered->id }}">
-                                        <button class="accordion-button collapsed" type="button" 
-                                                data-bs-toggle="collapse" data-bs-target="#collapse{{ $registered->id }}"
-                                                aria-expanded="false" aria-controls="collapse{{ $registered->id }}">
-                                            <div class="d-flex justify-content-between align-items-center w-100 me-3">
-                                                <div class="d-flex align-items-center">
-                                                    <span class="badge bg-secondary me-2">{{ $loop->iteration }}</span>
-                                                    <div>
-                                                        <strong class="text-dark">{{ $registered->subject->subject_code }} - {{ $registered->subject->name }}</strong>
-                                                        <br><small class="text-muted">Paper composition and question management</small>
+                                        <div class="d-flex align-items-center">
+                                            <!-- Accordion Button -->
+                                            <button class="accordion-button collapsed flex-grow-1" type="button" 
+                                                    data-bs-toggle="collapse" data-bs-target="#collapse{{ $registered->id }}"
+                                                    aria-expanded="false" aria-controls="collapse{{ $registered->id }}">
+                                                <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="badge bg-secondary me-2">{{ $loop->iteration }}</span>
+                                                        <div>
+                                                            <strong class="text-dark">{{ $registered->subject->subject_code }} - {{ $registered->subject->name }}</strong>
+                                                            <br><small class="text-muted">Paper composition and question management</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <!-- Sections Count -->
+                                                        <div class="text-center">
+                                                            <small class="text-muted d-block">Sections</small>
+                                                            <span class="badge {{ $sectionCount > 0 ? 'bg-primary' : 'bg-light text-dark' }}">
+                                                                {{ $sectionCount }}
+                                                            </span>
+                                                        </div>
+                                                        <!-- Questions Count -->
+                                                        <div class="text-center">
+                                                            <small class="text-muted d-block">Questions</small>
+                                                            <span class="badge {{ $questionCount > 0 ? 'bg-info' : 'bg-light text-dark' }}">
+                                                                {{ $questionCount }}
+                                                            </span>
+                                                        </div>
+                                                        <!-- Status Icon -->
+                                                        @if($isComposed)
+                                                            <i class="las la-check-circle text-success fs-5" title="Ready for testing"></i>
+                                                        @else
+                                                            <i class="las la-clock text-warning fs-5" title="Composition pending"></i>
+                                                        @endif
                                                     </div>
                                                 </div>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <!-- Sections Count -->
-                                                    <div class="text-center">
-                                                        <small class="text-muted d-block">Sections</small>
-                                                        <span class="badge {{ $sectionCount > 0 ? 'bg-primary' : 'bg-light text-dark' }}">
-                                                            {{ $sectionCount }}
-                                                        </span>
-                                                    </div>
-                                                    <!-- Questions Count -->
-                                                    <div class="text-center">
-                                                        <small class="text-muted d-block">Questions</small>
-                                                        <span class="badge {{ $questionCount > 0 ? 'bg-info' : 'bg-light text-dark' }}">
-                                                            {{ $questionCount }}
-                                                        </span>
-                                                    </div>
-                                                    <!-- Status Icon -->
-                                                    @if($isComposed)
-                                                        <i class="las la-check-circle text-success fs-5" title="Ready for testing"></i>
-                                                    @else
-                                                        <i class="las la-clock text-warning fs-5" title="Composition pending"></i>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </button>
+                                            </button>
+                                            
+                                            <!-- Compose Paper Button - Outside accordion button -->
+                                            <a class="btn btn-success btn-sm ms-2 me-2"
+                                               href="{{ route('admin.test.config.composition.compose',[$registered->id]) }}"
+                                               title="Compose sections and questions">
+                                                <i class="las la-edit me-1"></i>Compose Paper
+                                            </a>
+                                        </div>
                                     </h2>
                                     
                                     <!-- Accordion Body -->
@@ -245,12 +255,6 @@
                                                 <!-- Action Buttons -->
                                                 <div class="col-md-4">
                                                     <div class="d-grid gap-2">
-                                                        <a class="btn btn-success"
-                                                           href="{{ route('admin.test.config.composition.compose',[$registered->id]) }}"
-                                                           title="Compose sections and questions">
-                                                            <i class="las la-edit me-1"></i>Compose Paper
-                                                        </a>
-                                                        
                                                         @if($sectionCount > 0)
                                                             <button class="btn btn-outline-info" type="button" data-bs-toggle="collapse" 
                                                                     data-bs-target="#sectionsDetail{{ $registered->id }}" aria-expanded="false">
