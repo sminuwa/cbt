@@ -129,7 +129,8 @@ class TestConfigController extends Controller
     public function dates($config_id): Factory|\Illuminate\Foundation\Application|View|Application
     {
         $dates = $this->testDatesBy($config_id);
-        return view('pages.admin.authoring.dates', compact('config_id', 'dates'));
+        $config = TestConfig::with('test_code', 'test_type')->find($config_id);
+        return view('pages.admin.authoring.dates', compact('config_id', 'dates', 'config'));
     }
 
     public function storeDate(Request $request): Factory|\Illuminate\Foundation\Application|View|Application
@@ -179,7 +180,8 @@ class TestConfigController extends Controller
         ->where(['test_config_id' => $config_id])->get();
         // return $schedules;
         
-        return view('pages.admin.authoring.schedules', compact('schedules', 'config_id'));
+        $config = TestConfig::with('test_code', 'test_type')->find($config_id);
+        return view('pages.admin.authoring.schedules', compact('schedules', 'config_id', 'config'));
 
     }
 
@@ -461,7 +463,8 @@ class TestConfigController extends Controller
 
     public function subjects($config_id)
     {
-        return view('pages.admin.authoring.subjects', compact('config_id'));
+        $config = TestConfig::with('test_code', 'test_type')->find($config_id);
+        return view('pages.admin.authoring.subjects', compact('config_id', 'config'));
     }
 
     public function subjectsAjax($config_id): Factory|\Illuminate\Foundation\Application|View|Application
@@ -506,8 +509,9 @@ class TestConfigController extends Controller
     public function composition($config_id)
     {
         $subjects = $this->registeredSubjects($config_id)->get();
+        $config = TestConfig::with('test_code', 'test_type')->find($config_id);
         
-        return view('pages.admin.authoring.composition', compact('config_id', 'subjects'));
+        return view('pages.admin.authoring.composition', compact('config_id', 'subjects', 'config'));
     }
 
     public function compose(TestSubject $testSubject): Factory|\Illuminate\Foundation\Application|View|Application
@@ -1267,6 +1271,186 @@ class TestConfigController extends Controller
         }else{
             // DB::rollback();
             return back()->with(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function scheduleAllCenters(Request $request, $config_id)
+    {
+        try {
+            $request->validate([
+                'date' => 'required|date',
+                'maximum_batch' => 'required|integer|min:1',
+                'no_per_schedule' => 'required|integer|min:1',
+                'daily_start_time' => 'required',
+                'daily_end_time' => 'required',
+            ]);
+
+            DB::beginTransaction();
+
+            // Check if overwrite existing schedules
+            if ($request->has('overwrite_existing') && $request->overwrite_existing) {
+                Scheduling::where([
+                    'test_config_id' => $config_id,
+                    'date' => $request->date
+                ])->delete();
+            }
+
+            // Get all centers with their venues
+            $venues = DB::table('venues')
+                ->join('centres', 'centres.id', '=', 'venues.centre_id')
+                ->select('venues.id as venue_id', 'venues.name as venue_name', 'centres.name as centre_name', 'venues.capacity')
+                ->get();
+
+            if ($venues->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No venues found to schedule.'
+                ], 400);
+            }
+
+            $scheduledCount = 0;
+            $skippedCount = 0;
+            $schedules = [];
+
+            foreach ($venues as $venue) {
+                // Check if schedule already exists for this venue and date
+                $existingSchedule = Scheduling::where([
+                    'test_config_id' => $config_id,
+                    'venue_id' => $venue->venue_id,
+                    'date' => $request->date
+                ])->first();
+
+                if ($existingSchedule && !($request->has('overwrite_existing') && $request->overwrite_existing)) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                $schedules[] = [
+                    'test_config_id' => $config_id,
+                    'venue_id' => $venue->venue_id,
+                    'date' => $request->date,
+                    'maximum_batch' => $request->maximum_batch,
+                    'no_per_schedule' => $request->no_per_schedule,
+                    'daily_start_time' => $request->daily_start_time,
+                    'daily_end_time' => $request->daily_end_time,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
+
+            // Insert schedules in chunks
+            if (!empty($schedules)) {
+                foreach (array_chunk($schedules, 500) as $chunk) {
+                    Scheduling::insert($chunk);
+                    $scheduledCount += count($chunk);
+                }
+            }
+
+            DB::commit();
+
+            $message = "Successfully scheduled {$scheduledCount} centers for the selected date.";
+            if ($skippedCount > 0) {
+                $message .= " {$skippedCount} centers were skipped (already scheduled).";
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'scheduled_count' => $scheduledCount,
+                'skipped_count' => $skippedCount,
+                'total_venues' => $venues->count()
+            ]);
+
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error scheduling centers: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function batchReschedule(Request $request, $config_id)
+    {
+        try {
+            $request->validate([
+                'schedule_ids' => 'required|string',
+                'new_date' => 'required|date',
+                'new_batches' => 'nullable|integer|min:1',
+                'new_candidates' => 'nullable|integer|min:1',
+                'new_start_time' => 'nullable',
+                'new_end_time' => 'nullable',
+            ]);
+
+            DB::beginTransaction();
+
+            $scheduleIds = explode(',', $request->schedule_ids);
+            $scheduleIds = array_filter($scheduleIds); // Remove empty values
+
+            if (empty($scheduleIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No schedules selected for rescheduling.'
+                ], 400);
+            }
+
+            // Get the schedules to update
+            $schedules = Scheduling::where('test_config_id', $config_id)
+                ->whereIn('id', $scheduleIds)
+                ->get();
+
+            if ($schedules->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No valid schedules found to reschedule.'
+                ], 400);
+            }
+
+            $updateData = ['date' => $request->new_date];
+            $updateAll = $request->has('update_all_fields') && $request->update_all_fields;
+
+            // Add optional fields to update
+            if ($request->filled('new_batches') || $updateAll) {
+                $updateData['maximum_batch'] = $request->new_batches ?: 1;
+            }
+            
+            if ($request->filled('new_candidates') || $updateAll) {
+                $updateData['no_per_schedule'] = $request->new_candidates ?: 50;
+            }
+            
+            if ($request->filled('new_start_time') || $updateAll) {
+                $updateData['daily_start_time'] = $request->new_start_time ?: '08:00';
+            }
+            
+            if ($request->filled('new_end_time') || $updateAll) {
+                $updateData['daily_end_time'] = $request->new_end_time ?: '17:00';
+            }
+
+            $updateData['updated_at'] = now();
+
+            // Update schedules
+            $updatedCount = Scheduling::where('test_config_id', $config_id)
+                ->whereIn('id', $scheduleIds)
+                ->update($updateData);
+
+            DB::commit();
+
+            $message = "Successfully rescheduled {$updatedCount} schedule(s) to " . 
+                      \Carbon\Carbon::parse($request->new_date)->format('D, jS M, Y');
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'updated_count' => $updatedCount,
+                'new_date' => $request->new_date
+            ]);
+
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error rescheduling schedules: ' . $e->getMessage()
+            ], 500);
         }
     }
 

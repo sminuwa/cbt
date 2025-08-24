@@ -36,3 +36,451 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
 .card .card-header{
     padding:10px;
 }
+
+/* Select2 Bootstrap 4 styling to match form-control inputs */
+.select2-container--bootstrap4 .select2-selection--single {
+    height: calc(1.5em + 0.75rem + 2px) !important;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
+    padding-left: 0;
+    padding-right: 20px;
+    height: auto;
+    margin-top: -1px;
+    color: #495057;
+    line-height: 1.5;
+}
+
+.select2-container--bootstrap4 .select2-selection--single .select2-selection__placeholder {
+    color: #6c757d;
+}
+
+.select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow {
+    height: calc(1.5em + 0.75rem);
+    position: absolute;
+    top: 1px;
+    right: 3px;
+    width: 20px;
+}
+
+.select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow b {
+    border-color: #495057 transparent transparent transparent;
+    border-style: solid;
+    border-width: 5px 4px 0 4px;
+    height: 0;
+    left: 50%;
+    margin-left: -4px;
+    margin-top: -2px;
+    position: absolute;
+    top: 50%;
+    width: 0;
+}
+
+/* Focus state */
+.select2-container--bootstrap4.select2-container--focus .select2-selection--single {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Disabled state */
+.select2-container--bootstrap4 .select2-selection--single.select2-selection--disabled {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+    color: #6c757d;
+}
+
+/* Dropdown styling */
+.select2-container--bootstrap4 .select2-dropdown {
+    border-color: #ced4da;
+    border-radius: 0.25rem;
+    z-index: 9999;
+}
+
+.select2-container--bootstrap4 .select2-dropdown--above {
+    border-radius: 0.25rem;
+}
+
+.select2-container--bootstrap4 .select2-dropdown--below {
+    border-radius: 0.25rem;
+}
+
+.select2-container--bootstrap4 .select2-search {
+    padding: 0.375rem;
+}
+
+.select2-container--bootstrap4 .select2-dropdown .select2-search__field {
+    border: 1px solid #ced4da !important;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.select2-container--bootstrap4 .select2-dropdown .select2-search__field:focus {
+    border-color: #80bdff !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.select2-container--bootstrap4 .select2-results__option {
+    padding: 0.375rem 0.75rem;
+    color: #495057;
+}
+
+.select2-container--bootstrap4 .select2-results__option--highlighted {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.select2-container--bootstrap4 .select2-results__option[aria-selected=true] {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+/* Clear button styling */
+.select2-container--bootstrap4 .select2-selection__clear {
+    color: #6c757d;
+    cursor: pointer;
+    float: right;
+    font-weight: bold;
+    margin-right: 10px;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.select2-container--bootstrap4 .select2-selection__clear:hover {
+    color: #495057;
+}
+
+/* Multi-select styling */
+.select2-container--bootstrap4 .select2-selection--multiple {
+    min-height: calc(1.5em + 0.75rem + 2px);
+    padding-bottom: 0;
+    padding-right: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    background-color: #fff;
+}
+
+.select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice {
+    background-color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 0.25rem;
+    color: #fff;
+    font-size: 0.875rem;
+    margin: 0.375rem 0.375rem 0 0;
+    padding: 0.25rem 0.5rem;
+}
+
+.select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove {
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    display: inline-block;
+    font-weight: bold;
+    margin-right: 0.25rem;
+}
+
+.select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: #fff;
+}
+
+/* Modal specific adjustments */
+.modal .select2-container--bootstrap4 .select2-dropdown {
+    z-index: 10000;
+}
+
+.modal .select2-container {
+    z-index: 1051;
+}
+
+/* Fix for search input in modals */
+.select2-container--open .select2-dropdown {
+    z-index: 10000 !important;
+}
+
+/* Ensure search input receives focus */
+.select2-container--bootstrap4 .select2-search--dropdown .select2-search__field {
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    color: #495057;
+    font-size: 1rem;
+    outline: none;
+    padding: 0.375rem 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.select2-container--bootstrap4 .select2-search--dropdown .select2-search__field:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Results container */
+.select2-container--bootstrap4 .select2-results {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.select2-container--bootstrap4 .select2-results__message {
+    color: #6c757d;
+    padding: 0.375rem 0.75rem;
+}
+
+/* Custom Checkbox Design with Primary Color */
+.custom-checkbox {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+    line-height: 1;
+}
+
+.custom-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.custom-checkbox .checkmark {
+    position: relative;
+    display: inline-block;
+    height: 18px;
+    width: 18px;
+    background-color: #fff;
+    border: 2px solid #ced4da;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    vertical-align: middle;
+}
+
+.custom-checkbox:hover .checkmark {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.15);
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+    background-color: #007bff;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
+}
+
+.custom-checkbox input:focus ~ .checkmark {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.custom-checkbox .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    transition: all 0.2s ease;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+    display: block;
+    animation: checkmark-appear 0.2s ease;
+}
+
+.custom-checkbox input:indeterminate ~ .checkmark {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.custom-checkbox input:indeterminate ~ .checkmark:after {
+    display: block;
+    left: 3px;
+    top: 7px;
+    width: 8px;
+    height: 0;
+    border: solid #fff;
+    border-width: 0 0 2px 0;
+    transform: rotate(0deg);
+}
+
+/* Disabled state */
+.custom-checkbox input:disabled ~ .checkmark {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+}
+
+.custom-checkbox input:disabled:checked ~ .checkmark {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.custom-checkbox input:disabled ~ .checkmark:after {
+    border-color: #fff;
+}
+
+.custom-checkbox input:disabled {
+    cursor: not-allowed;
+}
+
+/* Animation for checkmark */
+@keyframes checkmark-appear {
+    0% {
+        transform: rotate(45deg) scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: rotate(45deg) scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: rotate(45deg) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Table checkbox specific styling */
+.table .custom-checkbox {
+    margin: 0;
+    padding: 0;
+}
+
+.table .custom-checkbox .checkmark {
+    margin-top: 2px;
+}
+
+/* Select all checkbox - slightly larger */
+#selectAll-wrapper .checkmark {
+    height: 20px;
+    width: 20px;
+}
+
+#selectAll-wrapper .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+}
+
+#selectAll-wrapper input:indeterminate ~ .checkmark:after {
+    left: 4px;
+    top: 8px;
+    width: 10px;
+    height: 0;
+}
+
+/* Hover effects for table rows */
+.table tbody tr:hover .custom-checkbox .checkmark {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .select2-container--bootstrap4 .select2-selection--single {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+        height: calc(1.5em + 0.5rem + 2px) !important;
+    }
+    
+    .select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow {
+        height: calc(1.5em + 0.5rem);
+    }
+    
+    .select2-container--bootstrap4 .select2-dropdown .select2-search__field {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .custom-checkbox .checkmark {
+        height: 16px;
+        width: 16px;
+    }
+    
+    .custom-checkbox .checkmark:after {
+        left: 4px;
+        top: 1px;
+        width: 3px;
+        height: 7px;
+    }
+}
+
+/* Test Configuration Info Section */
+.test-info-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+}
+
+.test-info-item {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 123, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.test-info-item:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 123, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+}
+
+.test-info-item i {
+    font-size: 1.1em;
+}
+
+.test-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.test-description {
+    background: rgba(108, 117, 125, 0.1);
+    padding: 12px 16px;
+    border-radius: 6px;
+    border-left: 4px solid #007bff;
+    font-style: italic;
+}
+
+/* Responsive adjustments for test info */
+@media (max-width: 768px) {
+    .test-info-section {
+        padding: 15px;
+    }
+    
+    .test-info-item {
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .test-title {
+        font-size: 1.3rem;
+    }
+}

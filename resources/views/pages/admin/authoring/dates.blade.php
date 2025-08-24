@@ -13,6 +13,41 @@
             </div>
         </div>
         <div class="card-body pt-0" style="">
+            <div class="text-center mb-4">
+                <h5 class="text-muted">Manage Test Dates</h5>
+                <h4 class="test-title">{{ $config->title }} - {{ $config->session }} - {{ $config->test_code->name ?? 'No Code' }} - {{ $config->test_type->name ?? 'No Type' }}</h4>
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            @if($config->paper)
+                            <div class="test-info-item">
+                                <i class="las la-file-alt text-primary me-2"></i>
+                                <span><strong>Paper:</strong> {{$config->paper}}</span>
+                            </div>
+                            @endif
+                            @if($config->code)
+                            <div class="test-info-item">
+                                <i class="las la-code text-primary me-2"></i>
+                                <span><strong>Code:</strong> {{$config->code}}</span>
+                            </div>
+                            @endif
+                            @if($config->year)
+                            <div class="test-info-item">
+                                <i class="las la-calendar text-primary me-2"></i>
+                                <span><strong>Year:</strong> {{$config->year}}</span>
+                            </div>
+                            @endif
+                            @if($config->exam_type)
+                            <div class="test-info-item">
+                                <i class="las la-graduation-cap text-primary me-2"></i>
+                                <span><strong>Type:</strong> {{$config->exam_type}}</span>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="input-group flatpicker-calender py-4">
                 <input name="date" class="form-control" id="test-date" type="date" placeholder="Pick date (eg. {{ date('Y-m-d') }})">
             </div>
