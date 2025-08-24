@@ -21,9 +21,27 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title d-flex justify-content-between">
+                        <h4 class="card-title d-flex justify-content-between align-items-center">
                             Duration & Mode
-                            <a href="{{ route('admin.test.config.index') }}" class="btn btn-info btn-xs text-light"><i class="las la-arrow-left"></i>Back</a>
+                            <div class="d-flex gap-2 align-items-center">
+                                <div class="btn-group btn-group-xs" role="group">
+                                    <a href="{{ route('admin.test.config.dates', $config->id) }}" class="btn btn-xs btn-outline-secondary" title="Test Dates">
+                                        <i class="las la-calendar"></i> Dates
+                                    </a>
+                                    <a href="{{ route('admin.test.config.subjects', $config->id) }}" class="btn btn-xs btn-outline-primary" title="Test Papers">
+                                        <i class="las la-book"></i> Papers
+                                    </a>
+                                    <a href="{{ route('admin.test.config.composition', $config->id) }}" class="btn btn-xs btn-outline-success" title="Test Composition">
+                                        <i class="las la-layer-group"></i> Composition
+                                    </a>
+                                    <a href="{{ route('admin.test.config.schedules', $config->id) }}" class="btn btn-xs btn-outline-warning" title="Test Schedules">
+                                        <i class="las la-calendar-alt"></i> Schedules
+                                    </a>
+                                </div>
+                                <a href="{{ route('admin.test.config.index') }}" class="btn btn-info btn-xs text-light">
+                                    <i class="las la-arrow-left"></i> Panel
+                                </a>
+                            </div>
                         </h4>
                     
                     </div>

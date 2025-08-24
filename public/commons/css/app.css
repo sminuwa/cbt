@@ -484,3 +484,9 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role=row] > td:first-child:bef
         font-size: 1.3rem;
     }
 }
+
+.badge {
+    padding: 4px 10px;
+    font-family: "Montserrat", sans-serif, sans-serif;
+    font-weight: 500;
+}

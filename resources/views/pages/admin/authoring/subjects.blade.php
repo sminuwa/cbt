@@ -21,11 +21,27 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title d-flex justify-content-between">
+                    <h4 class="card-title d-flex justify-content-between align-items-center">
                         <span>Test Papers</span>
-                        <a href="{{ route('admin.test.config.index') }}" class="btn btn-info btn-xs text-light">
-                            <i class="las la-arrow-left"></i> Back
-                        </a>
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="btn-group btn-group-xs" role="group">
+                                <a href="{{ route('admin.test.config.dates', $config->id) }}" class="btn btn-xs btn-outline-secondary" title="Test Dates">
+                                    <i class="las la-calendar"></i> Dates
+                                </a>
+                                <a href="{{ route('admin.test.config.composition', $config->id) }}" class="btn btn-xs btn-outline-success" title="Test Composition">
+                                    <i class="las la-layer-group"></i> Composition
+                                </a>
+                                <a href="{{ route('admin.test.config.schedules', $config->id) }}" class="btn btn-xs btn-outline-warning" title="Test Schedules">
+                                    <i class="las la-calendar-alt"></i> Schedules
+                                </a>
+                                <a href="{{ route('admin.test.config.basics', $config->id) }}" class="btn btn-xs btn-outline-info" title="Test Config">
+                                    <i class="las la-cog"></i> Config
+                                </a>
+                            </div>
+                            <a href="{{ route('admin.test.config.index') }}" class="btn btn-info btn-xs text-light">
+                                <i class="las la-arrow-left"></i> Panel
+                            </a>
+                        </div>
                     </h4>
                 </div>
                 <div class="card-body text-center">

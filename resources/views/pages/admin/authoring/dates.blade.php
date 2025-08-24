@@ -5,15 +5,33 @@
         <div class="card-header">
             <div class="row">
                 <div>
-                    <h4 class="card-title d-flex justify-content-between">
+                    <h4 class="card-title d-flex justify-content-between align-items-center">
                         <span>Test Dates</span>
-                        <a href="{{ route('admin.test.config.index') }}" class="btn btn-info btn-xs text-light"><i class="las la-arrow-left"></i>Back</a>
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="btn-group btn-group-xs" role="group">
+                                <a href="{{ route('admin.test.config.subjects', $config->id) }}" class="btn btn-xs btn-outline-primary" title="Test Papers">
+                                    <i class="las la-book"></i> Papers
+                                </a>
+                                <a href="{{ route('admin.test.config.composition', $config->id) }}" class="btn btn-xs btn-outline-success" title="Test Composition">
+                                    <i class="las la-layer-group"></i> Composition
+                                </a>
+                                <a href="{{ route('admin.test.config.schedules', $config->id) }}" class="btn btn-xs btn-outline-warning" title="Test Schedules">
+                                    <i class="las la-calendar-alt"></i> Schedules
+                                </a>
+                                <a href="{{ route('admin.test.config.basics', $config->id) }}" class="btn btn-xs btn-outline-info" title="Test Config">
+                                    <i class="las la-cog"></i> Config
+                                </a>
+                            </div>
+                            <a href="{{ route('admin.test.config.index') }}" class="btn btn-info btn-xs text-light">
+                                <i class="las la-arrow-left"></i> Panel
+                            </a>
+                        </div>
                     </h4>
                 </div>
             </div>
         </div>
         <div class="card-body pt-0" style="">
-            <div class="text-center mb-4">
+            <div class="text-center mt-4">
                 <h5 class="text-muted">Manage Test Dates</h5>
                 <h4 class="test-title">{{ $config->title }} - {{ $config->session }} - {{ $config->test_code->name ?? 'No Code' }} - {{ $config->test_type->name ?? 'No Type' }}</h4>
                 <div class="row justify-content-center">

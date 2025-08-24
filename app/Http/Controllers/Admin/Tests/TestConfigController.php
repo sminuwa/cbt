@@ -546,6 +546,107 @@ class TestConfigController extends Controller
     public function loadQuestions(Request $request)
     {
         try {
+            // Check if we should load composed questions (default) or browse question bank
+            $loadComposed = !$request->has('browse_mode') || $request->browse_mode != 'true';
+            
+            if ($loadComposed) {
+                return $this->loadComposedQuestions($request);
+            } else {
+                return $this->loadQuestionBank($request);
+            }
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+    
+    private function loadComposedQuestions(Request $request)
+    {
+        try {
+            // Get already composed questions for this section
+            $testQuestions = TestQuestion::where('test_section_id', $request->test_section_id)
+                ->with(['question_bank.answer_options'])
+                ->get();
+            
+            $questions = $testQuestions->map(function($testQuestion) {
+                $question = $testQuestion->question_bank;
+                $question->checked = true; // All composed questions are checked
+                return $question;
+            });
+            
+            // Apply filters if any
+            if ($request->difficulty_level && $request->difficulty_level != '%') {
+                $questions = $questions->filter(function($question) use ($request) {
+                    return $question->difficulty_level == $request->difficulty_level;
+                });
+            }
+            
+            if ($request->topic_id && $request->topic_id != '%') {
+                $questions = $questions->filter(function($question) use ($request) {
+                    return $question->topic_id == $request->topic_id;
+                });
+            }
+            
+            if ($request->author && $request->author != '%') {
+                $questions = $questions->filter(function($question) use ($request) {
+                    if ($request->author == 'me') {
+                        return $question->author == Auth::user()->id;
+                    } else if ($request->author == 'others') {
+                        return $question->author != Auth::user()->id;
+                    }
+                    return true;
+                });
+            }
+            
+            if ($request->phrase) {
+                $questions = $questions->filter(function($question) use ($request) {
+                    return stripos($question->title, $request->phrase) !== false;
+                });
+            }
+            
+            // Calculate statistics
+            $easy = $questions->where('difficulty_level', 'simple')->count();
+            $moderate = $questions->where('difficulty_level', 'moderate')->count();
+            $difficult = $questions->where('difficulty_level', 'difficult')->count();
+            
+            $statistics = [
+                'easy' => $easy,
+                'moderate' => $moderate,
+                'difficult' => $difficult,
+                'count' => $questions->count()
+            ];
+            
+            // Pagination
+            $currentPage = $request->input('page', 1);
+            $perPage = $request->page_count ?: 20;
+            $offset = ($currentPage - 1) * $perPage;
+            $currentPageItems = $questions->slice($offset, $perPage)->values();
+            
+            $paginator = new LengthAwarePaginator(
+                $currentPageItems,
+                $questions->count(),
+                $perPage,
+                $currentPage,
+                ['path' => $request->url()]
+            );
+            
+            return view(
+                'pages.admin.authoring.ajax.questions',
+                [
+                    'questions' => $paginator, 
+                    'statistics' => $statistics, 
+                    'page' => $currentPage, 
+                    'pageSize' => $perPage,
+                    'mode' => 'composed'
+                ]
+            );
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+    
+    private function loadQuestionBank(Request $request)
+    {
+        try {
             $where = [];
             $where[] = ['question_banks.subject_id', '=', $request->subject_id];
 
@@ -563,9 +664,27 @@ class TestConfigController extends Controller
             if (isset($request->phrase))
                 $where[] = ['title', 'like', '%' . $request->phrase . '%'];
 
-            $others_ids = TestSection::where('test_subject_id', $request->test_subject_id)->where('id', '<>', $request->test_section_id)->pluck('id')->toArray();
-            $nots_ids = TestQuestion::whereIn('test_section_id', $others_ids)->pluck('question_bank_id')->toArray();
-            $questions = QuestionBank::with('answer_options')->where($where)->whereNotIn('id', $nots_ids)->get();
+            // Exclude questions from other sections in the same test subject
+            $others_ids = TestSection::where('test_subject_id', $request->test_subject_id)
+                ->where('id', '<>', $request->test_section_id)
+                ->pluck('id')
+                ->toArray();
+            $nots_ids = TestQuestion::whereIn('test_section_id', $others_ids)
+                ->pluck('question_bank_id')
+                ->toArray();
+            
+            // Also exclude questions already composed in the current section
+            $current_section_question_ids = TestQuestion::where('test_section_id', $request->test_section_id)
+                ->pluck('question_bank_id')
+                ->toArray();
+            
+            // Merge both exclusion lists
+            $all_excluded_ids = array_merge($nots_ids, $current_section_question_ids);
+            
+            $questions = QuestionBank::with('answer_options')
+                ->where($where)
+                ->whereNotIn('id', $all_excluded_ids)
+                ->get();
 
             $easy = 0;
             $moderate = 0;
@@ -612,7 +731,13 @@ class TestConfigController extends Controller
 
             return view(
                 'pages.admin.authoring.ajax.questions',
-                ['questions' => $paginator, 'statistics' => $statistics, 'page' => $currentPage, 'pageSize' => $perPage]
+                [
+                    'questions' => $paginator, 
+                    'statistics' => $statistics, 
+                    'page' => $currentPage, 
+                    'pageSize' => $perPage,
+                    'mode' => 'browse'
+                ]
             );
         } catch (Exception $e) {
             return $e->getMessage();
