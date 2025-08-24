@@ -1683,6 +1683,7 @@ class TestConfigController extends Controller
                     $centreName = trim($row[$centreCol]);
                     $papers = isset($row[$paperCol]) ? trim($row[$paperCol]) : '';
                     
+                    // return $candidateIndexing;
                     try {
                         // Find candidate using searchForId helper
                         $candidate = searchForId($candidateIndexing, $candidatesArray, 'indexing');
@@ -1726,6 +1727,7 @@ class TestConfigController extends Controller
 
                         // return $schedulesByVenue;
                         // Prepare scheduled candidate data for batch insert
+                        // return $candidate;
                         $candidateIds[] = $candidate->id;
                         $uploaded_papers[trim($candidate->id)] = trim($papers);
                         if(!in_array($schedule->id, $candidateScheduleId))
@@ -1759,10 +1761,12 @@ class TestConfigController extends Controller
                         foreach (array_chunk($scheduledCandidatesData, 1000) as $chunk) {
                             ScheduledCandidate::upsert($chunk, ['candidate_id', 'exam_type_id', 'schedule_id']);
                         }
+
+
                         Log::info('Inserted scheduled candidates: ' . count($scheduledCandidatesData));
                         // Reset auto increment to clean up any gaps
                         reset_auto_increment('scheduled_candidates');
-
+                        // return $candidateScheduleId;
                         foreach($candidateScheduleId as $schedule){
                             // return $schedule;
                             $get_schedules = ScheduledCandidate::whereIn('candidate_id', $candidateIds)->where(['schedule_id'=> $schedule])->get();
@@ -1790,6 +1794,7 @@ class TestConfigController extends Controller
                                     $err[] = 'Something went wrong. [Graduands chunk upload]';
                                 }
                             }
+                            Log::info($err);
                             if(count($err) == 0){
                                 reset_auto_increment('scheduled_candidates');
                             }else{
