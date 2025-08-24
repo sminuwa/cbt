@@ -263,7 +263,7 @@ class CBTApiController extends Controller
             
             // Make API request with timeout
             $response = Http::timeout(120)->withHeaders($headers)
-                ->post('https://zxcvbnm.chprbn.gov.ng/pull-picture', [
+                ->post('https://asdfghjkl.lkjhgfdsa.chprbn.gov.ng/pull-picture', [
                     'indexings' => $candidate_ids
                 ]);
             

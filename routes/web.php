@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\System\TopicController;
 use App\Http\Controllers\Admin\System\TestCodeController;
 use App\Http\Controllers\Admin\System\TestTypeController;
 use App\Http\Controllers\Admin\System\VenueController;
+use App\Http\Controllers\Admin\Tests\TestConfigControllerOptimized;
 use App\Http\Controllers\Student\Dashboard\CandidateController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -63,7 +64,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
             Route::post('/schedules/store', [TestConfigController::class, 'storeSchedule'])->name('schedules.store');
             Route::post('/schedules/{config}/schedule-all', [TestConfigController::class, 'scheduleAllCenters'])->name('schedules.schedule-all');
             Route::post('/schedules/{config}/batch-reschedule', [TestConfigController::class, 'batchReschedule'])->name('schedules.batch-reschedule');
-            Route::post('/schedules/{config}/batch-schedule-candidates', [TestConfigController::class, 'batchScheduleCandidates'])->name('batch-schedule-candidates');
+            Route::post('/schedules/{config}/batch-schedule-candidates', [TestConfigControllerOptimized::class, 'batchScheduleCandidates'])->name('batch-schedule-candidates');
             Route::get('/schedules/{scheduling}/displacement', [TestConfigController::class, 'deleteSchedule'])->name('schedules.delete');
             Route::get('/schedules/{scheduling}/remove/delete', [TestConfigController::class, 'removeAndDeleteSchedule'])->name('schedules.remove.delete');
             Route::get('/schedules/{scheduling}/others/{size}', [TestConfigController::class, 'otherSchedules'])->name('schedules.others');
