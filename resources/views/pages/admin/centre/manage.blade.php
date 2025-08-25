@@ -378,10 +378,16 @@
                 e.preventDefault();
                 var centreId = $(this).data('id');
                 
+                console.log('Viewing centre ID:', centreId); // Debug log
+
                 $.ajax({
                     url: '{{ route("admin.centres.manage.show", "") }}/' + centreId,
                     type: 'GET',
+                    beforeSend: function() {
+                        $('#centre-details').html('<p>Loading centre details...</p>');
+                    },
                     success: function(response) {
+                        console.log('Centre details response:', response); // Debug log
                         // Build venues list
                         var venuesHtml = '';
                         if (response.venues && response.venues.length > 0) {

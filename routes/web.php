@@ -64,7 +64,7 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
             Route::post('/schedules/store', [TestConfigController::class, 'storeSchedule'])->name('schedules.store');
             Route::post('/schedules/{config}/schedule-all', [TestConfigController::class, 'scheduleAllCenters'])->name('schedules.schedule-all');
             Route::post('/schedules/{config}/batch-reschedule', [TestConfigController::class, 'batchReschedule'])->name('schedules.batch-reschedule');
-            Route::post('/schedules/{config}/batch-schedule-candidates', [TestConfigControllerOptimized::class, 'batchScheduleCandidates'])->name('batch-schedule-candidates');
+            Route::post('/schedules/{config}/batch-schedule-candidates', [TestConfigController::class, 'batchScheduleCandidates'])->name('batch-schedule-candidates');
             Route::post('/schedules/{config}/transfer-schedule', [TestConfigController::class, 'transferScheduleToCentre'])->name('transfer-schedule');
             Route::post('/schedules/{config}/transfer-candidates', [TestConfigController::class, 'transferCandidates'])->name('transfer-candidates');
             Route::get('/schedules/{schedule}/candidates', [TestConfigController::class, 'getScheduleCandidates'])->name('schedules.candidates');
