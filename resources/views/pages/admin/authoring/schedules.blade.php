@@ -707,13 +707,13 @@
 
                     <!-- Search and Filter Candidates -->
                     <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="candidate_search">Search Candidates</label>
                                 <input type="text" class="form-control" id="candidate_search" placeholder="Search by name, index number, or exam number...">
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="candidate_filter">Filter by Status</label>
                                 <select class="form-control" id="candidate_filter">
@@ -722,6 +722,14 @@
                                     <option value="pulled">Pulled Only</option>
                                     <option value="pushed">Pushed Only</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="bulk_indexing_paste">Bulk Select by Indexing Numbers</label>
+                                <button type="button" class="btn btn-outline-primary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#bulkIndexingModal">
+                                    <i class="las la-paste"></i> Paste Indexing Numbers
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -906,6 +914,109 @@
             </div>
         </div>
     </div>
+
+    <!-- Bulk Indexing Numbers Modal -->
+    <div class="modal fade" id="bulkIndexingModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Select by Indexing Numbers</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="las la-info-circle"></i> 
+                        <strong>Instructions:</strong> Paste or enter indexing numbers (one per line, or comma/space separated). 
+                        Candidates matching these indexing numbers will be automatically selected for transfer.
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="indexing_numbers_input">Indexing Numbers</label>
+                        <textarea class="form-control" id="indexing_numbers_input" rows="10" placeholder="Enter indexing numbers here... Examples:
+
+IDX001
+IDX002
+IDX003
+
+OR
+
+IDX001, IDX002, IDX003
+
+OR
+
+IDX001 IDX002 IDX003"></textarea>
+                        <small class="form-text text-muted">Supports multiple formats: one per line, comma-separated, or space-separated</small>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="clear_existing_selection" checked>
+                            <label class="form-check-label" for="clear_existing_selection">
+                                Clear existing selections before applying
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="bulk_selection_preview" class="mt-3" style="display: none;">
+                        <div class="card bg-primary">
+                            <div class="card-body p-3">
+                                <h6 class="card-title mb-2">Preview Selection</h6>
+                                <div id="preview_content" class="small"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-info" id="previewBulkSelection">
+                        <i class="las la-eye"></i> Preview Selection
+                    </button>
+                    <button type="button" class="btn btn-primary" id="applyBulkSelection">
+                        <i class="las la-check-square"></i> Apply Selection
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('style')
+<style>
+/* Button pulse effect */
+.btn-pulse {
+    animation: pulse-primary 2s infinite;
+    box-shadow: 0 0 0 rgba(0, 123, 255, 0.4);
+}
+
+@keyframes pulse-primary {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+    }
+}
+
+/* Ensure toasts appear above modals */
+.swal2-toast-container {
+    z-index: 9999 !important;
+}
+
+/* Make sure modal backdrop doesn't interfere with toasts */
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+}
+</style>
 @endsection
 
 @section('script')
@@ -1732,7 +1843,8 @@
             // Reset transfer candidates modal
             function resetTransferCandidatesModal() {
                 selectedCandidates = [];
-                allCandidates = [];
+                // Don't reset allCandidates here, keep it available for bulk operations
+                // allCandidates = [];
                 
                 // Reset form fields
                 $('#candidate_target_centre').val(null).trigger('change');
@@ -1787,6 +1899,7 @@
                             displayCandidates(allCandidates);
                             $('#candidates_loading').hide();
                             $('#candidates_table_container').show();
+                            console.log('✅ Candidates loaded and displayed successfully. Total candidates:', allCandidates.length);
                         } else {
                             $('#candidates_loading').hide();
                             $('#no_candidates_found').show();
@@ -2200,6 +2313,326 @@
             $('#transferCandidatesModal').on('hidden.bs.modal', function () {
                 resetTransferCandidatesModal();
                 initializeSelect2();
+            });
+
+            // Bulk Indexing Numbers functionality
+            
+            // Preview bulk selection
+            $('#previewBulkSelection').on('click', function() {
+                const inputText = $('#indexing_numbers_input').val().trim();
+                
+                if (!inputText) {
+                    Swal.fire('Info', 'Please enter some indexing numbers first', 'info');
+                    return;
+                }
+                
+                console.log('🔍 Starting bulk selection preview...');
+                console.log('Input text:', inputText);
+                console.log('All candidates array length:', allCandidates.length);
+                console.log('All candidates array:', allCandidates);
+                console.log('Candidates table rows:', $('#candidates_table_body tr').length);
+                console.log('Candidates table visible:', $('#candidates_table_container').is(':visible'));
+                
+                // Check if we have candidates in the table even if allCandidates array is empty
+                if (allCandidates.length === 0) {
+                    console.warn('⚠️ allCandidates array is empty, trying to rebuild from table...');
+                    
+                    // Try to rebuild candidates array from the visible table
+                    const tableRows = $('#candidates_table_body tr');
+                    if (tableRows.length > 0) {
+                        console.log('📊 Found table rows, rebuilding candidates array...');
+                        allCandidates = [];
+                        tableRows.each(function() {
+                            const $row = $(this);
+                            const checkbox = $row.find('.candidate-checkbox');
+                            const cells = $row.find('td');
+                            
+                            if (checkbox.length > 0 && cells.length >= 6) {
+                                const candidate = {
+                                    id: checkbox.val(),
+                                    indexing: $(cells[1]).text().trim(),
+                                    name: $(cells[2]).text().trim(),
+                                    exam_number: $(cells[3]).text().trim(),
+                                    status: checkbox.data('status') || 'unknown',
+                                    papers: $(cells[5]).text().trim()
+                                };
+                                allCandidates.push(candidate);
+                            }
+                        });
+                        console.log('✅ Rebuilt candidates array with', allCandidates.length, 'candidates:', allCandidates);
+                    }
+                }
+                
+                if (allCandidates.length === 0) {
+                    console.error('❌ Still no candidates available');
+                    Swal.fire('Warning', 'No candidates are loaded yet. Please wait for candidates to load first, or try closing and reopening the bulk selection modal.', 'warning');
+                    return;
+                }
+                
+                const indexingNumbers = parseIndexingNumbers(inputText);
+                const matchedCandidates = findCandidatesByIndexing(indexingNumbers);
+                
+                displayBulkSelectionPreview(matchedCandidates, indexingNumbers);
+            });
+            
+            // Apply bulk selection
+            $('#applyBulkSelection').on('click', function() {
+                const inputText = $('#indexing_numbers_input').val().trim();
+                
+                if (!inputText) {
+                    Swal.fire('Info', 'Please enter some indexing numbers first', 'info');
+                    return;
+                }
+                
+                console.log('🎯 Applying bulk selection...');
+                
+                const indexingNumbers = parseIndexingNumbers(inputText);
+                const matchedCandidates = findCandidatesByIndexing(indexingNumbers);
+                
+                if (matchedCandidates.length === 0) {
+                    Swal.fire('Info', 'No matching candidates found for the provided indexing numbers', 'info');
+                    return;
+                }
+                
+                console.log('📋 Matched candidates to select:', matchedCandidates.map(c => ({
+                    id: c.id, 
+                    indexing: c.indexing, 
+                    name: c.name
+                })));
+                
+                // Clear existing selections if checkbox is checked
+                if ($('#clear_existing_selection').is(':checked')) {
+                    console.log('🧹 Clearing existing selections...');
+                    $('.candidate-checkbox').prop('checked', false);
+                }
+                
+                // Select matching candidates in the main table
+                let appliedCount = 0;
+                matchedCandidates.forEach(function(candidate) {
+                    const checkbox = $(`.candidate-checkbox[value="${candidate.id}"]`);
+                    if (checkbox.length > 0) {
+                        checkbox.prop('checked', true);
+                        appliedCount++;
+                        console.log(`✅ Selected candidate: ${candidate.indexing} (ID: ${candidate.id})`);
+                    } else {
+                        console.warn(`⚠️ Could not find checkbox for candidate: ${candidate.indexing} (ID: ${candidate.id})`);
+                    }
+                });
+                
+                console.log(`📊 Applied selection to ${appliedCount} candidates out of ${matchedCandidates.length} matched`);
+                
+                // Update selection count and UI
+                updateSelectedCandidatesCount();
+                updateSelectAllTableState();
+                
+                // Ensure candidates table is visible and not stuck in loading state
+                $('#candidates_loading').hide();
+                $('#no_candidates_found').hide();
+                $('#candidates_table_container').show();
+                
+                console.log('📋 Candidates table visibility after bulk selection:');
+                console.log('- Loading div hidden:', $('#candidates_loading').is(':hidden'));
+                console.log('- Table container visible:', $('#candidates_table_container').is(':visible'));
+                console.log('- Table rows count:', $('#candidates_table_body tr').length);
+                
+                // Only close the bulk indexing modal, keep the main transfer modal open
+                $('#bulkIndexingModal').modal('hide');
+                
+                // Show success message but make sure it doesn't interfere with the main modal
+                setTimeout(() => {
+                    // Use a toast-style notification instead of a full modal
+                    Swal.fire({
+                        title: 'Selection Applied!',
+                        html: `Successfully selected <strong>${appliedCount}</strong> candidates from <strong>${indexingNumbers.length}</strong> indexing numbers provided.<br><br>The "Transfer Selected Candidates" button is now available below.`,
+                        icon: 'success',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: true,
+                        confirmButtonText: 'Got it!',
+                        timer: 6000,
+                        timerProgressBar: true,
+                        customClass: {
+                            container: 'swal2-toast-container'
+                        },
+                        didOpen: () => {
+                            // Ensure the transfer candidates modal stays open and visible
+                            if (!$('#transferCandidatesModal').hasClass('show')) {
+                                $('#transferCandidatesModal').modal('show');
+                            }
+                            
+                            // Double-check that candidates table is visible
+                            setTimeout(() => {
+                                if (!$('#candidates_table_container').is(':visible')) {
+                                    console.warn('⚠️ Candidates table not visible after bulk selection, fixing...');
+                                    $('#candidates_loading').hide();
+                                    $('#no_candidates_found').hide();
+                                    $('#candidates_table_container').show();
+                                }
+                            }, 200);
+                            
+                            // Highlight the transfer button briefly
+                            $('#transferCandidatesBtn').addClass('btn-pulse');
+                            setTimeout(() => {
+                                $('#transferCandidatesBtn').removeClass('btn-pulse');
+                            }, 3000);
+                        }
+                    });
+                }, 100);
+            });
+            
+            // Parse indexing numbers from input text
+            function parseIndexingNumbers(inputText) {
+                // Split by newlines first, then by commas or spaces if no newlines
+                let numbers;
+                if (inputText.includes('\n')) {
+                    // If there are newlines, split by newlines only
+                    numbers = inputText.split(/\n+/);
+                } else {
+                    // If no newlines, split by commas or spaces
+                    numbers = inputText.split(/[,\s]+/);
+                }
+                
+                // Clean up the numbers
+                numbers = numbers
+                    .map(num => num.trim()) // Trim whitespace
+                    .filter(num => num.length > 0); // Remove empty strings
+                
+                // Remove duplicates (keep original case for now)
+                const uniqueNumbers = [...new Set(numbers)];
+                console.log('Parsed indexing numbers:', uniqueNumbers);
+                return uniqueNumbers;
+            }
+            
+            // Find candidates by indexing numbers
+            function findCandidatesByIndexing(indexingNumbers) {
+                console.log('Searching for candidates with indexing numbers:', indexingNumbers);
+                console.log('Available candidates:', allCandidates.map(c => ({
+                    id: c.id, 
+                    indexing: c.indexing, 
+                    name: c.name
+                })));
+                
+                const matched = allCandidates.filter(function(candidate) {
+                    if (!candidate.indexing) {
+                        console.log('Candidate has no indexing:', candidate);
+                        return false;
+                    }
+                    
+                    const candidateIndexing = candidate.indexing.toString().trim();
+                    const isMatch = indexingNumbers.some(function(searchNumber) {
+                        const searchTerm = searchNumber.toString().trim();
+                        
+                        // Try multiple matching approaches
+                        const exactMatch = candidateIndexing === searchTerm;
+                        const exactMatchIgnoreCase = candidateIndexing.toLowerCase() === searchTerm.toLowerCase();
+                        const partialMatch = candidateIndexing.includes(searchTerm) || searchTerm.includes(candidateIndexing);
+                        const partialMatchIgnoreCase = candidateIndexing.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                                      searchTerm.toLowerCase().includes(candidateIndexing.toLowerCase());
+                        
+                        const matched = exactMatch || exactMatchIgnoreCase || partialMatch || partialMatchIgnoreCase;
+                        
+                        if (matched) {
+                            console.log(`✅ Match found: "${candidateIndexing}" matches "${searchTerm}" (exact: ${exactMatch}, exactIgnoreCase: ${exactMatchIgnoreCase}, partial: ${partialMatch}, partialIgnoreCase: ${partialMatchIgnoreCase})`);
+                        } else {
+                            console.log(`❌ No match: "${candidateIndexing}" vs "${searchTerm}"`);
+                        }
+                        
+                        return matched;
+                    });
+                    
+                    return isMatch;
+                });
+                
+                console.log('✅ Total matched candidates:', matched.length, matched.map(c => ({
+                    id: c.id, 
+                    indexing: c.indexing, 
+                    name: c.name
+                })));
+                
+                return matched;
+            }
+            
+            // Display bulk selection preview
+            function displayBulkSelectionPreview(matchedCandidates, indexingNumbers) {
+                let previewHtml = '';
+                
+                if (matchedCandidates.length > 0) {
+                    previewHtml += `<div class="mb-2">`;
+                    previewHtml += `<span class="badge bg-success me-2">${matchedCandidates.length} Found</span>`;
+                    previewHtml += `<span class="badge bg-info">${indexingNumbers.length} Searched</span>`;
+                    previewHtml += `</div>`;
+                    
+                    previewHtml += `<div class="mb-2"><strong>Matching Candidates:</strong></div>`;
+                    previewHtml += `<ul class="list-unstyled mb-0">`;
+                    matchedCandidates.forEach(function(candidate) {
+                        let statusBadge = '';
+                        switch(candidate.status) {
+                            case 'scheduled':
+                                statusBadge = '<span class="badge bg-success">Scheduled</span>';
+                                break;
+                            case 'pulled':
+                                statusBadge = '<span class="badge bg-warning">Pulled</span>';
+                                break;
+                            case 'pushed':
+                                statusBadge = '<span class="badge bg-info">Pushed</span>';
+                                break;
+                            default:
+                                statusBadge = '<span class="badge bg-secondary">Unknown</span>';
+                        }
+                        previewHtml += `<li class="mb-1">`;
+                        previewHtml += `<i class="las la-user text-primary me-1"></i>`;
+                        previewHtml += `${candidate.indexing} - ${candidate.name || 'N/A'} ${statusBadge}`;
+                        previewHtml += `</li>`;
+                    });
+                    previewHtml += `</ul>`;
+                    
+                    // Show unmatched indexing numbers if any
+                    const matchedIndexing = matchedCandidates.map(c => c.indexing.toUpperCase().trim());
+                    const unmatchedNumbers = indexingNumbers.filter(function(searchNumber) {
+                        return !matchedIndexing.some(matched => 
+                            matched === searchNumber || matched.includes(searchNumber)
+                        );
+                    });
+                    
+                    if (unmatchedNumbers.length > 0) {
+                        previewHtml += `<div class="mt-3 mb-2"><strong>Not Found:</strong></div>`;
+                        previewHtml += `<div class="text-muted small">`;
+                        unmatchedNumbers.forEach(function(number) {
+                            previewHtml += `<span class="badge bg-light text-dark me-1 mb-1">${number}</span>`;
+                        });
+                        previewHtml += `</div>`;
+                    }
+                } else {
+                    previewHtml = `<div class="text-center text-muted">`;
+                    previewHtml += `<i class="las la-search-minus la-2x mb-2"></i>`;
+                    previewHtml += `<p>No matching candidates found for the provided indexing numbers.</p>`;
+                    previewHtml += `</div>`;
+                }
+                
+                $('#preview_content').html(previewHtml);
+                $('#bulk_selection_preview').show();
+            }
+            
+            // Reset bulk indexing modal when closed
+            $('#bulkIndexingModal').on('hidden.bs.modal', function () {
+                $('#indexing_numbers_input').val('');
+                $('#clear_existing_selection').prop('checked', true);
+                $('#bulk_selection_preview').hide();
+            });
+            
+            // Auto-preview on input change (with debounce)
+            let previewTimeout;
+            $('#indexing_numbers_input').on('input', function() {
+                clearTimeout(previewTimeout);
+                const inputText = $(this).val().trim();
+                
+                if (inputText.length > 0) {
+                    previewTimeout = setTimeout(function() {
+                        $('#previewBulkSelection').click();
+                    }, 1000); // 1 second debounce
+                } else {
+                    $('#bulk_selection_preview').hide();
+                }
             });
         })
     </script>
