@@ -91,9 +91,9 @@
                         <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#batchRescheduleModal">
                             <i class="las la-calendar-alt"></i> Batch Reschedule
                         </button>
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#transferScheduleModal">
+                        {{-- <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#transferScheduleModal">
                             <i class="las la-exchange-alt"></i> Transfer Schedule
-                        </button>
+                        </button> --}}
                     </div>
                 </div>
             </div>
@@ -654,7 +654,7 @@
 
                     <!-- Transfer Options -->
                     <div class="row mb-4">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="candidate_target_centre">Target Centre <span class="text-danger">*</span></label>
                                 @php
@@ -668,7 +668,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="candidate_target_venue">Target Venue</label>
                                 <select class="form-control select2" id="candidate_target_venue" name="target_venue_id" data-placeholder="Select Target Venue">
@@ -677,11 +677,8 @@
                                 <small class="form-text text-muted">Select a target centre first to view available venues</small>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Transfer Mode Selection -->
-                    <div class="row mb-4">
-                        <div class="col-md-12">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="candidate_transfer_mode">Transfer Mode <span class="text-danger">*</span></label>
                                 <select class="form-control" id="candidate_transfer_mode" required>
