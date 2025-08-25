@@ -161,6 +161,13 @@ class TestConfigController extends Controller
 
     public function schedules($config_id)
     {
+        $config = TestConfig::with('test_code', 'test_type')->find($config_id);
+        
+        if (!$config) {
+            return redirect()->route('admin.test.config.index')
+                ->with(['success' => false, 'message' => 'Test configuration not found']);
+        }
+        
         $schedules = Scheduling::
         selectRaw("
             schedulings.*,
@@ -179,9 +186,7 @@ class TestConfigController extends Controller
         ")
         ->with('venue','pull_status')
         ->where(['test_config_id' => $config_id])->get();
-        // return $schedules;
         
-        $config = TestConfig::with('test_code', 'test_type')->find($config_id);
         return view('pages.admin.authoring.schedules', compact('schedules', 'config_id', 'config'));
 
     }
@@ -1584,8 +1589,8 @@ class TestConfigController extends Controller
     {
         // Set memory and execution limits for large files
         ini_set('memory_limit', '2G');
-        ini_set('max_execution_time', 1200); // 10 minutes
-        
+        ini_set('max_execution_time', 1200); // 20 minutes
+
         try {
             $request->validate([
                 'file' => 'required|mimes:xls,xlsx,csv|max:10240', // 10MB max
@@ -1892,12 +1897,46 @@ class TestConfigController extends Controller
      */
     public function transferScheduleToCentre(Request $request, $config_id)
     {
+        // Log all request data for debugging
+        Log::info('Transfer schedule request data', [
+            'all_request_data' => $request->all(),
+            'config_id' => $config_id,
+            'schedule_id' => $request->schedule_id,
+            'target_centre_id' => $request->target_centre_id,
+            'transfer_mode' => $request->transfer_mode,
+            'target_venue_id' => $request->target_venue_id
+        ]);
+        
         $request->validate([
             'schedule_id' => 'required|exists:schedulings,id',
             'target_centre_id' => 'required|exists:centres,id',
             'transfer_mode' => 'required|in:auto_assign,create_new,specific_venue',
-            'target_venue_id' => 'required_if:transfer_mode,specific_venue|exists:venues,id',
-            'copy_schedule_settings' => 'boolean'
+            'target_venue_id' => [
+                'required_if:transfer_mode,specific_venue',
+                'exists:venues,id',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->transfer_mode === 'specific_venue' && $value) {
+                        $venue = \App\Models\Venue::find($value);
+                        
+                        // Log detailed debugging information
+                        Log::info('Venue validation debug', [
+                            'transfer_mode' => $request->transfer_mode,
+                            'target_venue_id' => $value,
+                            'target_centre_id' => $request->target_centre_id,
+                            'venue_found' => $venue ? true : false,
+                            'venue_centre_id' => $venue ? $venue->centre_id : null,
+                            'venue_name' => $venue ? $venue->name : null
+                        ]);
+                        
+                        if (!$venue) {
+                            $fail('The selected target venue does not exist.');
+                        } elseif ($venue->centre_id != $request->target_centre_id) {
+                            $fail("The selected target venue '{$venue->name}' (Centre ID: {$venue->centre_id}) must belong to the selected centre (ID: {$request->target_centre_id}).");
+                        }
+                    }
+                },
+            ],
+            'copy_schedule_settings' => 'nullable'
         ]);
 
         try {
@@ -2135,7 +2174,7 @@ class TestConfigController extends Controller
             'source_schedule_id' => 'required|exists:schedulings,id',
             'target_centre_id' => 'required|exists:centres,id',
             'transfer_mode' => 'required|in:auto_assign,create_new,specific_schedule',
-            'target_schedule_id' => 'required_if:transfer_mode,specific_schedule|exists:schedulings,id',
+            'target_schedule_id' => 'nullable|required_if:transfer_mode,specific_schedule|exists:schedulings,id',
             'candidate_ids' => 'required|array|min:1',
             'candidate_ids.*' => 'required|integer'
         ]);
@@ -2207,10 +2246,25 @@ class TestConfigController extends Controller
 
             $transferredCount = 0;
 
+            // Log target schedule details
+            Log::info('Target schedule details', [
+                'target_schedule_id' => $targetSchedule->id,
+                'target_venue_id' => $targetSchedule->venue_id,
+                'target_centre_name' => $targetSchedule->venue->centre->name ?? 'Unknown',
+                'target_config_id' => $targetSchedule->test_config_id
+            ]);
+
             // Transfer each selected candidate
             foreach ($scheduledCandidates as $scheduledCandidate) {
                 $candidateId = $scheduledCandidate->candidate_id;
                 $oldScheduledCandidateId = $scheduledCandidate->id;
+                
+                Log::info('Starting candidate transfer', [
+                    'candidate_id' => $candidateId,
+                    'old_scheduled_candidate_id' => $oldScheduledCandidateId,
+                    'source_schedule' => $sourceScheduleId,
+                    'target_schedule' => $targetSchedule->id
+                ]);
                 
                 // Create new scheduled candidate record in target schedule
                 $newScheduledCandidate = ScheduledCandidate::create([
@@ -2219,39 +2273,72 @@ class TestConfigController extends Controller
                     'schedule_id' => $targetSchedule->id,
                 ]);
 
+                Log::info('Created new scheduled candidate', [
+                    'new_scheduled_candidate_id' => $newScheduledCandidate->id,
+                    'candidate_id' => $candidateId,
+                    'target_schedule_id' => $targetSchedule->id
+                ]);
+
                 // Transfer candidate subjects
                 $candidateSubjects = CandidateSubject::where('scheduled_candidate_id', $oldScheduledCandidateId)->get();
+                Log::info('Found candidate subjects to transfer', [
+                    'count' => $candidateSubjects->count(),
+                    'old_scheduled_candidate_id' => $oldScheduledCandidateId
+                ]);
+                
                 foreach ($candidateSubjects as $candidateSubject) {
-                    CandidateSubject::create([
+                    $newCandidateSubject = CandidateSubject::create([
                         'scheduled_candidate_id' => $newScheduledCandidate->id,
                         'subject_id' => $candidateSubject->subject_id,
                         'schedule_id' => $targetSchedule->id,
                         'add_index' => $candidateSubject->add_index,
                         'enabled' => $candidateSubject->enabled,
                     ]);
+                    
+                    Log::info('Created candidate subject', [
+                        'new_candidate_subject_id' => $newCandidateSubject->id,
+                        'subject_id' => $candidateSubject->subject_id,
+                        'new_scheduled_candidate_id' => $newScheduledCandidate->id
+                    ]);
                 }
 
                 // Transfer time controls
                 $timeControls = TimeControl::where('scheduled_candidate_id', $oldScheduledCandidateId)->get();
+                Log::info('Found time controls to transfer', [
+                    'count' => $timeControls->count(),
+                    'old_scheduled_candidate_id' => $oldScheduledCandidateId
+                ]);
+                
                 foreach ($timeControls as $timeControl) {
                     $timeControl->update([
                         'scheduled_candidate_id' => $newScheduledCandidate->id,
                         'test_config_id' => $config_id
                     ]);
+                    
+                    Log::info('Updated time control', [
+                        'time_control_id' => $timeControl->id,
+                        'new_scheduled_candidate_id' => $newScheduledCandidate->id
+                    ]);
                 }
 
                 // Delete old records
-                CandidateSubject::where('scheduled_candidate_id', $oldScheduledCandidateId)->delete();
+                $deletedSubjects = CandidateSubject::where('scheduled_candidate_id', $oldScheduledCandidateId)->delete();
                 $scheduledCandidate->delete();
+
+                Log::info('Deleted old records', [
+                    'deleted_candidate_subjects' => $deletedSubjects,
+                    'deleted_scheduled_candidate_id' => $oldScheduledCandidateId
+                ]);
 
                 $transferredCount++;
                 
-                Log::info('Transferred candidate', [
+                Log::info('Completed candidate transfer', [
                     'candidate_id' => $candidateId,
                     'old_scheduled_candidate_id' => $oldScheduledCandidateId,
                     'new_scheduled_candidate_id' => $newScheduledCandidate->id,
                     'from_schedule' => $sourceScheduleId,
-                    'to_schedule' => $targetSchedule->id
+                    'to_schedule' => $targetSchedule->id,
+                    'transferred_count' => $transferredCount
                 ]);
             }
 
@@ -2341,6 +2428,31 @@ class TestConfigController extends Controller
     }
 
     /**
+     * Debug method to check venue
+     */
+    public function debugVenue($config_id, $venue_id)
+    {
+        Log::info('debugVenue called', ['config_id' => $config_id, 'venue_id' => $venue_id]);
+        
+        $venue = \App\Models\Venue::with('centre')->find($venue_id);
+        if (!$venue) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Venue not found',
+                'venue_id' => $venue_id
+            ], 404);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'venue' => $venue,
+            'centre' => $venue->centre,
+            'venue_centre_id' => $venue->centre_id,
+            'centre_id' => $venue->centre ? $venue->centre->id : null
+        ]);
+    }
+    
+    /**
      * Debug method to check schedule
      */
     public function debugSchedule($schedule_id)
@@ -2381,6 +2493,10 @@ class TestConfigController extends Controller
                 ], 422);
             }
             
+            // First check raw count without relationships
+            $rawCount = ScheduledCandidate::where('schedule_id', $schedule->id)->count();
+            Log::info('Raw scheduled candidates count', ['raw_count' => $rawCount, 'schedule_id' => $schedule->id]);
+            
             // Get scheduled candidates with their candidate details and subjects
             $scheduledCandidates = ScheduledCandidate::where('schedule_id', $schedule->id)
                 ->with([
@@ -2389,7 +2505,21 @@ class TestConfigController extends Controller
                 ])
                 ->get();
             
-            Log::info('Found scheduled candidates', ['count' => $scheduledCandidates->count()]);
+            Log::info('Found scheduled candidates with relationships', [
+                'count' => $scheduledCandidates->count(),
+                'first_candidate_id' => $scheduledCandidates->first() ? $scheduledCandidates->first()->candidate_id : null,
+                'first_scheduled_candidate_id' => $scheduledCandidates->first() ? $scheduledCandidates->first()->id : null
+            ]);
+            
+            // Check candidate subjects separately for debugging
+            if ($scheduledCandidates->isNotEmpty()) {
+                $firstScheduledCandidate = $scheduledCandidates->first();
+                $candidateSubjectsCount = CandidateSubject::where('scheduled_candidate_id', $firstScheduledCandidate->id)->count();
+                Log::info('Candidate subjects for first scheduled candidate', [
+                    'scheduled_candidate_id' => $firstScheduledCandidate->id,
+                    'candidate_subjects_count' => $candidateSubjectsCount
+                ]);
+            }
 
             // Transform data for the frontend
             $candidates = $scheduledCandidates->map(function($scheduledCandidate) {

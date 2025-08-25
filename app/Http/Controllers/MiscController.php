@@ -79,6 +79,93 @@ class MiscController extends Controller
         return view('pages.admin.reports.ajax.candidates', compact('candidates'));
     }
 
+    /**
+     * Get schedules for a specific centre (for transfer candidates functionality)
+     */
+    public function centreSchedules(Request $request, $centre_id)
+    {
+        try {
+            // Get current test config ID from the current request context
+            // This should be passed via URL or session, for now we'll try to get it from referrer
+            $testConfigId = $request->get('test_config_id');
+            
+            if (!$testConfigId) {
+                // Try to extract from referrer URL if available
+                $referrer = $request->header('referer');
+                if ($referrer && preg_match('/\/test\/config\/(\d+)\//', $referrer, $matches)) {
+                    $testConfigId = $matches[1];
+                }
+            }
+            
+            if (!$testConfigId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Test config ID is required'
+                ], 400);
+            }
+            
+            // Build query
+            $query = Scheduling::with(['venue:id,name,centre_id', 'venue.centre:id,name'])
+                ->where('test_config_id', $testConfigId);
+                
+            // Filter by centre - get all venues in the centre
+            $venueIds = Venue::where('centre_id', $centre_id)->pluck('id')->toArray();
+            if (empty($venueIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No venues found for this centre'
+                ], 404);
+            }
+            
+            $query->whereIn('venue_id', $venueIds);
+            
+            // Optional venue filter
+            $venueId = $request->get('venue_id');
+            if ($venueId) {
+                $query->where('venue_id', $venueId);
+            }
+            
+            $schedules = $query->get();
+            
+            // Transform data for frontend
+            $transformedSchedules = $schedules->map(function($schedule) {
+                // Count current candidates in this schedule
+                $currentCount = DB::table('scheduled_candidates')
+                    ->where('schedule_id', $schedule->id)
+                    ->count();
+                
+                return [
+                    'id' => $schedule->id,
+                    'venue' => $schedule->venue->name ?? 'N/A',
+                    'venue_id' => $schedule->venue_id,
+                    'date' => $schedule->date,
+                    'start_time' => date('H:i', strtotime($schedule->daily_start_time)),
+                    'end_time' => date('H:i', strtotime($schedule->daily_end_time)),
+                    'capacity' => $schedule->no_per_schedule * $schedule->maximum_batch,
+                    'current_count' => $currentCount,
+                    'maximum_batch' => $schedule->maximum_batch,
+                    'no_per_schedule' => $schedule->no_per_schedule
+                ];
+            });
+            
+            return response()->json([
+                'success' => true,
+                'schedules' => $transformedSchedules
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error fetching centre schedules', [
+                'centre_id' => $centre_id,
+                'error' => $e->getMessage()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching schedules: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     public function configuration(Request $request){
         // $output = array();

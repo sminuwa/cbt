@@ -670,13 +670,27 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
+                                <label for="candidate_target_venue">Target Venue</label>
+                                <select class="form-control select2" id="candidate_target_venue" name="target_venue_id" data-placeholder="Select Target Venue">
+                                    <option value="">Select Target Venue</option>
+                                </select>
+                                <small class="form-text text-muted">Select a target centre first to view available venues</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transfer Mode Selection -->
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label for="candidate_transfer_mode">Transfer Mode <span class="text-danger">*</span></label>
                                 <select class="form-control" id="candidate_transfer_mode" required>
                                     <option value="">Select Transfer Mode</option>
-                                    <option value="auto_assign">Auto-assign to available schedule at target centre</option>
+                                    <option value="auto_assign" selected>Auto-assign to available schedule at target centre</option>
                                     <option value="create_new">Create new schedule for transferred candidates</option>
                                     <option value="specific_schedule">Transfer to specific schedule (select below)</option>
                                 </select>
+                                <small class="form-text text-muted">Choose how candidates should be transferred to the target centre</small>
                             </div>
                         </div>
                     </div>
@@ -840,25 +854,27 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="transfer_mode">Transfer Mode <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="transfer_mode" name="transfer_mode" required>
-                                        <option value="">Select Transfer Mode</option>
-                                        <option value="auto_assign">Auto-assign to existing or create new schedule</option>
-                                        <option value="create_new">Always create new schedule at target venue</option>
-                                        <option value="specific_venue">Transfer to specific venue (select below)</option>
+                                    <label for="target_venue">Target Venue</label>
+                                    <select class="form-control select2" id="target_venue" name="target_venue_id" data-placeholder="Select Target Venue">
+                                        <option value="">Select Target Venue</option>
                                     </select>
+                                    <small class="form-text text-muted">Select a target centre first to view available venues</small>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Specific Venue Selection (shown when specific_venue mode is selected) -->
-                        <div id="specific_venue_section" class="row mt-3" style="display: none;">
+                        <!-- Transfer Mode Selection -->
+                        <div class="row mt-3">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="target_venue">Target Venue <span class="text-danger">*</span></label>
-                                    <select class="form-control select2" id="target_venue" name="target_venue_id" data-placeholder="Select Target Venue">
-                                        <option value="">Select Target Venue</option>
+                                    <label for="transfer_mode">Transfer Mode <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="transfer_mode" name="transfer_mode" required>
+                                        <option value="">Select Transfer Mode</option>
+                                        <option value="auto_assign" selected>Auto-assign to existing or create new schedule</option>
+                                        <option value="create_new">Always create new schedule at target venue</option>
+                                        <option value="specific_venue">Transfer to specific venue (use venue selected above)</option>
                                     </select>
+                                    <small class="form-text text-muted">Choose how candidates should be transferred to the target centre</small>
                                 </div>
                             </div>
                         </div>
@@ -867,7 +883,7 @@
                         <div class="row mt-4">
                             <div class="col-md-12">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="copy_schedule_settings" name="copy_schedule_settings" checked>
+                                    <input class="form-check-input" type="checkbox" id="copy_schedule_settings" name="copy_schedule_settings">
                                     <label class="form-check-label" for="copy_schedule_settings">
                                         Copy current schedule settings (date, time, batch size) to target
                                     </label>
@@ -1483,7 +1499,6 @@
                 // Reset form
                 $('#transferScheduleForm')[0].reset();
                 $('#transfer_schedule_id').val(scheduleId); // Reset form clears this, so set it again
-                $('#specific_venue_section').hide();
                 $('#transfer_progress').hide();
                 $('.progress-bar').css('width', '0%');
                 
@@ -1534,6 +1549,7 @@
                         Swal.fire('Error', 'Failed to load venues for selected centre', 'error');
                     });
                 } else {
+                    // Reset venue dropdown when no centre is selected
                     $('#target_venue').html('<option value="">Select Target Venue</option>');
                 }
             });
@@ -1541,13 +1557,13 @@
             // Transfer mode change handler
             $('#transfer_mode').on('change', function() {
                 const mode = $(this).val();
+                // Set venue as required only when specific_venue mode is selected
                 if (mode === 'specific_venue') {
-                    $('#specific_venue_section').show();
                     $('#target_venue').prop('required', true);
                 } else {
-                    $('#specific_venue_section').hide();
                     $('#target_venue').prop('required', false);
                 }
+                // Note: venue section visibility is now controlled by target_centre selection
             });
 
             // Transfer schedule form submission
@@ -1571,6 +1587,23 @@
                 }
                 
                 const formData = $(this).serialize();
+                
+                // Debug: Log form data
+                console.log('Form data being sent:', formData);
+                console.log('Target centre ID:', $('#target_centre').val());
+                console.log('Transfer mode:', $('#transfer_mode').val());
+                console.log('Target venue ID:', $('#target_venue').val());
+                console.log('Target venue options:', $('#target_venue option'));
+                
+                // Debug: Check if venue belongs to centre
+                if ($('#transfer_mode').val() === 'specific_venue') {
+                    console.log('Specific venue mode - checking venue availability');
+                    const venueOptions = $('#target_venue option:not([value=""])');
+                    console.log('Available venue options:', venueOptions.length);
+                    venueOptions.each(function() {
+                        console.log('Venue option:', $(this).val(), $(this).text());
+                    });
+                }
                 const $submitBtn = $('#transferScheduleBtn');
                 const $progress = $('#transfer_progress');
                 const $progressBar = $progress.find('.progress-bar');
@@ -1658,7 +1691,6 @@
             // Reset transfer modal when closed
             $('#transferScheduleModal').on('hidden.bs.modal', function () {
                 $('#transferScheduleForm')[0].reset();
-                $('#specific_venue_section').hide();
                 $('#transfer_progress').hide();
                 $('.progress-bar').css('width', '0%');
                 $('#transferScheduleBtn').prop('disabled', false).html('<i class="las la-exchange-alt"></i> Transfer Schedule');
@@ -1731,9 +1763,9 @@
                 $('#candidates_table_container').hide();
                 $('#no_candidates_found').hide();
                 
-                // Simulate API call to get candidates - replace with actual endpoint
+                // Use the actual API endpoint
                 $.ajax({
-                    url: `/admin/test/config/schedules/${scheduleId}/candidates`,
+                    url: `{{ url('/admin/test/config/schedules') }}/${scheduleId}/candidates`,
                     type: 'GET',
                     success: function(response) {
                         if (response.success && response.candidates && response.candidates.length > 0) {
@@ -1749,12 +1781,7 @@
                     error: function(xhr, status, error) {
                         $('#candidates_loading').hide();
                         $('#no_candidates_found').show();
-                        
-                        // For demo purposes, show sample data
-                        allCandidates = generateSampleCandidates();
-                        displayCandidates(allCandidates);
-                        $('#no_candidates_found').hide();
-                        $('#candidates_table_container').show();
+                        console.error('Error loading candidates:', xhr.responseText);
                     }
                 });
             }
@@ -1902,11 +1929,59 @@
             // Target centre change handler for candidate transfer
             $('#candidate_target_centre').on('change', function() {
                 const centreId = $(this).val();
-                if (centreId && $('#candidate_transfer_mode').val() === 'specific_schedule') {
-                    loadTargetSchedules(centreId);
+                
+                if (centreId) {
+                    // Load venues for selected centre
+                    $.get('{{ route('admin.misc.venues',[':id']) }}'.replace(':id', centreId), function (data) {
+                        let options = `<option value="">Select Target Venue</option>`;
+                        $.each(data, function (i, v) {
+                            options += `<option value='${v.id}'>${v.name}</option>`;
+                        });
+                        $('#candidate_target_venue').html(options);
+                        
+                        // Reinitialize select2 for candidate target venue dropdown
+                        try {
+                            if ($('#candidate_target_venue').hasClass('select2-hidden-accessible')) {
+                                $('#candidate_target_venue').select2('destroy');
+                            }
+                            
+                            var $modal = $('#candidate_target_venue').closest('.modal');
+                            var config = {
+                                width: '100%',
+                                allowClear: true,
+                                minimumResultsForSearch: 0,
+                                placeholder: 'Select Target Venue'
+                            };
+                            if ($modal.length > 0) {
+                                config.dropdownParent = $modal;
+                            }
+                            $('#candidate_target_venue').select2(config);
+                        } catch (error) {
+                            console.error('Error initializing candidate target venue select2:', error);
+                        }
+                    }).fail(function() {
+                        Swal.fire('Error', 'Failed to load venues for selected centre', 'error');
+                    });
+                    
+                    // Also check if we need to load schedules
+                    if ($('#candidate_transfer_mode').val() === 'specific_schedule') {
+                        loadTargetSchedules(centreId, $('#candidate_target_venue').val());
+                    }
                 } else {
+                    // Reset venue dropdown when no centre is selected
+                    $('#candidate_target_venue').html('<option value="">Select Target Venue</option>');
                     $('#target_schedules_section').hide();
                     $('#selected_target_schedule').val('');
+                }
+            });
+            
+            // Target venue change handler for candidate transfer
+            $('#candidate_target_venue').on('change', function() {
+                const centreId = $('#candidate_target_centre').val();
+                const venueId = $(this).val();
+                
+                if (centreId && $('#candidate_transfer_mode').val() === 'specific_schedule') {
+                    loadTargetSchedules(centreId, venueId);
                 }
             });
 
@@ -1924,29 +1999,36 @@
                 }
             });
 
-            // Load target schedules for selected centre
-            function loadTargetSchedules(centreId) {
+            // Load target schedules for selected centre and optionally filter by venue
+            function loadTargetSchedules(centreId, venueId = null) {
                 $('#target_schedules_list').html('<p class="text-muted mb-0">Loading available schedules...</p>');
                 
-                // Simulate API call - replace with actual endpoint
+                // Build URL with test config ID and optional venue parameter
+                let url = `{{ url('/admin/misc/centre') }}/${centreId}/schedules?test_config_id={{ $config_id }}`;
+                if (venueId) {
+                    url += `&venue_id=${venueId}`;
+                }
+                
+                // Call the actual API endpoint
                 $.ajax({
-                    url: `/admin/test-config/centre/${centreId}/schedules`,
+                    url: url,
                     type: 'GET',
                     success: function(response) {
                         if (response.success && response.schedules && response.schedules.length > 0) {
                             displayTargetSchedules(response.schedules);
                         } else {
-                            $('#target_schedules_list').html('<p class="text-muted mb-0">No available schedules found for this centre</p>');
+                            let message = venueId ? 
+                                'No available schedules found for this venue' : 
+                                'No available schedules found for this centre';
+                            $('#target_schedules_list').html(`<p class="text-muted mb-0">${message}</p>`);
                         }
                     },
-                    error: function() {
-                        // For demo purposes, show sample schedules
-                        const sampleSchedules = [
-                            { id: 10, venue: 'Main Hall', date: '2024-03-15', start_time: '09:00', end_time: '17:00', capacity: 50, current_count: 25 },
-                            { id: 11, venue: 'Lab 1', date: '2024-03-16', start_time: '08:30', end_time: '16:30', capacity: 30, current_count: 15 },
-                            { id: 12, venue: 'Classroom A', date: '2024-03-17', start_time: '10:00', end_time: '18:00', capacity: 40, current_count: 10 }
-                        ];
-                        displayTargetSchedules(sampleSchedules);
+                    error: function(xhr, status, error) {
+                        console.error('Error loading target schedules:', xhr.responseText);
+                        let message = venueId ? 
+                            'Error loading schedules for this venue' : 
+                            'Error loading schedules for this centre';
+                        $('#target_schedules_list').html(`<p class="text-muted mb-0">${message}</p>`);
                     }
                 });
             }
@@ -2016,6 +2098,7 @@
                     confirmButtonText: 'Yes, Transfer Candidates'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        console.log("starting candidate transfer...");
                         performCandidateTransfer();
                     }
                 });
@@ -2043,6 +2126,7 @@
                     candidate_ids: selectedCandidates
                 };
                 
+                console.log('Form data for candidate transfer:', formData);
                 $.ajax({
                     url: '{{ route('admin.test.config.transfer-candidates', $config_id) }}',
                     type: 'POST',
@@ -2053,7 +2137,7 @@
                     success: function(response) {
                         $progressBar.css('width', '80%');
                         $progressText.text('Finalizing transfer...');
-                        
+                        console.log('Candidate transfer response:', response);
                         setTimeout(() => {
                             $progressBar.css('width', '100%');
                             $progressText.text('Transfer completed!');

@@ -43,7 +43,7 @@ class CandidateSubject extends Model
 
     public function scheduled_candidate()
     {
-        return $this->belongsTo(ScheduledCandidate::class, 'candidate_id');
+        return $this->belongsTo(ScheduledCandidate::class, 'scheduled_candidate_id');
     }
 
     public function candidate()

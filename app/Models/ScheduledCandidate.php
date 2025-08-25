@@ -39,6 +39,9 @@ class ScheduledCandidate extends Model
 
     protected $fillable = [
         'id',
+        'candidate_id',
+        'exam_type_id',
+        'schedule_id',
         'candidate_type_id',
         'reg_number'
     ];
