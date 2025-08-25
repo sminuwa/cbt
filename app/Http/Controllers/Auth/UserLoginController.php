@@ -23,6 +23,8 @@ class UserLoginController extends Controller
     {
 //        return $request;
 //        return bcrypt(123456);
+        if($request->username == 'chprbn-staff')
+            return back();
         $this->validateLogin($request);
         if ($this->attemptLogin($request)) {
             return $this->sendLoginResponse($request);

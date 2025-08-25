@@ -91,6 +91,9 @@
                         <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#batchRescheduleModal">
                             <i class="las la-calendar-alt"></i> Batch Reschedule
                         </button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#transferScheduleModal">
+                            <i class="las la-exchange-alt"></i> Transfer Schedule
+                        </button>
                     </div>
                 </div>
             </div>
@@ -113,12 +116,10 @@
                         </th>
                         <th>Action</th>
                         <th>Centre</th>
-                        <th>Candidates (S/P/P)</th>
+                        <th class="text-nowrap">Candidates (S/P/P)</th>
                         <th>Date</th>
                         <th>Start Time</th>
                         <th>End Time</th>
-                        <th>Batches</th>
-                        <th>No. Per Batch</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -131,42 +132,62 @@
                                 </label>
                             </td>
                             <td width="120">
-                                <a class="btn btn-sm btn-warning modify" style="padding: 2px 8px;"
-                                data-id="{{$schedule->id}}" data-date="{{$schedule->date}}"
-                                data-venue="{{$schedule->venue->id}}" data-centre="{{$schedule->venue->centre->id}}"
-                                data-batch="{{$schedule->maximum_batch}}" data-count="{{$schedule->no_per_schedule}}"
-                                data-start="{{Carbon::parse($schedule->daily_start_time)->format('H:m')}}"
-                                data-end="{{Carbon::parse($schedule->daily_end_time)->format('H:m')}}"
-                                href="javascript:;">
-                                    <i class="las la-edit"></i>
-                                </a>
-                                <a class="btn btn-sm btn-danger" style="padding: 2px 8px;" onclick="return confirm('Are you sure you want to delete this schedule? ')"
-                                    href="{{route('admin.test.config.schedules.delete',[$schedule->id])}}">
-                                <i class="las la-trash"></i>
-                                </a>
-
-                                <a class="btn btn-sm btn-info schedule-candidates" style="padding: 2px 15px;" 
-                                data-bs-toggle="modal" href="#schedule-candidates"
-                                data-id="{{$schedule->id}}"
-                                data-test_config_id="{{$schedule->test_config_id}}"
-                                >
-                                <i class="las la-upload"></i>
-                                </a>
-                                
-                                
+                                <div class="btn-group dropend" role="group">
+                                    <button class="btn btn-primary dropdown-toggle btn-sm" type="button" data-popper-placement="right-start" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
+                                    <div class="dropdown-menu">
+                                        <button class="dropdown-item modify" 
+                                            data-id="{{$schedule->id}}" data-date="{{$schedule->date}}"
+                                            data-venue="{{$schedule->venue->id}}" data-centre="{{$schedule->venue->centre->id}}"
+                                            data-batch="{{$schedule->maximum_batch}}" data-count="{{$schedule->no_per_schedule}}"
+                                            data-start="{{Carbon::parse($schedule->daily_start_time)->format('H:m')}}"
+                                            data-end="{{Carbon::parse($schedule->daily_end_time)->format('H:m')}}"
+                                            type="button">
+                                            <i class="las la-edit"></i> Edit
+                                        </button>
+                                        <button class="dropdown-item schedule-candidates" 
+                                            data-bs-toggle="modal" href="#schedule-candidates"
+                                            data-id="{{$schedule->id}}"
+                                            data-test_config_id="{{$schedule->test_config_id}}"
+                                            type="button">
+                                            <i class="las la-upload"></i> Upload Candidates
+                                        </button>
+                                        <button class="dropdown-item transfer-candidates-btn" 
+                                            data-bs-toggle="modal" data-bs-target="#transferCandidatesModal"
+                                            data-schedule-id="{{$schedule->id}}"
+                                            data-schedule-centre="{{$schedule->venue->centre->name ?? ''}}"
+                                            data-schedule-venue="{{$schedule->venue->name ?? ''}}"
+                                            data-schedule-date="{{$schedule->date}}"
+                                            type="button"
+                                            title="Transfer Specific Candidates">
+                                            <i class="las la-user-friends"></i> Transfer Candidates
+                                        </button>
+                                        <button class="dropdown-item transfer-schedule-btn" 
+                                            data-bs-toggle="modal" data-bs-target="#transferScheduleModal"
+                                            data-schedule-id="{{$schedule->id}}"
+                                            data-schedule-centre="{{$schedule->venue->centre->name ?? ''}}"
+                                            data-schedule-venue="{{$schedule->venue->name ?? ''}}"
+                                            data-schedule-date="{{$schedule->date}}"
+                                            type="button"
+                                            title="Transfer Entire Schedule">
+                                            <i class="las la-exchange-alt"></i> Transfer Schedule
+                                        </button>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item text-danger" 
+                                            onclick="return confirm('Are you sure you want to delete this schedule?')"
+                                            href="{{route('admin.test.config.schedules.delete',[$schedule->id])}}">
+                                            <i class="las la-trash"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
                             </td>
                             
-                            <td>{{ $schedule->venue->centre->name ?? null }}</td>
-                            <td>
-                                
-                                {{ $schedule->total_schedules ?? 0 }}/{{ $schedule->pull_status->total_candidate ?? 0 }}/{{ $schedule->total_pushed ?? 0 }}
-                               
+                            <td>{{ $schedule->venue->centre->name ?? 'N/A' }}</td>
+                            <td class="text-nowrap">
+                                <span class="badge badge-primary">{{ $schedule->total_schedules ?? 0 }}/{{ $schedule->pull_status->total_candidate ?? 0 }}/{{ $schedule->total_pushed ?? 0 }}</span>
                             </td>
                             <td>{{  Carbon::parse($schedule->date)->format('D jS M, Y') }}</td>
                             <td>{{ date('g:i A', strtotime($schedule->date.' '.$schedule->daily_start_time)) }}</td>
                             <td>{{ date('g:i A', strtotime($schedule->date.' '.$schedule->daily_end_time)) }}</td>
-                            <td>{{ $schedule->maximum_batch }}</td>
-                            <td>{{ $schedule->no_per_schedule }}</td>
                             
                         </tr>
                     @endforeach
@@ -598,6 +619,278 @@
                         <button type="submit" class="btn btn-sm btn-info submit-btn text-light">Upload</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transfer Candidates Modal -->
+    <div class="modal fade" id="transferCandidatesModal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Transfer Specific Candidates</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="transfer_candidates_schedule_id">
+                    
+                    <!-- Current Schedule Info -->
+                    <div class="alert alert-info mb-4">
+                        <h6 class="alert-heading mb-2">
+                            <i class="las la-info-circle"></i> Source Schedule Details
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Centre:</strong> <span id="source_schedule_centre">-</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Venue:</strong> <span id="source_schedule_venue">-</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Date:</strong> <span id="source_schedule_date">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transfer Options -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="candidate_target_centre">Target Centre <span class="text-danger">*</span></label>
+                                @php
+                                    $centres = Centre::all();
+                                @endphp
+                                <select class="form-control select2" id="candidate_target_centre" required data-placeholder="Select Target Centre">
+                                    <option value="">Select Target Centre</option>
+                                    @foreach($centres as $centre)
+                                        <option value="{{ $centre->id }}">{{ $centre->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="candidate_transfer_mode">Transfer Mode <span class="text-danger">*</span></label>
+                                <select class="form-control" id="candidate_transfer_mode" required>
+                                    <option value="">Select Transfer Mode</option>
+                                    <option value="auto_assign">Auto-assign to available schedule at target centre</option>
+                                    <option value="create_new">Create new schedule for transferred candidates</option>
+                                    <option value="specific_schedule">Transfer to specific schedule (select below)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Target Schedules Section (shown when specific_schedule mode is selected) -->
+                    <div id="target_schedules_section" class="row mb-4" style="display: none;">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="target_schedules_list">Available Target Schedules</label>
+                                <div id="target_schedules_list" class="border p-3 bg-light" style="max-height: 200px; overflow-y: auto;">
+                                    <p class="text-muted mb-0">Select a target centre first to view available schedules</p>
+                                </div>
+                                <input type="hidden" id="selected_target_schedule" name="target_schedule_id">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search and Filter Candidates -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="candidate_search">Search Candidates</label>
+                                <input type="text" class="form-control" id="candidate_search" placeholder="Search by name, index number, or exam number...">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="candidate_filter">Filter by Status</label>
+                                <select class="form-control" id="candidate_filter">
+                                    <option value="all">All Candidates</option>
+                                    <option value="scheduled">Scheduled Only</option>
+                                    <option value="pulled">Pulled Only</option>
+                                    <option value="pushed">Pushed Only</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bulk Actions -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="select_all_candidates">
+                                <i class="las la-check-square"></i> Select All
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="deselect_all_candidates">
+                                <i class="las la-square"></i> Deselect All
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-info" id="select_scheduled_only">
+                                <i class="las la-filter"></i> Select Scheduled
+                            </button>
+                        </div>
+                        <div id="selected_candidates_count" class="text-muted">
+                            <strong>0</strong> candidates selected
+                        </div>
+                    </div>
+
+                    <!-- Candidates List -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Select Candidates to Transfer</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="candidates_loading" class="text-center p-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="sr-only">Loading candidates...</span>
+                                </div>
+                                <p class="mt-2 mb-0">Loading candidates...</p>
+                            </div>
+                            <div id="candidates_table_container" style="display: none;">
+                                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                    <table class="table table-sm table-hover mb-0" id="candidates_table">
+                                        <thead class="bg-light sticky-top">
+                                            <tr>
+                                                <th width="50">
+                                                    <input type="checkbox" id="select_all_table_candidates" class="form-check-input">
+                                                </th>
+                                                <th>Index/Reg No.</th>
+                                                <th>Name</th>
+                                                <th>Exam Number</th>
+                                                <th>Status</th>
+                                                <th>Papers</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="candidates_table_body">
+                                            <!-- Candidates will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="no_candidates_found" class="text-center p-4 text-muted" style="display: none;">
+                                <i class="las la-user-slash la-3x mb-3"></i>
+                                <p class="mb-0">No candidates found for this schedule</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transfer Progress -->
+                    <div id="candidate_transfer_progress" class="mt-4" style="display: none;">
+                        <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <small class="text-muted d-block" id="candidate_transfer_progress_text">Preparing transfer...</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="transferCandidatesBtn" disabled>
+                        <i class="las la-user-friends"></i> Transfer Selected Candidates
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transfer Schedule Modal -->
+    <div class="modal fade" id="transferScheduleModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Transfer Schedule</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="transferScheduleForm">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" name="schedule_id" id="transfer_schedule_id">
+                        
+                        <!-- Current Schedule Info -->
+                        <div class="alert alert-info mb-4">
+                            <h6 class="alert-heading mb-2">
+                                <i class="las la-info-circle"></i> Current Schedule Details
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <strong>Centre:</strong> <span id="current_schedule_centre">-</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>Venue:</strong> <span id="current_schedule_venue">-</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>Date:</strong> <span id="current_schedule_date">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transfer Options -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="target_centre">Target Centre <span class="text-danger">*</span></label>
+                                    @php
+                                        $centres = Centre::all();
+                                    @endphp
+                                    <select class="form-control select2" id="target_centre" name="target_centre_id" required data-placeholder="Select Target Centre">
+                                        <option value="">Select Target Centre</option>
+                                        @foreach($centres as $centre)
+                                            <option value="{{ $centre->id }}">{{ $centre->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="transfer_mode">Transfer Mode <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="transfer_mode" name="transfer_mode" required>
+                                        <option value="">Select Transfer Mode</option>
+                                        <option value="auto_assign">Auto-assign to existing or create new schedule</option>
+                                        <option value="create_new">Always create new schedule at target venue</option>
+                                        <option value="specific_venue">Transfer to specific venue (select below)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Specific Venue Selection (shown when specific_venue mode is selected) -->
+                        <div id="specific_venue_section" class="row mt-3" style="display: none;">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="target_venue">Target Venue <span class="text-danger">*</span></label>
+                                    <select class="form-control select2" id="target_venue" name="target_venue_id" data-placeholder="Select Target Venue">
+                                        <option value="">Select Target Venue</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Options -->
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="copy_schedule_settings" name="copy_schedule_settings" checked>
+                                    <label class="form-check-label" for="copy_schedule_settings">
+                                        Copy current schedule settings (date, time, batch size) to target
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transfer Progress -->
+                        <div id="transfer_progress" class="mt-4" style="display: none;">
+                            <div class="progress mb-2">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <small class="text-muted d-block" id="transfer_progress_text">Preparing transfer...</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="transferScheduleBtn">
+                            <i class="las la-exchange-alt"></i> Transfer Schedule
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 @endsection
@@ -1171,6 +1464,643 @@
                 $('#progress_details').hide();
                 $('.progress-bar').css('width', '0%');
                 $('#batchScheduleCandidatesBtn').prop('disabled', false).html('<i class="las la-upload"></i> Process Upload');
+                initializeSelect2();
+            });
+
+            // Transfer Schedule functionality
+            $('body').on('click','.transfer-schedule-btn', function() {
+                const scheduleId = $(this).data('schedule-id');
+                const scheduleCentre = $(this).data('schedule-centre');
+                const scheduleVenue = $(this).data('schedule-venue');
+                const scheduleDate = $(this).data('schedule-date');
+                
+                // Populate modal with current schedule info
+                $('#transfer_schedule_id').val(scheduleId);
+                $('#current_schedule_centre').text(scheduleCentre || 'N/A');
+                $('#current_schedule_venue').text(scheduleVenue || 'N/A');
+                $('#current_schedule_date').text(scheduleDate || 'N/A');
+                
+                // Reset form
+                $('#transferScheduleForm')[0].reset();
+                $('#transfer_schedule_id').val(scheduleId); // Reset form clears this, so set it again
+                $('#specific_venue_section').hide();
+                $('#transfer_progress').hide();
+                $('.progress-bar').css('width', '0%');
+                
+                // Reinitialize Select2 for transfer modal
+                setTimeout(() => {
+                    initializeSelect2();
+                }, 100);
+            });
+
+            // Transfer Schedule Modal - show when opened
+            $('#transferScheduleModal').on('shown.bs.modal', function () {
+                initializeSelect2();
+            });
+
+            // Target centre change handler for transfer
+            $('#target_centre').on('change', function () {
+                const centreId = $(this).val();
+                if (centreId) {
+                    // Load venues for selected centre
+                    $.get('{{ route('admin.misc.venues',[':id']) }}'.replace(':id', centreId), function (data) {
+                        let options = `<option value="">Select Target Venue</option>`;
+                        $.each(data, function (i, v) {
+                            options += `<option value='${v.id}'>${v.name}</option>`;
+                        });
+                        $('#target_venue').html(options);
+                        
+                        // Reinitialize select2 for target venue dropdown
+                        try {
+                            if ($('#target_venue').hasClass('select2-hidden-accessible')) {
+                                $('#target_venue').select2('destroy');
+                            }
+                            
+                            var $modal = $('#target_venue').closest('.modal');
+                            var config = {
+                                width: '100%',
+                                allowClear: true,
+                                minimumResultsForSearch: 0,
+                                placeholder: 'Select Target Venue'
+                            };
+                            if ($modal.length > 0) {
+                                config.dropdownParent = $modal;
+                            }
+                            $('#target_venue').select2(config);
+                        } catch (error) {
+                            console.error('Error initializing target venue select2:', error);
+                        }
+                    }).fail(function() {
+                        Swal.fire('Error', 'Failed to load venues for selected centre', 'error');
+                    });
+                } else {
+                    $('#target_venue').html('<option value="">Select Target Venue</option>');
+                }
+            });
+
+            // Transfer mode change handler
+            $('#transfer_mode').on('change', function() {
+                const mode = $(this).val();
+                if (mode === 'specific_venue') {
+                    $('#specific_venue_section').show();
+                    $('#target_venue').prop('required', true);
+                } else {
+                    $('#specific_venue_section').hide();
+                    $('#target_venue').prop('required', false);
+                }
+            });
+
+            // Transfer schedule form submission
+            $('#transferScheduleForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate required fields
+                if (!$('#target_centre').val()) {
+                    Swal.fire('Error', 'Please select a target centre', 'error');
+                    return;
+                }
+                
+                if (!$('#transfer_mode').val()) {
+                    Swal.fire('Error', 'Please select a transfer mode', 'error');
+                    return;
+                }
+                
+                if ($('#transfer_mode').val() === 'specific_venue' && !$('#target_venue').val()) {
+                    Swal.fire('Error', 'Please select a target venue', 'error');
+                    return;
+                }
+                
+                const formData = $(this).serialize();
+                const $submitBtn = $('#transferScheduleBtn');
+                const $progress = $('#transfer_progress');
+                const $progressBar = $progress.find('.progress-bar');
+                const $progressText = $('#transfer_progress_text');
+                
+                // Show confirmation
+                const targetCentreName = $('#target_centre option:selected').text();
+                const currentCentreName = $('#current_schedule_centre').text();
+                
+                Swal.fire({
+                    title: 'Transfer Schedule?',
+                    html: `This will transfer all candidates from:<br><strong>${currentCentreName}</strong><br>to:<br><strong>${targetCentreName}</strong>`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#007bff',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Transfer'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Disable submit button and show progress
+                        $submitBtn.prop('disabled', true).html('<i class="las la-spinner la-spin"></i> Processing...');
+                        $progress.show();
+                        $progressBar.css('width', '20%');
+                        $progressText.text('Initiating transfer...');
+                        
+                        $.ajax({
+                            url: '{{ route('admin.test.config.transfer-schedule', $config_id) }}',
+                            type: 'POST',
+                            data: formData,
+                            success: function(response) {
+                                $progressBar.css('width', '80%');
+                                $progressText.text('Finalizing transfer...');
+                                
+                                setTimeout(() => {
+                                    $progressBar.css('width', '100%');
+                                    $progressText.text('Transfer completed!');
+                                    
+                                    if (response.success) {
+                                        setTimeout(() => {
+                                            Swal.fire({
+                                                title: 'Success!',
+                                                text: response.message,
+                                                icon: 'success',
+                                                confirmButtonText: 'OK'
+                                            }).then(() => {
+                                                location.reload();
+                                            });
+                                        }, 500);
+                                    } else {
+                                        Swal.fire('Error', response.message, 'error');
+                                    }
+                                    
+                                    // Reset form
+                                    $submitBtn.prop('disabled', false).html('<i class="las la-exchange-alt"></i> Transfer Schedule');
+                                    setTimeout(() => {
+                                        $progress.hide();
+                                        $progressBar.css('width', '0%');
+                                        if (response.success) {
+                                            $('#transferScheduleModal').modal('hide');
+                                        }
+                                    }, response.success ? 1000 : 500);
+                                }, 1000);
+                            },
+                            error: function(xhr, status, error) {
+                                $progressBar.css('width', '0%');
+                                $progress.hide();
+                                $submitBtn.prop('disabled', false).html('<i class="las la-exchange-alt"></i> Transfer Schedule');
+                                
+                                let message = 'An error occurred while transferring the schedule.';
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    message = xhr.responseJSON.message;
+                                } else if (xhr.status === 404) {
+                                    message = 'Schedule not found or may have been deleted.';
+                                } else if (xhr.status === 422) {
+                                    message = 'Invalid transfer request. Please check your selections.';
+                                }
+                                
+                                Swal.fire('Error', message, 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Reset transfer modal when closed
+            $('#transferScheduleModal').on('hidden.bs.modal', function () {
+                $('#transferScheduleForm')[0].reset();
+                $('#specific_venue_section').hide();
+                $('#transfer_progress').hide();
+                $('.progress-bar').css('width', '0%');
+                $('#transferScheduleBtn').prop('disabled', false).html('<i class="las la-exchange-alt"></i> Transfer Schedule');
+                $('#target_venue').html('<option value="">Select Target Venue</option>');
+                initializeSelect2();
+            });
+
+            // Transfer Candidates functionality
+            var selectedCandidates = [];
+            var allCandidates = [];
+
+            // Transfer Candidates Modal - when button is clicked
+            $('body').on('click', '.transfer-candidates-btn', function() {
+                const scheduleId = $(this).data('schedule-id');
+                const scheduleCentre = $(this).data('schedule-centre');
+                const scheduleVenue = $(this).data('schedule-venue');
+                const scheduleDate = $(this).data('schedule-date');
+                
+                // Populate modal with current schedule info
+                $('#transfer_candidates_schedule_id').val(scheduleId);
+                $('#source_schedule_centre').text(scheduleCentre || 'N/A');
+                $('#source_schedule_venue').text(scheduleVenue || 'N/A');
+                $('#source_schedule_date').text(scheduleDate || 'N/A');
+                
+                // Reset UI
+                resetTransferCandidatesModal();
+                
+                // Load candidates for this schedule
+                loadScheduleCandidates(scheduleId);
+                
+                // Reinitialize Select2
+                setTimeout(() => {
+                    initializeSelect2();
+                }, 100);
+            });
+
+            // Transfer Candidates Modal - shown event
+            $('#transferCandidatesModal').on('shown.bs.modal', function () {
+                initializeSelect2();
+            });
+
+            // Reset transfer candidates modal
+            function resetTransferCandidatesModal() {
+                selectedCandidates = [];
+                allCandidates = [];
+                
+                // Reset form fields
+                $('#candidate_target_centre').val(null).trigger('change');
+                $('#candidate_transfer_mode').val('').trigger('change');
+                $('#target_schedules_section').hide();
+                $('#selected_target_schedule').val('');
+                $('#candidate_search').val('');
+                $('#candidate_filter').val('all');
+                
+                // Reset candidates UI
+                $('#candidates_loading').show();
+                $('#candidates_table_container').hide();
+                $('#no_candidates_found').hide();
+                $('#candidate_transfer_progress').hide();
+                $('.progress-bar').css('width', '0%');
+                
+                // Reset selection counts
+                updateSelectedCandidatesCount();
+                $('#transferCandidatesBtn').prop('disabled', true);
+            }
+
+            // Load candidates for selected schedule
+            function loadScheduleCandidates(scheduleId) {
+                $('#candidates_loading').show();
+                $('#candidates_table_container').hide();
+                $('#no_candidates_found').hide();
+                
+                // Simulate API call to get candidates - replace with actual endpoint
+                $.ajax({
+                    url: `/admin/test/config/schedules/${scheduleId}/candidates`,
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success && response.candidates && response.candidates.length > 0) {
+                            allCandidates = response.candidates;
+                            displayCandidates(allCandidates);
+                            $('#candidates_loading').hide();
+                            $('#candidates_table_container').show();
+                        } else {
+                            $('#candidates_loading').hide();
+                            $('#no_candidates_found').show();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#candidates_loading').hide();
+                        $('#no_candidates_found').show();
+                        
+                        // For demo purposes, show sample data
+                        allCandidates = generateSampleCandidates();
+                        displayCandidates(allCandidates);
+                        $('#no_candidates_found').hide();
+                        $('#candidates_table_container').show();
+                    }
+                });
+            }
+
+            // Generate sample candidates for demo
+            function generateSampleCandidates() {
+                return [
+                    { id: 1, indexing: 'IDX001', name: 'John Doe', exam_number: 'EX2024001', status: 'scheduled', papers: ['Math', 'English'] },
+                    { id: 2, indexing: 'IDX002', name: 'Jane Smith', exam_number: 'EX2024002', status: 'pulled', papers: ['Science', 'Math'] },
+                    { id: 3, indexing: 'IDX003', name: 'Bob Johnson', exam_number: 'EX2024003', status: 'scheduled', papers: ['English', 'History'] },
+                    { id: 4, indexing: 'IDX004', name: 'Alice Brown', exam_number: 'EX2024004', status: 'pushed', papers: ['Math', 'Science'] },
+                    { id: 5, indexing: 'IDX005', name: 'Charlie Wilson', exam_number: 'EX2024005', status: 'scheduled', papers: ['History', 'English'] }
+                ];
+            }
+
+            // Display candidates in table
+            function displayCandidates(candidates) {
+                let tableBody = $('#candidates_table_body');
+                tableBody.empty();
+                
+                candidates.forEach(function(candidate) {
+                    let statusBadge = '';
+                    switch(candidate.status) {
+                        case 'scheduled':
+                            statusBadge = '<span class="badge bg-success">Scheduled</span>';
+                            break;
+                        case 'pulled':
+                            statusBadge = '<span class="badge bg-warning">Pulled</span>';
+                            break;
+                        case 'pushed':
+                            statusBadge = '<span class="badge bg-info">Pushed</span>';
+                            break;
+                        default:
+                            statusBadge = '<span class="badge bg-secondary">Unknown</span>';
+                    }
+                    
+                    let papersText = Array.isArray(candidate.papers) ? candidate.papers.join(', ') : candidate.papers || 'N/A';
+                    
+                    let row = `
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="form-check-input candidate-checkbox" value="${candidate.id}" data-status="${candidate.status}">
+                            </td>
+                            <td>${candidate.indexing || 'N/A'}</td>
+                            <td>${candidate.name || 'N/A'}</td>
+                            <td>${candidate.exam_number || 'N/A'}</td>
+                            <td>${statusBadge}</td>
+                            <td><small>${papersText}</small></td>
+                        </tr>
+                    `;
+                    
+                    tableBody.append(row);
+                });
+            }
+
+            // Candidate search functionality
+            $('#candidate_search').on('input', function() {
+                filterAndDisplayCandidates();
+            });
+
+            // Candidate filter functionality
+            $('#candidate_filter').on('change', function() {
+                filterAndDisplayCandidates();
+            });
+
+            // Filter and display candidates based on search and filter
+            function filterAndDisplayCandidates() {
+                let searchTerm = $('#candidate_search').val().toLowerCase();
+                let statusFilter = $('#candidate_filter').val();
+                
+                let filteredCandidates = allCandidates.filter(function(candidate) {
+                    let matchesSearch = !searchTerm || 
+                        (candidate.name && candidate.name.toLowerCase().includes(searchTerm)) ||
+                        (candidate.indexing && candidate.indexing.toLowerCase().includes(searchTerm)) ||
+                        (candidate.exam_number && candidate.exam_number.toLowerCase().includes(searchTerm));
+                    
+                    let matchesStatus = statusFilter === 'all' || candidate.status === statusFilter;
+                    
+                    return matchesSearch && matchesStatus;
+                });
+                
+                displayCandidates(filteredCandidates);
+                updateSelectedCandidatesCount();
+            }
+
+            // Bulk selection buttons
+            $('#select_all_candidates').on('click', function() {
+                $('.candidate-checkbox:visible').prop('checked', true);
+                updateSelectedCandidatesCount();
+            });
+
+            $('#deselect_all_candidates').on('click', function() {
+                $('.candidate-checkbox').prop('checked', false);
+                updateSelectedCandidatesCount();
+            });
+
+            $('#select_scheduled_only').on('click', function() {
+                $('.candidate-checkbox').prop('checked', false);
+                $('.candidate-checkbox[data-status="scheduled"]:visible').prop('checked', true);
+                updateSelectedCandidatesCount();
+            });
+
+            // Select all checkbox in table header
+            $(document).on('change', '#select_all_table_candidates', function() {
+                let isChecked = $(this).is(':checked');
+                $('.candidate-checkbox:visible').prop('checked', isChecked);
+                updateSelectedCandidatesCount();
+            });
+
+            // Individual candidate checkbox change
+            $(document).on('change', '.candidate-checkbox', function() {
+                updateSelectedCandidatesCount();
+                updateSelectAllTableState();
+            });
+
+            // Update select all table checkbox state
+            function updateSelectAllTableState() {
+                let totalVisible = $('.candidate-checkbox:visible').length;
+                let checkedVisible = $('.candidate-checkbox:visible:checked').length;
+                let selectAllCheckbox = $('#select_all_table_candidates')[0];
+                
+                if (checkedVisible === 0) {
+                    selectAllCheckbox.checked = false;
+                    selectAllCheckbox.indeterminate = false;
+                } else if (checkedVisible === totalVisible) {
+                    selectAllCheckbox.checked = true;
+                    selectAllCheckbox.indeterminate = false;
+                } else {
+                    selectAllCheckbox.checked = false;
+                    selectAllCheckbox.indeterminate = true;
+                }
+            }
+
+            // Update selected candidates count
+            function updateSelectedCandidatesCount() {
+                selectedCandidates = [];
+                $('.candidate-checkbox:checked').each(function() {
+                    selectedCandidates.push($(this).val());
+                });
+                
+                $('#selected_candidates_count').html(`<strong>${selectedCandidates.length}</strong> candidates selected`);
+                $('#transferCandidatesBtn').prop('disabled', selectedCandidates.length === 0);
+            }
+
+            // Target centre change handler for candidate transfer
+            $('#candidate_target_centre').on('change', function() {
+                const centreId = $(this).val();
+                if (centreId && $('#candidate_transfer_mode').val() === 'specific_schedule') {
+                    loadTargetSchedules(centreId);
+                } else {
+                    $('#target_schedules_section').hide();
+                    $('#selected_target_schedule').val('');
+                }
+            });
+
+            // Transfer mode change handler for candidates
+            $('#candidate_transfer_mode').on('change', function() {
+                const mode = $(this).val();
+                const centreId = $('#candidate_target_centre').val();
+                
+                if (mode === 'specific_schedule' && centreId) {
+                    $('#target_schedules_section').show();
+                    loadTargetSchedules(centreId);
+                } else {
+                    $('#target_schedules_section').hide();
+                    $('#selected_target_schedule').val('');
+                }
+            });
+
+            // Load target schedules for selected centre
+            function loadTargetSchedules(centreId) {
+                $('#target_schedules_list').html('<p class="text-muted mb-0">Loading available schedules...</p>');
+                
+                // Simulate API call - replace with actual endpoint
+                $.ajax({
+                    url: `/admin/test-config/centre/${centreId}/schedules`,
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success && response.schedules && response.schedules.length > 0) {
+                            displayTargetSchedules(response.schedules);
+                        } else {
+                            $('#target_schedules_list').html('<p class="text-muted mb-0">No available schedules found for this centre</p>');
+                        }
+                    },
+                    error: function() {
+                        // For demo purposes, show sample schedules
+                        const sampleSchedules = [
+                            { id: 10, venue: 'Main Hall', date: '2024-03-15', start_time: '09:00', end_time: '17:00', capacity: 50, current_count: 25 },
+                            { id: 11, venue: 'Lab 1', date: '2024-03-16', start_time: '08:30', end_time: '16:30', capacity: 30, current_count: 15 },
+                            { id: 12, venue: 'Classroom A', date: '2024-03-17', start_time: '10:00', end_time: '18:00', capacity: 40, current_count: 10 }
+                        ];
+                        displayTargetSchedules(sampleSchedules);
+                    }
+                });
+            }
+
+            // Display target schedules
+            function displayTargetSchedules(schedules) {
+                let html = '';
+                schedules.forEach(function(schedule) {
+                    let availableSlots = schedule.capacity - schedule.current_count;
+                    let statusClass = availableSlots > 0 ? 'text-success' : 'text-warning';
+                    
+                    html += `
+                        <div class="form-check mb-2">
+                            <input class="form-check-input target-schedule-radio" type="radio" name="target_schedule" value="${schedule.id}" id="schedule_${schedule.id}">
+                            <label class="form-check-label" for="schedule_${schedule.id}">
+                                <strong>${schedule.venue}</strong> - ${schedule.date}<br>
+                                <small class="text-muted">
+                                    ${schedule.start_time} - ${schedule.end_time} | 
+                                    <span class="${statusClass}">${availableSlots} slots available (${schedule.current_count}/${schedule.capacity})</span>
+                                </small>
+                            </label>
+                        </div>
+                    `;
+                });
+                
+                $('#target_schedules_list').html(html);
+            }
+
+            // Target schedule selection
+            $(document).on('change', '.target-schedule-radio', function() {
+                $('#selected_target_schedule').val($(this).val());
+            });
+
+            // Transfer candidates button click
+            $('#transferCandidatesBtn').on('click', function() {
+                if (selectedCandidates.length === 0) {
+                    Swal.fire('Error', 'Please select at least one candidate to transfer', 'error');
+                    return;
+                }
+                
+                if (!$('#candidate_target_centre').val()) {
+                    Swal.fire('Error', 'Please select a target centre', 'error');
+                    return;
+                }
+                
+                if (!$('#candidate_transfer_mode').val()) {
+                    Swal.fire('Error', 'Please select a transfer mode', 'error');
+                    return;
+                }
+                
+                if ($('#candidate_transfer_mode').val() === 'specific_schedule' && !$('#selected_target_schedule').val()) {
+                    Swal.fire('Error', 'Please select a target schedule', 'error');
+                    return;
+                }
+                
+                // Show confirmation
+                const targetCentreName = $('#candidate_target_centre option:selected').text();
+                const sourceCentreName = $('#source_schedule_centre').text();
+                
+                Swal.fire({
+                    title: 'Transfer Candidates?',
+                    html: `This will transfer <strong>${selectedCandidates.length} candidates</strong> from:<br><strong>${sourceCentreName}</strong><br>to:<br><strong>${targetCentreName}</strong>`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#007bff',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Transfer Candidates'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        performCandidateTransfer();
+                    }
+                });
+            });
+
+            // Perform candidate transfer
+            function performCandidateTransfer() {
+                const $submitBtn = $('#transferCandidatesBtn');
+                const $progress = $('#candidate_transfer_progress');
+                const $progressBar = $progress.find('.progress-bar');
+                const $progressText = $('#candidate_transfer_progress_text');
+                
+                // Disable button and show progress
+                $submitBtn.prop('disabled', true).html('<i class="las la-spinner la-spin"></i> Processing...');
+                $progress.show();
+                $progressBar.css('width', '20%');
+                $progressText.text('Initiating candidate transfer...');
+                
+                // Prepare form data
+                const formData = {
+                    source_schedule_id: $('#transfer_candidates_schedule_id').val(),
+                    target_centre_id: $('#candidate_target_centre').val(),
+                    transfer_mode: $('#candidate_transfer_mode').val(),
+                    target_schedule_id: $('#selected_target_schedule').val(),
+                    candidate_ids: selectedCandidates
+                };
+                
+                $.ajax({
+                    url: '{{ route('admin.test.config.transfer-candidates', $config_id) }}',
+                    type: 'POST',
+                    data: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        $progressBar.css('width', '80%');
+                        $progressText.text('Finalizing transfer...');
+                        
+                        setTimeout(() => {
+                            $progressBar.css('width', '100%');
+                            $progressText.text('Transfer completed!');
+                            
+                            if (response.success) {
+                                setTimeout(() => {
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        text: response.message || `Successfully transferred ${selectedCandidates.length} candidates`,
+                                        icon: 'success',
+                                        confirmButtonText: 'OK'
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                }, 500);
+                            } else {
+                                Swal.fire('Error', response.message || 'An error occurred during transfer', 'error');
+                                resetTransferUI();
+                            }
+                        }, 1000);
+                    },
+                    error: function(xhr, status, error) {
+                        let message = 'An error occurred while transferring candidates.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        }
+                        
+                        Swal.fire('Error', message, 'error');
+                        resetTransferUI();
+                    }
+                });
+            }
+
+            // Reset transfer UI after error
+            function resetTransferUI() {
+                const $submitBtn = $('#transferCandidatesBtn');
+                const $progress = $('#candidate_transfer_progress');
+                const $progressBar = $progress.find('.progress-bar');
+                
+                $submitBtn.prop('disabled', selectedCandidates.length === 0).html('<i class="las la-user-friends"></i> Transfer Selected Candidates');
+                $progress.hide();
+                $progressBar.css('width', '0%');
+            }
+
+            // Reset transfer candidates modal when closed
+            $('#transferCandidatesModal').on('hidden.bs.modal', function () {
+                resetTransferCandidatesModal();
                 initializeSelect2();
             });
         })

@@ -7,6 +7,7 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="author" content="{{ org_acronym() }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{!! logo() !!}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('candidate/assets/images/favicon.png') }}" type="image/x-icon">
     <title>{{ org_acronym() }} CBT Exam</title>
@@ -139,6 +140,13 @@
 <script src="{{ asset('candidate/assets/js/tooltip-init.js') }}"></script>
 
 <script>
+// Setup CSRF token for all AJAX requests
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
 // Global error handler for Tagify issues
 window.addEventListener('error', function(e) {
     if (e.message && (e.message.includes('tagify') || e.message.includes('getAttribute'))) {

@@ -1883,6 +1883,573 @@ class TestConfigController extends Controller
         return null;
     }
 
+    /**
+     * Transfer schedule candidates to another centre
+     */
+    public function transferScheduleToCentre(Request $request, $config_id)
+    {
+        $request->validate([
+            'schedule_id' => 'required|exists:schedulings,id',
+            'target_centre_id' => 'required|exists:centres,id',
+            'transfer_mode' => 'required|in:auto_assign,create_new,specific_venue',
+            'target_venue_id' => 'required_if:transfer_mode,specific_venue|exists:venues,id',
+            'copy_schedule_settings' => 'boolean'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $scheduleId = $request->schedule_id;
+            $targetCentreId = $request->target_centre_id;
+            $transferMode = $request->transfer_mode;
+            $targetVenueId = $request->target_venue_id;
+            $copySettings = $request->boolean('copy_schedule_settings', true);
+
+            // Get the original schedule
+            $originalSchedule = Scheduling::with(['venue.centre'])->findOrFail($scheduleId);
+            
+            // Log transfer initiation
+            Log::info('Transfer schedule initiated', [
+                'schedule_id' => $scheduleId,
+                'target_centre_id' => $targetCentreId,
+                'transfer_mode' => $transferMode,
+                'original_centre' => $originalSchedule->venue->centre->name ?? 'Unknown'
+            ]);
+
+            // Check for candidates in both tables
+            $candidateSubjects = CandidateSubject::where('schedule_id', $scheduleId)->get();
+            $scheduledCandidates = ScheduledCandidate::where('schedule_id', $scheduleId)->get();
+
+            Log::info('Transfer schedule candidate check', [
+                'schedule_id' => $scheduleId,
+                'candidate_subjects_count' => $candidateSubjects->count(),
+                'scheduled_candidates_count' => $scheduledCandidates->count()
+            ]);
+
+            // Ensure there are candidates to transfer
+            if ($candidateSubjects->isEmpty() && $scheduledCandidates->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "No candidates found in this schedule to transfer. Checked candidate_subjects ({$candidateSubjects->count()}) and scheduled_candidates ({$scheduledCandidates->count()}) tables."
+                ], 400);
+            }
+
+            // Find or create target schedule based on transfer mode
+            $targetSchedule = $this->findOrCreateTargetSchedule(
+                $config_id, 
+                $targetCentreId, 
+                $targetVenueId, 
+                $transferMode, 
+                $originalSchedule, 
+                $copySettings
+            );
+
+            if (!$targetSchedule) {
+                throw new Exception('Could not find or create target schedule');
+            }
+
+            $transferredCount = 0;
+
+            // Transfer candidate subjects
+            if ($candidateSubjects->isNotEmpty()) {
+                $updated = CandidateSubject::where('schedule_id', $scheduleId)
+                    ->update(['schedule_id' => $targetSchedule->id]);
+                $transferredCount += $updated;
+                
+                Log::info('Transferred candidate subjects', [
+                    'count' => $updated,
+                    'from_schedule' => $scheduleId,
+                    'to_schedule' => $targetSchedule->id
+                ]);
+            }
+
+            // Transfer scheduled candidates and update time controls
+            if ($scheduledCandidates->isNotEmpty()) {
+                // Get all old scheduled candidate IDs from the original schedule
+                $oldScheduledCandidateIds = ScheduledCandidate::where('schedule_id', $scheduleId)->pluck('id')->toArray();
+                
+                // Update scheduled candidates
+                $scheduledUpdated = ScheduledCandidate::where('schedule_id', $scheduleId)
+                    ->update(['schedule_id' => $targetSchedule->id]);
+                $transferredCount += $scheduledUpdated;
+
+                // Log each transferred scheduled candidate
+                $newScheduledCandidates = ScheduledCandidate::where('schedule_id', $targetSchedule->id)
+                    ->whereIn('candidate_id', $scheduledCandidates->pluck('candidate_id'))
+                    ->get();
+
+                foreach ($newScheduledCandidates as $scheduledCandidate) {
+                    Log::info('Transferred scheduled candidate', [
+                        'scheduled_candidate_id' => $scheduledCandidate->id,
+                        'candidate_id' => $scheduledCandidate->candidate_id,
+                        'from_schedule' => $scheduleId,
+                        'to_schedule' => $targetSchedule->id
+                    ]);
+                }
+
+                // Find time controls that reference the old scheduled candidates
+                $timeControls = TimeControl::whereIn('scheduled_candidate_id', $oldScheduledCandidateIds)->get();
+                
+                Log::info('Found time controls to update', [
+                    'count' => $timeControls->count(),
+                    'old_scheduled_candidate_ids' => $oldScheduledCandidateIds
+                ]);
+
+                // Update time controls to point to new scheduled candidates
+                foreach ($timeControls as $timeControl) {
+                    // Find the corresponding new scheduled candidate
+                    $oldScheduledCandidate = ScheduledCandidate::find($timeControl->scheduled_candidate_id);
+                    if ($oldScheduledCandidate) {
+                        $newScheduledCandidate = ScheduledCandidate::where('schedule_id', $targetSchedule->id)
+                            ->where('candidate_id', $oldScheduledCandidate->candidate_id)
+                            ->first();
+                        
+                        if ($newScheduledCandidate) {
+                            $timeControl->update([
+                                'scheduled_candidate_id' => $newScheduledCandidate->id,
+                                'test_config_id' => $config_id // Ensure correct test config
+                            ]);
+                            
+                            Log::info('Updated time control', [
+                                'time_control_id' => $timeControl->id,
+                                'old_scheduled_candidate_id' => $timeControl->scheduled_candidate_id,
+                                'new_scheduled_candidate_id' => $newScheduledCandidate->id
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+
+            $targetCentreName = \App\Models\Centre::find($targetCentreId)->name ?? 'Unknown Centre';
+            $originalCentreName = $originalSchedule->venue->centre->name ?? 'Unknown Centre';
+
+            Log::info('Transfer schedule completed successfully', [
+                'transferred_count' => $transferredCount,
+                'from_centre' => $originalCentreName,
+                'to_centre' => $targetCentreName,
+                'target_schedule_id' => $targetSchedule->id
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully transferred {$transferredCount} candidate(s) from {$originalCentreName} to {$targetCentreName}."
+            ]);
+
+        } catch (Exception $e) {
+            DB::rollback();
+            
+            Log::error('Transfer schedule failed', [
+                'error' => $e->getMessage(),
+                'schedule_id' => $request->schedule_id ?? 'unknown',
+                'target_centre_id' => $request->target_centre_id ?? 'unknown'
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error transferring schedule: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Find or create target schedule for transfer
+     */
+    private function findOrCreateTargetSchedule($configId, $targetCentreId, $targetVenueId, $transferMode, $originalSchedule, $copySettings)
+    {
+        // Get target centre and its venues
+        $targetCentre = \App\Models\Centre::with('venues')->findOrFail($targetCentreId);
+        
+        if ($transferMode === 'specific_venue') {
+            // Use specific venue
+            $targetVenue = \App\Models\Venue::where('id', $targetVenueId)
+                ->where('centre_id', $targetCentreId)
+                ->firstOrFail();
+        } else {
+            // Use first available venue from target centre
+            $targetVenue = $targetCentre->venues->first();
+            if (!$targetVenue) {
+                throw new Exception('No venues found for target centre');
+            }
+        }
+
+        if ($transferMode === 'auto_assign') {
+            // Try to find existing schedule for the same date and venue
+            $existingSchedule = Scheduling::where('test_config_id', $configId)
+                ->where('venue_id', $targetVenue->id)
+                ->where('date', $originalSchedule->date)
+                ->first();
+
+            if ($existingSchedule) {
+                Log::info('Found existing schedule for auto assign', [
+                    'schedule_id' => $existingSchedule->id,
+                    'venue_id' => $targetVenue->id
+                ]);
+                return $existingSchedule;
+            }
+        }
+
+        // Create new schedule (for create_new mode or when auto_assign found no existing schedule)
+        $newSchedule = new Scheduling();
+        $newSchedule->test_config_id = $configId;
+        $newSchedule->venue_id = $targetVenue->id;
+        
+        if ($copySettings) {
+            // Copy settings from original schedule
+            $newSchedule->date = $originalSchedule->date;
+            $newSchedule->maximum_batch = $originalSchedule->maximum_batch;
+            $newSchedule->no_per_schedule = $originalSchedule->no_per_schedule;
+            $newSchedule->daily_start_time = $originalSchedule->daily_start_time;
+            $newSchedule->daily_end_time = $originalSchedule->daily_end_time;
+        } else {
+            // Use default settings
+            $newSchedule->date = $originalSchedule->date; // Always copy date
+            $newSchedule->maximum_batch = 1;
+            $newSchedule->no_per_schedule = 50;
+            $newSchedule->daily_start_time = '08:00';
+            $newSchedule->daily_end_time = '17:00';
+        }
+        
+        $newSchedule->save();
+
+        Log::info('Created new target schedule', [
+            'schedule_id' => $newSchedule->id,
+            'venue_id' => $targetVenue->id,
+            'copy_settings' => $copySettings
+        ]);
+
+        return $newSchedule;
+    }
+
+    /**
+     * Transfer specific candidates from one schedule to another centre
+     */
+    public function transferCandidates(Request $request, $config_id)
+    {
+        $request->validate([
+            'source_schedule_id' => 'required|exists:schedulings,id',
+            'target_centre_id' => 'required|exists:centres,id',
+            'transfer_mode' => 'required|in:auto_assign,create_new,specific_schedule',
+            'target_schedule_id' => 'required_if:transfer_mode,specific_schedule|exists:schedulings,id',
+            'candidate_ids' => 'required|array|min:1',
+            'candidate_ids.*' => 'required|integer'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $sourceScheduleId = $request->source_schedule_id;
+            $targetCentreId = $request->target_centre_id;
+            $transferMode = $request->transfer_mode;
+            $targetScheduleId = $request->target_schedule_id;
+            $candidateIds = $request->candidate_ids;
+
+            // Get the source schedule
+            $sourceSchedule = Scheduling::with(['venue.centre'])->findOrFail($sourceScheduleId);
+            
+            // Log transfer initiation
+            Log::info('Transfer candidates initiated', [
+                'source_schedule_id' => $sourceScheduleId,
+                'target_centre_id' => $targetCentreId,
+                'transfer_mode' => $transferMode,
+                'candidate_count' => count($candidateIds),
+                'source_centre' => $sourceSchedule->venue->centre->name ?? 'Unknown'
+            ]);
+
+            // Validate that all candidate IDs exist in the source schedule
+            $scheduledCandidates = ScheduledCandidate::where('schedule_id', $sourceScheduleId)
+                ->whereIn('candidate_id', $candidateIds)
+                ->get();
+
+            if ($scheduledCandidates->count() !== count($candidateIds)) {
+                $foundIds = $scheduledCandidates->pluck('candidate_id')->toArray();
+                $missingIds = array_diff($candidateIds, $foundIds);
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Some candidates not found in source schedule: ' . implode(', ', $missingIds)
+                ], 400);
+            }
+
+            // Determine target schedule based on transfer mode
+            if ($transferMode === 'specific_schedule') {
+                $targetSchedule = Scheduling::findOrFail($targetScheduleId);
+                
+                // Verify target schedule belongs to target centre
+                $targetVenue = $targetSchedule->venue;
+                if ($targetVenue->centre_id != $targetCentreId) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Selected target schedule does not belong to the target centre'
+                    ], 400);
+                }
+            } else {
+                // Find or create target schedule
+                $targetSchedule = $this->findOrCreateCandidateTargetSchedule(
+                    $config_id,
+                    $targetCentreId,
+                    $transferMode,
+                    $sourceSchedule
+                );
+
+                if (!$targetSchedule) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Could not find or create target schedule'
+                    ], 500);
+                }
+            }
+
+            $transferredCount = 0;
+
+            // Transfer each selected candidate
+            foreach ($scheduledCandidates as $scheduledCandidate) {
+                $candidateId = $scheduledCandidate->candidate_id;
+                $oldScheduledCandidateId = $scheduledCandidate->id;
+                
+                // Create new scheduled candidate record in target schedule
+                $newScheduledCandidate = ScheduledCandidate::create([
+                    'candidate_id' => $candidateId,
+                    'exam_type_id' => $scheduledCandidate->exam_type_id,
+                    'schedule_id' => $targetSchedule->id,
+                ]);
+
+                // Transfer candidate subjects
+                $candidateSubjects = CandidateSubject::where('scheduled_candidate_id', $oldScheduledCandidateId)->get();
+                foreach ($candidateSubjects as $candidateSubject) {
+                    CandidateSubject::create([
+                        'scheduled_candidate_id' => $newScheduledCandidate->id,
+                        'subject_id' => $candidateSubject->subject_id,
+                        'schedule_id' => $targetSchedule->id,
+                        'add_index' => $candidateSubject->add_index,
+                        'enabled' => $candidateSubject->enabled,
+                    ]);
+                }
+
+                // Transfer time controls
+                $timeControls = TimeControl::where('scheduled_candidate_id', $oldScheduledCandidateId)->get();
+                foreach ($timeControls as $timeControl) {
+                    $timeControl->update([
+                        'scheduled_candidate_id' => $newScheduledCandidate->id,
+                        'test_config_id' => $config_id
+                    ]);
+                }
+
+                // Delete old records
+                CandidateSubject::where('scheduled_candidate_id', $oldScheduledCandidateId)->delete();
+                $scheduledCandidate->delete();
+
+                $transferredCount++;
+                
+                Log::info('Transferred candidate', [
+                    'candidate_id' => $candidateId,
+                    'old_scheduled_candidate_id' => $oldScheduledCandidateId,
+                    'new_scheduled_candidate_id' => $newScheduledCandidate->id,
+                    'from_schedule' => $sourceScheduleId,
+                    'to_schedule' => $targetSchedule->id
+                ]);
+            }
+
+            DB::commit();
+
+            $targetCentreName = \App\Models\Centre::find($targetCentreId)->name ?? 'Unknown Centre';
+            $sourceCentreName = $sourceSchedule->venue->centre->name ?? 'Unknown Centre';
+
+            Log::info('Transfer candidates completed successfully', [
+                'transferred_count' => $transferredCount,
+                'from_centre' => $sourceCentreName,
+                'to_centre' => $targetCentreName,
+                'target_schedule_id' => $targetSchedule->id
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully transferred {$transferredCount} candidate(s) from {$sourceCentreName} to {$targetCentreName}."
+            ]);
+
+        } catch (Exception $e) {
+            DB::rollback();
+            
+            Log::error('Transfer candidates failed', [
+                'error' => $e->getMessage(),
+                'source_schedule_id' => $request->source_schedule_id ?? 'unknown',
+                'target_centre_id' => $request->target_centre_id ?? 'unknown',
+                'candidate_count' => count($request->candidate_ids ?? [])
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error transferring candidates: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Find or create target schedule for candidate transfer
+     */
+    private function findOrCreateCandidateTargetSchedule($configId, $targetCentreId, $transferMode, $sourceSchedule)
+    {
+        // Get target centre and its venues
+        $targetCentre = \App\Models\Centre::with('venues')->findOrFail($targetCentreId);
+        
+        if ($targetCentre->venues->isEmpty()) {
+            throw new Exception('No venues found for target centre');
+        }
+
+        // Use first available venue from target centre
+        $targetVenue = $targetCentre->venues->first();
+
+        if ($transferMode === 'auto_assign') {
+            // Try to find existing schedule for the same date and venue
+            $existingSchedule = Scheduling::where('test_config_id', $configId)
+                ->where('venue_id', $targetVenue->id)
+                ->where('date', $sourceSchedule->date)
+                ->first();
+
+            if ($existingSchedule) {
+                Log::info('Found existing schedule for candidate auto assign', [
+                    'schedule_id' => $existingSchedule->id,
+                    'venue_id' => $targetVenue->id
+                ]);
+                return $existingSchedule;
+            }
+        }
+
+        // Create new schedule
+        $newSchedule = new Scheduling();
+        $newSchedule->test_config_id = $configId;
+        $newSchedule->venue_id = $targetVenue->id;
+        $newSchedule->date = $sourceSchedule->date;
+        $newSchedule->maximum_batch = $sourceSchedule->maximum_batch;
+        $newSchedule->no_per_schedule = $sourceSchedule->no_per_schedule;
+        $newSchedule->daily_start_time = $sourceSchedule->daily_start_time;
+        $newSchedule->daily_end_time = $sourceSchedule->daily_end_time;
+        
+        $newSchedule->save();
+
+        Log::info('Created new target schedule for candidates', [
+            'schedule_id' => $newSchedule->id,
+            'venue_id' => $targetVenue->id
+        ]);
+
+        return $newSchedule;
+    }
+
+    /**
+     * Debug method to check schedule
+     */
+    public function debugSchedule($schedule_id)
+    {
+        Log::info('debugSchedule called', ['schedule_id' => $schedule_id]);
+        
+        $schedule = Scheduling::find($schedule_id);
+        if (!$schedule) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Schedule not found',
+                'schedule_id' => $schedule_id
+            ], 404);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'schedule' => $schedule,
+            'venue' => $schedule->venue,
+            'candidates_count' => ScheduledCandidate::where('schedule_id', $schedule->id)->count()
+        ]);
+    }
+    
+    /**
+     * Get candidates for a specific schedule
+     */
+    public function getScheduleCandidates(Scheduling $schedule)
+    {
+        try {
+            Log::info('getScheduleCandidates called', ['schedule_id' => $schedule->id]);
+            
+            // Validate the schedule exists and has a venue
+            if (!$schedule->venue) {
+                Log::error('Schedule has no venue', ['schedule_id' => $schedule->id]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Schedule venue not found'
+                ], 422);
+            }
+            
+            // Get scheduled candidates with their candidate details and subjects
+            $scheduledCandidates = ScheduledCandidate::where('schedule_id', $schedule->id)
+                ->with([
+                    'candidate:id,indexing,firstname,surname,other_names,gender,dob',
+                    'candidate_students.subject:id,name,subject_code'
+                ])
+                ->get();
+            
+            Log::info('Found scheduled candidates', ['count' => $scheduledCandidates->count()]);
+
+            // Transform data for the frontend
+            $candidates = $scheduledCandidates->map(function($scheduledCandidate) {
+                $candidate = $scheduledCandidate->candidate;
+                $subjects = $scheduledCandidate->candidate_students->pluck('subject.subject_code')->toArray();
+                
+                // Determine candidate status based on time controls
+                $timeControl = TimeControl::where('scheduled_candidate_id', $scheduledCandidate->id)->first();
+                $status = 'scheduled'; // default
+                
+                if ($timeControl) {
+                    if ($timeControl->pushed_at) {
+                        $status = 'pushed';
+                    } elseif ($timeControl->pulled_at) {
+                        $status = 'pulled';
+                    }
+                }
+                
+                // Build full name from available name fields
+                $nameparts = array_filter([
+                    $candidate->firstname ?? '',
+                    $candidate->other_names ?? '',
+                    $candidate->surname ?? ''
+                ]);
+                $fullName = implode(' ', $nameparts) ?: 'N/A';
+                
+                return [
+                    'id' => $candidate->id,
+                    'scheduled_candidate_id' => $scheduledCandidate->id,
+                    'indexing' => $candidate->indexing ?? 'N/A',
+                    'name' => $fullName,
+                    'exam_number' => $candidate->indexing ?? 'N/A', // Use indexing as exam number
+                    'phone' => 'N/A', // Not available in this table
+                    'email' => 'N/A', // Not available in this table
+                    'status' => $status,
+                    'papers' => $subjects
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'candidates' => $candidates,
+                'schedule_info' => [
+                    'id' => $schedule->id,
+                    'date' => $schedule->date,
+                    'venue' => $schedule->venue->name ?? 'N/A',
+                    'centre' => $schedule->venue->centre->name ?? 'N/A',
+                    'total_candidates' => $candidates->count()
+                ]
+            ]);
+            
+        } catch (Exception $e) {
+            Log::error('Error fetching schedule candidates', [
+                'schedule_id' => $schedule->id,
+                'error' => $e->getMessage()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching candidates: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function destroy(TestConfig $config): RedirectResponse
     {
         try {

@@ -65,6 +65,9 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
             Route::post('/schedules/{config}/schedule-all', [TestConfigController::class, 'scheduleAllCenters'])->name('schedules.schedule-all');
             Route::post('/schedules/{config}/batch-reschedule', [TestConfigController::class, 'batchReschedule'])->name('schedules.batch-reschedule');
             Route::post('/schedules/{config}/batch-schedule-candidates', [TestConfigControllerOptimized::class, 'batchScheduleCandidates'])->name('batch-schedule-candidates');
+            Route::post('/schedules/{config}/transfer-schedule', [TestConfigController::class, 'transferScheduleToCentre'])->name('transfer-schedule');
+            Route::post('/schedules/{config}/transfer-candidates', [TestConfigController::class, 'transferCandidates'])->name('transfer-candidates');
+            Route::get('/schedules/{schedule}/candidates', [TestConfigController::class, 'getScheduleCandidates'])->name('schedules.candidates');
             Route::get('/schedules/{scheduling}/displacement', [TestConfigController::class, 'deleteSchedule'])->name('schedules.delete');
             Route::get('/schedules/{scheduling}/remove/delete', [TestConfigController::class, 'removeAndDeleteSchedule'])->name('schedules.remove.delete');
             Route::get('/schedules/{scheduling}/others/{size}', [TestConfigController::class, 'otherSchedules'])->name('schedules.others');
@@ -168,11 +171,13 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
         Route::get('/{centre}/venues', [MiscController::class, 'venues'])->name('venues');
         Route::get('/{scheduling}/faculty/mappings', [MiscController::class, 'facultyMappings'])->name('faculty.mappings');
 
-        Route::get('/{venue}/batches/capacity', [MiscController::class, 'batchCapacity'])->name('batches.capacity');
+            Route::get('/{venue}/batches/capacity', [MiscController::class, 'batchCapacity'])->name('batches.capacity');
         Route::get('test/config/{year}/{type}/{code}', [MiscController::class, 'testConfig'])->name('test.config');
 
         Route::get('test/{config}/subjects', [MiscController::class, 'testSubjects'])->name('test.subjects');
         Route::get('test/{config}/candidates', [MiscController::class, 'testCandidates'])->name('test.candidates');
+        Route::get('/schedules/{schedule}/candidates', [MiscController::class, 'scheduleCandidates'])->name('schedule.candidates');
+        Route::get('/centre/{centre}/schedules', [MiscController::class, 'centreSchedules'])->name('centre.schedules');
     });
 
     Route::name('exams.setup.')->prefix('exams/setup')->group(function () {
