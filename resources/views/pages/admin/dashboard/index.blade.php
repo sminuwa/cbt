@@ -472,41 +472,58 @@ const DashboardCharts = {
         });
     },
     
-    // Load all charts with staggered delays for better UX
+    // Load all charts with improved staggered delays for better UX
     loadAllCharts() {
-        const charts = [
-            { id: 'scheduled-centres-chart', endpoint: 'scheduled-centres', delay: 0 },
-            { id: 'centres-pulled-chart', endpoint: 'centres-pull', delay: 200 },
-            { id: 'centres-pushed-chart', endpoint: 'centres-push', delay: 400 },
-            { id: 'candidates-attended-chart', endpoint: 'candidates-attended', delay: 600 },
-            { id: 'attendance-remarks-chart', endpoint: 'attendance-stats', delay: 800 },
-            { id: 'centre-performance-chart', endpoint: 'centre-performance', delay: 1000 },
-            { id: 'daily-activity-chart', endpoint: 'daily-activity', delay: 1200 },
-            { id: 'subject-performance-chart', endpoint: 'subject-performance', delay: 1400 },
-            { id: 'capacity-utilization-chart', endpoint: 'capacity-utilization', delay: 1600 },
-            { id: 'pie-chart1', endpoint: 'exam-status', delay: 1800 },
-            { id: 'column-chart1', endpoint: 'test-programme', delay: 2000 },
-            { id: 'bar-chart1', endpoint: 'top-scorers', delay: 2200 }
+        // Group charts by priority - load faster charts first
+        const priorityCharts = [
+            { id: 'pie-chart1', endpoint: 'exam-status', delay: 0 },
+            { id: 'daily-activity-chart', endpoint: 'daily-activity', delay: 500 },
+            { id: 'attendance-remarks-chart', endpoint: 'attendance-stats', delay: 1000 }
         ];
         
-        charts.forEach(chart => {
+        const mediumCharts = [
+            { id: 'scheduled-centres-chart', endpoint: 'scheduled-centres', delay: 1500 },
+            { id: 'centres-pulled-chart', endpoint: 'centres-pull', delay: 2000 },
+            { id: 'centres-pushed-chart', endpoint: 'centres-push', delay: 2500 },
+            { id: 'candidates-attended-chart', endpoint: 'candidates-attended', delay: 3000 },
+            { id: 'column-chart1', endpoint: 'test-programme', delay: 3500 }
+        ];
+        
+        const heavyCharts = [
+            { id: 'centre-performance-chart', endpoint: 'centre-performance', delay: 4000 },
+            { id: 'subject-performance-chart', endpoint: 'subject-performance', delay: 5000 },
+            { id: 'capacity-utilization-chart', endpoint: 'capacity-utilization', delay: 6000 },
+            { id: 'bar-chart1', endpoint: 'top-scorers', delay: 7000 }
+        ];
+        
+        const allCharts = [...priorityCharts, ...mediumCharts, ...heavyCharts];
+        
+        allCharts.forEach(chart => {
             setTimeout(() => {
                 this.loadChart(chart.id, chart.endpoint);
             }, chart.delay);
         });
     },
     
-    // Generic chart loader
+    // Generic chart loader with improved error handling
     loadChart(chartId, endpoint) {
         if ($("#" + chartId).length === 0) return;
         
         this.loadingStates[chartId] = true;
         
+        // Determine timeout based on chart complexity
+        const heavyCharts = ['centre-performance', 'subject-performance', 'capacity-utilization', 'top-scorers'];
+        const timeout = heavyCharts.includes(endpoint) ? 45000 : 20000;
+        
         $.ajax({
             url: this.apiUrls[endpoint],
             method: 'GET',
             dataType: 'json',
-            timeout: 30000,
+            timeout: timeout,
+            beforeSend: () => {
+                // Show loading indicator specific to the chart type
+                this.showLoadingWithProgress(chartId, endpoint);
+            },
             success: (response) => {
                 this.loadingStates[chartId] = false;
                 if (response.success) {
@@ -517,20 +534,71 @@ const DashboardCharts = {
             },
             error: (xhr, status, error) => {
                 this.loadingStates[chartId] = false;
-                console.error(`Chart ${chartId} loading failed:`, error);
-                this.showError(chartId, 'Failed to load chart. Please refresh the page.');
+                console.error(`Chart ${chartId} loading failed:`, status, error);
+                
+                let errorMessage = 'Failed to load chart.';
+                if (status === 'timeout') {
+                    errorMessage = 'Chart loading timed out. The system may be busy processing data.';
+                } else if (xhr.status === 500) {
+                    errorMessage = 'Server error occurred while loading chart data.';
+                } else if (xhr.status === 0) {
+                    errorMessage = 'Network connection issue. Please check your internet connection.';
+                }
+                
+                this.showError(chartId, errorMessage);
             }
         });
     },
     
-    // Show error message
+    // Show enhanced loading indicator
+    showLoadingWithProgress(chartId, endpoint) {
+        const heavyCharts = ['centre-performance', 'subject-performance', 'capacity-utilization', 'top-scorers'];
+        const isHeavy = heavyCharts.includes(endpoint);
+        const message = isHeavy ? 'Processing complex data...' : 'Loading chart data...';
+        
+        document.getElementById(chartId).innerHTML = 
+            `<div class="chart-loading">
+                <i class="las la-spinner la-3x"></i>
+                <p>${message}</p>
+                ${isHeavy ? '<small>This may take a moment for complex datasets</small>' : ''}
+            </div>`;
+    },
+    
+    // Show error message with retry option
     showError(chartId, message) {
         document.getElementById(chartId).innerHTML = 
             `<div class="chart-error">
                 <i class="las la-exclamation-triangle la-3x mb-3"></i>
                 <p>Error loading chart</p>
                 <small>${message}</small>
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-primary" onclick="DashboardCharts.retryChart('${chartId}')">Retry</button>
+                </div>
             </div>`;
+    },
+    
+    // Retry loading a specific chart
+    retryChart(chartId) {
+        // Find the endpoint for this chart
+        const chartMappings = {
+            'scheduled-centres-chart': 'scheduled-centres',
+            'centres-pulled-chart': 'centres-pull',
+            'centres-pushed-chart': 'centres-push',
+            'candidates-attended-chart': 'candidates-attended',
+            'attendance-remarks-chart': 'attendance-stats',
+            'centre-performance-chart': 'centre-performance',
+            'daily-activity-chart': 'daily-activity',
+            'subject-performance-chart': 'subject-performance',
+            'capacity-utilization-chart': 'capacity-utilization',
+            'pie-chart1': 'exam-status',
+            'column-chart1': 'test-programme',
+            'bar-chart1': 'top-scorers'
+        };
+        
+        const endpoint = chartMappings[chartId];
+        if (endpoint) {
+            this.loadChart(chartId, endpoint);
+        }
     },
     
     // Show no data message

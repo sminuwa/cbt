@@ -19,6 +19,7 @@ use App\Models\Attendance;
 use App\Models\Centre;
 use App\Models\Venue;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardApiController extends Controller
 {
@@ -141,28 +142,54 @@ class DashboardApiController extends Controller
     public function centrePerformance()
     {
         try {
-            $data = DB::select("
-                SELECT 
-                    c.name as centre_name,
-                    c.location as centre_location,
-                    COUNT(DISTINCT sc.candidate_id) as total_candidates,
-                    COUNT(DISTINCT CASE WHEN tc.completed = 1 THEN sc.candidate_id END) as completed_candidates,
-                    ROUND(AVG(s.point_scored), 2) as average_score,
-                    COUNT(s.id) as total_responses
-                FROM centres c
-                LEFT JOIN venues v ON v.centre_id = c.id
-                LEFT JOIN schedulings sch ON sch.venue_id = v.id
-                LEFT JOIN scheduled_candidates sc ON sc.schedule_id = sch.id
-                LEFT JOIN time_controls tc ON tc.scheduled_candidate_id = sc.id
-                LEFT JOIN scores s ON s.scheduled_candidate_id = sc.id
-                GROUP BY c.id, c.name, c.location
-                HAVING total_candidates > 0
-                ORDER BY average_score DESC
-            ");
+            // Cache this heavy query for 10 minutes
+            $data = Cache::remember('dashboard_centre_performance', 600, function () {
+                try {
+                    return DB::select("
+                        SELECT 
+                            c.name as centre_name,
+                            c.location as centre_location,
+                            COUNT(DISTINCT sc.candidate_id) as total_candidates,
+                            COUNT(DISTINCT CASE WHEN tc.completed = 1 THEN sc.candidate_id END) as completed_candidates,
+                            ROUND(AVG(s.point_scored), 2) as average_score,
+                            COUNT(s.id) as total_responses
+                        FROM centres c
+                        INNER JOIN venues v ON v.centre_id = c.id
+                        INNER JOIN schedulings sch ON sch.venue_id = v.id
+                        INNER JOIN scheduled_candidates sc ON sc.schedule_id = sch.id
+                        LEFT JOIN time_controls tc ON tc.scheduled_candidate_id = sc.id
+                        LEFT JOIN scores s ON s.scheduled_candidate_id = sc.id
+                        WHERE sc.id IS NOT NULL
+                        GROUP BY c.id, c.name, c.location
+                        HAVING total_candidates > 0
+                        ORDER BY average_score DESC
+                        LIMIT 20
+                    ");
+                } catch (\Exception $e) {
+                    // Fallback to simpler query if complex one fails
+                    return DB::select("
+                        SELECT 
+                            c.name as centre_name,
+                            c.location as centre_location,
+                            COUNT(DISTINCT sc.candidate_id) as total_candidates,
+                            0 as completed_candidates,
+                            0 as average_score,
+                            0 as total_responses
+                        FROM centres c
+                        INNER JOIN venues v ON v.centre_id = c.id
+                        INNER JOIN schedulings sch ON sch.venue_id = v.id
+                        INNER JOIN scheduled_candidates sc ON sc.schedule_id = sch.id
+                        GROUP BY c.id, c.name, c.location
+                        HAVING total_candidates > 0
+                        ORDER BY total_candidates DESC
+                        LIMIT 15
+                    ");
+                }
+            });
 
             return response()->json(['success' => true, 'data' => $data]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'error' => 'Unable to load centre performance data. Please try again later.']);
         }
     }
 
@@ -189,46 +216,74 @@ class DashboardApiController extends Controller
     public function subjectPerformance()
     {
         try {
-            $data = DB::select("
-                SELECT 
-                    sub.name as subject_name,
-                    sub.subject_code,
-                    COUNT(DISTINCT cs.scheduled_candidate_id) as enrolled_candidates,
-                    COUNT(s.id) as total_responses,
-                    ROUND(AVG(s.point_scored), 2) as average_score,
-                    COUNT(DISTINCT CASE WHEN s.point_scored >= 0.5 THEN cs.scheduled_candidate_id END) as passed_candidates
-                FROM subjects sub
-                LEFT JOIN candidate_subjects cs ON cs.subject_id = sub.id
-                LEFT JOIN scores s ON s.scheduled_candidate_id = cs.scheduled_candidate_id
-                LEFT JOIN question_banks qb ON qb.id = s.question_bank_id AND qb.subject_id = sub.id
-                GROUP BY sub.id, sub.name, sub.subject_code
-                HAVING enrolled_candidates > 0
-                ORDER BY average_score DESC
-            ");
+            // Cache this heavy query for 10 minutes
+            $data = Cache::remember('dashboard_subject_performance', 600, function () {
+                try {
+                    return DB::select("
+                        SELECT 
+                            sub.name as subject_name,
+                            sub.subject_code,
+                            COUNT(DISTINCT cs.scheduled_candidate_id) as enrolled_candidates,
+                            COUNT(s.id) as total_responses,
+                            ROUND(AVG(s.point_scored), 2) as average_score,
+                            COUNT(DISTINCT CASE WHEN s.point_scored >= 0.5 THEN cs.scheduled_candidate_id END) as passed_candidates
+                        FROM subjects sub
+                        INNER JOIN candidate_subjects cs ON cs.subject_id = sub.id
+                        INNER JOIN scores s ON s.scheduled_candidate_id = cs.scheduled_candidate_id
+                        WHERE cs.scheduled_candidate_id IS NOT NULL
+                        GROUP BY sub.id, sub.name, sub.subject_code
+                        HAVING enrolled_candidates > 0
+                        ORDER BY average_score DESC
+                        LIMIT 15
+                    ");
+                } catch (\Exception $e) {
+                    // Fallback to simpler query
+                    return DB::select("
+                        SELECT 
+                            sub.name as subject_name,
+                            sub.subject_code,
+                            COUNT(DISTINCT cs.scheduled_candidate_id) as enrolled_candidates,
+                            0 as total_responses,
+                            0 as average_score,
+                            0 as passed_candidates
+                        FROM subjects sub
+                        INNER JOIN candidate_subjects cs ON cs.subject_id = sub.id
+                        GROUP BY sub.id, sub.name, sub.subject_code
+                        HAVING enrolled_candidates > 0
+                        ORDER BY enrolled_candidates DESC
+                        LIMIT 10
+                    ");
+                }
+            });
 
             return response()->json(['success' => true, 'data' => $data]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'error' => 'Unable to load subject performance data. Please try again later.']);
         }
     }
 
     public function centreCapacityUtilization()
     {
         try {
-            $data = DB::select("
-                SELECT 
-                    c.name as centre_name,
-                    SUM(v.capacity) as total_capacity,
-                    COUNT(DISTINCT sc.candidate_id) as scheduled_candidates,
-                    ROUND((COUNT(DISTINCT sc.candidate_id) * 100.0 / SUM(v.capacity)), 2) as utilization_percentage
-                FROM centres c
-                LEFT JOIN venues v ON v.centre_id = c.id
-                LEFT JOIN schedulings sch ON sch.venue_id = v.id
-                LEFT JOIN scheduled_candidates sc ON sc.schedule_id = sch.id
-                GROUP BY c.id, c.name
-                HAVING total_capacity > 0
-                ORDER BY utilization_percentage DESC
-            ");
+            // Cache this query for 15 minutes
+            $data = Cache::remember('dashboard_capacity_utilization', 900, function () {
+                return DB::select("
+                    SELECT 
+                        c.name as centre_name,
+                        SUM(v.capacity) as total_capacity,
+                        COUNT(DISTINCT sc.candidate_id) as scheduled_candidates,
+                        ROUND((COUNT(DISTINCT sc.candidate_id) * 100.0 / SUM(v.capacity)), 2) as utilization_percentage
+                    FROM centres c
+                    INNER JOIN venues v ON v.centre_id = c.id
+                    INNER JOIN schedulings sch ON sch.venue_id = v.id
+                    INNER JOIN scheduled_candidates sc ON sc.schedule_id = sch.id
+                    WHERE v.capacity > 0
+                    GROUP BY c.id, c.name
+                    HAVING total_capacity > 0
+                    ORDER BY utilization_percentage DESC
+                    LIMIT 15
+                ");
+            });
 
             return response()->json(['success' => true, 'data' => $data]);
         } catch (\Exception $e) {
@@ -280,24 +335,33 @@ class DashboardApiController extends Controller
     public function topScorers()
     {
         try {
-            $top_scorers_by_cadre = DB::select("
-                SELECT 
-                    tc.name as cadre_name,
-                    CONCAT(c.surname, ' ', c.firstname) as candidate_name,
-                    c.indexing,
-                    AVG(s.point_scored) as average_score,
-                    COUNT(s.id) as total_questions
-                FROM test_codes tc
-                LEFT JOIN test_configs tcfg ON tcfg.test_code_id = tc.id
-                LEFT JOIN schedulings sch ON sch.test_config_id = tcfg.id
-                LEFT JOIN scheduled_candidates sc ON sc.schedule_id = sch.id
-                LEFT JOIN candidates c ON c.id = sc.candidate_id
-                LEFT JOIN scores s ON s.scheduled_candidate_id = sc.id
-                WHERE s.point_scored IS NOT NULL
-                GROUP BY tc.id, tc.name, c.id, c.surname, c.firstname, c.indexing
-                HAVING COUNT(s.id) > 0
-                ORDER BY tc.name, average_score DESC
-            ");
+            // Cache this heavy query for 15 minutes
+            $top_scorers_by_cadre = Cache::remember('dashboard_top_scorers', 900, function () {
+                try {
+                    return DB::select("
+                        SELECT 
+                            tc.name as cadre_name,
+                            CONCAT(c.surname, ' ', c.firstname) as candidate_name,
+                            c.indexing,
+                            AVG(s.point_scored) as average_score,
+                            COUNT(s.id) as total_questions
+                        FROM test_codes tc
+                        INNER JOIN test_configs tcfg ON tcfg.test_code_id = tc.id
+                        INNER JOIN schedulings sch ON sch.test_config_id = tcfg.id
+                        INNER JOIN scheduled_candidates sc ON sc.schedule_id = sch.id
+                        INNER JOIN candidates c ON c.id = sc.candidate_id
+                        INNER JOIN scores s ON s.scheduled_candidate_id = sc.id
+                        WHERE s.point_scored > 0
+                        GROUP BY tc.id, tc.name, c.id, c.surname, c.firstname, c.indexing
+                        HAVING COUNT(s.id) >= 5
+                        ORDER BY tc.name, average_score DESC
+                        LIMIT 50
+                    ");
+                } catch (\Exception $e) {
+                    // Fallback to empty array - will show "No data available" message
+                    return [];
+                }
+            });
 
             // Group top scorers by cadre and get the highest scorer for each
             $cadre_top_scorers = [];
