@@ -670,14 +670,7 @@ const DashboardCharts = {
             hAxis: { format: 'decimal' },
             height: 280,
             colors: ['#17a2b8', '#6f42c1'],
-            titlePosition: 'bottom',
-            title: 'Centres Pull Status - Centres and candidates pulled per paper',
-            titleTextStyle: {
-                fontSize: 14,
-                bold: true,
-                color: '#333'
-            },
-            legend: { position: 'bottom', alignment: 'center' },
+            legend: { position: 'none' },
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
@@ -704,14 +697,7 @@ const DashboardCharts = {
             hAxis: { format: 'decimal' },
             height: 280,
             colors: ['#fd7e14', '#e83e8c'],
-            titlePosition: 'bottom',
-            title: 'Centres Push Status - Centres and candidates pushed per paper',
-            titleTextStyle: {
-                fontSize: 14,
-                bold: true,
-                color: '#333'
-            },
-            legend: { position: 'bottom', alignment: 'center' },
+            legend: { position: 'none' },
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
@@ -746,13 +732,6 @@ const DashboardCharts = {
             hAxis: { textStyle: { fontSize: 9 } },
             height: 280,
             colors: ['#28a745', '#007bff', '#ffc107'],
-            titlePosition: 'bottom',
-            title: 'Candidates Attended per Paper/Test Code',
-            titleTextStyle: {
-                fontSize: 14,
-                bold: true,
-                color: '#333'
-            },
             legend: { position: 'bottom', alignment: 'center' },
             annotations: {
                 alwaysOutside: true,
@@ -780,13 +759,6 @@ const DashboardCharts = {
             height: 280,
             pieHole: 0.3,
             colors: ['#28a745', '#dc3545', '#ffc107', '#6c757d', '#17a2b8'],
-            titlePosition: 'bottom',
-            title: 'Attendance Remarks Distribution',
-            titleTextStyle: {
-                fontSize: 14,
-                bold: true,
-                color: '#333'
-            },
             legend: { position: 'bottom', alignment: 'center' }
         };
         
@@ -807,13 +779,6 @@ const DashboardCharts = {
             hAxis: { textStyle: { fontSize: 10 } },
             height: 280,
             colors: ['#007bff', '#28a745'],
-            titlePosition: 'bottom',
-            title: 'Daily Exam Activity (Last 5 Days)',
-            titleTextStyle: {
-                fontSize: 14,
-                bold: true,
-                color: '#333'
-            },
             legend: { position: 'bottom', alignment: 'center' }
         };
         
@@ -833,14 +798,7 @@ const DashboardCharts = {
             hAxis: { format: 'decimal', minValue: 0, maxValue: 1 },
             height: 280,
             colors: ['#6f42c1'],
-            titlePosition: 'bottom',
-            title: 'Subject Performance - Average scores by subject',
-            titleTextStyle: {
-                fontSize: 14,
-                bold: true,
-                color: '#333'
-            },
-            legend: { position: 'bottom', alignment: 'center' },
+            legend: { position: 'none' },
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
@@ -870,13 +828,6 @@ const DashboardCharts = {
             height: 280,
             colors: ['#28a745', '#ffc107', '#dc3545'],
             pieHole: 0.4,
-            titlePosition: 'bottom',
-            title: 'Exam Status Distribution',
-            titleTextStyle: {
-                fontSize: 14,
-                bold: true,
-                color: '#333'
-            },
             legend: { position: 'bottom', alignment: 'center' }
         };
         
@@ -893,17 +844,10 @@ const DashboardCharts = {
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
             bars: 'horizontal',
-            hAxis: { format: 'decimal', title: 'Number of Candidates/Responses' },
+            hAxis: { format: 'decimal' },
             vAxis: { textStyle: { fontSize: 12 } },
             height: 180,
             colors: ['#007bff', '#28a745', '#51bb25', '#173878', '#f8d62b'],
-            titlePosition: 'bottom',
-            title: 'Test Performance by Programme',
-            titleTextStyle: {
-                fontSize: 14,
-                bold: true,
-                color: '#333'
-            },
             legend: { position: 'bottom', alignment: 'center' },
             annotations: {
                 alwaysOutside: true,
@@ -935,18 +879,11 @@ const DashboardCharts = {
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
             bars: 'horizontal',
-            hAxis: { format: 'decimal', title: 'Score Percentage (%)', minValue: 0, maxValue: 100 },
+            hAxis: { format: 'decimal', minValue: 0, maxValue: 100 },
             height: 280,
             colors: ['#17a2b8'],
             tooltip: { isHtml: true },
-            titlePosition: 'bottom',
-            title: 'Top Scorers by Programme - Highest performing candidates',
-            titleTextStyle: {
-                fontSize: 14,
-                bold: true,
-                color: '#333'
-            },
-            legend: { position: 'bottom', alignment: 'center' },
+            legend: { position: 'none' },
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
