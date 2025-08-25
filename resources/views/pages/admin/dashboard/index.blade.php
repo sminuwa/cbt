@@ -189,7 +189,7 @@
 
 <!-- Fourth Row: Academic Performance -->
 <div class="row">
-    <div class="col-sm-12 col-md-6 col-xl-4">
+    <div class="col-sm-12 col-md-6 col-xl-6">
         <div class="card dashboard-chart-card">
             <div class="card-header compact-header">
                 <h5>Subject Performance</h5>
@@ -205,23 +205,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-12 col-md-6 col-xl-4">
-        <div class="card dashboard-chart-card">
-            <div class="card-header compact-header">
-                <h5>Capacity Utilization</h5>
-                <small class="text-muted">Centre usage percentage</small>
-            </div>
-            <div class="card-body compact-chart">
-                <div id="capacity-utilization-chart" class="chart-container">
-                    <div class="chart-loading">
-                        <i class="las la-spinner la-2x"></i>
-                        <p>Loading...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-12 col-md-6 col-xl-4">
+    <div class="col-sm-12 col-md-6 col-xl-6">
         <div class="card dashboard-chart-card">
             <div class="card-header compact-header">
                 <h5>Top Scorers</h5>
@@ -514,8 +498,7 @@ const DashboardCharts = {
         
         const heavyCharts = [
             { id: 'subject-performance-chart', endpoint: 'subject-performance', delay: 4000 },
-            { id: 'capacity-utilization-chart', endpoint: 'capacity-utilization', delay: 5000 },
-            { id: 'bar-chart1', endpoint: 'top-scorers', delay: 6000 }
+            { id: 'bar-chart1', endpoint: 'top-scorers', delay: 5000 }
         ];
         
         const allCharts = [...priorityCharts, ...mediumCharts, ...heavyCharts];
@@ -534,7 +517,7 @@ const DashboardCharts = {
         this.loadingStates[chartId] = true;
         
         // Determine timeout based on chart complexity
-        const heavyCharts = ['subject-performance', 'capacity-utilization', 'top-scorers'];
+        const heavyCharts = ['subject-performance', 'top-scorers'];
         const timeout = heavyCharts.includes(endpoint) ? 45000 : 20000;
         
         $.ajax({
@@ -574,7 +557,7 @@ const DashboardCharts = {
     
     // Show enhanced loading indicator
     showLoadingWithProgress(chartId, endpoint) {
-        const heavyCharts = ['subject-performance', 'capacity-utilization', 'top-scorers'];
+        const heavyCharts = ['subject-performance', 'top-scorers'];
         const isHeavy = heavyCharts.includes(endpoint);
         const message = isHeavy ? 'Processing...' : 'Loading...';
         
@@ -609,7 +592,6 @@ const DashboardCharts = {
             'attendance-remarks-chart': 'attendance-stats',
             'daily-activity-chart': 'daily-activity',
             'subject-performance-chart': 'subject-performance',
-            'capacity-utilization-chart': 'capacity-utilization',
             'pie-chart1': 'exam-status',
             'column-chart1': 'test-programme',
             'bar-chart1': 'top-scorers'
@@ -658,9 +640,6 @@ const DashboardCharts = {
                 case 'subject-performance':
                     this.renderSubjectPerformance(chartId, data);
                     break;
-                case 'capacity-utilization':
-                    this.renderCapacityUtilization(chartId, data);
-                    break;
                 case 'exam-status':
                     this.renderExamStatus(chartId, data);
                     break;
@@ -687,11 +666,18 @@ const DashboardCharts = {
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
-            chart: { title: 'Centres Pull Status', subtitle: 'Centres and candidates pulled per paper' },
             bars: 'horizontal',
             hAxis: { format: 'decimal' },
             height: 280,
             colors: ['#17a2b8', '#6f42c1'],
+            titlePosition: 'bottom',
+            title: 'Centres Pull Status - Centres and candidates pulled per paper',
+            titleTextStyle: {
+                fontSize: 14,
+                bold: true,
+                color: '#333'
+            },
+            legend: { position: 'bottom', alignment: 'center' },
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
@@ -714,11 +700,18 @@ const DashboardCharts = {
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
-            chart: { title: 'Centres Push Status', subtitle: 'Centres and candidates pushed per paper' },
             bars: 'horizontal',
             hAxis: { format: 'decimal' },
             height: 280,
             colors: ['#fd7e14', '#e83e8c'],
+            titlePosition: 'bottom',
+            title: 'Centres Push Status - Centres and candidates pushed per paper',
+            titleTextStyle: {
+                fontSize: 14,
+                bold: true,
+                color: '#333'
+            },
+            legend: { position: 'bottom', alignment: 'center' },
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
@@ -748,15 +741,18 @@ const DashboardCharts = {
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
-            chart: { 
-                title: 'Candidates Attended per Paper/Test Code', 
-                subtitle: 'Number of candidates who attended, completed, and are in progress for each paper and test code' 
-            },
             bars: 'vertical',
             vAxis: { format: 'decimal' },
             hAxis: { textStyle: { fontSize: 9 } },
             height: 280,
             colors: ['#28a745', '#007bff', '#ffc107'],
+            titlePosition: 'bottom',
+            title: 'Candidates Attended per Paper/Test Code',
+            titleTextStyle: {
+                fontSize: 14,
+                bold: true,
+                color: '#333'
+            },
             legend: { position: 'bottom', alignment: 'center' },
             annotations: {
                 alwaysOutside: true,
@@ -780,11 +776,18 @@ const DashboardCharts = {
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
-            title: 'Attendance Remarks Distribution',
             width: '100%',
             height: 280,
             pieHole: 0.3,
-            colors: ['#28a745', '#dc3545', '#ffc107', '#6c757d', '#17a2b8']
+            colors: ['#28a745', '#dc3545', '#ffc107', '#6c757d', '#17a2b8'],
+            titlePosition: 'bottom',
+            title: 'Attendance Remarks Distribution',
+            titleTextStyle: {
+                fontSize: 14,
+                bold: true,
+                color: '#333'
+            },
+            legend: { position: 'bottom', alignment: 'center' }
         };
         
         const chart = new google.visualization.PieChart(document.getElementById(chartId));
@@ -800,12 +803,18 @@ const DashboardCharts = {
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
-            title: 'Daily Exam Activity (Last 5 Days)',
             curveType: 'function',
-            legend: { position: 'bottom' },
             hAxis: { textStyle: { fontSize: 10 } },
             height: 280,
-            colors: ['#007bff', '#28a745']
+            colors: ['#007bff', '#28a745'],
+            titlePosition: 'bottom',
+            title: 'Daily Exam Activity (Last 5 Days)',
+            titleTextStyle: {
+                fontSize: 14,
+                bold: true,
+                color: '#333'
+            },
+            legend: { position: 'bottom', alignment: 'center' }
         };
         
         const chart = new google.visualization.LineChart(document.getElementById(chartId));
@@ -820,11 +829,18 @@ const DashboardCharts = {
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
-            chart: { title: 'Subject Performance', subtitle: 'Average scores by subject' },
             bars: 'horizontal',
             hAxis: { format: 'decimal', minValue: 0, maxValue: 1 },
             height: 280,
             colors: ['#6f42c1'],
+            titlePosition: 'bottom',
+            title: 'Subject Performance - Average scores by subject',
+            titleTextStyle: {
+                fontSize: 14,
+                bold: true,
+                color: '#333'
+            },
+            legend: { position: 'bottom', alignment: 'center' },
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
@@ -839,32 +855,6 @@ const DashboardCharts = {
         chart.draw(dataTable, google.charts.Bar.convertOptions(options));
     },
     
-    renderCapacityUtilization(chartId, data) {
-        const chartData = [['Centre', 'Utilization %']];
-        data.forEach(item => {
-            chartData.push([item.centre_name.substring(0, 15), parseFloat(item.utilization_percentage) || 0]);
-        });
-        
-        const dataTable = google.visualization.arrayToDataTable(chartData);
-        const options = {
-            chart: { title: 'Centre Capacity Utilization', subtitle: 'Percentage of centre capacity being used' },
-            bars: 'horizontal',
-            hAxis: { format: 'decimal', minValue: 0, maxValue: 100 },
-            height: 280,
-            colors: ['#fd7e14'],
-            annotations: {
-                alwaysOutside: true,
-                textStyle: {
-                    fontSize: 10,
-                    bold: true,
-                    color: '#333'
-                }
-            }
-        };
-        
-        const chart = new google.charts.Bar(document.getElementById(chartId));
-        chart.draw(dataTable, google.charts.Bar.convertOptions(options));
-    },
     
     renderExamStatus(chartId, data) {
         const chartData = [
@@ -876,12 +866,18 @@ const DashboardCharts = {
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
-            title: 'Exam Status Distribution',
             width: '100%',
             height: 280,
             colors: ['#28a745', '#ffc107', '#dc3545'],
-            legend: { position: 'bottom', alignment: 'center' },
-            pieHole: 0.4
+            pieHole: 0.4,
+            titlePosition: 'bottom',
+            title: 'Exam Status Distribution',
+            titleTextStyle: {
+                fontSize: 14,
+                bold: true,
+                color: '#333'
+            },
+            legend: { position: 'bottom', alignment: 'center' }
         };
         
         const chart = new google.visualization.PieChart(document.getElementById(chartId));
@@ -896,12 +892,19 @@ const DashboardCharts = {
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
-            chart: { title: 'Test Performance by Programme', subtitle: 'Candidates registered and responses submitted' },
             bars: 'horizontal',
             hAxis: { format: 'decimal', title: 'Number of Candidates/Responses' },
             vAxis: { textStyle: { fontSize: 12 } },
             height: 180,
             colors: ['#007bff', '#28a745', '#51bb25', '#173878', '#f8d62b'],
+            titlePosition: 'bottom',
+            title: 'Test Performance by Programme',
+            titleTextStyle: {
+                fontSize: 14,
+                bold: true,
+                color: '#333'
+            },
+            legend: { position: 'bottom', alignment: 'center' },
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
@@ -931,13 +934,19 @@ const DashboardCharts = {
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
-            chart: { title: 'Top Scorers by Programme', subtitle: 'Highest performing candidate per cadre' },
             bars: 'horizontal',
             hAxis: { format: 'decimal', title: 'Score Percentage (%)', minValue: 0, maxValue: 100 },
             height: 280,
             colors: ['#17a2b8'],
             tooltip: { isHtml: true },
-            legend: { position: 'none' },
+            titlePosition: 'bottom',
+            title: 'Top Scorers by Programme - Highest performing candidates',
+            titleTextStyle: {
+                fontSize: 14,
+                bold: true,
+                color: '#333'
+            },
+            legend: { position: 'bottom', alignment: 'center' },
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
