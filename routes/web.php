@@ -46,6 +46,22 @@ Route::middleware('auth:admin')->name('admin.')->prefix('admin')->group(function
     Route::name('dashboard.')->prefix('dashboard')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
     });
+    
+    // Dashboard API Routes for AJAX loading
+    Route::name('api.dashboard.')->prefix('api/dashboard')->group(function () {
+        Route::get('/scheduled-centres', [App\Http\Controllers\Api\DashboardApiController::class, 'scheduledCentresPerPaper'])->name('scheduled.centres');
+        Route::get('/centres-pull', [App\Http\Controllers\Api\DashboardApiController::class, 'centresPullStats'])->name('centres.pull');
+        Route::get('/centres-push', [App\Http\Controllers\Api\DashboardApiController::class, 'centresPushStats'])->name('centres.push');
+        Route::get('/candidates-attended', [App\Http\Controllers\Api\DashboardApiController::class, 'candidatesAttendedPerPaper'])->name('candidates.attended');
+        Route::get('/attendance-stats', [App\Http\Controllers\Api\DashboardApiController::class, 'attendanceStats'])->name('attendance.stats');
+        Route::get('/centre-performance', [App\Http\Controllers\Api\DashboardApiController::class, 'centrePerformance'])->name('centre.performance');
+        Route::get('/daily-activity', [App\Http\Controllers\Api\DashboardApiController::class, 'dailyActivity'])->name('daily.activity');
+        Route::get('/subject-performance', [App\Http\Controllers\Api\DashboardApiController::class, 'subjectPerformance'])->name('subject.performance');
+        Route::get('/capacity-utilization', [App\Http\Controllers\Api\DashboardApiController::class, 'centreCapacityUtilization'])->name('capacity.utilization');
+        Route::get('/exam-status', [App\Http\Controllers\Api\DashboardApiController::class, 'examStatus'])->name('exam.status');
+        Route::get('/test-programme', [App\Http\Controllers\Api\DashboardApiController::class, 'testProgrammePerformance'])->name('test.programme');
+        Route::get('/top-scorers', [App\Http\Controllers\Api\DashboardApiController::class, 'topScorers'])->name('top.scorers');
+    });
 
     Route::name('test.')->prefix('test')->group(function () {
         Route::name('config.')->prefix('config')->group(function () {
