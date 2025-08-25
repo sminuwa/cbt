@@ -531,6 +531,7 @@ const DashboardCharts = {
             },
             success: (response) => {
                 this.loadingStates[chartId] = false;
+                console.log(`API Response for ${chartId}:`, response);
                 if (response.success) {
                     this.renderChart(chartId, response.data, endpoint);
                 } else {
@@ -615,8 +616,11 @@ const DashboardCharts = {
     
     // Render specific chart based on type
     renderChart(chartId, data, endpoint) {
+        // Log for debugging
+        console.log(`Rendering chart ${chartId} with endpoint ${endpoint}:`, data);
+        
         if (!data || data.length === 0) {
-            this.showNoData(chartId);
+            this.showNoData(chartId, `No ${endpoint.replace('-', ' ')} data available`);
             return;
         }
         
@@ -652,17 +656,29 @@ const DashboardCharts = {
             }
         } catch (error) {
             console.error('Error rendering chart:', error);
-            this.showError(chartId, 'Chart rendering failed');
+            this.showError(chartId, 'Chart rendering failed: ' + error.message);
         }
     },
     
     // Individual chart rendering methods
     
     renderCentresPull(chartId, data) {
+        // Check if data is empty or null
+        if (!data || data.length === 0) {
+            this.showNoData(chartId, 'No pull status data available');
+            return;
+        }
+        
         const chartData = [['Paper', 'Centres Pulled', 'Candidates Pulled']];
         data.forEach(item => {
             chartData.push([item.paper_name, parseInt(item.centres_pulled), parseInt(item.total_candidates_pulled) || 0]);
         });
+        
+        // Double check if we actually have data rows
+        if (chartData.length === 1) {
+            this.showNoData(chartId, 'No pull status data available');
+            return;
+        }
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
@@ -687,10 +703,22 @@ const DashboardCharts = {
     },
     
     renderCentresPush(chartId, data) {
+        // Check if data is empty or null
+        if (!data || data.length === 0) {
+            this.showNoData(chartId, 'No push status data available');
+            return;
+        }
+        
         const chartData = [['Paper', 'Centres Pushed', 'Candidates Pushed']];
         data.forEach(item => {
             chartData.push([item.paper_name, parseInt(item.centres_pushed), parseInt(item.total_candidates_pushed) || 0]);
         });
+        
+        // Double check if we actually have data rows
+        if (chartData.length === 1) {
+            this.showNoData(chartId, 'No push status data available');
+            return;
+        }
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
