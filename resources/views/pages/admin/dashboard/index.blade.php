@@ -79,13 +79,13 @@
 @if(auth()->user()->id==1)
 <!-- Charts Section -->
 
-<!-- First Row: Candidates Attended per Paper -->
+<!-- First Row: Candidates Attended per Paper/Test Code -->
 <div class="row">
     <div class="col-sm-12 col-xl-12 box-col-12">
         <div class="card">
             <div class="card-header">
-                <h4>Candidates Attended per Paper</h4>
-                <span class="f-12 f-light">Number of candidates who attended each paper</span>
+                <h4>Candidates Attended per Test Configuration</h4>
+                <span class="f-12 f-light">Number of candidates who attended, completed, and are in progress for each test configuration</span>
             </div>
             <div class="card-body chart-block">
                 <div class="chart-overflow" id="candidates-attended-chart">
@@ -727,18 +727,30 @@ const DashboardCharts = {
     },
     
     renderCandidatesAttended(chartId, data) {
-        const chartData = [['Paper', 'Candidates Attended', 'Candidates Completed']];
+        const chartData = [['Paper/Test Code', 'Attended', 'Completed', 'In Progress']];
         data.forEach(item => {
-            chartData.push([item.paper_name, parseInt(item.candidates_attended), parseInt(item.candidates_completed)]);
+            // Use the combined paper_test_code or fallback to paper_name
+            const displayName = item.paper_test_code || item.paper_name;
+            chartData.push([
+                displayName.length > 25 ? displayName.substring(0, 25) + '...' : displayName,
+                parseInt(item.candidates_attended) || 0,
+                parseInt(item.candidates_completed) || 0,
+                parseInt(item.candidates_in_progress) || 0
+            ]);
         });
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
-            chart: { title: 'Candidates Attended per Paper', subtitle: 'Number of candidates who attended and completed each paper' },
+            chart: { 
+                title: 'Candidates Attended per Paper/Test Code', 
+                subtitle: 'Number of candidates who attended, completed, and are in progress for each paper and test code' 
+            },
             bars: 'vertical',
             vAxis: { format: 'decimal' },
-            height: 350,
-            colors: ['#28a745', '#007bff']
+            hAxis: { textStyle: { fontSize: 9 } },
+            height: 400,
+            colors: ['#28a745', '#007bff', '#ffc107'],
+            legend: { position: 'bottom', alignment: 'center' }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));

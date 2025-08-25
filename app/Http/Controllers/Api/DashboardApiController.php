@@ -103,15 +103,24 @@ class DashboardApiController extends Controller
         try {
             $data = DB::select("
                 SELECT 
+                    tc.id as test_code_id,
                     tc.name as paper_name,
+                    tcfg.title as test_config_title,
+                    tcfg.id as test_config_id,
+                    CASE 
+                        WHEN tcfg.title IS NOT NULL AND tcfg.title != '' 
+                        THEN CONCAT(tc.name, ' - ', tcfg.title)
+                        ELSE CONCAT(tc.name, ' (Config ID: ', tcfg.id, ')')
+                    END as paper_test_code,
                     COUNT(DISTINCT t.scheduled_candidate_id) as candidates_attended,
-                    COUNT(DISTINCT CASE WHEN t.completed = 1 THEN t.scheduled_candidate_id END) as candidates_completed
+                    COUNT(DISTINCT CASE WHEN t.completed = 1 THEN t.scheduled_candidate_id END) as candidates_completed,
+                    COUNT(DISTINCT CASE WHEN t.completed = 0 THEN t.scheduled_candidate_id END) as candidates_in_progress
                 FROM test_codes tc
                 LEFT JOIN test_configs tcfg ON tcfg.test_code_id = tc.id
                 LEFT JOIN time_controls t ON t.test_config_id = tcfg.id
                 WHERE t.id IS NOT NULL
-                GROUP BY tc.id, tc.name
-                ORDER BY tc.name
+                GROUP BY tc.id, tc.name, tcfg.id, tcfg.title
+                ORDER BY tc.name, tcfg.title
             ");
 
             return response()->json(['success' => true, 'data' => $data]);
