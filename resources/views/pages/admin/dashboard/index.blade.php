@@ -137,7 +137,7 @@
         <div class="card dashboard-chart-card">
             <div class="card-header compact-header">
                 <h5>Centres Push Status</h5>
-                <small class="text-muted">Centres and candidates pushed per paper</small>
+                <small class="text-muted">Centres with candidates who have started exams</small>
             </div>
             <div class="card-body compact-chart">
                 <div id="centres-pushed-chart" class="chart-container">

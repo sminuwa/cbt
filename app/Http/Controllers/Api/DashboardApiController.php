@@ -81,13 +81,14 @@ class DashboardApiController extends Controller
             $data = DB::select("
                 SELECT 
                     tc.name as paper_name,
-                    COUNT(DISTINCT spss.schedule_id) as centres_pushed,
-                    SUM(spss.total_candidate) as total_candidates_pushed
+                    COUNT(DISTINCT s.id) as centres_pushed,
+                    COUNT(DISTINCT tctrl.scheduled_candidate_id) as total_candidates_pushed
                 FROM test_codes tc
                 LEFT JOIN test_configs tcfg ON tcfg.test_code_id = tc.id
                 LEFT JOIN schedulings s ON s.test_config_id = tcfg.id
-                LEFT JOIN schedule_push_statuses spss ON spss.schedule_id = s.id
-                WHERE spss.id IS NOT NULL
+                LEFT JOIN scheduled_candidates sc ON sc.schedule_id = s.id
+                LEFT JOIN time_controls tctrl ON tctrl.scheduled_candidate_id = sc.id
+                WHERE tctrl.id IS NOT NULL
                 GROUP BY tc.id, tc.name
                 ORDER BY tc.name
             ");
