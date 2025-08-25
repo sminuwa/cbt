@@ -223,25 +223,6 @@
     </div>
 </div>
 
-<!-- Fifth Row: Attendance Analysis -->
-<div class="row">
-    <div class="col-sm-12 col-md-6 col-xl-4 mx-auto">
-        <div class="card dashboard-chart-card">
-            <div class="card-header compact-header">
-                <h5>Attendance Remarks</h5>
-                <small class="text-muted">Distribution of attendance remarks</small>
-            </div>
-            <div class="card-body compact-chart">
-                <div id="attendance-remarks-chart" class="chart-container">
-                    <div class="chart-loading">
-                        <i class="las la-spinner la-2x"></i>
-                        <p>Loading...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 @endif
     
@@ -486,8 +467,7 @@ const DashboardCharts = {
         const priorityCharts = [
             { id: 'candidates-attended-chart', endpoint: 'candidates-attended', delay: 0 }, // First chart after overview cards
             { id: 'pie-chart1', endpoint: 'exam-status', delay: 500 },
-            { id: 'daily-activity-chart', endpoint: 'daily-activity', delay: 1000 },
-            { id: 'attendance-remarks-chart', endpoint: 'attendance-stats', delay: 1500 }
+            { id: 'daily-activity-chart', endpoint: 'daily-activity', delay: 1000 }
         ];
         
         const mediumCharts = [
@@ -590,7 +570,6 @@ const DashboardCharts = {
             'centres-pulled-chart': 'centres-pull',
             'centres-pushed-chart': 'centres-push',
             'candidates-attended-chart': 'candidates-attended',
-            'attendance-remarks-chart': 'attendance-stats',
             'daily-activity-chart': 'daily-activity',
             'subject-performance-chart': 'subject-performance',
             'pie-chart1': 'exam-status',
@@ -634,9 +613,6 @@ const DashboardCharts = {
                     break;
                 case 'candidates-attended':
                     this.renderCandidatesAttended(chartId, data);
-                    break;
-                case 'attendance-stats':
-                    this.renderAttendanceRemarks(chartId, data);
                     break;
                 case 'daily-activity':
                     this.renderDailyActivity(chartId, data);
@@ -691,11 +667,13 @@ const DashboardCharts = {
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
-                    fontSize: 10,
+                    fontSize: 12,
                     bold: true,
                     color: '#333'
                 }
-            }
+            },
+            bar: { groupWidth: '75%' },
+            chartArea: { left: 120, top: 20, width: '70%', height: '80%' }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -731,11 +709,13 @@ const DashboardCharts = {
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
-                    fontSize: 10,
+                    fontSize: 12,
                     bold: true,
                     color: '#333'
                 }
-            }
+            },
+            bar: { groupWidth: '75%' },
+            chartArea: { left: 120, top: 20, width: '70%', height: '80%' }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -767,35 +747,19 @@ const DashboardCharts = {
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
-                    fontSize: 10,
+                    fontSize: 11,
                     bold: true,
                     color: '#333'
                 }
-            }
+            },
+            bar: { groupWidth: '80%' },
+            chartArea: { left: 50, top: 20, width: '85%', height: '70%' }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
         chart.draw(dataTable, google.charts.Bar.convertOptions(options));
     },
     
-    renderAttendanceRemarks(chartId, data) {
-        const chartData = [['Remark', 'Count']];
-        data.forEach(item => {
-            chartData.push([item.remark || 'No Remark', parseInt(item.count)]);
-        });
-        
-        const dataTable = google.visualization.arrayToDataTable(chartData);
-        const options = {
-            width: '100%',
-            height: '100%',
-            pieHole: 0.3,
-            colors: ['#28a745', '#dc3545', '#ffc107', '#6c757d', '#17a2b8'],
-            legend: { position: 'bottom', alignment: 'center' }
-        };
-        
-        const chart = new google.visualization.PieChart(document.getElementById(chartId));
-        chart.draw(dataTable, options);
-    },
     
     
     renderDailyActivity(chartId, data) {
@@ -811,7 +775,17 @@ const DashboardCharts = {
             height: '100%',
             width: '100%',
             colors: ['#007bff', '#28a745'],
-            legend: { position: 'bottom', alignment: 'center' }
+            legend: { position: 'bottom', alignment: 'center' },
+            pointSize: 8,
+            dataOpacity: 0.8,
+            chartArea: { left: 60, top: 20, width: '85%', height: '70%' },
+            annotations: {
+                textStyle: {
+                    fontSize: 11,
+                    bold: true,
+                    color: '#333'
+                }
+            }
         };
         
         const chart = new google.visualization.LineChart(document.getElementById(chartId));
@@ -835,11 +809,13 @@ const DashboardCharts = {
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
-                    fontSize: 10,
+                    fontSize: 11,
                     bold: true,
                     color: '#333'
                 }
-            }
+            },
+            bar: { groupWidth: '70%' },
+            chartArea: { left: 80, top: 20, width: '75%', height: '80%' }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -861,7 +837,14 @@ const DashboardCharts = {
             height: '100%',
             colors: ['#28a745', '#ffc107', '#dc3545'],
             pieHole: 0.4,
-            legend: { position: 'bottom', alignment: 'center' }
+            legend: { position: 'bottom', alignment: 'center' },
+            pieSliceText: 'value',
+            pieSliceTextStyle: {
+                color: 'white',
+                fontSize: 12,
+                bold: true
+            },
+            chartArea: { left: 20, top: 20, width: '90%', height: '70%' }
         };
         
         const chart = new google.visualization.PieChart(document.getElementById(chartId));
@@ -886,11 +869,13 @@ const DashboardCharts = {
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
-                    fontSize: 10,
+                    fontSize: 11,
                     bold: true,
                     color: '#333'
                 }
-            }
+            },
+            bar: { groupWidth: '75%' },
+            chartArea: { left: 100, top: 20, width: '70%', height: '60%' }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -922,11 +907,13 @@ const DashboardCharts = {
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
-                    fontSize: 10,
+                    fontSize: 11,
                     bold: true,
                     color: '#333'
                 }
-            }
+            },
+            bar: { groupWidth: '70%' },
+            chartArea: { left: 120, top: 20, width: '70%', height: '80%' }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
