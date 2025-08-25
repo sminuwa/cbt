@@ -906,7 +906,7 @@ const DashboardCharts = {
             curveType: 'function',
             legend: { position: 'bottom' },
             hAxis: { textStyle: { fontSize: 10 } },
-            height: 180,
+            height: 280,
             colors: ['#007bff', '#28a745']
         };
         
@@ -952,7 +952,7 @@ const DashboardCharts = {
             chart: { title: 'Centre Capacity Utilization', subtitle: 'Percentage of centre capacity being used' },
             bars: 'horizontal',
             hAxis: { format: 'decimal', minValue: 0, maxValue: 100 },
-            height: 180,
+            height: 280,
             colors: ['#fd7e14'],
             annotations: {
                 alwaysOutside: true,
