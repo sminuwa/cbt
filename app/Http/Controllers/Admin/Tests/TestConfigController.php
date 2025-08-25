@@ -1582,6 +1582,10 @@ class TestConfigController extends Controller
 
     public function batchScheduleCandidates(Request $request, $config_id)
     {
+        // Set memory and execution limits for large files
+        ini_set('memory_limit', '2G');
+        ini_set('max_execution_time', 1200); // 10 minutes
+        
         try {
             $request->validate([
                 'file' => 'required|mimes:xls,xlsx,csv|max:10240', // 10MB max

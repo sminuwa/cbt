@@ -23,7 +23,7 @@ class TestConfigControllerOptimized extends Controller
     {
         // Set memory and execution limits for large files
         ini_set('memory_limit', '2G');
-        ini_set('max_execution_time', 600); // 10 minutes
+        ini_set('max_execution_time', 1200); // 10 minutes
         
         try {
             $request->validate([
