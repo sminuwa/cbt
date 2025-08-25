@@ -1766,7 +1766,24 @@
                     type: 'GET',
                     success: function(response) {
                         if (response.success && response.candidates && response.candidates.length > 0) {
-                            allCandidates = response.candidates;
+                            // Sort candidates by indexing number in ascending order
+                            allCandidates = response.candidates.sort(function(a, b) {
+                                // Handle cases where indexing might be null or undefined
+                                const indexA = a.indexing || '';
+                                const indexB = b.indexing || '';
+                                
+                                // Try to compare as numbers if they are numeric, otherwise compare as strings
+                                const numA = parseInt(indexA.replace(/[^0-9]/g, ''));
+                                const numB = parseInt(indexB.replace(/[^0-9]/g, ''));
+                                
+                                if (!isNaN(numA) && !isNaN(numB)) {
+                                    return numA - numB;
+                                }
+                                
+                                // Fallback to string comparison
+                                return indexA.localeCompare(indexB);
+                            });
+                            
                             displayCandidates(allCandidates);
                             $('#candidates_loading').hide();
                             $('#candidates_table_container').show();
