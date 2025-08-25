@@ -35,12 +35,11 @@ class DashboardController extends Controller
         
         // System overview stats (fast queries for immediate display)
         $total_centres = Centre::count();
-        $total_venues = Venue::count();
-        $total_schedules = Scheduling::count();
-        $total_attendances = Attendance::count();
+        $total_candidates = Candidate::count();
+        $total_programmes = TestCode::count();
+        $total_subjects = Subject::count();
         
         // Basic statistics (fast queries)
-        $total_candidates = Candidate::count();
         $total_submitted = TimeControl::where('completed',1)->count();
         $total_in_progress = TimeControl::where('completed',0)->count();
         $total_pending = $total_candidates - ($total_submitted + $total_in_progress);
@@ -62,9 +61,8 @@ class DashboardController extends Controller
             'active_tests',
             'total_tests',
             'total_centres',
-            'total_venues',
-            'total_schedules',
-            'total_attendances'
+            'total_programmes',
+            'total_subjects'
         ));
     }
 }

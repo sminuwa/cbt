@@ -24,14 +24,14 @@
     <div class="col-sm-6 col-xl-3">
         <div class="card o-hidden small-widget">
             <div class="card-body total-project border-l-success border-3">
-                <span class="f-light f-w-500 f-14">Total Venues</span>
+                <span class="f-light f-w-500 f-14">Total Candidates</span>
                 <div class="project-details">
                     <div class="project-counter">
-                        <h2 class="f-w-600 d-inline">{{ $total_venues }}</h2>
-                        <span class="f-12">Venues</span>
+                        <h2 class="f-w-600 d-inline">{{ $total_candidates }}</h2>
+                        <span class="f-12">Candidates</span>
                     </div>
                     <div class="product-sub bg-success-light">
-                        <i class="las la-map-marker la-2x"></i>
+                        <i class="las la-users la-2x"></i>
                     </div>
                 </div>
                 @include('components.bubbles')
@@ -42,14 +42,14 @@
     <div class="col-sm-6 col-xl-3">
         <div class="card o-hidden small-widget">
             <div class="card-body total-project border-l-warning border-3">
-                <span class="f-light f-w-500 f-14">Total Schedules</span>
+                <span class="f-light f-w-500 f-14">Total Programmes</span>
                 <div class="project-details">
                     <div class="project-counter">
-                        <h2 class="f-w-600 d-inline">{{ $total_schedules }}</h2>
-                        <span class="f-12">Schedules</span>
+                        <h2 class="f-w-600 d-inline">{{ $total_programmes }}</h2>
+                        <span class="f-12">Programmes</span>
                     </div>
                     <div class="product-sub bg-warning-light">
-                        <i class="las la-calendar la-2x"></i>
+                        <i class="las la-graduation-cap la-2x"></i>
                     </div>
                 </div>
                 @include('components.bubbles')
@@ -60,14 +60,14 @@
     <div class="col-sm-6 col-xl-3">
         <div class="card o-hidden small-widget">
             <div class="card-body total-project border-l-info border-3">
-                <span class="f-light f-w-500 f-14">Total Attendances</span>
+                <span class="f-light f-w-500 f-14">Total Subjects</span>
                 <div class="project-details">
                     <div class="project-counter">
-                        <h2 class="f-w-600 d-inline">{{ $total_attendances }}</h2>
-                        <span class="f-12">Attendances</span>
+                        <h2 class="f-w-600 d-inline">{{ $total_subjects }}</h2>
+                        <span class="f-12">Subjects</span>
                     </div>
                     <div class="product-sub bg-info-light">
-                        <i class="las la-user-check la-2x"></i>
+                        <i class="las la-book la-2x"></i>
                     </div>
                 </div>
                 @include('components.bubbles')
@@ -79,7 +79,27 @@
 @if(auth()->user()->id==1)
 <!-- Charts Section -->
 
-<!-- First Row: Scheduled Centres per Paper -->
+<!-- First Row: Candidates Attended per Paper -->
+<div class="row">
+    <div class="col-sm-12 col-xl-12 box-col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Candidates Attended per Paper</h4>
+                <span class="f-12 f-light">Number of candidates who attended each paper</span>
+            </div>
+            <div class="card-body chart-block">
+                <div class="chart-overflow" id="candidates-attended-chart">
+                    <div class="chart-loading">
+                        <i class="las la-spinner la-3x"></i>
+                        <p>Loading chart data...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Row: Scheduled Centres per Paper -->
 <div class="row">
     <div class="col-sm-12 col-xl-12 box-col-12">
         <div class="card">
@@ -99,7 +119,7 @@
     </div>
 </div>
 
-<!-- Second Row: Pull/Push Statistics -->
+<!-- Third Row: Pull/Push Statistics -->
 <div class="row">
     <div class="col-sm-12 col-xl-6 box-col-6">
         <div class="card">
@@ -135,25 +155,9 @@
     </div>
 </div>
 
-<!-- Third Row: Candidates Attendance -->
+<!-- Fourth Row: Attendance Remarks -->
 <div class="row">
-    <div class="col-sm-12 col-xl-8 box-col-8">
-        <div class="card">
-            <div class="card-header">
-                <h4>Candidates Attended per Paper</h4>
-                <span class="f-12 f-light">Number of candidates who attended each paper</span>
-            </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="candidates-attended-chart">
-                    <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-12 col-xl-4 box-col-4">
+    <div class="col-sm-12 col-xl-6 box-col-6 mx-auto">
         <div class="card">
             <div class="card-header">
                 <h4>Attendance Remarks</h4>
@@ -171,7 +175,7 @@
     </div>
 </div>
 
-<!-- Fourth Row: Centre Performance -->
+<!-- Fifth Row: Centre Performance -->
 <div class="row">
     <div class="col-sm-12 col-xl-12 box-col-12">
         <div class="card">
@@ -191,7 +195,7 @@
     </div>
 </div>
 
-<!-- Fifth Row: Daily Activity and Subject Performance -->
+<!-- Sixth Row: Daily Activity and Subject Performance -->
 <div class="row">
     <div class="col-sm-12 col-xl-7 box-col-7">
         <div class="card">
@@ -227,7 +231,7 @@
     </div>
 </div>
 
-<!-- Sixth Row: Centre Capacity Utilization -->
+<!-- Seventh Row: Centre Capacity Utilization -->
 <div class="row">
     <div class="col-sm-12 col-xl-12 box-col-12">
         <div class="card">
@@ -247,7 +251,7 @@
     </div>
 </div>
 
-<!-- Exam Status Overview Row -->
+<!-- Eighth Row: Exam Status Overview -->
 <div class="row">
     <div class="col-sm-12 col-xl-6 box-col-6 mx-auto">
         <div class="card">
@@ -267,7 +271,7 @@
     </div>
 </div>
 
-<!-- Seventh Row: Test Programme Performance and Top Scorers -->
+<!-- Ninth Row: Test Programme Performance and Top Scorers -->
 <div class="row">
     <div class="col-sm-12 col-xl-8 box-col-8">
         <div class="card">
@@ -474,18 +478,18 @@ const DashboardCharts = {
     
     // Load all charts with improved staggered delays for better UX
     loadAllCharts() {
-        // Group charts by priority - load faster charts first
+        // Group charts by priority - load most important charts first
         const priorityCharts = [
-            { id: 'pie-chart1', endpoint: 'exam-status', delay: 0 },
-            { id: 'daily-activity-chart', endpoint: 'daily-activity', delay: 500 },
-            { id: 'attendance-remarks-chart', endpoint: 'attendance-stats', delay: 1000 }
+            { id: 'candidates-attended-chart', endpoint: 'candidates-attended', delay: 0 }, // First chart after overview cards
+            { id: 'pie-chart1', endpoint: 'exam-status', delay: 500 },
+            { id: 'daily-activity-chart', endpoint: 'daily-activity', delay: 1000 },
+            { id: 'attendance-remarks-chart', endpoint: 'attendance-stats', delay: 1500 }
         ];
         
         const mediumCharts = [
-            { id: 'scheduled-centres-chart', endpoint: 'scheduled-centres', delay: 1500 },
-            { id: 'centres-pulled-chart', endpoint: 'centres-pull', delay: 2000 },
-            { id: 'centres-pushed-chart', endpoint: 'centres-push', delay: 2500 },
-            { id: 'candidates-attended-chart', endpoint: 'candidates-attended', delay: 3000 },
+            { id: 'scheduled-centres-chart', endpoint: 'scheduled-centres', delay: 2000 },
+            { id: 'centres-pulled-chart', endpoint: 'centres-pull', delay: 2500 },
+            { id: 'centres-pushed-chart', endpoint: 'centres-push', delay: 3000 },
             { id: 'column-chart1', endpoint: 'test-programme', delay: 3500 }
         ];
         
