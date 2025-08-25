@@ -77,21 +77,37 @@
 </div>
 
 @if(auth()->user()->id==1)
-<!-- Charts Section -->
+<!-- Charts Section with Consistent Heights -->
 
-<!-- First Row: Candidates Attended per Paper/Test Code -->
+<!-- First Row: Key Metrics -->
 <div class="row">
-    <div class="col-sm-12 col-xl-12 box-col-12">
-        <div class="card">
-            <div class="card-header">
-                <h4>Candidates Attended per Test Configuration</h4>
-                <span class="f-12 f-light">Number of candidates who attended, completed, and are in progress for each test configuration</span>
+    <div class="col-sm-12 col-md-12 col-xl-8">
+        <div class="card dashboard-chart-card">
+            <div class="card-header compact-header">
+                <h5>Candidates Attended per Test Configuration</h5>
+                <small class="text-muted">Per test configuration - showing attended, completed, and in progress</small>
             </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="candidates-attended-chart">
+            <div class="card-body compact-chart">
+                <div id="candidates-attended-chart" class="chart-container">
                     <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
+                        <i class="las la-spinner la-2x"></i>
+                        <p>Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-xl-4">
+        <div class="card dashboard-chart-card">
+            <div class="card-header compact-header">
+                <h5>Exam Status</h5>
+                <small class="text-muted">Completion distribution</small>
+            </div>
+            <div class="card-body compact-chart">
+                <div id="pie-chart1" class="chart-container">
+                    <div class="chart-loading">
+                        <i class="las la-spinner la-2x"></i>
+                        <p>Loading...</p>
                     </div>
                 </div>
             </div>
@@ -99,19 +115,51 @@
     </div>
 </div>
 
-<!-- Second Row: Scheduled Centres per Paper -->
+<!-- Second Row: Centre Operations -->
 <div class="row">
-    <div class="col-sm-12 col-xl-12 box-col-12">
-        <div class="card">
-            <div class="card-header">
-                <h4>Scheduled Centres per Paper/Test Code</h4>
-                <span class="f-12 f-light">Number of centres, venues, and schedules per test paper</span>
+    <div class="col-sm-12 col-md-12 col-xl-6">
+        <div class="card dashboard-chart-card">
+            <div class="card-header compact-header">
+                <h5>Scheduled Centres per Paper/Test Code</h5>
+                <small class="text-muted">Schedules, venues, and centres per test paper</small>
             </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="scheduled-centres-chart">
+            <div class="card-body compact-chart">
+                <div id="scheduled-centres-chart" class="chart-container">
                     <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
+                        <i class="las la-spinner la-2x"></i>
+                        <p>Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-xl-3">
+        <div class="card dashboard-chart-card">
+            <div class="card-header compact-header">
+                <h5>Centres Pull Status</h5>
+                <small class="text-muted">Centres & candidates</small>
+            </div>
+            <div class="card-body compact-chart">
+                <div id="centres-pulled-chart" class="chart-container">
+                    <div class="chart-loading">
+                        <i class="las la-spinner la-2x"></i>
+                        <p>Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-xl-3">
+        <div class="card dashboard-chart-card">
+            <div class="card-header compact-header">
+                <h5>Centres Push Status</h5>
+                <small class="text-muted">Centres & candidates</small>
+            </div>
+            <div class="card-body compact-chart">
+                <div id="centres-pushed-chart" class="chart-container">
+                    <div class="chart-loading">
+                        <i class="las la-spinner la-2x"></i>
+                        <p>Loading...</p>
                     </div>
                 </div>
             </div>
@@ -119,35 +167,35 @@
     </div>
 </div>
 
-<!-- Third Row: Pull/Push Statistics -->
+<!-- Third Row: Performance Metrics -->
 <div class="row">
-    <div class="col-sm-12 col-xl-6 box-col-6">
-        <div class="card">
-            <div class="card-header">
-                <h4>Centres Pull Status</h4>
-                <span class="f-12 f-light">Number of centres pulled per paper</span>
+    <div class="col-sm-12 col-md-12 col-xl-8">
+        <div class="card dashboard-chart-card">
+            <div class="card-header compact-header">
+                <h5>Centre Performance Statistics</h5>
+                <small class="text-muted">Performance metrics by centre - candidates, completion rates, scores</small>
             </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="centres-pulled-chart">
+            <div class="card-body compact-chart">
+                <div id="centre-performance-chart" class="chart-container">
                     <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
+                        <i class="las la-spinner la-2x"></i>
+                        <p>Loading...</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-sm-12 col-xl-6 box-col-6">
-        <div class="card">
-            <div class="card-header">
-                <h4>Centres Push Status</h4>
-                <span class="f-12 f-light">Number of centres pushed per paper</span>
+    <div class="col-sm-12 col-md-6 col-xl-4">
+        <div class="card dashboard-chart-card">
+            <div class="card-header compact-header">
+                <h5>Daily Activity</h5>
+                <small class="text-muted">Last 5 days trend</small>
             </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="centres-pushed-chart">
+            <div class="card-body compact-chart">
+                <div id="daily-activity-chart" class="chart-container">
                     <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
+                        <i class="las la-spinner la-2x"></i>
+                        <p>Loading...</p>
                     </div>
                 </div>
             </div>
@@ -155,19 +203,51 @@
     </div>
 </div>
 
-<!-- Fourth Row: Attendance Remarks -->
+<!-- Fourth Row: Programme & Performance -->
 <div class="row">
-    <div class="col-sm-12 col-xl-6 box-col-6 mx-auto">
-        <div class="card">
-            <div class="card-header">
-                <h4>Attendance Remarks</h4>
-                <span class="f-12 f-light">Distribution of attendance remarks</span>
+    <div class="col-sm-12 col-md-6 col-xl-4">
+        <div class="card dashboard-chart-card">
+            <div class="card-header compact-header">
+                <h5>Test Programme Performance</h5>
+                <small class="text-muted">Candidates & responses by programme</small>
             </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="attendance-remarks-chart">
+            <div class="card-body compact-chart">
+                <div id="column-chart1" class="chart-container">
                     <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
+                        <i class="las la-spinner la-2x"></i>
+                        <p>Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-xl-4">
+        <div class="card dashboard-chart-card">
+            <div class="card-header compact-header">
+                <h5>Subject Performance</h5>
+                <small class="text-muted">Average scores by subject</small>
+            </div>
+            <div class="card-body compact-chart">
+                <div id="subject-performance-chart" class="chart-container">
+                    <div class="chart-loading">
+                        <i class="las la-spinner la-2x"></i>
+                        <p>Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-xl-4">
+        <div class="card dashboard-chart-card">
+            <div class="card-header compact-header">
+                <h5>Capacity Utilization</h5>
+                <small class="text-muted">Centre usage percentage</small>
+            </div>
+            <div class="card-body compact-chart">
+                <div id="capacity-utilization-chart" class="chart-container">
+                    <div class="chart-loading">
+                        <i class="las la-spinner la-2x"></i>
+                        <p>Loading...</p>
                     </div>
                 </div>
             </div>
@@ -175,131 +255,35 @@
     </div>
 </div>
 
-<!-- Fifth Row: Centre Performance -->
+<!-- Fifth Row: Additional Charts -->
 <div class="row">
-    <div class="col-sm-12 col-xl-12 box-col-12">
-        <div class="card">
-            <div class="card-header">
-                <h4>Centre Performance Statistics</h4>
-                <span class="f-12 f-light">Average performance and completion rates by centre</span>
+    <div class="col-sm-12 col-md-6 col-xl-4">
+        <div class="card dashboard-chart-card">
+            <div class="card-header compact-header">
+                <h5>Top Scorers</h5>
+                <small class="text-muted">Highest performers by programme</small>
             </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="centre-performance-chart">
+            <div class="card-body compact-chart">
+                <div id="bar-chart1" class="chart-container">
                     <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
+                        <i class="las la-spinner la-2x"></i>
+                        <p>Loading...</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Sixth Row: Daily Activity and Subject Performance -->
-<div class="row">
-    <div class="col-sm-12 col-xl-7 box-col-7">
-        <div class="card">
-            <div class="card-header">
-                <h4>Daily Exam Activity (Last 5 Days)</h4>
-                <span class="f-12 f-light">Trend of candidates starting and completing exams</span>
+    <div class="col-sm-12 col-md-6 col-xl-4">
+        <div class="card dashboard-chart-card">
+            <div class="card-header compact-header">
+                <h5>Attendance Remarks</h5>
+                <small class="text-muted">Distribution of remarks</small>
             </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="daily-activity-chart">
+            <div class="card-body compact-chart">
+                <div id="attendance-remarks-chart" class="chart-container">
                     <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-12 col-xl-5 box-col-5">
-        <div class="card">
-            <div class="card-header">
-                <h4>Subject Performance</h4>
-                <span class="f-12 f-light">Average scores by subject</span>
-            </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="subject-performance-chart">
-                    <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Seventh Row: Centre Capacity Utilization -->
-<div class="row">
-    <div class="col-sm-12 col-xl-12 box-col-12">
-        <div class="card">
-            <div class="card-header">
-                <h4>Centre Capacity Utilization</h4>
-                <span class="f-12 f-light">How well centres are being utilized</span>
-            </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="capacity-utilization-chart">
-                    <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Eighth Row: Exam Status Overview -->
-<div class="row">
-    <div class="col-sm-12 col-xl-6 box-col-6 mx-auto">
-        <div class="card">
-            <div class="card-header">
-                <h4>Exam Status Overview</h4>
-                <span class="f-12 f-light">Distribution of exam completion status</span>
-            </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="pie-chart1">
-                    <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Ninth Row: Test Programme Performance and Top Scorers -->
-<div class="row">
-    <div class="col-sm-12 col-xl-8 box-col-8">
-        <div class="card">
-            <div class="card-header">
-                <h4>Test Programme Performance</h4>
-                <span class="f-12 f-light">Candidates and responses by programme</span>
-            </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="column-chart1">
-                    <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-12 col-xl-4 box-col-4">
-        <div class="card">
-            <div class="card-header">
-                <h4>Top Scorers by Programme</h4>
-                <span class="f-12 f-light">Highest performing candidates per cadre</span>
-            </div>
-            <div class="card-body chart-block">
-                <div class="chart-overflow" id="bar-chart1">
-                    <div class="chart-loading">
-                        <i class="las la-spinner la-3x"></i>
-                        <p>Loading chart data...</p>
+                        <i class="las la-spinner la-2x"></i>
+                        <p>Loading...</p>
                     </div>
                 </div>
             </div>
@@ -414,18 +398,63 @@
 
 @section('script')
 <style>
+/* Dashboard Chart Styling */
+.dashboard-chart-card {
+    height: 345px;
+    margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.compact-header {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e9ecef;
+    background-color: #f8f9fa;
+}
+
+.compact-header h5 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.compact-header small {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 2px;
+    display: block;
+}
+
+.compact-chart {
+    padding: 8px;
+    height: calc(345px - 65px); /* Total height minus header */
+    overflow: hidden;
+}
+
+.chart-container {
+    height: 100%;
+    width: 100%;
+}
+
 .chart-loading {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 300px;
+    height: 100%;
     flex-direction: column;
     color: #6c757d;
 }
 
 .chart-loading i {
     animation: spin 2s linear infinite;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+}
+
+.chart-loading p {
+    margin: 0;
+    font-size: 12px;
 }
 
 @keyframes spin {
@@ -437,9 +466,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 300px;
+    height: 100%;
     flex-direction: column;
     color: #dc3545;
+    font-size: 12px;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .dashboard-chart-card {
+        height: 380px;
+    }
+    .compact-chart {
+        height: calc(380px - 65px);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-chart-card {
+        height: 400px;
+        margin-bottom: 15px;
+    }
+    .compact-chart {
+        height: calc(400px - 65px);
+    }
 }
 </style>
 
@@ -558,13 +610,13 @@ const DashboardCharts = {
     showLoadingWithProgress(chartId, endpoint) {
         const heavyCharts = ['centre-performance', 'subject-performance', 'capacity-utilization', 'top-scorers'];
         const isHeavy = heavyCharts.includes(endpoint);
-        const message = isHeavy ? 'Processing complex data...' : 'Loading chart data...';
+        const message = isHeavy ? 'Processing...' : 'Loading...';
         
         document.getElementById(chartId).innerHTML = 
             `<div class="chart-loading">
-                <i class="las la-spinner la-3x"></i>
+                <i class="las la-spinner la-2x"></i>
                 <p>${message}</p>
-                ${isHeavy ? '<small>This may take a moment for complex datasets</small>' : ''}
+                ${isHeavy ? '<small>Complex data</small>' : ''}
             </div>`;
     },
     
@@ -572,11 +624,11 @@ const DashboardCharts = {
     showError(chartId, message) {
         document.getElementById(chartId).innerHTML = 
             `<div class="chart-error">
-                <i class="las la-exclamation-triangle la-3x mb-3"></i>
-                <p>Error loading chart</p>
+                <i class="las la-exclamation-triangle la-2x mb-2"></i>
+                <p><strong>Error loading chart</strong></p>
                 <small>${message}</small>
-                <div class="mt-3">
-                    <button class="btn btn-sm btn-outline-primary" onclick="DashboardCharts.retryChart('${chartId}')">Retry</button>
+                <div class="mt-2">
+                    <button class="btn btn-xs btn-outline-primary" onclick="DashboardCharts.retryChart('${chartId}')">Retry</button>
                 </div>
             </div>`;
     },
@@ -608,9 +660,9 @@ const DashboardCharts = {
     // Show no data message
     showNoData(chartId, message = 'No data available') {
         document.getElementById(chartId).innerHTML = 
-            `<div style="display:flex; align-items:center; justify-content:center; height:300px; color:#6c757d; flex-direction:column;">
-                <i class="las la-chart-bar la-3x mb-3"></i>
-                <p>${message}</p>
+            `<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#6c757d; flex-direction:column; font-size:12px; text-align:center; padding:10px;">
+                <i class="las la-chart-bar la-2x mb-2"></i>
+                <p style="margin:5px 0;">${message}</p>
                 <small>Data will appear when available</small>
             </div>`;
     },
@@ -680,8 +732,16 @@ const DashboardCharts = {
             bars: 'vertical',
             vAxis: { format: 'decimal' },
             hAxis: { textStyle: { fontSize: 10 } },
-            height: 400,
-            colors: ['#007bff', '#28a745', '#ffc107']
+            height: 280,
+            colors: ['#007bff', '#28a745', '#ffc107'],
+            annotations: {
+                alwaysOutside: true,
+                textStyle: {
+                    fontSize: 10,
+                    bold: true,
+                    color: '#333'
+                }
+            }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -699,8 +759,16 @@ const DashboardCharts = {
             chart: { title: 'Centres Pull Status', subtitle: 'Centres and candidates pulled per paper' },
             bars: 'horizontal',
             hAxis: { format: 'decimal' },
-            height: 300,
-            colors: ['#17a2b8', '#6f42c1']
+            height: 280,
+            colors: ['#17a2b8', '#6f42c1'],
+            annotations: {
+                alwaysOutside: true,
+                textStyle: {
+                    fontSize: 10,
+                    bold: true,
+                    color: '#333'
+                }
+            }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -718,8 +786,16 @@ const DashboardCharts = {
             chart: { title: 'Centres Push Status', subtitle: 'Centres and candidates pushed per paper' },
             bars: 'horizontal',
             hAxis: { format: 'decimal' },
-            height: 300,
-            colors: ['#fd7e14', '#e83e8c']
+            height: 280,
+            colors: ['#fd7e14', '#e83e8c'],
+            annotations: {
+                alwaysOutside: true,
+                textStyle: {
+                    fontSize: 10,
+                    bold: true,
+                    color: '#333'
+                }
+            }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -748,9 +824,17 @@ const DashboardCharts = {
             bars: 'vertical',
             vAxis: { format: 'decimal' },
             hAxis: { textStyle: { fontSize: 9 } },
-            height: 400,
+            height: 280,
             colors: ['#28a745', '#007bff', '#ffc107'],
-            legend: { position: 'bottom', alignment: 'center' }
+            legend: { position: 'bottom', alignment: 'center' },
+            annotations: {
+                alwaysOutside: true,
+                textStyle: {
+                    fontSize: 10,
+                    bold: true,
+                    color: '#333'
+                }
+            }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -767,7 +851,7 @@ const DashboardCharts = {
         const options = {
             title: 'Attendance Remarks Distribution',
             width: '100%',
-            height: 300,
+            height: 280,
             pieHole: 0.3,
             colors: ['#28a745', '#dc3545', '#ffc107', '#6c757d', '#17a2b8']
         };
@@ -794,8 +878,16 @@ const DashboardCharts = {
             bars: 'vertical',
             vAxis: { format: 'decimal' },
             hAxis: { textStyle: { fontSize: 10 } },
-            height: 400,
-            colors: ['#007bff', '#28a745', '#dc3545', '#ffc107']
+            height: 280,
+            colors: ['#007bff', '#28a745', '#dc3545', '#ffc107'],
+            annotations: {
+                alwaysOutside: true,
+                textStyle: {
+                    fontSize: 10,
+                    bold: true,
+                    color: '#333'
+                }
+            }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -814,7 +906,7 @@ const DashboardCharts = {
             curveType: 'function',
             legend: { position: 'bottom' },
             hAxis: { textStyle: { fontSize: 10 } },
-            height: 350,
+            height: 180,
             colors: ['#007bff', '#28a745']
         };
         
@@ -833,8 +925,16 @@ const DashboardCharts = {
             chart: { title: 'Subject Performance', subtitle: 'Average scores by subject' },
             bars: 'horizontal',
             hAxis: { format: 'decimal', minValue: 0, maxValue: 1 },
-            height: 300,
-            colors: ['#6f42c1']
+            height: 280,
+            colors: ['#6f42c1'],
+            annotations: {
+                alwaysOutside: true,
+                textStyle: {
+                    fontSize: 10,
+                    bold: true,
+                    color: '#333'
+                }
+            }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -852,8 +952,16 @@ const DashboardCharts = {
             chart: { title: 'Centre Capacity Utilization', subtitle: 'Percentage of centre capacity being used' },
             bars: 'horizontal',
             hAxis: { format: 'decimal', minValue: 0, maxValue: 100 },
-            height: 300,
-            colors: ['#fd7e14']
+            height: 180,
+            colors: ['#fd7e14'],
+            annotations: {
+                alwaysOutside: true,
+                textStyle: {
+                    fontSize: 10,
+                    bold: true,
+                    color: '#333'
+                }
+            }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -872,7 +980,7 @@ const DashboardCharts = {
         const options = {
             title: 'Exam Status Distribution',
             width: '100%',
-            height: 300,
+            height: 180,
             colors: ['#28a745', '#ffc107', '#dc3545'],
             legend: { position: 'bottom', alignment: 'center' },
             pieHole: 0.4
@@ -894,8 +1002,16 @@ const DashboardCharts = {
             bars: 'horizontal',
             hAxis: { format: 'decimal', title: 'Number of Candidates/Responses' },
             vAxis: { textStyle: { fontSize: 12 } },
-            height: 400,
-            colors: ['#007bff', '#28a745', '#51bb25', '#173878', '#f8d62b']
+            height: 180,
+            colors: ['#007bff', '#28a745', '#51bb25', '#173878', '#f8d62b'],
+            annotations: {
+                alwaysOutside: true,
+                textStyle: {
+                    fontSize: 10,
+                    bold: true,
+                    color: '#333'
+                }
+            }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -920,10 +1036,18 @@ const DashboardCharts = {
             chart: { title: 'Top Scorers by Programme', subtitle: 'Highest performing candidate per cadre' },
             bars: 'horizontal',
             hAxis: { format: 'decimal', title: 'Score Percentage (%)', minValue: 0, maxValue: 100 },
-            height: 300,
+            height: 280,
             colors: ['#17a2b8'],
             tooltip: { isHtml: true },
-            legend: { position: 'none' }
+            legend: { position: 'none' },
+            annotations: {
+                alwaysOutside: true,
+                textStyle: {
+                    fontSize: 10,
+                    bold: true,
+                    color: '#333'
+                }
+            }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
