@@ -1736,7 +1736,7 @@
                 
                 // Reset form fields
                 $('#candidate_target_centre').val(null).trigger('change');
-                $('#candidate_transfer_mode').val('').trigger('change');
+                $('#candidate_transfer_mode').val('auto_assign').trigger('change');
                 $('#target_schedules_section').hide();
                 $('#selected_target_schedule').val('');
                 $('#candidate_search').val('');
