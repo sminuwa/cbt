@@ -117,27 +117,11 @@
 
 <!-- Second Row: Centre Operations -->
 <div class="row">
-    <div class="col-sm-12 col-md-12 col-xl-6">
-        <div class="card dashboard-chart-card">
-            <div class="card-header compact-header">
-                <h5>Scheduled Centres per Paper/Test Code</h5>
-                <small class="text-muted">Schedules, venues, and centres per test paper</small>
-            </div>
-            <div class="card-body compact-chart">
-                <div id="scheduled-centres-chart" class="chart-container">
-                    <div class="chart-loading">
-                        <i class="las la-spinner la-2x"></i>
-                        <p>Loading...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-12 col-md-6 col-xl-3">
+    <div class="col-sm-12 col-md-6 col-xl-6">
         <div class="card dashboard-chart-card">
             <div class="card-header compact-header">
                 <h5>Centres Pull Status</h5>
-                <small class="text-muted">Centres & candidates</small>
+                <small class="text-muted">Centres and candidates pulled per paper</small>
             </div>
             <div class="card-body compact-chart">
                 <div id="centres-pulled-chart" class="chart-container">
@@ -149,11 +133,11 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-12 col-md-6 col-xl-3">
+    <div class="col-sm-12 col-md-6 col-xl-6">
         <div class="card dashboard-chart-card">
             <div class="card-header compact-header">
                 <h5>Centres Push Status</h5>
-                <small class="text-muted">Centres & candidates</small>
+                <small class="text-muted">Centres and candidates pushed per paper</small>
             </div>
             <div class="card-body compact-chart">
                 <div id="centres-pushed-chart" class="chart-container">
@@ -167,29 +151,13 @@
     </div>
 </div>
 
-<!-- Third Row: Performance Metrics -->
+<!-- Third Row: Daily Activity -->
 <div class="row">
-    <div class="col-sm-12 col-md-12 col-xl-8">
-        <div class="card dashboard-chart-card">
-            <div class="card-header compact-header">
-                <h5>Centre Performance Statistics</h5>
-                <small class="text-muted">Performance metrics by centre - candidates, completion rates, scores</small>
-            </div>
-            <div class="card-body compact-chart">
-                <div id="centre-performance-chart" class="chart-container">
-                    <div class="chart-loading">
-                        <i class="las la-spinner la-2x"></i>
-                        <p>Loading...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-12 col-md-6 col-xl-4">
+    <div class="col-sm-12 col-md-12 col-xl-6">
         <div class="card dashboard-chart-card">
             <div class="card-header compact-header">
                 <h5>Daily Activity</h5>
-                <small class="text-muted">Last 5 days trend</small>
+                <small class="text-muted">Last 5 days trend - candidates starting and completing exams</small>
             </div>
             <div class="card-body compact-chart">
                 <div id="daily-activity-chart" class="chart-container">
@@ -201,15 +169,11 @@
             </div>
         </div>
     </div>
-</div>
-
-<!-- Fourth Row: Programme & Performance -->
-<div class="row">
-    <div class="col-sm-12 col-md-6 col-xl-4">
+    <div class="col-sm-12 col-md-6 col-xl-6">
         <div class="card dashboard-chart-card">
             <div class="card-header compact-header">
                 <h5>Test Programme Performance</h5>
-                <small class="text-muted">Candidates & responses by programme</small>
+                <small class="text-muted">Candidates registered and responses submitted by programme</small>
             </div>
             <div class="card-body compact-chart">
                 <div id="column-chart1" class="chart-container">
@@ -221,6 +185,10 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Fourth Row: Academic Performance -->
+<div class="row">
     <div class="col-sm-12 col-md-6 col-xl-4">
         <div class="card dashboard-chart-card">
             <div class="card-header compact-header">
@@ -253,10 +221,6 @@
             </div>
         </div>
     </div>
-</div>
-
-<!-- Fifth Row: Additional Charts -->
-<div class="row">
     <div class="col-sm-12 col-md-6 col-xl-4">
         <div class="card dashboard-chart-card">
             <div class="card-header compact-header">
@@ -273,11 +237,15 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-12 col-md-6 col-xl-4">
+</div>
+
+<!-- Fifth Row: Attendance Analysis -->
+<div class="row">
+    <div class="col-sm-12 col-md-6 col-xl-4 mx-auto">
         <div class="card dashboard-chart-card">
             <div class="card-header compact-header">
                 <h5>Attendance Remarks</h5>
-                <small class="text-muted">Distribution of remarks</small>
+                <small class="text-muted">Distribution of attendance remarks</small>
             </div>
             <div class="card-body compact-chart">
                 <div id="attendance-remarks-chart" class="chart-container">
@@ -539,17 +507,15 @@ const DashboardCharts = {
         ];
         
         const mediumCharts = [
-            { id: 'scheduled-centres-chart', endpoint: 'scheduled-centres', delay: 2000 },
-            { id: 'centres-pulled-chart', endpoint: 'centres-pull', delay: 2500 },
-            { id: 'centres-pushed-chart', endpoint: 'centres-push', delay: 3000 },
-            { id: 'column-chart1', endpoint: 'test-programme', delay: 3500 }
+            { id: 'centres-pulled-chart', endpoint: 'centres-pull', delay: 2000 },
+            { id: 'centres-pushed-chart', endpoint: 'centres-push', delay: 2500 },
+            { id: 'column-chart1', endpoint: 'test-programme', delay: 3000 }
         ];
         
         const heavyCharts = [
-            { id: 'centre-performance-chart', endpoint: 'centre-performance', delay: 4000 },
-            { id: 'subject-performance-chart', endpoint: 'subject-performance', delay: 5000 },
-            { id: 'capacity-utilization-chart', endpoint: 'capacity-utilization', delay: 6000 },
-            { id: 'bar-chart1', endpoint: 'top-scorers', delay: 7000 }
+            { id: 'subject-performance-chart', endpoint: 'subject-performance', delay: 4000 },
+            { id: 'capacity-utilization-chart', endpoint: 'capacity-utilization', delay: 5000 },
+            { id: 'bar-chart1', endpoint: 'top-scorers', delay: 6000 }
         ];
         
         const allCharts = [...priorityCharts, ...mediumCharts, ...heavyCharts];
@@ -568,7 +534,7 @@ const DashboardCharts = {
         this.loadingStates[chartId] = true;
         
         // Determine timeout based on chart complexity
-        const heavyCharts = ['centre-performance', 'subject-performance', 'capacity-utilization', 'top-scorers'];
+        const heavyCharts = ['subject-performance', 'capacity-utilization', 'top-scorers'];
         const timeout = heavyCharts.includes(endpoint) ? 45000 : 20000;
         
         $.ajax({
@@ -608,7 +574,7 @@ const DashboardCharts = {
     
     // Show enhanced loading indicator
     showLoadingWithProgress(chartId, endpoint) {
-        const heavyCharts = ['centre-performance', 'subject-performance', 'capacity-utilization', 'top-scorers'];
+        const heavyCharts = ['subject-performance', 'capacity-utilization', 'top-scorers'];
         const isHeavy = heavyCharts.includes(endpoint);
         const message = isHeavy ? 'Processing...' : 'Loading...';
         
@@ -637,12 +603,10 @@ const DashboardCharts = {
     retryChart(chartId) {
         // Find the endpoint for this chart
         const chartMappings = {
-            'scheduled-centres-chart': 'scheduled-centres',
             'centres-pulled-chart': 'centres-pull',
             'centres-pushed-chart': 'centres-push',
             'candidates-attended-chart': 'candidates-attended',
             'attendance-remarks-chart': 'attendance-stats',
-            'centre-performance-chart': 'centre-performance',
             'daily-activity-chart': 'daily-activity',
             'subject-performance-chart': 'subject-performance',
             'capacity-utilization-chart': 'capacity-utilization',
@@ -676,9 +640,6 @@ const DashboardCharts = {
         
         try {
             switch(endpoint) {
-                case 'scheduled-centres':
-                    this.renderScheduledCentres(chartId, data);
-                    break;
                 case 'centres-pull':
                     this.renderCentresPull(chartId, data);
                     break;
@@ -690,9 +651,6 @@ const DashboardCharts = {
                     break;
                 case 'attendance-stats':
                     this.renderAttendanceRemarks(chartId, data);
-                    break;
-                case 'centre-performance':
-                    this.renderCentrePerformance(chartId, data);
                     break;
                 case 'daily-activity':
                     this.renderDailyActivity(chartId, data);
@@ -720,33 +678,6 @@ const DashboardCharts = {
     },
     
     // Individual chart rendering methods
-    renderScheduledCentres(chartId, data) {
-        const chartData = [['Paper/Test Code', 'Total Schedules', 'Unique Venues', 'Unique Centres']];
-        data.forEach(item => {
-            chartData.push([item.paper_name, parseInt(item.total_schedules), parseInt(item.unique_venues), parseInt(item.unique_centres)]);
-        });
-        
-        const dataTable = google.visualization.arrayToDataTable(chartData);
-        const options = {
-            chart: { title: 'Scheduled Centres per Paper', subtitle: 'Number of schedules, venues, and centres per test paper' },
-            bars: 'vertical',
-            vAxis: { format: 'decimal' },
-            hAxis: { textStyle: { fontSize: 10 } },
-            height: 280,
-            colors: ['#007bff', '#28a745', '#ffc107'],
-            annotations: {
-                alwaysOutside: true,
-                textStyle: {
-                    fontSize: 10,
-                    bold: true,
-                    color: '#333'
-                }
-            }
-        };
-        
-        const chart = new google.charts.Bar(document.getElementById(chartId));
-        chart.draw(dataTable, google.charts.Bar.convertOptions(options));
-    },
     
     renderCentresPull(chartId, data) {
         const chartData = [['Paper', 'Centres Pulled', 'Candidates Pulled']];
@@ -860,39 +791,6 @@ const DashboardCharts = {
         chart.draw(dataTable, options);
     },
     
-    renderCentrePerformance(chartId, data) {
-        const chartData = [['Centre', 'Total Candidates', 'Completed Candidates', 'Average Score', 'Total Responses']];
-        data.forEach(item => {
-            chartData.push([
-                item.centre_name.substring(0, 20),
-                parseInt(item.total_candidates),
-                parseInt(item.completed_candidates),
-                parseFloat(item.average_score) || 0,
-                parseInt(item.total_responses)
-            ]);
-        });
-        
-        const dataTable = google.visualization.arrayToDataTable(chartData);
-        const options = {
-            chart: { title: 'Centre Performance Statistics', subtitle: 'Performance metrics by centre' },
-            bars: 'vertical',
-            vAxis: { format: 'decimal' },
-            hAxis: { textStyle: { fontSize: 10 } },
-            height: 280,
-            colors: ['#007bff', '#28a745', '#dc3545', '#ffc107'],
-            annotations: {
-                alwaysOutside: true,
-                textStyle: {
-                    fontSize: 10,
-                    bold: true,
-                    color: '#333'
-                }
-            }
-        };
-        
-        const chart = new google.charts.Bar(document.getElementById(chartId));
-        chart.draw(dataTable, google.charts.Bar.convertOptions(options));
-    },
     
     renderDailyActivity(chartId, data) {
         const chartData = [['Date', 'Started', 'Completed']];
@@ -980,7 +878,7 @@ const DashboardCharts = {
         const options = {
             title: 'Exam Status Distribution',
             width: '100%',
-            height: 180,
+            height: 280,
             colors: ['#28a745', '#ffc107', '#dc3545'],
             legend: { position: 'bottom', alignment: 'center' },
             pieHole: 0.4
