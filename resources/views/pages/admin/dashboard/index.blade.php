@@ -668,7 +668,8 @@ const DashboardCharts = {
         const options = {
             bars: 'horizontal',
             hAxis: { format: 'decimal' },
-            height: 280,
+            height: '100%',
+            width: '100%',
             colors: ['#17a2b8', '#6f42c1'],
             legend: { position: 'none' },
             annotations: {
@@ -695,7 +696,8 @@ const DashboardCharts = {
         const options = {
             bars: 'horizontal',
             hAxis: { format: 'decimal' },
-            height: 280,
+            height: '100%',
+            width: '100%',
             colors: ['#fd7e14', '#e83e8c'],
             legend: { position: 'none' },
             annotations: {
@@ -730,7 +732,8 @@ const DashboardCharts = {
             bars: 'vertical',
             vAxis: { format: 'decimal' },
             hAxis: { textStyle: { fontSize: 9 } },
-            height: 280,
+            height: '100%',
+            width: '100%',
             colors: ['#28a745', '#007bff', '#ffc107'],
             legend: { position: 'bottom', alignment: 'center' },
             annotations: {
@@ -756,7 +759,7 @@ const DashboardCharts = {
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
             width: '100%',
-            height: 280,
+            height: '100%',
             pieHole: 0.3,
             colors: ['#28a745', '#dc3545', '#ffc107', '#6c757d', '#17a2b8'],
             legend: { position: 'bottom', alignment: 'center' }
@@ -777,7 +780,8 @@ const DashboardCharts = {
         const options = {
             curveType: 'function',
             hAxis: { textStyle: { fontSize: 10 } },
-            height: 280,
+            height: '100%',
+            width: '100%',
             colors: ['#007bff', '#28a745'],
             legend: { position: 'bottom', alignment: 'center' }
         };
@@ -796,7 +800,8 @@ const DashboardCharts = {
         const options = {
             bars: 'horizontal',
             hAxis: { format: 'decimal', minValue: 0, maxValue: 1 },
-            height: 280,
+            height: '100%',
+            width: '100%',
             colors: ['#6f42c1'],
             legend: { position: 'none' },
             annotations: {
@@ -825,7 +830,7 @@ const DashboardCharts = {
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
             width: '100%',
-            height: 280,
+            height: '100%',
             colors: ['#28a745', '#ffc107', '#dc3545'],
             pieHole: 0.4,
             legend: { position: 'bottom', alignment: 'center' }
@@ -846,7 +851,8 @@ const DashboardCharts = {
             bars: 'horizontal',
             hAxis: { format: 'decimal' },
             vAxis: { textStyle: { fontSize: 12 } },
-            height: 180,
+            height: '100%',
+            width: '100%',
             colors: ['#007bff', '#28a745', '#51bb25', '#173878', '#f8d62b'],
             legend: { position: 'bottom', alignment: 'center' },
             annotations: {
@@ -880,7 +886,8 @@ const DashboardCharts = {
         const options = {
             bars: 'horizontal',
             hAxis: { format: 'decimal', minValue: 0, maxValue: 100 },
-            height: 280,
+            height: '100%',
+            width: '100%',
             colors: ['#17a2b8'],
             tooltip: { isHtml: true },
             legend: { position: 'none' },
