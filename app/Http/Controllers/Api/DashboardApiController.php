@@ -90,15 +90,16 @@ class DashboardApiController extends Controller
                     sub.name as subject_name,
                     sub.subject_code,
                     CONCAT(tc.name, ' - ', sub.name) as paper_subject,
-                    COUNT(DISTINCT sps.schedule_id) as centres_pushed,
+                    COUNT(DISTINCT sch.id) as centres_pushed,
                     COUNT(DISTINCT cs.scheduled_candidate_id) as candidates_with_subject
                 FROM test_codes tc
                 INNER JOIN test_configs tcfg ON tcfg.test_code_id = tc.id
-                INNER JOIN schedulings s ON s.test_config_id = tcfg.id
-                INNER JOIN schedule_push_statuses sps ON sps.schedule_id = s.id
-                INNER JOIN scheduled_candidates sc ON sc.schedule_id = s.id
+                INNER JOIN schedulings sch ON sch.test_config_id = tcfg.id
+                INNER JOIN scheduled_candidates sc ON sc.schedule_id = sch.id
+                INNER JOIN time_controls tctrl ON tctrl.scheduled_candidate_id = sc.id
                 INNER JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
                 INNER JOIN subjects sub ON sub.id = cs.subject_id
+                WHERE tctrl.id IS NOT NULL
                 GROUP BY tc.id, tc.name, sub.id, sub.name, sub.subject_code
                 HAVING centres_pushed > 0
                 ORDER BY tc.name, sub.name

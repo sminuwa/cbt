@@ -700,7 +700,7 @@ const DashboardCharts = {
             // Use paper_subject for combined display, or fallback to paper_name - subject_name
             const displayName = item.paper_subject || `${item.paper_name} - ${item.subject_name}`;
             // Truncate long names for better display
-            const truncatedName = displayName.length > 30 ? displayName.substring(0, 30) + '...' : displayName;
+            const truncatedName = displayName.length > 25 ? displayName.substring(0, 25) + '...' : displayName;
             chartData.push([
                 truncatedName, 
                 parseInt(item.centres_pushed) || 0, 
@@ -716,8 +716,9 @@ const DashboardCharts = {
         
         const dataTable = google.visualization.arrayToDataTable(chartData);
         const options = {
-            bars: 'horizontal',
-            hAxis: { format: 'decimal' },
+            bars: 'vertical',
+            vAxis: { format: 'decimal' },
+            hAxis: { textStyle: { fontSize: 9 } },
             height: '100%',
             width: '100%',
             colors: ['#fd7e14', '#e83e8c'],
@@ -730,8 +731,8 @@ const DashboardCharts = {
                     color: '#333'
                 }
             },
-            bar: { groupWidth: '70%' },
-            chartArea: { left: 130, top: 20, width: '65%', height: '65%' }
+            bar: { groupWidth: '80%' },
+            chartArea: { left: 50, top: 20, width: '85%', height: '70%' }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
