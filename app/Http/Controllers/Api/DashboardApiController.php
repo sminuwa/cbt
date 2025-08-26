@@ -58,15 +58,21 @@ class DashboardApiController extends Controller
             $data = DB::select("
                 SELECT 
                     tc.name as paper_name,
+                    sub.name as subject_name,
+                    sub.subject_code,
+                    CONCAT(tc.name, ' - ', sub.name) as paper_subject,
                     COUNT(DISTINCT sps.schedule_id) as centres_pulled,
-                    SUM(sps.total_candidate) as total_candidates_pulled
+                    COUNT(DISTINCT cs.scheduled_candidate_id) as candidates_with_subject
                 FROM test_codes tc
-                LEFT JOIN test_configs tcfg ON tcfg.test_code_id = tc.id
-                LEFT JOIN schedulings s ON s.test_config_id = tcfg.id
-                LEFT JOIN schedule_pull_statuses sps ON sps.schedule_id = s.id
-                WHERE sps.id IS NOT NULL
-                GROUP BY tc.id, tc.name
-                ORDER BY tc.name
+                INNER JOIN test_configs tcfg ON tcfg.test_code_id = tc.id
+                INNER JOIN schedulings s ON s.test_config_id = tcfg.id
+                INNER JOIN schedule_pull_statuses sps ON sps.schedule_id = s.id
+                INNER JOIN scheduled_candidates sc ON sc.schedule_id = s.id
+                INNER JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
+                INNER JOIN subjects sub ON sub.id = cs.subject_id
+                GROUP BY tc.id, tc.name, sub.id, sub.name, sub.subject_code
+                HAVING centres_pulled > 0
+                ORDER BY tc.name, sub.name
             ");
 
             return response()->json(['success' => true, 'data' => $data]);
@@ -81,16 +87,21 @@ class DashboardApiController extends Controller
             $data = DB::select("
                 SELECT 
                     tc.name as paper_name,
-                    COUNT(DISTINCT s.id) as centres_pushed,
-                    COUNT(DISTINCT tctrl.scheduled_candidate_id) as total_candidates_pushed
+                    sub.name as subject_name,
+                    sub.subject_code,
+                    CONCAT(tc.name, ' - ', sub.name) as paper_subject,
+                    COUNT(DISTINCT sps.schedule_id) as centres_pushed,
+                    COUNT(DISTINCT cs.scheduled_candidate_id) as candidates_with_subject
                 FROM test_codes tc
-                LEFT JOIN test_configs tcfg ON tcfg.test_code_id = tc.id
-                LEFT JOIN schedulings s ON s.test_config_id = tcfg.id
-                LEFT JOIN scheduled_candidates sc ON sc.schedule_id = s.id
-                LEFT JOIN time_controls tctrl ON tctrl.scheduled_candidate_id = sc.id
-                WHERE tctrl.id IS NOT NULL
-                GROUP BY tc.id, tc.name
-                ORDER BY tc.name
+                INNER JOIN test_configs tcfg ON tcfg.test_code_id = tc.id
+                INNER JOIN schedulings s ON s.test_config_id = tcfg.id
+                INNER JOIN schedule_push_statuses sps ON sps.schedule_id = s.id
+                INNER JOIN scheduled_candidates sc ON sc.schedule_id = s.id
+                INNER JOIN candidate_subjects cs ON cs.scheduled_candidate_id = sc.id
+                INNER JOIN subjects sub ON sub.id = cs.subject_id
+                GROUP BY tc.id, tc.name, sub.id, sub.name, sub.subject_code
+                HAVING centres_pushed > 0
+                ORDER BY tc.name, sub.name
             ");
 
             return response()->json(['success' => true, 'data' => $data]);

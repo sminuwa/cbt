@@ -121,7 +121,7 @@
         <div class="card dashboard-chart-card">
             <div class="card-header compact-header">
                 <h5>Centres Pull Status</h5>
-                <small class="text-muted">Centres and candidates pulled per paper</small>
+                <small class="text-muted">Centres and candidates pulled per subject per test code</small>
             </div>
             <div class="card-body compact-chart">
                 <div id="centres-pulled-chart" class="chart-container">
@@ -137,7 +137,7 @@
         <div class="card dashboard-chart-card">
             <div class="card-header compact-header">
                 <h5>Centres Push Status</h5>
-                <small class="text-muted">Centres with candidates who have started exams</small>
+                <small class="text-muted">Centres with candidates who have started exams per subject per test code</small>
             </div>
             <div class="card-body compact-chart">
                 <div id="centres-pushed-chart" class="chart-container">
@@ -645,9 +645,17 @@ const DashboardCharts = {
             return;
         }
         
-        const chartData = [['Paper', 'Centres Pulled', 'Candidates Pulled']];
+        const chartData = [['Paper - Subject', 'Centres Pulled', 'Candidates with Subject']];
         data.forEach(item => {
-            chartData.push([item.paper_name, parseInt(item.centres_pulled), parseInt(item.total_candidates_pulled) || 0]);
+            // Use paper_subject for combined display, or fallback to paper_name - subject_name
+            const displayName = item.paper_subject || `${item.paper_name} - ${item.subject_name}`;
+            // Truncate long names for better display
+            const truncatedName = displayName.length > 30 ? displayName.substring(0, 30) + '...' : displayName;
+            chartData.push([
+                truncatedName, 
+                parseInt(item.centres_pulled) || 0, 
+                parseInt(item.candidates_with_subject) || 0
+            ]);
         });
         
         // Double check if we actually have data rows
@@ -663,17 +671,17 @@ const DashboardCharts = {
             height: '100%',
             width: '100%',
             colors: ['#17a2b8', '#6f42c1'],
-            legend: { position: 'none' },
+            legend: { position: 'bottom', alignment: 'center' },
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
-                    fontSize: 12,
+                    fontSize: 11,
                     bold: true,
                     color: '#333'
                 }
             },
-            bar: { groupWidth: '75%' },
-            chartArea: { left: 120, top: 20, width: '70%', height: '80%' }
+            bar: { groupWidth: '70%' },
+            chartArea: { left: 130, top: 20, width: '65%', height: '65%' }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
@@ -687,9 +695,17 @@ const DashboardCharts = {
             return;
         }
         
-        const chartData = [['Paper', 'Centres Pushed', 'Candidates Pushed']];
+        const chartData = [['Paper - Subject', 'Centres Pushed', 'Candidates with Subject']];
         data.forEach(item => {
-            chartData.push([item.paper_name, parseInt(item.centres_pushed), parseInt(item.total_candidates_pushed) || 0]);
+            // Use paper_subject for combined display, or fallback to paper_name - subject_name
+            const displayName = item.paper_subject || `${item.paper_name} - ${item.subject_name}`;
+            // Truncate long names for better display
+            const truncatedName = displayName.length > 30 ? displayName.substring(0, 30) + '...' : displayName;
+            chartData.push([
+                truncatedName, 
+                parseInt(item.centres_pushed) || 0, 
+                parseInt(item.candidates_with_subject) || 0
+            ]);
         });
         
         // Double check if we actually have data rows
@@ -705,17 +721,17 @@ const DashboardCharts = {
             height: '100%',
             width: '100%',
             colors: ['#fd7e14', '#e83e8c'],
-            legend: { position: 'none' },
+            legend: { position: 'bottom', alignment: 'center' },
             annotations: {
                 alwaysOutside: true,
                 textStyle: {
-                    fontSize: 12,
+                    fontSize: 11,
                     bold: true,
                     color: '#333'
                 }
             },
-            bar: { groupWidth: '75%' },
-            chartArea: { left: 120, top: 20, width: '70%', height: '80%' }
+            bar: { groupWidth: '70%' },
+            chartArea: { left: 130, top: 20, width: '65%', height: '65%' }
         };
         
         const chart = new google.charts.Bar(document.getElementById(chartId));
